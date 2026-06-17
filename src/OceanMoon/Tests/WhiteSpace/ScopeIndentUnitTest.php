@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Galaxon\Tests\WhiteSpace;
+namespace OceanMoon\Tests\WhiteSpace;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffTestCase;
 
 /**
- * Unit tests for Galaxon.WhiteSpace.ScopeIndent sniff.
+ * Unit tests for OceanMoon.WhiteSpace.ScopeIndent sniff.
  *
  * Focuses on PHP 8.4 property hook indentation, which is the reason this
  * sniff was forked from Generic.WhiteSpace.ScopeIndent.

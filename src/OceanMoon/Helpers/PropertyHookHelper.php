@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Galaxon\Helpers;
+namespace OceanMoon\Helpers;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;

@@ -1,6 +1,6 @@
-# Galaxon PHP Coding Standard
+# OceanMoon PHP Coding Standard
 
-A PHP_CodeSniffer coding standard for Galaxon PHP libraries extending PSR-12 with custom rules.
+A PHP_CodeSniffer coding standard for the Ocean Moon PHP packages extending PSR-12 with custom rules.
 
 **[License](LICENSE)** | **[Changelog](CHANGELOG.md)**
 
@@ -10,7 +10,7 @@ A PHP_CodeSniffer coding standard for Galaxon PHP libraries extending PSR-12 wit
 
 ## Description
 
-This package provides a custom PHP_CodeSniffer coding standard for the Galaxon PHP libraries by Shaun Moss. It extends PSR-12 with additional rules for consistent naming conventions and modern PHP 8.4+ syntax.
+This package provides a custom PHP_CodeSniffer coding standard for the PHP packages by Shaun Moss. It extends PSR-12 with additional rules for consistent naming conventions and modern PHP 8.4+ syntax.
 
 **Key Features:**
 - Extends PSR-12 coding standard
@@ -22,10 +22,10 @@ This package provides a custom PHP_CodeSniffer coding standard for the Galaxon P
 
 The package provides several custom sniffs to cover gaps in the available standards. These include:
 
-- **Galaxon.Arrays.ArrayDeclaration**: Enforces consistent array formatting with lists and associative arrays
-- **Galaxon.Classes.ClassInstantiationNoBrackets**: Removes unnecessary parentheses around class instantiation when accessing members (PHP 8.4+)
-- **Galaxon.Classes.PropertyDeclaration**: Verifies property declarations, with PHP 8.4 property hook support
-- **Galaxon.WhiteSpace.ScopeIndent**: Checks that control structures and code are indented correctly, with PHP 8.4 property hook support
+- **OceanMoon.Arrays.ArrayDeclaration**: Enforces consistent array formatting with lists and associative arrays
+- **OceanMoon.Classes.ClassInstantiationNoBrackets**: Removes unnecessary parentheses around class instantiation when accessing members (PHP 8.4+)
+- **OceanMoon.Classes.PropertyDeclaration**: Verifies property declarations, with PHP 8.4 property hook support
+- **OceanMoon.WhiteSpace.ScopeIndent**: Checks that control structures and code are indented correctly, with PHP 8.4 property hook support
 
 See [Custom Sniffs](#custom-sniffs) for more details.
 
@@ -49,7 +49,7 @@ See [Custom Sniffs](#custom-sniffs) for more details.
 ## Installation
 
 ```bash
-composer require --dev galaxon/coding-standard
+composer require --dev oceanmoon/coding-standard
 ```
 
 The standard is automatically registered with PHP_CodeSniffer via the `dealerdirect/phpcodesniffer-composer-installer` plugin.
@@ -68,7 +68,7 @@ Create a `phpcs.xml` file in your project root:
     <file>src</file>
     <file>tests</file>
 
-    <rule ref="Galaxon"/>
+    <rule ref="OceanMoon"/>
 </ruleset>
 ```
 
@@ -83,7 +83,7 @@ vendor/bin/phpcbf       # Auto-fix issues
 
 ## Included Sniffs
 
-The Galaxon coding standard extends PSR-12 and includes the following additional sniffs.
+The OceanMoon coding standard extends PSR-12 and includes the following additional sniffs.
 
 Links:
 * [PSR-12 standard](https://www.php-fig.org/psr/psr-12/)
@@ -93,8 +93,8 @@ Links:
 ### Base Standard
 
 - **PSR-12**: Complete PSR-12 coding standard (with exception for multiple classes in test files)
-  - `PSR2.Classes.PropertyDeclaration` excluded — replaced by `Galaxon.Classes.PropertyDeclaration` for PHP 8.4 property hook support (see [Custom Sniffs](#custom-sniffs))
-  - `Generic.WhiteSpace.ScopeIndent` excluded — replaced by `Galaxon.WhiteSpace.ScopeIndent` for PHP 8.4 property hook support (see [Custom Sniffs](#custom-sniffs))
+  - `PSR2.Classes.PropertyDeclaration` excluded — replaced by `OceanMoon.Classes.PropertyDeclaration` for PHP 8.4 property hook support (see [Custom Sniffs](#custom-sniffs))
+  - `Generic.WhiteSpace.ScopeIndent` excluded — replaced by `OceanMoon.WhiteSpace.ScopeIndent` for PHP 8.4 property hook support (see [Custom Sniffs](#custom-sniffs))
 
 ### Generic Sniffs
 
@@ -272,13 +272,13 @@ This sniff is compliant with several PHP coding standards:
 2. Laravel requires `$lowerCamelCase` ([unofficially](https://spatie.be/guidelines/laravel-php#content-general-php-rules)).
 3. Drupal variable names may use either `$lowerCamelCase` or `$lower_snake_case` ([ref](https://project.pages.drupalcode.org/coding_standards/php/coding/#functions-and-variables)), as long as one is consistent. Properties should use `$lowerCamelCase`, and protected or private properties should not use an underscore prefix. ([ref](https://project.pages.drupalcode.org/coding_standards/php/coding/#classes-methods-and-properties)).
 
-Therefore, if any of the Galaxon packages are used in projects based on these frameworks, the code should be compliant.
+Therefore, if any of the OceanMoon packages are used in projects based on these frameworks, the code should be compliant.
 
 ---
 
 ## Custom Sniffs
 
-### Galaxon.Arrays.ArrayDeclaration
+### OceanMoon.Arrays.ArrayDeclaration
 
 Enforces consistent array formatting based on array type. The sniff differentiates between *lists* (no array keys appearing in the code), and *associative arrays* (at least one key appearing in the code). Technically, a list in PHP is any array with sequential integer keys starting from 0, but since we don't want to remove keys if they exist in the code, we treat any array with keys as an associative array and format it as such.
 
@@ -353,7 +353,7 @@ $user = ['name' => 'John', 'email' => 'john@example.com', 'age' => 30];
 | `indent`        | int  | 4       | Number of spaces to indent array elements.                          |
 
 ```xml
-<rule ref="Galaxon.Arrays.ArrayDeclaration">
+<rule ref="OceanMoon.Arrays.ArrayDeclaration">
     <properties>
         <property name="maxLineLength" value="100"/>
         <property name="indent" value="2"/>
@@ -361,7 +361,7 @@ $user = ['name' => 'John', 'email' => 'john@example.com', 'age' => 30];
 </rule>
 ```
 
-### Galaxon.Classes.ClassInstantiationNoBrackets
+### OceanMoon.Classes.ClassInstantiationNoBrackets
 
 Removes unnecessary parentheses around `new` expressions when accessing members (PHP 8.4+).
 
@@ -381,7 +381,7 @@ new Bar()->property;
 (new Bar())->property;              // Unnecessary parentheses
 ```
 
-### Galaxon.Classes.PropertyDeclaration
+### OceanMoon.Classes.PropertyDeclaration
 
 Verifies that properties are declared correctly. This is a replacement for `PSR2.Classes.PropertyDeclaration` that properly handles PHP 8.4 property hooks.
 
@@ -391,7 +391,7 @@ Verifies that properties are declared correctly. This is a replacement for `PSR2
 - Supports PHP 8.4 asymmetric visibility (`public private(set)`), enforcing that read-visibility comes before write-visibility.
 - Enforces correct ordering of modifiers: `abstract`/`final` before visibility, `static`/`readonly` after visibility.
 
-### Galaxon.WhiteSpace.ScopeIndent
+### OceanMoon.WhiteSpace.ScopeIndent
 
 Checks that control structures and code are indented correctly. This is a fork of `Generic.WhiteSpace.ScopeIndent` with PHP 8.4 property hook support.
 
@@ -419,7 +419,7 @@ class User
 | `indent` | int | 4 | Number of spaces per indentation level. |
 
 ```xml
-<rule ref="Galaxon.WhiteSpace.ScopeIndent">
+<rule ref="OceanMoon.WhiteSpace.ScopeIndent">
     <properties>
         <property name="indent" value="2"/>
     </properties>
@@ -437,7 +437,7 @@ MIT License - see [LICENSE](LICENSE) for details
 ## Support
 
 - **Issues**: https://github.com/mossy2100/PHP-CodingStandard/issues
-- **Examples**: See `phpcs.xml` files in other Galaxon packages
+- **Examples**: See `phpcs.xml` files in other OceanMoon packages
 
 For questions or suggestions, please [open an issue](https://github.com/mossy2100/PHP-CodingStandard/issues).
 

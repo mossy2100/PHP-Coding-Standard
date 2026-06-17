@@ -14,7 +14,7 @@
 
 declare(strict_types=1);
 
-namespace Galaxon\Sniffs\WhiteSpace;
+namespace OceanMoon\Sniffs\WhiteSpace;
 
 use PHP_CodeSniffer\Config;
 use PHP_CodeSniffer\Files\File;
@@ -410,7 +410,7 @@ class ScopeIndentSniff implements Sniff
                 && $tokens[$i]['code'] === T_PHPCS_SET
                 && isset($tokens[$i]['sniffCode']) === true
                 && ($tokens[$i]['sniffCode'] === 'Generic.WhiteSpace.ScopeIndent'
-                    || $tokens[$i]['sniffCode'] === 'Galaxon.WhiteSpace.ScopeIndent')
+                    || $tokens[$i]['sniffCode'] === 'OceanMoon.WhiteSpace.ScopeIndent')
                 && $tokens[$i]['sniffProperty'] === 'exact'
             ) {
                 $value = $tokens[$i]['sniffPropertyValue'];

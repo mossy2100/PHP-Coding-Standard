@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Galaxon\Tests\Classes;
+namespace OceanMoon\Tests\Classes;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffTestCase;
 
 /**
- * Unit tests for Galaxon.Classes.PropertyDeclaration sniff.
+ * Unit tests for OceanMoon.Classes.PropertyDeclaration sniff.
  */
 class PropertyDeclarationUnitTest extends AbstractSniffTestCase
 {

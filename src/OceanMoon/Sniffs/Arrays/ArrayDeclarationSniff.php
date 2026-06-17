@@ -13,7 +13,7 @@
 
 declare(strict_types=1);
 
-namespace Galaxon\Sniffs\Arrays;
+namespace OceanMoon\Sniffs\Arrays;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;

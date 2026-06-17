@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Galaxon\Sniffs\Classes;
+namespace OceanMoon\Sniffs\Classes;
 
 use Exception;
-use Galaxon\Helpers\PropertyHookHelper;
+use OceanMoon\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\AbstractVariableSniff;
 use PHP_CodeSniffer\Util\Tokens;

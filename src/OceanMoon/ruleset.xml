@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Galaxon">
-    <description>Galaxon PHP Coding Standard</description>
+<ruleset name="OceanMoon">
+    <description>OceanMoon PHP Coding Standard</description>
 
     <!-- ====== PSR ====== -->
 
@@ -11,9 +11,9 @@
 
     <!-- Inherit from PSR-12 -->
     <rule ref="PSR12">
-        <!-- Exclude PSR2 PropertyDeclaration - replaced by Galaxon version for PHP 8.4 property hook support -->
+        <!-- Exclude PSR2 PropertyDeclaration - replaced by OceanMoon version for PHP 8.4 property hook support -->
         <exclude name="PSR2.Classes.PropertyDeclaration"/>
-        <!-- Exclude Generic ScopeIndent - replaced by Galaxon version for PHP 8.4 property hook support -->
+        <!-- Exclude Generic ScopeIndent - replaced by OceanMoon version for PHP 8.4 property hook support -->
         <exclude name="Generic.WhiteSpace.ScopeIndent"/>
     </rule>
 
@@ -255,18 +255,18 @@
     <rule ref="SlevomatCodingStandard.Variables.DuplicateAssignmentToVariable"/>
     <rule ref="SlevomatCodingStandard.Variables.UselessVariable"/>
 
-    <!-- ===== GALAXON ====== -->
+    <!-- ===== OCEAN MOON ====== -->
 
     <!-- Array formatting with aligned arrows for associative arrays -->
-    <rule ref="Galaxon.Arrays.ArrayDeclaration"/>
+    <rule ref="OceanMoon.Arrays.ArrayDeclaration"/>
 
     <!-- Scope indent with PHP 8.4 property hook support -->
-    <rule ref="Galaxon.WhiteSpace.ScopeIndent"/>
+    <rule ref="OceanMoon.WhiteSpace.ScopeIndent"/>
 
     <!-- Property declaration with PHP 8.4 property hook support -->
-    <rule ref="Galaxon.Classes.PropertyDeclaration"/>
+    <rule ref="OceanMoon.Classes.PropertyDeclaration"/>
 
     <!-- Remove useless parentheses around new (PHP 8.4+) -->
-    <rule ref="Galaxon.Classes.ClassInstantiationNoBrackets"/>
+    <rule ref="OceanMoon.Classes.ClassInstantiationNoBrackets"/>
 
 </ruleset>

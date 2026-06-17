@@ -2,8 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [2.0.0] - 2026-06-18
+
+### Changed
+
+- **Renamed package** from `galaxon/coding-standard` to `oceanmoon/coding-standard` — update your `composer.json` require accordingly.
+- **Renamed sniffs** — all `Galaxon.*` sniff references must be updated to `OceanMoon.*` in `phpcs.xml` and any inline `// phpcs:ignore` comments:
+  - `Galaxon.Arrays.ArrayDeclaration` → `OceanMoon.Arrays.ArrayDeclaration`
+  - `Galaxon.Classes.ClassInstantiationNoBrackets` → `OceanMoon.Classes.ClassInstantiationNoBrackets`
+  - `Galaxon.Classes.PropertyDeclaration` → `OceanMoon.Classes.PropertyDeclaration`
+  - `Galaxon.WhiteSpace.ScopeIndent` → `OceanMoon.WhiteSpace.ScopeIndent`
+- **Renamed PHP namespaces** from `Galaxon\*` to `OceanMoon\*` throughout all source and test files.
+- **Moved source tree** from `src/Galaxon/` to `src/OceanMoon/`.
+- **Ruleset name** changed from `Galaxon` to `OceanMoon` — update `<rule ref="Galaxon"/>` to `<rule ref="OceanMoon"/>` in your `phpcs.xml`.
+- `composer.json`: updated author email, homepage, and support URLs to Ocean Moon Software.
 
 ---
 

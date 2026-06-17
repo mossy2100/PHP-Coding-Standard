@@ -1,5 +1,5 @@
 {
-    "name": "galaxon/coding-standard",
+    "name": "oceanmoon/coding-standard",
     "description": "PHP_CodeSniffer coding standard extending PSR-12 with lowerCamelCase naming and modern PHP 8.4+ rules.",
     "type": "phpcodesniffer-standard",
     "license": "MIT",
@@ -15,13 +15,13 @@
     "authors": [
         {
             "name": "Shaun Moss",
-            "email": "shaun@astromultimedia.com"
+            "email": "shaun@oceanmoon.software"
         }
     ],
-    "homepage": "https://github.com/mossy2100/Galaxon-PHP-Coding-Standard",
+    "homepage": "https://github.com/mossy2100/PHP-Coding-Standard",
     "support": {
-        "issues": "https://github.com/mossy2100/Galaxon-PHP-Coding-Standard/issues",
-        "source": "https://github.com/mossy2100/Galaxon-PHP-Coding-Standard"
+        "issues": "https://github.com/mossy2100/PHP-Coding-Standard/issues",
+        "source": "https://github.com/mossy2100/PHP-Coding-Standard"
     },
     "require": {
         "php": "^8.4",
