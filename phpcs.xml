@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Ocean Moon PHP Coding Standard">
-    <description>Coding standard for the Ocean Moon PHP packages.</description>
+<ruleset name="OceanMoon PHP Coding Standard">
+    <description>Coding standard for the OceanMoon PHP packages.</description>
 
     <!-- Paths to check -->
     <file>src</file>

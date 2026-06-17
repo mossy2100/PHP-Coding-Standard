@@ -1,6 +1,6 @@
 # OceanMoon PHP Coding Standard
 
-A PHP_CodeSniffer coding standard for the Ocean Moon PHP packages extending PSR-12 with custom rules.
+A PHP_CodeSniffer coding standard for the OceanMoon PHP packages extending PSR-12 with custom rules.
 
 **[License](LICENSE)** | **[Changelog](CHANGELOG.md)**
 
