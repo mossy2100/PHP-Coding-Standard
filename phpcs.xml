@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <ruleset name="OceanMoon PHP Coding Standard">
-    <description>Coding standard for the OceanMoon PHP packages.</description>
+    <description>Coding standard for the OceanMoon packages by Shaun Moss.</description>
 
     <!-- Paths to check -->
     <file>src</file>
 
-    <!-- OceanMoon Coding Standard (includes PSR12 + custom rules) -->
+    <!-- Use OceanMoon PHP Coding Standard (includes PSR12 + additional rules) -->
     <rule ref="OceanMoon"/>
 
     <exclude-pattern>*/Tests/*.inc</exclude-pattern>
