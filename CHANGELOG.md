@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [2.0.1] - 2026-07-07
+
+### Removed
+
+- `SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition` — this sniff is scoped to class
+  constant lists (e.g. `public const A = 1, B = 2;`) but misfires on single top-level `const`
+  statements whose value is a `new` expression with more than one constructor argument (e.g.
+  `const I = new Complex(0, 1);`), apparently miscounting the comma inside the constructor call as
+  a constant-list separator. Removed rather than suppressed, since it produced a false positive on
+  a single, valid constant declaration.
+
+---
+
 ## [2.0.0] - 2026-06-18
 
 ### Changed
