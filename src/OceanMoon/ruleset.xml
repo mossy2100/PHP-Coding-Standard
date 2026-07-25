@@ -23,11 +23,7 @@
     <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
 
     <!-- Casting -->
-    <rule ref="Generic.Formatting.SpaceAfterCast">
-        <properties>
-            <property name="spacing" value="0" />
-        </properties>
-    </rule>
+    <rule ref="Generic.Formatting.SpaceAfterCast"/>
 
     <!-- Line length. This warning is replaced by an error from SlevomatCodingStandard.Files.LineLength.LineTooLong -->
     <rule ref="Generic.Files.LineLength">
@@ -205,7 +201,6 @@
     <rule ref="SlevomatCodingStandard.Namespaces.UselessAlias"/>
 
     <!-- Operators -->
-    <rule ref="SlevomatCodingStandard.Operators.DisallowEqualOperators"/>
     <rule ref="SlevomatCodingStandard.Operators.NegationOperatorSpacing"/>
     <rule ref="SlevomatCodingStandard.Operators.RequireCombinedAssignmentOperator"/>
     <rule ref="SlevomatCodingStandard.Operators.RequireOnlyStandaloneIncrementAndDecrementOperators"/>

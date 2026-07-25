@@ -201,7 +201,6 @@ Links:
 - **UselessAlias**: Disallows useless use statement aliases
 
 #### Operators
-- **DisallowEqualOperators**: Disallows == and != operators, requires === and !==
 - **NegationOperatorSpacing**: Enforces spacing around negation operator
 - **RequireCombinedAssignmentOperator**: Requires combined assignment operators (+=, -=, etc.)
 - **RequireOnlyStandaloneIncrementAndDecrementOperators**: Requires ++ and -- to be used standalone

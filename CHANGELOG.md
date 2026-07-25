@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [Unreleased]
+
+### Removed
+
+- `SlevomatCodingStandard.Operators.DisallowEqualOperators` — forcing `===`/`!==` everywhere is
+  incompatible with common PHP ecosystem conventions (Drupal, Laravel, and, less strictly,
+  WordPress all permit or rely on loose comparison in places), and it actively breaks code that
+  intentionally overloads `==`/`!=` for value equality (e.g. `oceanmoon/math-ext`'s `Rational`).
+  Loose vs. strict comparison is now left to the developer's judgement per call site.
+
+---
+
 ## [2.0.1] - 2026-07-07
 
 ### Removed
