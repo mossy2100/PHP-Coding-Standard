@@ -25,6 +25,9 @@
     <!-- Casting -->
     <rule ref="Generic.Formatting.SpaceAfterCast"/>
 
+    <!-- CodeAnalysis -->
+    <rule ref="Generic.CodeAnalysis.AssignmentInCondition"/>
+
     <!-- Line length. This warning is replaced by an error from SlevomatCodingStandard.Files.LineLength.LineTooLong -->
     <rule ref="Generic.Files.LineLength">
         <exclude name="Generic.Files.LineLength.TooLong"/>
@@ -113,7 +116,6 @@
     <rule ref="SlevomatCodingStandard.Commenting.UselessInheritDocComment"/>
 
     <!-- ControlStructures -->
-    <rule ref="SlevomatCodingStandard.ControlStructures.AssignmentInCondition"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.DisallowContinueWithoutIntegerOperandInSwitch"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.DisallowTrailingMultiLineTernaryOperator"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.LanguageConstructWithParentheses"/>
@@ -137,7 +139,6 @@
     </rule>
     <rule ref="SlevomatCodingStandard.ControlStructures.RequireShortTernaryOperator"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.RequireTernaryOperator"/>
-    <rule ref="SlevomatCodingStandard.ControlStructures.DisallowYodaComparison"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.UselessIfConditionWithReturn"/>
 
     <!-- Exceptions -->

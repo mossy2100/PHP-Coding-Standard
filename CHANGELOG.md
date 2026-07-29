@@ -19,6 +19,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   constant separators, but not commas inside a parenthesized argument list. This fork adds that missing skip, fixing
   the false positive while still catching genuine multi-constant statements. See the "Custom Sniffs" section in
   `README.md`.
+- **`Generic.CodeAnalysis.AssignmentInCondition`**, replacing
+  `SlevomatCodingStandard.ControlStructures.AssignmentInCondition` (see Removed) — covers `if`, `elseif`, `while`,
+  `for` (condition clause only), `switch`, `case`, and `match`, and every assignment operator (`=`, `+=`, `??=`,
+  etc.), not just `=` in `if`/`elseif`/`do`-`while`. Confirmed by testing directly: the Slevomat rule doesn't fire at
+  all on `while ($item = array_shift($items))`, `for ($i = 0; $x = $items[$i] ?? null; $i++)`, or `if ($y ??= 5)` —
+  only the `do`-`while` case overlaps between the two. Reports as a warning rather than an error, but `phpcs` still
+  exits non-zero on warnings alone, so this doesn't weaken enforcement in CI.
+- **New "Yoda-style Comparisons" section in `README.md`**, explaining why this standard takes no position on Yoda
+  conditions (Symfony requires them; WordPress required them but is phasing the requirement out; Drupal explicitly
+  disallows them; Laravel actively rewrites them away via Pint; Slevomat disallows them as a readability
+  anti-pattern; most other standards don't care) and that `Generic.CodeAnalysis.AssignmentInCondition` addresses the
+  actual problem Yoda conditions were meant to solve, without dictating operand order.
 
 ### Removed
 
@@ -27,6 +39,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   places), and it actively breaks code that intentionally overloads `==`/`!=` for value equality (e.g.
   `oceanmoon/math-ext`'s `Rational`). Loose vs. strict comparison is now left to the developer's judgement per call
   site.
+- `SlevomatCodingStandard.ControlStructures.DisallowYodaComparison` — opinion is genuinely split across the PHP
+  ecosystem (see the new README section), so this standard no longer takes a position on Yoda-style comparisons
+  either way.
+- `SlevomatCodingStandard.ControlStructures.AssignmentInCondition` — replaced by
+  `Generic.CodeAnalysis.AssignmentInCondition` (see Added), which covers substantially more cases.
 
 ### Changed
 

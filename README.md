@@ -15,21 +15,20 @@ with additional rules for consistent naming conventions and modern PHP 8.4+ synt
 
 **Key Features:**
 
-- Extends PSR-12 coding standard
-- Enforces `$lowerCamelCase` naming for variables, parameters, and properties
-- Enforces consistent array formatting: single-line, grid, one-per-line, and associative with aligned arrows
-- Removes unnecessary parentheses around class instantiation (PHP 8.4+)
-- Enforces correct indentation for property hooks
-- Automatic registration with PHP_CodeSniffer
+- Extends PSR-12 coding standard.
+- Enforces `$camelCase` naming for variables, parameters, and properties.
+- Enforces consistent array formatting: single-line, grid, one-per-line, and associative with aligned arrows.
+- Removes unnecessary parentheses around class instantiation (PHP 8.4+).
+- Enforces correct indentation for property hooks.
+- Automatic registration with PHP_CodeSniffer.
 
 The package provides several custom sniffs to cover gaps in the available standards. These include:
 
 - **OceanMoon.Arrays.ArrayDeclaration**: Enforces consistent array formatting with lists and associative arrays.
 - **OceanMoon.Classes.ClassInstantiationNoBrackets**: Removes unnecessary parentheses around class instantiation when
   accessing members (PHP 8.4+).
-- **OceanMoon.Classes.PropertyDeclaration**: Verifies property declarations, with PHP 8.4 property hook support.
-- **OceanMoon.WhiteSpace.ScopeIndent**: Checks that control structures and code are indented correctly, with PHP 8.4
-  property hook support.
+- **OceanMoon.Classes.PropertyDeclaration**: Verifies property declarations, with property hook support (PHP 8.4+).
+- **OceanMoon.WhiteSpace.ScopeIndent**: Checks that control structures and code are indented correctly, with property hook support (PHP 8.4+).
 - **OceanMoon.PHP.DisallowMultiConstantDefinition**: Disallows defining multiple constants in one statement. A fork
   of `SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition` fixing a false positive on constants with a
   parenthesized multi-argument value (e.g. `const I = new Complex(0, 1);`).
@@ -40,17 +39,11 @@ See [Custom Sniffs](#custom-sniffs) for more details.
 
 ## Development and Quality Assurance
 
-[Claude Chat](https://claude.ai) and [Claude Code](https://www.claude.com/product/claude-code) were used in the
-development of this package. The core classes were designed, coded, and commented primarily by the author, with Claude
-providing substantial assistance with code review, suggesting improvements, debugging, and generating tests and
-documentation.
+[Claude Chat](https://claude.ai) and [Claude Code](https://www.claude.com/product/claude-code) were used in the development of this package. The core classes were designed, coded, and commented primarily by the author, with Claude providing substantial assistance with code review, suggesting improvements, debugging, and generating tests and documentation.
 
-All code was thoroughly reviewed by the author, and validated using industry-standard tools including
-[PHP_Codesniffer](https://github.com/PHPCSStandards/PHP_CodeSniffer/) and [PHPStan](https://phpstan.org/) (to level 9)
-to ensure full compliance with [PSR-12](https://www.php-fig.org/psr/psr-12/) coding standards.
+All code was thoroughly reviewed by the author, and validated using industry-standard tools including [PHP_Codesniffer](https://github.com/PHPCSStandards/PHP_CodeSniffer/) and [PHPStan](https://phpstan.org/) (to level 9) to ensure full compliance with [PSR-12](https://www.php-fig.org/psr/psr-12/) coding standards.
 
-This collaborative approach has produced a well-designed, production-ready package with thorough test coverage and
-documentation.
+This collaborative approach has produced a well-designed, production-ready package with thorough test coverage and documentation.
 
 ---
 
@@ -126,10 +119,12 @@ Links:
 
 - **Generic.Arrays.DisallowLongArraySyntax**: Requires short array syntax `[]` instead of `array()`.
 - **Generic.Formatting.SpaceAfterCast**: Enforces a space after type casts (e.g. `(int) $value`).
+- **Generic.CodeAnalysis.AssignmentInCondition**: Warns about assignments in `if`, `elseif`, `while`, `for`, `switch`,
+  `case`, and `match` conditions/expressions.
 
 ### Squiz Sniffs
 
-- **Squiz.NamingConventions.ValidVariableName**: Enforces `$lowerCamelCase` for variables, parameters, and properties.
+- **Squiz.NamingConventions.ValidVariableName**: Enforces `$camelCase` for variables, parameters, and properties.
 - **Squiz.Strings.DoubleQuoteUsage.NotRequired**: Ensures strings use single quotes unless double quotes are necessary.
 
 ### Slevomat Sniffs
@@ -179,7 +174,6 @@ Links:
 
 #### Control Structures
 
-- **AssignmentInCondition**: Disallows assignments in if, elseif, and do-while conditions.
 - **DisallowContinueWithoutIntegerOperandInSwitch**: Disallows continue without integer operand in switch.
 - **DisallowTrailingMultiLineTernaryOperator**: Requires leading operators in multi-line ternary expressions.
 - **LanguageConstructWithParentheses**: Requires parentheses for language constructs.
@@ -191,7 +185,6 @@ Links:
 - **RequireSingleLineCondition**: Requires single-line format for short conditions.
 - **RequireShortTernaryOperator**: Requires short ternary operator ?: when possible.
 - **RequireTernaryOperator**: Requires ternary operator when possible.
-- **DisallowYodaComparison**: Disallows Yoda comparisons (constant === $variable).
 - **UselessIfConditionWithReturn**: Disallows useless if conditions returning true or false.
 
 #### Exceptions
@@ -459,7 +452,7 @@ class User
 Disallows defining multiple constants in a single statement (e.g. `const A = 1, B = 2;`). This is a fork of
 `SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition`.
 
-The upstream sniff scans for commas between `const` and the closing `;`, skipping over commas inside a short array
+The original sniff scans for commas between `const` and the closing `;`, skipping over commas inside a short array
 (`[...]`) so it doesn't mistake them for constant separators — but it doesn't do the same for a parenthesized
 argument list. That makes it misfire on a single, valid constant whose value is a multi-argument `new` expression or
 function call, e.g. `const I = new Complex(0, 1);` is wrongly flagged, because the comma inside `Complex(0, 1)` is
@@ -473,13 +466,14 @@ Applies equally to class constants and namespace/file-scope constants — `T_CON
 ```php
 public const int A = 1;
 public const int B = 2;
+public const array scores = [42, 33, 12, 99]; // not flagged - comma belongs to the array literal
 public const Complex I = new Complex(0, 1);  // not flagged — comma belongs to the constructor call
 ```
 
 **Bad:**
 
 ```php
-public const int A = 1, B = 2;
+public const int A = 1, B = 2; // comma detected as indicating multi-constant definition
 ```
 
 ---
@@ -487,7 +481,10 @@ public const int A = 1, B = 2;
 ## Variable and Property Naming Convention
 
 This coding standard is supplied by the **Squiz.NamingConventions.ValidVariableName** sniff, which ensures all
-variables, parameters, and properties use `$lowerCamelCase` format without leading underscores.
+variables, parameters, and properties:
+
+1. Use the `$camelCase` style.
+2. Do not have leading underscores.
 
 **Good:**
 
@@ -520,27 +517,40 @@ In addition, from
 > Property or constant names MUST NOT be prefixed with a single underscore to indicate protected or private visibility.
 > That is, an underscore prefix explicitly has no meaning.
 
-Once upon a time, the convention was to use `$lower_snake_case` for variable names and properties; however, as the
-object-oriented features of PHP evolved, it became more common to use `$lowerCamelCase`, following the coding convention
-from Java. AI-generated code typically uses `$lowerCamelCase`, which is indicative of the trend. Therefore, given the
-requirement to be consistent, this sniff enforces the use of `$lowerCamelCase` for all variables, class properties, and
+Once upon a time, the convention was to use `$snake_case` for variable names and properties; however, as the
+object-oriented features of PHP evolved, it became more common to use `$camelCase`, following the coding convention
+from Java. AI-generated code typically uses `$camelCase`, which is indicative of the trend. Therefore, given the
+requirement to be consistent, this sniff enforces the use of `$camelCase` for all variables, class properties, and
 function parameters.
 
-Similarly, using an underscore prefix to indicate protected or private visibility was common practice in PHP until use
-of visibility modifiers became the standard. And now, the use of an underscore prefix is generally discouraged or
-disallowed.
+Similarly, using an underscore prefix to indicate protected or private visibility was common practice in until PHP 5.0 when visibility modifiers became available. Now, the use of an underscore prefix is generally discouraged or disallowed.
 
 This sniff is compliant with several PHP coding standards:
 
-1. Symfony requires `$lowerCamelCase`
-   ([ref](https://symfony.com/doc/current/contributing/code/standards.html#naming-conventions)).
-2. Laravel requires `$lowerCamelCase`
-   ([unofficially](https://spatie.be/guidelines/laravel-php#content-general-php-rules)).
-3. Drupal variable names may use either `$lowerCamelCase` or `$lower_snake_case`
-   ([ref](https://project.pages.drupalcode.org/coding_standards/php/coding/#functions-and-variables)), as long as
-   consistency is maintained. Properties should use `$lowerCamelCase`, and protected or private properties should not
-   use an underscore prefix.
-   ([ref](https://project.pages.drupalcode.org/coding_standards/php/coding/#classes-methods-and-properties)).
+1. Symfony requires `$camelCase` ([ref](https://symfony.com/doc/current/contributing/code/standards.html#naming-conventions)).
+2. Laravel requires `$camelCase` ([unofficially](https://spatie.be/guidelines/laravel-php#content-general-php-rules)).
+3. Drupal variable names may use either `$camelCase` or `$snake_case` ([ref](https://project.pages.drupalcode.org/coding_standards/php/coding/#functions-and-variables)), as long as consistency is maintained. Properties should use `$camelCase`, and protected or private properties should not use an underscore prefix. ([ref](https://project.pages.drupalcode.org/coding_standards/php/coding/#classes-methods-and-properties)).
+
+WordPress is the main variation, requiring `$snake_case` for variables, but permitting either `$snake_case` or `$camelCase` for properties.
+
+---
+
+## Yoda-style Comparisons
+
+A **Yoda condition** puts the constant on the left of a comparison (`true === $x` instead of `$x === true`), so an accidental `=` when `==` was meant becomes a parse error instead of a silent, always-truthy assignment.
+
+Opinion on Yoda conditions is split across the PHP ecosystem:
+
+1. Symfony [requires](https://symfony.com/doc/current/contributing/code/standards.html#naming-conventions) them.
+2. WordPress required them too, but is phasing the requirement out. Modern WordPress core updates and sub-ecosystems like WooCommerce have largely voted to remove or forbid Yoda style, in favor of letting tooling catch accidental assignments directly ([ref](https://make.wordpress.org/core/2022/06/14/upcoming-disallow-assignments-in-conditions-and-remove-the-yoda-condition-requirement-for-php/)).
+3. Drupal explicitly disallows Yoda conditions, prioritizing left-to-right readability for developers scanning a condition. Its `drupal/coder` PHPCS ruleset enforces this via a `DisallowYodaConditions` sniff ([ref](https://www.drupal.org/project/coding_standards/issues/2372543)).
+4. Laravel doesn't use Yoda style anywhere in its ecosystem, favoring expressive, natural-reading syntax over it. [Laravel Pint](https://laravel.com/docs/pint) (Laravel's code-style tool, a wrapper around PHP-CS-Fixer) actively rewrites Yoda expressions back to standard order via PHP-CS-Fixer's `yoda_style` rule, configured with `equal`/`identical`/`less_and_greater` all `false`.
+5. The Slevomat coding standard, which this standard borrows many rules from, expressly disallows Yoda-style comparisons as a less readable anti-pattern, via the **DisallowYodaComparison** sniff (not included here).
+6. Modern IDEs, such as PhpStorm and VS Code with the Intelephense extension, will flag an assignment inside a boolean expression (e.g. an `if`/`while` condition) directly, regardless of operand order.
+
+Given that some PHP developers will use Yoda conditions and some won't, this coding standard is deliberately silent on the issue. Write comparisons in whichever order reads best to you.
+
+It does, however, include the `Generic.CodeAnalysis.AssignmentInCondition` sniff, which flags assignments in `if`, `elseif`, `while`, `for`, `switch`, `case`, and `match` conditions/expressions. This directly addresses the problem Yoda-style comparisons are intended to solve, without dictating operand order.
 
 ---
 
