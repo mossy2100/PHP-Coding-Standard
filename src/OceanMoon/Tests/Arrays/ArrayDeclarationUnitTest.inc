@@ -8,6 +8,18 @@ $a = ['red', 'green', 'blue'];
 // Valid: empty array.
 $b = [];
 
+// Valid: bare variables (fits on one line).
+$w3 = [$alpha, $beta, $gamma];
+
+// Valid: bare constants (fits on one line).
+$w7 = [PHP_EOL, PHP_INT_MAX, M_PI];
+
+// Valid: mixed simple items -- literals, null, booleans, variables, and constants.
+$w8 = [1, 'two', 3.0, null, true, $x, MY_CONST];
+
+// Valid: signed constants and variables (not just signed number literals).
+$w9 = [-INF, INF, -PHP_INT_MAX, -$x];
+
 // === ERRORS: Simple list arrays ===
 
 // ListTrailingComma: trailing comma in simple list.
@@ -20,7 +32,7 @@ $d = [
     'blue',
 ];
 
-// === VALID: List of arrays ===
+// === VALID: Complex list arrays (nested arrays) ===
 
 // Valid: list of arrays, one per line, trailing comma.
 $e = [
@@ -29,41 +41,41 @@ $e = [
     [5, 6],
 ];
 
-// === ERRORS: List of arrays ===
+// === ERRORS: Complex list arrays (nested arrays) ===
 
-// ListOfArraysMissingTrailingComma: missing trailing comma.
+// ListMissingTrailingComma: missing trailing comma.
 $f = [
     [1, 2],
     [3, 4],
     [5, 6]
 ];
 
-// ListOfArraysFirstElementNewLine: first element on same line as bracket.
+// ListFirstElementNewLine: first element on same line as bracket.
 $g = [[1, 2],
     [3, 4],
     [5, 6],
 ];
 
-// ListOfArraysElementNewLine: elements on same line.
+// ListElementNewLine: elements on same line.
 $h = [
     [1, 2], [3, 4],
     [5, 6],
 ];
 
-// ListOfArraysClosingBracketNewLine: closing bracket on same line as last element.
+// ListClosingBracketNewLine: closing bracket on same line as last element.
 $i = [
     [1, 2],
     [3, 4],
     [5, 6],];
 
-// ListOfArraysElementIndent: wrong indentation.
+// ListElementIndent: wrong indentation.
 $j = [
         [1, 2],
     [3, 4],
     [5, 6],
 ];
 
-// ListOfArraysClosingBracketIndent: wrong indentation on closing bracket.
+// ListClosingBracketIndent: wrong indentation on closing bracket.
 $k = [
     [1, 2],
     [3, 4],
@@ -72,6 +84,23 @@ $k = [
 
 // All on one line: first element, elements, closing bracket on same line + missing trailing comma.
 $l2 = [[1, 2], [3, 4], [5, 6]];
+
+// === ERRORS: Complex list arrays (non-literal items) ===
+
+// All on one line: function calls.
+$w2 = [strlen('hi'), ucfirst('bye'), trim('x')];
+
+// All on one line: new expressions.
+$w4 = [new stdClass(), new stdClass(), new stdClass()];
+
+// All on one line: enum case access.
+$w5 = [Suit::Hearts, Suit::Spades];
+
+// All on one line: arithmetic expressions.
+$w6 = [1 + 1, 2 + 2];
+
+// Function call list too long for single line -- already one error per line missing.
+$w = [strtoupper('red'), strtolower('GREEN'), trim('  blue  '), substr('yellow', 0, 3), str_repeat('x', 10), ucfirst('test')];
 
 // === VALID: Associative arrays ===
 
@@ -162,22 +191,6 @@ $u = [
 
 // Valid: negative numbers that fit on one line (no grid needed).
 $v = [-100, -200, -300, -400, -500, -600];
-
-// === VALID: Non-scalar lists ===
-
-// Valid: variables and expressions that fit on one line.
-$w3 = [$alpha, $beta, $gamma];
-
-// Valid: function call list that fits on one line.
-$w2 = [strlen('hi'), ucfirst('bye'), trim('x')];
-
-// Valid: new expression list that fits on one line.
-$w4 = [new stdClass(), new stdClass(), new stdClass()];
-
-// === ERRORS: One per line (non-scalar lists too long for single line) ===
-
-// ListShouldBeOnePerLine: function call list too long for single line.
-$w = [strtoupper('red'), strtolower('GREEN'), trim('  blue  '), substr('yellow', 0, 3), str_repeat('x', 10), ucfirst('test')];
 
 // === ERRORS: Grid format ===
 

@@ -263,4 +263,8 @@
     <!-- Remove useless parentheses around new (PHP 8.4+) -->
     <rule ref="OceanMoon.Classes.ClassInstantiationNoBrackets"/>
 
+    <!-- Disallow multi constant definitions; fork of SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition
+         fixing a false positive on constants with a parenthesized multi-argument value (e.g. new Foo(1, 2)) -->
+    <rule ref="OceanMoon.PHP.DisallowMultiConstantDefinition"/>
+
 </ruleset>

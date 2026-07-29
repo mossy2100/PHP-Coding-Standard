@@ -2,19 +2,44 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
 ## [Unreleased]
 
+### Added
+
+- **`OceanMoon.PHP.DisallowMultiConstantDefinition`** — disallows defining multiple constants in one statement (e.g.
+  `const A = 1, B = 2;`), for both class constants and namespace/file-scope constants. A fork of
+  `SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition`, which was removed in `2.0.1` because it false-
+  positived on a single, valid constant whose value is a multi-argument `new` expression or function call (e.g.
+  `const I = new Complex(0, 1);`) — the upstream sniff skips commas inside a short array (`[...]`) when scanning for
+  constant separators, but not commas inside a parenthesized argument list. This fork adds that missing skip, fixing
+  the false positive while still catching genuine multi-constant statements. See the "Custom Sniffs" section in
+  `README.md`.
+
 ### Removed
 
-- `SlevomatCodingStandard.Operators.DisallowEqualOperators` — forcing `===`/`!==` everywhere is
-  incompatible with common PHP ecosystem conventions (Drupal, Laravel, and, less strictly,
-  WordPress all permit or rely on loose comparison in places), and it actively breaks code that
-  intentionally overloads `==`/`!=` for value equality (e.g. `oceanmoon/math-ext`'s `Rational`).
-  Loose vs. strict comparison is now left to the developer's judgement per call site.
+- `SlevomatCodingStandard.Operators.DisallowEqualOperators` — forcing `===`/`!==` everywhere is incompatible with common
+  PHP ecosystem conventions (Drupal, Laravel, and, less strictly, WordPress all permit or rely on loose comparison in
+  places), and it actively breaks code that intentionally overloads `==`/`!=` for value equality (e.g.
+  `oceanmoon/math-ext`'s `Rational`). Loose vs. strict comparison is now left to the developer's judgement per call
+  site.
+
+### Changed
+
+- The rule `Generic.Formatting.SpaceAfterCast` had been overridden to have no space between a cast operator and the
+  operand (e.g. `(int)$x`). This was reset to the default setting, which includes a space (e.g. `(int) $x`).
+- **`OceanMoon.Arrays.ArrayDeclaration` reworked to classify list array elements as "simple" or "complex"**, loosely
+  mirroring `OceanMoon\Core\Stringify::stringifyArray()`'s pretty-print logic. Simple elements — scalar literals,
+  `null`/`true`/`false`, bare variables, and bare constants — are still eligible for the compact single-line or grid
+  formats. Any complex element (nested array, function/method call, `new` expression, arithmetic, enum case access,
+  property/static access, or any other expression) now forces one element per line **unconditionally**, even when
+  the whole array would otherwise fit on one line — previously, such lists stayed compact if they fit within the
+  line length regardless of content, and only fell back to grid/one-per-line once they didn't. Nested arrays already
+  behaved this way; the change is extending the same treatment to every other kind of complex element.
 
 ---
 
@@ -22,12 +47,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
-- `SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition` — this sniff is scoped to class
-  constant lists (e.g. `public const A = 1, B = 2;`) but misfires on single top-level `const`
-  statements whose value is a `new` expression with more than one constructor argument (e.g.
-  `const I = new Complex(0, 1);`), apparently miscounting the comma inside the constructor call as
-  a constant-list separator. Removed rather than suppressed, since it produced a false positive on
-  a single, valid constant declaration.
+- `SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition` — this sniff is scoped to class constant lists (e.g.
+  `public const A = 1, B = 2;`) but misfires on single top-level `const` statements whose value is a `new` expression
+  with more than one constructor argument (e.g. `const I = new Complex(0, 1);`), apparently miscounting the comma inside
+  the constructor call as a constant-list separator. Removed rather than suppressed, since it produced a false positive
+  on a single, valid constant declaration.
 
 ---
 
@@ -35,15 +59,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- **Renamed package** from `galaxon/coding-standard` to `oceanmoon/coding-standard` — update your `composer.json` require accordingly.
-- **Renamed sniffs** — all `Galaxon.*` sniff references must be updated to `OceanMoon.*` in `phpcs.xml` and any inline `// phpcs:ignore` comments:
+- **Renamed package** from `galaxon/coding-standard` to `oceanmoon/coding-standard` — update your `composer.json`
+  require accordingly.
+- **Renamed sniffs** — all `Galaxon.*` sniff references must be updated to `OceanMoon.*` in `phpcs.xml` and any inline
+  `// phpcs:ignore` comments:
   - `Galaxon.Arrays.ArrayDeclaration` → `OceanMoon.Arrays.ArrayDeclaration`
   - `Galaxon.Classes.ClassInstantiationNoBrackets` → `OceanMoon.Classes.ClassInstantiationNoBrackets`
   - `Galaxon.Classes.PropertyDeclaration` → `OceanMoon.Classes.PropertyDeclaration`
   - `Galaxon.WhiteSpace.ScopeIndent` → `OceanMoon.WhiteSpace.ScopeIndent`
 - **Renamed PHP namespaces** from `Galaxon\*` to `OceanMoon\*` throughout all source and test files.
 - **Moved source tree** from `src/Galaxon/` to `src/OceanMoon/`.
-- **Ruleset name** changed from `Galaxon` to `OceanMoon` — update `<rule ref="Galaxon"/>` to `<rule ref="OceanMoon"/>` in your `phpcs.xml`.
+- **Ruleset name** changed from `Galaxon` to `OceanMoon` — update `<rule ref="Galaxon"/>` to `<rule ref="OceanMoon"/>`
+  in your `phpcs.xml`.
 - `composer.json`: updated author email, homepage, and support URLs to Ocean Moon Software.
 
 ---
@@ -52,11 +79,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Removed `SlevomatCodingStandard.Commenting.RequireOneLineDocComment` from the ruleset. The sniff was too aggressive in collapsing multi-line docblocks that callers preferred to keep expanded.
+- Removed `SlevomatCodingStandard.Commenting.RequireOneLineDocComment` from the ruleset. The sniff was too aggressive in
+  collapsing multi-line docblocks that callers preferred to keep expanded.
 
 ### Fixed
 
-- **ClassInstantiationNoBracketsSniff** — No longer incorrectly removes parentheses from method/function call argument lists containing `new` expressions (e.g. `$obj->add(new Foo())->method()`).
+- **ClassInstantiationNoBracketsSniff** — No longer incorrectly removes parentheses from method/function call argument
+  lists containing `new` expressions (e.g. `$obj->add(new Foo())->method()`).
 
 ### Documentation
 
@@ -68,15 +97,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- **Single-line arrays take priority** — any list (without nested arrays) that fits on one line without overflowing the maximum line length and without multiline elements now uses single-line format, regardless of content. Function calls and `new` expressions no longer force multiline when the array fits on one line. Lists with nested arrays always use one-per-line format.
-- **Nested arrays excluded from grid format** — lists containing nested arrays that are too long for a single line use one-per-line format instead of grid.
-- **UseSpacing** — set `linesCountBetweenUseTypes` to 1 for a blank line between different import types (class, function, const).
+- **Single-line arrays take priority** — any list (without nested arrays) that fits on one line without overflowing the
+  maximum line length and without multiline elements now uses single-line format, regardless of content. Function calls
+  and `new` expressions no longer force multiline when the array fits on one line. Lists with nested arrays always use
+  one-per-line format.
+- **Nested arrays excluded from grid format** — lists containing nested arrays that are too long for a single line use
+  one-per-line format instead of grid.
+- **UseSpacing** — set `linesCountBetweenUseTypes` to 1 for a blank line between different import types (class,
+  function, const).
 - Excluded `Generic.Files.LineLength.TooLong` warning (replaced by Slevomat's `Files.LineLength.LineTooLong` error).
 - Removed `UselessConstantTypeHint` sniff (not needed with `ClassConstantTypeHint`).
 
 ### Fixed
 
-- **Array fix bouncing** — fixed infinite loop in PHPCBF when collapsing a multiline list to single line. The trailing comma removal and single-line collapse no longer conflict.
+- **Array fix bouncing** — fixed infinite loop in PHPCBF when collapsing a multiline list to single line. The trailing
+  comma removal and single-line collapse no longer conflict.
 
 ### Documentation
 
@@ -89,8 +124,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- **Grid format eligibility expanded** — variables, properties, constants, enums, and simple expressions (e.g. grouping parentheses) are now eligible for single-line and grid formatting, not just scalar literals.
-- **Function/method calls, `new` expressions, and closures always one-per-line** — arrays containing these elements are formatted one item per line regardless of total length.
+- **Grid format eligibility expanded** — variables, properties, constants, enums, and simple expressions (e.g. grouping
+  parentheses) are now eligible for single-line and grid formatting, not just scalar literals.
+- **Function/method calls, `new` expressions, and closures always one-per-line** — arrays containing these elements are
+  formatted one item per line regardless of total length.
 - Updated README to reflect new grid eligibility rules and terminology.
 
 ---
@@ -100,22 +137,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - **Grid format** for scalar list arrays too long for a single line — items arranged in uniformly padded rows.
-- **One-per-line format** for non-scalar list arrays — function calls, expressions, etc. always formatted one element per line with trailing comma, regardless of length.
+- **One-per-line format** for non-scalar list arrays — function calls, expressions, etc. always formatted one element
+  per line with trailing comma, regardless of length.
 - **Unit tests** for all four custom Galaxon sniffs:
-  - `Galaxon.Arrays.ArrayDeclaration` — covers scalar lists, grid format, one-per-line, list-of-arrays, associative arrays, mixed keyed/unkeyed, and explicit sequential integer keys.
-  - `Galaxon.Classes.ClassInstantiationNoBrackets` — covers method calls, property access, nullsafe, constructor args, chained calls.
-  - `Galaxon.Classes.PropertyDeclaration` — covers hooks, asymmetric visibility, modifier ordering, var keyword, underscore warning.
+  - `Galaxon.Arrays.ArrayDeclaration` — covers scalar lists, grid format, one-per-line, list-of-arrays, associative
+    arrays, mixed keyed/unkeyed, and explicit sequential integer keys.
+  - `Galaxon.Classes.ClassInstantiationNoBrackets` — covers method calls, property access, nullsafe, constructor args,
+    chained calls.
+  - `Galaxon.Classes.PropertyDeclaration` — covers hooks, asymmetric visibility, modifier ordering, var keyword,
+    underscore warning.
   - `Galaxon.WhiteSpace.ScopeIndent` — covers PHP 8.4 property hook indentation.
 - PHPUnit configuration (`phpunit.xml.dist`) and test bootstrap.
 
 ### Changed
 
-- `Galaxon.Arrays.ArrayDeclaration` sniff rewritten with format-selection logic: scalar lists use single-line or grid; non-scalar lists and associative arrays use one-per-line.
-- README updated with documentation for all array formats, links to upstream standard documentation (PSR-12, Generic, Squiz, Slevomat), and improved descriptions.
+- `Galaxon.Arrays.ArrayDeclaration` sniff rewritten with format-selection logic: scalar lists use single-line or grid;
+  non-scalar lists and associative arrays use one-per-line.
+- README updated with documentation for all array formats, links to upstream standard documentation (PSR-12, Generic,
+  Squiz, Slevomat), and improved descriptions.
 
 ### Fixed
 
-- `Galaxon.Classes.ClassInstantiationNoBrackets` namespace corrected from `dev\Sniffs\Classes` to `Galaxon\Sniffs\Classes`.
+- `Galaxon.Classes.ClassInstantiationNoBrackets` namespace corrected from `dev\Sniffs\Classes` to
+  `Galaxon\Sniffs\Classes`.
 - Trailing whitespace in `Core\Stringify::stringifyList()` grid format — last item on each row no longer padded.
 
 ### Removed
@@ -188,7 +232,7 @@ This is the first stable release of Galaxon Coding Standard, ready for publicati
 
 ### Removed
 
-- Custom `Galaxon.NamingConventions.ValidVariableNameSniff` (moved to _dev directory)
+- Custom `Galaxon.NamingConventions.ValidVariableNameSniff` (moved to \_dev directory)
 
 ---
 
@@ -197,7 +241,9 @@ This is the first stable release of Galaxon Coding Standard, ready for publicati
 ### Added
 
 - Initial release
-- `Galaxon.NamingConventions.ValidVariableName` sniff - enforces `$lowerCamelCase` variable naming without leading underscores
-- `Galaxon.Classes.ClassInstantiationNoBrackets` sniff - removes unnecessary parentheses around class instantiation (PHP 8.4+)
+- `Galaxon.NamingConventions.ValidVariableName` sniff - enforces `$lowerCamelCase` variable naming without leading
+  underscores
+- `Galaxon.Classes.ClassInstantiationNoBrackets` sniff - removes unnecessary parentheses around class instantiation (PHP
+  8.4+)
 - Extends PSR-12 coding standard
 - Auto-registration via `dealerdirect/phpcodesniffer-composer-installer`

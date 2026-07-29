@@ -10,9 +10,11 @@ A PHP_CodeSniffer coding standard for the OceanMoon PHP packages extending PSR-1
 
 ## Description
 
-This package provides a custom PHP_CodeSniffer coding standard for the PHP packages by Shaun Moss. It extends PSR-12 with additional rules for consistent naming conventions and modern PHP 8.4+ syntax.
+This package provides a custom PHP_CodeSniffer coding standard for the PHP packages by Shaun Moss. It extends PSR-12
+with additional rules for consistent naming conventions and modern PHP 8.4+ syntax.
 
 **Key Features:**
+
 - Extends PSR-12 coding standard
 - Enforces `$lowerCamelCase` naming for variables, parameters, and properties
 - Enforces consistent array formatting: single-line, grid, one-per-line, and associative with aligned arrows
@@ -22,10 +24,15 @@ This package provides a custom PHP_CodeSniffer coding standard for the PHP packa
 
 The package provides several custom sniffs to cover gaps in the available standards. These include:
 
-- **OceanMoon.Arrays.ArrayDeclaration**: Enforces consistent array formatting with lists and associative arrays
-- **OceanMoon.Classes.ClassInstantiationNoBrackets**: Removes unnecessary parentheses around class instantiation when accessing members (PHP 8.4+)
-- **OceanMoon.Classes.PropertyDeclaration**: Verifies property declarations, with PHP 8.4 property hook support
-- **OceanMoon.WhiteSpace.ScopeIndent**: Checks that control structures and code are indented correctly, with PHP 8.4 property hook support
+- **OceanMoon.Arrays.ArrayDeclaration**: Enforces consistent array formatting with lists and associative arrays.
+- **OceanMoon.Classes.ClassInstantiationNoBrackets**: Removes unnecessary parentheses around class instantiation when
+  accessing members (PHP 8.4+).
+- **OceanMoon.Classes.PropertyDeclaration**: Verifies property declarations, with PHP 8.4 property hook support.
+- **OceanMoon.WhiteSpace.ScopeIndent**: Checks that control structures and code are indented correctly, with PHP 8.4
+  property hook support.
+- **OceanMoon.PHP.DisallowMultiConstantDefinition**: Disallows defining multiple constants in one statement. A fork
+  of `SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition` fixing a false positive on constants with a
+  parenthesized multi-argument value (e.g. `const I = new Complex(0, 1);`).
 
 See [Custom Sniffs](#custom-sniffs) for more details.
 
@@ -33,7 +40,17 @@ See [Custom Sniffs](#custom-sniffs) for more details.
 
 ## Development and Quality Assurance
 
-[Claude Chat](https://claude.ai) and [Claude Code](https://www.claude.com/product/claude-code) were used in the development of this package. The core classes were designed, coded, and commented primarily by the author, with Claude providing substantial assistance with code review, suggesting improvements, debugging, and generating tests and documentation. All code was thoroughly reviewed by the author, and validated using industry-standard tools including [PHP_Codesniffer](https://github.com/PHPCSStandards/PHP_CodeSniffer/) and [PHPStan](https://phpstan.org/) (to level 9) to ensure full compliance with [PSR-12](https://www.php-fig.org/psr/psr-12/) coding standards. This collaborative approach has produced a well-designed, production-ready package with thorough test coverage and documentation.
+[Claude Chat](https://claude.ai) and [Claude Code](https://www.claude.com/product/claude-code) were used in the
+development of this package. The core classes were designed, coded, and commented primarily by the author, with Claude
+providing substantial assistance with code review, suggesting improvements, debugging, and generating tests and
+documentation.
+
+All code was thoroughly reviewed by the author, and validated using industry-standard tools including
+[PHP_Codesniffer](https://github.com/PHPCSStandards/PHP_CodeSniffer/) and [PHPStan](https://phpstan.org/) (to level 9)
+to ensure full compliance with [PSR-12](https://www.php-fig.org/psr/psr-12/) coding standards.
+
+This collaborative approach has produced a well-designed, production-ready package with thorough test coverage and
+documentation.
 
 ---
 
@@ -52,7 +69,8 @@ See [Custom Sniffs](#custom-sniffs) for more details.
 composer require --dev oceanmoon/coding-standard
 ```
 
-The standard is automatically registered with PHP_CodeSniffer via the `dealerdirect/phpcodesniffer-composer-installer` plugin.
+The standard is automatically registered with PHP_CodeSniffer via the `dealerdirect/phpcodesniffer-composer-installer`
+plugin.
 
 ---
 
@@ -83,195 +101,176 @@ vendor/bin/phpcbf       # Auto-fix issues
 
 ## Included Sniffs
 
-The OceanMoon coding standard extends PSR-12 and includes the following additional sniffs.
+The OceanMoon coding standard extends PSR-12 and includes the following additional sniffs and several custom sniffs.
 
 Links:
-* [PSR-12 standard](https://www.php-fig.org/psr/psr-12/)
-* PHP_CodeSniffer provides the PSR-12, Generic, and Squiz sniffs. Documentation is found in the [repository](https://github.com/PHPCSStandards/PHP_CodeSniffer) and [wiki](https://github.com/PHPCSStandards/PHP_CodeSniffer/wiki)
-* [Slevomat coding standard repository and documentation](https://github.com/slevomat/coding-standard)
+
+- [PSR-12 standard](https://www.php-fig.org/psr/psr-12/)
+- PHP_CodeSniffer provides the PSR-12, Generic, and Squiz sniffs. Documentation is found in the
+  [repository](https://github.com/PHPCSStandards/PHP_CodeSniffer) and
+  [wiki](https://github.com/PHPCSStandards/PHP_CodeSniffer/wiki)
+- [Slevomat coding standard repository and documentation](https://github.com/slevomat/coding-standard)
 
 ### Base Standard
 
-- **PSR-12**: Complete PSR-12 coding standard (with exception for multiple classes in test files)
-  - `PSR2.Classes.PropertyDeclaration` excluded — replaced by `OceanMoon.Classes.PropertyDeclaration` for PHP 8.4 property hook support (see [Custom Sniffs](#custom-sniffs))
-  - `Generic.WhiteSpace.ScopeIndent` excluded — replaced by `OceanMoon.WhiteSpace.ScopeIndent` for PHP 8.4 property hook support (see [Custom Sniffs](#custom-sniffs))
+**PSR-12**: Complete PSR-12 coding standard, with the following exceptions:
+
+- **PSR1.Classes.ClassDeclaration.MultipleClasses** is disabled for files in `tests` folders, because PHPUnit test files
+  often include small additional classes for testing purposes.
+- **PSR2.Classes.PropertyDeclaration** is excluded, replaced by `OceanMoon.Classes.PropertyDeclaration`, which adds
+  support for property hooks (PHP 8.4) (see [Custom Sniffs](#custom-sniffs)).
+- **Generic.WhiteSpace.ScopeIndent** is excluded, replaced by `OceanMoon.WhiteSpace.ScopeIndent`, which also adds
+  support for property hooks (see [Custom Sniffs](#custom-sniffs)).
 
 ### Generic Sniffs
 
-- **Generic.Arrays.DisallowLongArraySyntax**: Requires short array syntax `[]` instead of `array()`
-- **Generic.Formatting.SpaceAfterCast**: Enforces no space after type casts (e.g. `(int)$value`)
+- **Generic.Arrays.DisallowLongArraySyntax**: Requires short array syntax `[]` instead of `array()`.
+- **Generic.Formatting.SpaceAfterCast**: Enforces a space after type casts (e.g. `(int) $value`).
 
 ### Squiz Sniffs
 
-- **Squiz.NamingConventions.ValidVariableName**: Enforces `$lowerCamelCase` for variables, parameters, and properties
-- **Squiz.Strings.DoubleQuoteUsage.NotRequired**: Ensures strings use single quotes unless double quotes are necessary
+- **Squiz.NamingConventions.ValidVariableName**: Enforces `$lowerCamelCase` for variables, parameters, and properties.
+- **Squiz.Strings.DoubleQuoteUsage.NotRequired**: Ensures strings use single quotes unless double quotes are necessary.
 
 ### Slevomat Sniffs
 
 #### Arrays
-- **ArrayAccess**: Disallows whitespace between array access operators
-- **DisallowImplicitArrayCreation**: Disallows implicit array creation
-- **DisallowPartiallyKeyed**: Requires arrays to have keys for all or none of the values
-- **SingleLineArrayWhitespace**: Checks whitespace in single-line array declarations
+
+- **ArrayAccess**: Disallows whitespace between array access operators.
+- **DisallowImplicitArrayCreation**: Disallows implicit array creation.
+- **DisallowPartiallyKeyed**: Requires arrays to have keys for all or none of the values.
+- **SingleLineArrayWhitespace**: Checks whitespace in single-line array declarations.
 
 #### Attributes
-- **AttributeAndTargetSpacing**: Enforces spacing between attributes and their targets
-- **AttributesOrder**: Requires attributes to be ordered alphabetically
-- **DisallowAttributesJoining**: Disallows joining multiple attributes with commas
-- **DisallowMultipleAttributesPerLine**: Requires each attribute on its own line
-- **RequireAttributeAfterDocComment**: Requires attributes to appear after doc comments
+
+- **AttributeAndTargetSpacing**: Enforces spacing between attributes and their targets.
+- **AttributesOrder**: Requires attributes to be ordered alphabetically.
+- **DisallowAttributesJoining**: Disallows joining multiple attributes with commas.
+- **DisallowMultipleAttributesPerLine**: Requires each attribute on its own line.
+- **RequireAttributeAfterDocComment**: Requires attributes to appear after doc comments.
 
 #### Classes
-- **BackedEnumTypeSpacing**: Enforces spacing around backed enum types
-- **ClassConstantVisibility**: Requires visibility modifiers on class constants
-- **ClassMemberSpacing**: Enforces spacing between class members
-- **ConstantSpacing**: Enforces spacing around class constants
-- **DisallowMultiConstantDefinition**: Disallows defining multiple constants in one statement
-- **DisallowMultiPropertyDefinition**: Disallows defining multiple properties in one statement
-- **DisallowStringExpressionPropertyFetch**: Disallows string expressions for property access
-- **EmptyLinesAroundClassBraces**: Enforces no empty lines after opening or before closing class braces
-- **EnumCaseSpacing**: Enforces spacing between enum cases
-- **MethodSpacing**: Enforces spacing between methods
-- **ModernClassNameReference**: Requires ::class syntax for class name references
-- **PropertyDeclaration**: Enforces proper property declaration format including promoted properties
-- **PropertySpacing**: Enforces spacing between properties
-- **RequireMultiLineMethodSignature**: Requires multi-line format for long method signatures
-- **RequireSelfReference**: Requires self:: instead of ClassName:: for self-references
-- **RequireSingleLineMethodSignature**: Requires single-line format for short method signatures
-- **TraitUseDeclaration**: Enforces proper trait use declaration format
-- **TraitUseSpacing**: Enforces spacing around trait use statements
+
+- **BackedEnumTypeSpacing**: Enforces spacing around backed enum types.
+- **ClassConstantVisibility**: Requires visibility modifiers on class constants.
+- **ClassMemberSpacing**: Enforces spacing between class members.
+- **ConstantSpacing**: Enforces spacing around class constants.
+- **DisallowMultiPropertyDefinition**: Disallows defining multiple properties in one statement.
+- **DisallowStringExpressionPropertyFetch**: Disallows string expressions for property access.
+- **EmptyLinesAroundClassBraces**: Enforces no empty lines after opening or before closing class braces.
+- **EnumCaseSpacing**: Enforces spacing between enum cases.
+- **MethodSpacing**: Enforces spacing between methods.
+- **ModernClassNameReference**: Requires ::class syntax for class name references.
+- **PropertyDeclaration**: Enforces proper property declaration format including promoted properties.
+- **PropertySpacing**: Enforces spacing between properties.
+- **RequireMultiLineMethodSignature**: Requires multi-line format for long method signatures.
+- **RequireSelfReference**: Requires self:: instead of ClassName:: for self-references.
+- **RequireSingleLineMethodSignature**: Requires single-line format for short method signatures.
+- **TraitUseDeclaration**: Enforces proper trait use declaration format.
+- **TraitUseSpacing**: Enforces spacing around trait use statements.
 
 #### Commenting
-- **AnnotationName**: Enforces correct annotation names
-- **DeprecatedAnnotationDeclaration**: Enforces proper @deprecated annotation format
-- **EmptyComment**: Disallows empty comments
-- **RequireOneLinePropertyDocComment**: Requires one-line format for short property doc comments
-- **UselessInheritDocComment**: Disallows useless @inheritDoc comments
+
+- **AnnotationName**: Enforces correct annotation names.
+- **DeprecatedAnnotationDeclaration**: Enforces proper @deprecated annotation format.
+- **EmptyComment**: Disallows empty comments.
+- **RequireOneLinePropertyDocComment**: Requires one-line format for short property doc comments.
+- **UselessInheritDocComment**: Disallows useless @inheritDoc comments.
 
 #### Control Structures
-- **AssignmentInCondition**: Disallows assignments in if, elseif, and do-while conditions
-- **DisallowContinueWithoutIntegerOperandInSwitch**: Disallows continue without integer operand in switch
-- **DisallowTrailingMultiLineTernaryOperator**: Requires leading operators in multi-line ternary expressions
-- **LanguageConstructWithParentheses**: Requires parentheses for language constructs
-- **RequireMultiLineCondition**: Requires multi-line format for long conditions with boolean operators
-- **RequireMultiLineTernaryOperator**: Requires multi-line format for long ternary operators
-- **RequireNullCoalesceEqualOperator**: Requires ??= operator when possible
-- **RequireNullCoalesceOperator**: Requires ?? operator when possible
-- **RequireNullSafeObjectOperator**: Requires ?-> operator when possible
-- **RequireSingleLineCondition**: Requires single-line format for short conditions
-- **RequireShortTernaryOperator**: Requires short ternary operator ?: when possible
-- **RequireTernaryOperator**: Requires ternary operator when possible
-- **DisallowYodaComparison**: Disallows Yoda comparisons (constant === $variable)
-- **UselessIfConditionWithReturn**: Disallows useless if conditions returning true or false
+
+- **AssignmentInCondition**: Disallows assignments in if, elseif, and do-while conditions.
+- **DisallowContinueWithoutIntegerOperandInSwitch**: Disallows continue without integer operand in switch.
+- **DisallowTrailingMultiLineTernaryOperator**: Requires leading operators in multi-line ternary expressions.
+- **LanguageConstructWithParentheses**: Requires parentheses for language constructs.
+- **RequireMultiLineCondition**: Requires multi-line format for long conditions with boolean operators.
+- **RequireMultiLineTernaryOperator**: Requires multi-line format for long ternary operators.
+- **RequireNullCoalesceEqualOperator**: Requires ??= operator when possible.
+- **RequireNullCoalesceOperator**: Requires ?? operator when possible.
+- **RequireNullSafeObjectOperator**: Requires ?-> operator when possible.
+- **RequireSingleLineCondition**: Requires single-line format for short conditions.
+- **RequireShortTernaryOperator**: Requires short ternary operator ?: when possible.
+- **RequireTernaryOperator**: Requires ternary operator when possible.
+- **DisallowYodaComparison**: Disallows Yoda comparisons (constant === $variable).
+- **UselessIfConditionWithReturn**: Disallows useless if conditions returning true or false.
 
 #### Exceptions
-- **DeadCatch**: Disallows empty catch blocks that don't handle exceptions
-- **RequireNonCapturingCatch**: Requires catch without variable when exception is not used
+
+- **DeadCatch**: Disallows empty catch blocks that don't handle exceptions.
+- **RequireNonCapturingCatch**: Requires catch without variable when exception is not used.
 
 #### Files
-- **LineLength**: Enforces maximum line length of 120 characters
+
+- **LineLength**: Enforces maximum line length of 120 characters.
 
 #### Functions
-- **ArrowFunctionDeclaration**: Enforces proper arrow function declaration format
-- **DisallowEmptyFunction**: Disallows empty function bodies
-- **FunctionLength**: Enforces maximum function length of 100 lines
-- **RequireArrowFunction**: Requires arrow functions for simple closures
-- **RequireMultiLineCall**: Requires multi-line format for long function calls
-- **RequireSingleLineCall**: Requires single-line format for short function calls
-- **NamedArgumentSpacing**: Enforces spacing around named arguments
-- **DisallowTrailingCommaInCall**: Disallows trailing comma in function calls
-- **DisallowTrailingCommaInClosureUse**: Disallows trailing comma in closure use statements
-- **DisallowTrailingCommaInDeclaration**: Disallows trailing comma in function declarations
-- **StaticClosure**: Requires static keyword for closures that don't use $this
-- **StrictCall**: Enforces strict call_user_func_array and call_user_func usage
-- **UselessParameterDefaultValue**: Disallows useless parameter default values
+
+- **ArrowFunctionDeclaration**: Enforces proper arrow function declaration format.
+- **DisallowEmptyFunction**: Disallows empty function bodies.
+- **FunctionLength**: Enforces maximum function length of 100 lines.
+- **RequireArrowFunction**: Requires arrow functions for simple closures.
+- **RequireMultiLineCall**: Requires multi-line format for long function calls.
+- **RequireSingleLineCall**: Requires single-line format for short function calls.
+- **NamedArgumentSpacing**: Enforces spacing around named arguments.
+- **DisallowTrailingCommaInCall**: Disallows trailing comma in function calls.
+- **DisallowTrailingCommaInClosureUse**: Disallows trailing comma in closure use statements.
+- **DisallowTrailingCommaInDeclaration**: Disallows trailing comma in function declarations.
+- **StaticClosure**: Requires static keyword for closures that don't use $this.
+- **StrictCall**: Enforces strict call_user_func_array and call_user_func usage.
+- **UselessParameterDefaultValue**: Disallows useless parameter default values.
 
 #### Namespaces
-- **AlphabeticallySortedUses**: Requires use statements to be alphabetically sorted
-- **DisallowGroupUse**: Disallows group use declarations
-- **MultipleUsesPerLine**: Disallows multiple use statements on one line
-- **NamespaceDeclaration**: Enforces proper namespace declaration format
-- **NamespaceSpacing**: Enforces spacing around namespace declarations
-- **ReferenceUsedNamesOnly**: Requires use statements for all referenced names
-- **RequireOneNamespaceInFile**: Requires exactly one namespace per file
-- **UnusedUses**: Disallows unused use statements including in annotations
-- **UseDoesNotStartWithBackslash**: Disallows leading backslash in use statements
-- **UseFromSameNamespace**: Disallows use statements from the same namespace
-- **UseSpacing**: Enforces spacing between use statements
-- **UselessAlias**: Disallows useless use statement aliases
+
+- **AlphabeticallySortedUses**: Requires use statements to be alphabetically sorted.
+- **DisallowGroupUse**: Disallows group use declarations.
+- **MultipleUsesPerLine**: Disallows multiple use statements on one line.
+- **NamespaceDeclaration**: Enforces proper namespace declaration format.
+- **NamespaceSpacing**: Enforces spacing around namespace declarations.
+- **ReferenceUsedNamesOnly**: Requires use statements for all referenced names.
+- **RequireOneNamespaceInFile**: Requires exactly one namespace per file.
+- **UnusedUses**: Disallows unused use statements including in annotations.
+- **UseDoesNotStartWithBackslash**: Disallows leading backslash in use statements.
+- **UseFromSameNamespace**: Disallows use statements from the same namespace.
+- **UseSpacing**: Enforces spacing between use statements.
+- **UselessAlias**: Disallows useless use statement aliases.
 
 #### Operators
-- **NegationOperatorSpacing**: Enforces spacing around negation operator
-- **RequireCombinedAssignmentOperator**: Requires combined assignment operators (+=, -=, etc.)
-- **RequireOnlyStandaloneIncrementAndDecrementOperators**: Requires ++ and -- to be used standalone
-- **SpreadOperatorSpacing**: Enforces spacing around spread operator
+
+- **NegationOperatorSpacing**: Enforces spacing around negation operator.
+- **RequireCombinedAssignmentOperator**: Requires combined assignment operators (+=, -=, etc.).
+- **RequireOnlyStandaloneIncrementAndDecrementOperators**: Requires ++ and -- to be used standalone.
+- **SpreadOperatorSpacing**: Enforces spacing around spread operator.
 
 #### PHP
-- **DisallowDirectMagicInvokeCall**: Disallows direct __invoke() calls
-- **ReferenceSpacing**: Enforces spacing around reference operator
-- **ShortList**: Requires short list syntax []
-- **TypeCast**: Enforces proper type cast format
-- **UselessSemicolon**: Disallows useless semicolons
+
+- **DisallowDirectMagicInvokeCall**: Disallows direct \_\_invoke() calls.
+- **ReferenceSpacing**: Enforces spacing around reference operator.
+- **ShortList**: Requires short list syntax [].
+- **TypeCast**: Enforces proper type cast format.
+- **UselessSemicolon**: Disallows useless semicolons.
 
 #### Strings
-- **DisallowVariableParsing**: Disallows variable parsing in strings
+
+- **DisallowVariableParsing**: Disallows variable parsing in strings.
 
 #### Type Hints
-- **DeclareStrictTypes**: Requires declare(strict_types=1)
-- **ParameterTypeHintSpacing**: Enforces spacing around parameter type hints
-- **ReturnTypeHintSpacing**: Enforces spacing around return type hints
-- **LongTypeHints**: Requires long type hints (int instead of integer)
-- **DNFTypeHintFormat**: Enforces DNF type format without spaces
-- **NullableTypeForNullDefaultValue**: Requires nullable type for parameters with null default
-- **ParameterTypeHint**: Requires parameter type hints
-- **PropertyTypeHint**: Requires property type hints
-- **ReturnTypeHint**: Requires return type hints
-- **ClassConstantTypeHint**: Requires class constant type hints
+
+- **DeclareStrictTypes**: Requires declare(strict_types=1).
+- **ParameterTypeHintSpacing**: Enforces spacing around parameter type hints.
+- **ReturnTypeHintSpacing**: Enforces spacing around return type hints.
+- **LongTypeHints**: Requires long type hints (int instead of integer).
+- **DNFTypeHintFormat**: Enforces DNF type format without spaces.
+- **NullableTypeForNullDefaultValue**: Requires nullable type for parameters with null default.
+- **ParameterTypeHint**: Requires parameter type hints.
+- **PropertyTypeHint**: Requires property type hints.
+- **ReturnTypeHint**: Requires return type hints.
+- **ClassConstantTypeHint**: Requires class constant type hints.
 
 #### Variables
-- **DisallowVariableVariable**: Disallows variable variables (\$$var)
-- **DuplicateAssignmentToVariable**: Disallows duplicate assignments to the same variable
-- **UselessVariable**: Disallows useless variables
 
----
-
-## Variable and Property Naming Convention
-
-Ensures all variables, parameters, and properties use `$lowerCamelCase` format without leading underscores.
-
-**Good:**
-```php
-$userName = 'John';
-$orderTotal = 100;
-$isValid = true;
-```
-
-**Bad:**
-```php
-$user_name = 'John';   // snake_case not allowed
-$_private = 'value';   // leading underscore not allowed
-$UserName = 'John';    // UpperCamelCase not allowed
-```
-
-PSR-12 and PER 3.0 do not mandate variable naming conventions. Specifically, from [PSR-1, Section 4.2 "Properties"](https://www.php-fig.org/psr/psr-1/#42-properties):
-
-> This guide intentionally avoids any recommendation regarding the use of \$StudlyCaps, \$camelCase, or \$under_score property names.
-> Whatever naming convention is used SHOULD be applied consistently within a reasonable scope. That scope may be vendor-level, package-level, class-level, or method-level.
-
-In addition, from [PER Coding Style 3.0 Section 4.3 "Properties and Constants"](https://www.php-fig.org/per/coding-style/#43-properties-and-constants):
-
-> Property or constant names MUST NOT be prefixed with a single underscore to indicate protected or private visibility. That is, an underscore prefix explicitly has no meaning.
-
-Once upon a time, the convention was to use `$lower_snake_case` for variable names and properties; however, as the object-oriented features of PHP evolved, it became more common to use `$lowerCamelCase`, following the coding convention from Java. AI-generated code typically uses `$lowerCamelCase`, which is indicative of the trend. Therefore, given the requirement to be consistent, this sniff enforces the use of `$lowerCamelCase` for all variables, class properties, and function parameters.
-
-Similarly, using an underscore prefix to indicate protected or private visibility was common practice in PHP until use of visibility modifiers became the standard. And now, the use of an underscore prefix is generally discouraged or disallowed.
-
-This sniff is compliant with several PHP coding standards:
-1. Symfony requires `$lowerCamelCase` ([ref](https://symfony.com/doc/current/contributing/code/standards.html#naming-conventions)).
-2. Laravel requires `$lowerCamelCase` ([unofficially](https://spatie.be/guidelines/laravel-php#content-general-php-rules)).
-3. Drupal variable names may use either `$lowerCamelCase` or `$lower_snake_case` ([ref](https://project.pages.drupalcode.org/coding_standards/php/coding/#functions-and-variables)), as long as one is consistent. Properties should use `$lowerCamelCase`, and protected or private properties should not use an underscore prefix. ([ref](https://project.pages.drupalcode.org/coding_standards/php/coding/#classes-methods-and-properties)).
-
-Therefore, if any of the OceanMoon packages are used in projects based on these frameworks, the code should be compliant.
+- **DisallowVariableVariable**: Disallows variable variables (\$$var).
+- **DuplicateAssignmentToVariable**: Disallows duplicate assignments to the same variable.
+- **UselessVariable**: Disallows useless variables.
 
 ---
 
@@ -279,18 +278,34 @@ Therefore, if any of the OceanMoon packages are used in projects based on these 
 
 ### OceanMoon.Arrays.ArrayDeclaration
 
-Enforces consistent array formatting based on array type. The sniff differentiates between *lists* (no array keys appearing in the code), and *associative arrays* (at least one key appearing in the code). Technically, a list in PHP is any array with sequential integer keys starting from 0, but since we don't want to remove keys if they exist in the code, we treat any array with keys as an associative array and format it as such.
+Enforces consistent array formatting based on array type. The sniff differentiates between _lists_ (no array keys
+appearing in the code), and _associative arrays_ (at least one key appearing in the code). Technically, a list in PHP is
+any array with sequential integer keys starting from 0, but since we don't want to remove keys if they exist in the
+code, we treat any array with keys as an associative array and format it as such, even if those keys are 0, 1, 2, etc.
 
-The format is chosen automatically based on array type, content, and length. Lists without nested arrays that fit on a single line (without overflowing the maximum line length and without multiline elements) use a compact single-line format — regardless of whether elements contain function calls or `new` expressions. Lists that don't fit on one line use grid format for simple values, or one-per-line for complex values (function/method calls, `new` expressions). Lists containing nested arrays always use one-per-line format. Associative arrays always use one key-value pair per line.
+The format is chosen automatically based on array type and content, loosely mirroring how
+`OceanMoon\Core\Stringify::stringifyArray()` pretty-prints a value at runtime:
 
-Array indentation defaults to 4 spaces per nesting level; this is configurable. The sniff uses `mb_strlen()` for proper Unicode character support when aligning arrows and grid padding. Values in associative arrays must start on the same line as the double arrow.
+- List arrays where every element is **simple** — a scalar literal, `null`/`true`/`false`, a bare variable, or a bare
+  constant — use a compact single-line format if it fits within the line length, or a grid format with uniform padding
+  if it doesn't.
+- List arrays containing at least one **complex** element — a nested array, a function/method call, a `new` expression,
+  arithmetic, enum case access, property/static access, or any other expression — always use one element per line, _even
+  if the whole array would otherwise fit on one line_. A grid or compact layout only reads unambiguously when every
+  element is a plain literal, variable, or constant; anything more involved needs its own line.
+- Associative arrays always use one key-value pair per line, arrows aligned.
 
-**Single-line lists**: Lists without nested arrays that fit on one line use a compact format with no trailing comma — including lists with function calls or `new` expressions.
+Array indentation defaults to 4 spaces per nesting level; this is configurable. The sniff uses `mb_strlen()` for proper
+Unicode character support when aligning arrows and grid padding. Values in associative arrays must start on the same
+line as the double arrow.
+
+**Single-line lists**: Lists where every element is simple (a scalar literal, `null`/`true`/`false`, a bare variable, or
+a bare constant) use a compact format with no trailing comma, if they fit within the line length.
+
 ```php
 // Good
 $colors = ['red', 'green', 'blue'];
-$results = [strlen('hi'), ucfirst('bye'), trim('x')];
-$objects = [new Foo(), new Bar(), new Baz()];
+$values = [1, 'two', 3.0, null, true, $x, MY_CONST];
 
 // Bad
 $colors = [
@@ -300,7 +315,9 @@ $colors = [
 ];
 ```
 
-**Grid format**: Lists of simple values too long for a single line are arranged in a grid with uniform padding. A trailing comma is included.
+**Grid format**: Simple-element lists too long for a single line are arranged in a grid with uniform padding. A trailing
+comma is included.
+
 ```php
 // Good
 $colors = [
@@ -310,28 +327,28 @@ $colors = [
 ];
 ```
 
-**One per line**: Lists too long for a single line that contain function/method calls or `new` expressions use one element per line with a trailing comma.
+**One per line**: Lists containing at least one complex element — function/method calls, `new` expressions, arithmetic,
+enum case access, property/static access, or nested arrays — always use one element per line with a trailing comma,
+regardless of whether the array would fit on one line.
+
 ```php
 // Good
 $results = [
     strtoupper('red'),
     strtolower('GREEN'),
     trim('  blue  '),
-    substr('yellow', 0, 3),
 ];
-```
-
-**List of arrays**: Lists containing nested arrays always use one element per line, trailing comma required.
-```php
-// Good
 $points = [
     [1, 2],
     [3, 4],
-    [5, 6],
 ];
+
+// Bad — forces reformatting even though it fits on one line
+$results = [strtoupper('red'), strtolower('GREEN'), trim('  blue  ')];
 ```
 
 **Associative arrays**: One key-value pair per line, arrows aligned, trailing comma required.
+
 ```php
 // Good
 $user = [
@@ -364,9 +381,11 @@ $user = ['name' => 'John', 'email' => 'john@example.com', 'age' => 30];
 
 Removes unnecessary parentheses around `new` expressions when accessing members (PHP 8.4+).
 
-PHP 8.4 introduced the ability to access properties and methods on newly instantiated objects without wrapping the instantiation in parentheses. This sniff enforces that modern syntax.
+PHP 8.4 introduced the ability to access properties and methods on newly instantiated objects without wrapping the
+instantiation in parentheses. This sniff enforces that modern syntax.
 
 **Good:**
+
 ```php
 new DateTime()->format('Y-m-d');
 new Foo()->method();
@@ -374,6 +393,7 @@ new Bar()->property;
 ```
 
 **Bad:**
+
 ```php
 (new DateTime())->format('Y-m-d');  // Unnecessary parentheses
 (new Foo())->method();              // Unnecessary parentheses
@@ -382,21 +402,30 @@ new Bar()->property;
 
 ### OceanMoon.Classes.PropertyDeclaration
 
-Verifies that properties are declared correctly. This is a replacement for `PSR2.Classes.PropertyDeclaration` that properly handles PHP 8.4 property hooks.
+Verifies that properties are declared correctly. This is a replacement for `PSR2.Classes.PropertyDeclaration` that
+properly handles PHP 8.4 property hooks.
 
 **Improvements over the PSR2 version:**
-- Variables inside property hook bodies (e.g. `$this`, `$value`, local variables) are correctly ignored as non-property declarations.
+
+- Variables inside property hook bodies (e.g. `$this`, `$value`, local variables) are correctly ignored as non-property
+  declarations.
 - Properties with hooks end with a closing brace `}`, not a semicolon `;`, and are handled correctly.
-- Supports PHP 8.4 asymmetric visibility (`public private(set)`), enforcing that read-visibility comes before write-visibility.
+- Supports PHP 8.4 asymmetric visibility (`public private(set)`), enforcing that read-visibility comes before
+  write-visibility.
 - Enforces correct ordering of modifiers: `abstract`/`final` before visibility, `static`/`readonly` after visibility.
 
 ### OceanMoon.WhiteSpace.ScopeIndent
 
-Checks that control structures and code are indented correctly. This is a fork of `Generic.WhiteSpace.ScopeIndent` with PHP 8.4 property hook support.
+Checks that control structures and code are indented correctly. This is a fork of `Generic.WhiteSpace.ScopeIndent` with
+PHP 8.4 property hook support.
 
-PHP_CodeSniffer's tokenizer does not recognize property hook braces as scope openers/closers, so the built-in `ScopeIndent` sniff cannot track their indentation. This sniff builds a map of property hook scopes (both the hook container `{ get ... set ... }` and individual hook bodies `get { ... }`) and tracks them alongside the standard scope stack.
+PHP_CodeSniffer's tokenizer does not recognize property hook braces as scope openers/closers, so the built-in
+`ScopeIndent` sniff cannot track their indentation. This sniff builds a map of property hook scopes (both the hook
+container `{ get ... set ... }` and individual hook bodies `get { ... }`) and tracks them alongside the standard scope
+stack.
 
 **Good:**
+
 ```php
 class User
 {
@@ -413,9 +442,9 @@ class User
 
 **Configuration:**
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `indent` | int | 4 | Number of spaces per indentation level. |
+| Property | Type | Default | Description                             |
+| -------- | ---- | ------- | --------------------------------------- |
+| `indent` | int  | 4       | Number of spaces per indentation level. |
 
 ```xml
 <rule ref="OceanMoon.WhiteSpace.ScopeIndent">
@@ -425,20 +454,108 @@ class User
 </rule>
 ```
 
+### OceanMoon.PHP.DisallowMultiConstantDefinition
+
+Disallows defining multiple constants in a single statement (e.g. `const A = 1, B = 2;`). This is a fork of
+`SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition`.
+
+The upstream sniff scans for commas between `const` and the closing `;`, skipping over commas inside a short array
+(`[...]`) so it doesn't mistake them for constant separators — but it doesn't do the same for a parenthesized
+argument list. That makes it misfire on a single, valid constant whose value is a multi-argument `new` expression or
+function call, e.g. `const I = new Complex(0, 1);` is wrongly flagged, because the comma inside `Complex(0, 1)` is
+miscounted as a constant separator. This fork also skips over parenthesized expressions, fixing the false positive
+while still catching genuine multi-constant statements.
+
+Applies equally to class constants and namespace/file-scope constants — `T_CONST` isn't class-specific.
+
+**Good:**
+
+```php
+public const int A = 1;
+public const int B = 2;
+public const Complex I = new Complex(0, 1);  // not flagged — comma belongs to the constructor call
+```
+
+**Bad:**
+
+```php
+public const int A = 1, B = 2;
+```
+
+---
+
+## Variable and Property Naming Convention
+
+This coding standard is supplied by the **Squiz.NamingConventions.ValidVariableName** sniff, which ensures all
+variables, parameters, and properties use `$lowerCamelCase` format without leading underscores.
+
+**Good:**
+
+```php
+$userName = 'John';
+$orderTotal = 100;
+$isValid = true;
+```
+
+**Bad:**
+
+```php
+$user_name = 'John';   // snake_case not allowed
+$_private = 'value';   // leading underscore not allowed
+$UserName = 'John';    // UpperCamelCase not allowed
+```
+
+So - why is this included?
+
+PSR-12 and PER 3.0 do not mandate variable naming conventions. Specifically, from
+[PSR-1, Section 4.2 "Properties"](https://www.php-fig.org/psr/psr-1/#42-properties):
+
+> This guide intentionally avoids any recommendation regarding the use of \$StudlyCaps, \$camelCase, or \$under_score
+> property names. Whatever naming convention is used SHOULD be applied consistently within a reasonable scope. That
+> scope may be vendor-level, package-level, class-level, or method-level.
+
+In addition, from
+[PER Coding Style 3.0 Section 4.3 "Properties and Constants"](https://www.php-fig.org/per/coding-style/#43-properties-and-constants):
+
+> Property or constant names MUST NOT be prefixed with a single underscore to indicate protected or private visibility.
+> That is, an underscore prefix explicitly has no meaning.
+
+Once upon a time, the convention was to use `$lower_snake_case` for variable names and properties; however, as the
+object-oriented features of PHP evolved, it became more common to use `$lowerCamelCase`, following the coding convention
+from Java. AI-generated code typically uses `$lowerCamelCase`, which is indicative of the trend. Therefore, given the
+requirement to be consistent, this sniff enforces the use of `$lowerCamelCase` for all variables, class properties, and
+function parameters.
+
+Similarly, using an underscore prefix to indicate protected or private visibility was common practice in PHP until use
+of visibility modifiers became the standard. And now, the use of an underscore prefix is generally discouraged or
+disallowed.
+
+This sniff is compliant with several PHP coding standards:
+
+1. Symfony requires `$lowerCamelCase`
+   ([ref](https://symfony.com/doc/current/contributing/code/standards.html#naming-conventions)).
+2. Laravel requires `$lowerCamelCase`
+   ([unofficially](https://spatie.be/guidelines/laravel-php#content-general-php-rules)).
+3. Drupal variable names may use either `$lowerCamelCase` or `$lower_snake_case`
+   ([ref](https://project.pages.drupalcode.org/coding_standards/php/coding/#functions-and-variables)), as long as
+   consistency is maintained. Properties should use `$lowerCamelCase`, and protected or private properties should not
+   use an underscore prefix.
+   ([ref](https://project.pages.drupalcode.org/coding_standards/php/coding/#classes-methods-and-properties)).
+
 ---
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details
+MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
 ## Support
 
-- **Issues**: https://github.com/mossy2100/PHP-CodingStandard/issues
+- **Issues**: https://github.com/mossy2100/PHP-Coding-Standard/issues
 - **Examples**: See `phpcs.xml` files in other OceanMoon packages
 
-For questions or suggestions, please [open an issue](https://github.com/mossy2100/PHP-CodingStandard/issues).
+For questions or suggestions, please [open an issue](https://github.com/mossy2100/PHP-Coding-Standard/issues).
 
 ---
 

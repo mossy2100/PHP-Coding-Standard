@@ -21,49 +21,57 @@ class ArrayDeclarationUnitTest extends AbstractSniffTestCase
     {
         return [
             // Simple list: trailing comma.
-            14  => 1,
+            26  => 1,
             // Simple list: should be single line (trailing comma handled by fix).
-            17  => 1,
-            // List of arrays: missing trailing comma.
-            38  => 1,
-            // List of arrays: first element on same line.
-            42  => 1,
-            // List of arrays: element on same line.
-            49  => 1,
-            // List of arrays: closing bracket on same line.
-            57  => 1,
-            // List of arrays: wrong indentation.
+            29  => 1,
+            // Complex list (nested arrays): missing trailing comma.
+            50  => 1,
+            // Complex list (nested arrays): first element on same line.
+            54  => 1,
+            // Complex list (nested arrays): element on same line.
             61  => 1,
-            // List of arrays: wrong closing bracket indentation.
-            71  => 1,
-            // List of arrays: all on one line.
-            74  => 5,
+            // Complex list (nested arrays): closing bracket on same line.
+            69  => 1,
+            // Complex list (nested arrays): wrong indentation.
+            73  => 1,
+            // Complex list (nested arrays): wrong closing bracket indentation.
+            83  => 1,
+            // Complex list (nested arrays): all on one line.
+            86  => 5,
+            // Complex list (function calls): all on one line.
+            91  => 5,
+            // Complex list (new expressions): all on one line.
+            94  => 5,
+            // Complex list (enum case access): all on one line.
+            97  => 4,
+            // Complex list (arithmetic expressions): all on one line.
+            100 => 4,
+            // Complex list (function calls): too long for single line, forced one per line unconditionally.
+            103 => 8,
             // Assoc: missing trailing comma.
-            106 => 1,
+            135 => 1,
             // Assoc: first element on same line.
-            110 => 1,
+            139 => 1,
             // Assoc: element on same line + arrow alignment.
-            117 => 2,
-            118 => 1,
+            146 => 2,
+            147 => 1,
             // Assoc: closing bracket on same line.
-            125 => 1,
+            154 => 1,
             // Assoc: arrow alignment.
-            129 => 1,
-            131 => 1,
+            158 => 1,
+            160 => 1,
             // Assoc: wrong indentation.
-            136 => 1,
+            165 => 1,
             // Assoc: wrong closing bracket indentation.
-            146 => 1,
+            175 => 1,
             // Assoc: value not on arrow line.
-            151 => 1,
-            // One per line: function call list too long for single line.
             180 => 1,
             // Grid: one-per-line list that should be grid.
-            185 => 1,
+            198 => 1,
             // Grid: single long line that should be grid.
-            204 => 1,
+            217 => 1,
             // Grid: grid with wrong padding.
-            207 => 1,
+            220 => 1,
         ];
     }
 
