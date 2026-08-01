@@ -64,7 +64,6 @@
 
     <!-- Classes -->
     <rule ref="SlevomatCodingStandard.Classes.BackedEnumTypeSpacing"/>
-    <rule ref="SlevomatCodingStandard.Classes.ClassConstantVisibility"/>
     <rule ref="SlevomatCodingStandard.Classes.ClassMemberSpacing"/>
     <rule ref="SlevomatCodingStandard.Classes.ConstantSpacing">
         <properties>

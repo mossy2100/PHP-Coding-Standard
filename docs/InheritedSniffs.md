@@ -56,7 +56,6 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 ### Classes
 
 - **BackedEnumTypeSpacing**: Enforces spacing around backed enum types.
-- **ClassConstantVisibility**: Requires visibility modifiers on class constants.
 - **ClassMemberSpacing**: Enforces spacing between class members.
 - **ConstantSpacing**: Enforces spacing around class constants.
 - **DisallowMultiPropertyDefinition**: Disallows defining multiple properties in one statement.

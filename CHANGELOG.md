@@ -44,6 +44,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   either way.
 - `SlevomatCodingStandard.ControlStructures.AssignmentInCondition` — replaced by
   `Generic.CodeAnalysis.AssignmentInCondition` (see Added), which covers substantially more cases.
+- `SlevomatCodingStandard.Classes.ClassConstantVisibility` — duplicated `PSR12.Properties.ConstantVisibility.NotFound`
+  exactly (same trigger condition: a class constant with no explicit visibility keyword), and neither sniff was
+  configured to auto-fix, so it added nothing beyond the PSR-12 check already inherited from `PSR12`.
 
 ### Changed
 
