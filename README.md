@@ -15,7 +15,7 @@ This package provides a custom PHP_CodeSniffer coding standard for PHP, which ex
 **Key Features:**
 
 - Extends PSR-12 coding standard.
-- Enforces `$camelCase` naming for variables, parameters, and properties.
+- Enforces "camelCase" naming for variables, parameters, and properties.
 - Enforces consistent array formatting: single-line, grid, one-per-line, and associative with aligned arrows.
 - Removes unnecessary parentheses around class instantiation (PHP 8.4+).
 - Enforces correct indentation for property hooks.
