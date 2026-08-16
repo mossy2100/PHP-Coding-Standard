@@ -1,6 +1,6 @@
-# Ocean Moon Coding Standard for PHP
+# OceanMoon Coding Standard for PHP
 
-A PHP_CodeSniffer coding standard for PHP 8.4, developed by Shaun Moss (Ocean Moon Software).
+A PHP_CodeSniffer coding standard for PHP 8.4, developed by Shaun Moss.
 
 **[License](LICENSE)** | **[Changelog](CHANGELOG.md)**
 
@@ -93,7 +93,7 @@ vendor/bin/phpcbf       # Auto-fix issues
 
 ## Included Sniffs
 
-The Ocean Moon Coding Standard extends PSR-12, borrows from existing standards, and adds several custom sniffs.
+The OceanMoon Coding Standard extends PSR-12, borrows from existing standards, and adds several custom sniffs.
 
 1. [Inherited Sniffs](docs/InheritedSniffs.md) - From PSR-12 and other standards.
 2. [Custom Sniffs](docs/CustomSniffs.md) - Developed for this standard.

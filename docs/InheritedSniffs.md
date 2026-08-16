@@ -1,6 +1,6 @@
-# Ocean Moon Coding Standard - Inherited Sniffs
+# OceanMoon Coding Standard - Inherited Sniffs
 
-This document lists the PHP_CodeSniffer sniffs inherited from other coding standards by the [Ocean Moon Coding Standard](../README.md).
+This document lists the PHP_CodeSniffer sniffs inherited from other coding standards by the [OceanMoon Coding Standard](../README.md).
 
 PHP_CodeSniffer provides the PSR-12, Generic, and Squiz sniffs out of the box. Documentation is found in the [repository](https://github.com/PHPCSStandards/PHP_CodeSniffer) and
   [wiki](https://github.com/PHPCSStandards/PHP_CodeSniffer/wiki).

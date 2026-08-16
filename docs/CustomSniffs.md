@@ -1,6 +1,6 @@
-# Ocean Moon Coding Standard - Custom Sniffs
+# OceanMoon Coding Standard - Custom Sniffs
 
-This document describes the custom PHP_CodeSniffer sniffs created for the [Ocean Moon Coding Standard](../README.md).
+This document describes the custom PHP_CodeSniffer sniffs created for the [OceanMoon Coding Standard](../README.md).
 
 ---
 ## OceanMoon.Arrays.ArrayDeclaration
