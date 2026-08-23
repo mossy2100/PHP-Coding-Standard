@@ -7,6 +7,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [2.2.0] - 2026-08-23
+
+### Removed
+
+- The `tests/*` exclude-pattern on `PSR1.Classes.ClassDeclaration.MultipleClasses`. Every class, interface, trait,
+  and enum must now live in its own file, test fixtures included — no exceptions for `tests/*` any more. Existing
+  multi-class test files should split their extra fixture classes into their own files (e.g. a `tests/Fixtures/`
+  subdirectory), matching PSR-4 autoloading expectations.
+
 ## [2.1.0] - 2026-08-16
 
 ### Added

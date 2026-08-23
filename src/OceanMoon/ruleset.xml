@@ -4,11 +4,6 @@
 
     <!-- ====== PSR ====== -->
 
-    <!-- Allow multiple classes in test files for test fixtures -->
-    <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
-        <exclude-pattern>tests/*</exclude-pattern>
-    </rule>
-
     <!-- Inherit from PSR-12 -->
     <rule ref="PSR12">
         <!-- Exclude PSR2 PropertyDeclaration - replaced by OceanMoon version for PHP 8.4 property hook support -->
