@@ -3,7 +3,7 @@
 /**
  * Sniff for array declaration formatting.
  *
- * Loosely mirrors OceanMoon\Core\Stringify::stringifyArray() with pretty-printing enabled, but also treats bare
+ * Loosely mirrors Mossy2100\Core\Stringify::stringifyArray() with pretty-printing enabled, but also treats bare
  * variables and constants as "simple" (see isSimpleElement()) -- Stringify has no equivalent concept, since it
  * works on runtime values rather than source code, but in source, a bare `$var` or `CONST_NAME` is typically
  * short and always single-line, same as a scalar literal:
@@ -25,7 +25,7 @@
 
 declare(strict_types=1);
 
-namespace OceanMoon\Sniffs\Arrays;
+namespace Mossy2100\Sniffs\Arrays;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;

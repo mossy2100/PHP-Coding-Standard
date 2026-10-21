@@ -2,14 +2,14 @@
 <phpunit
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-    bootstrap="src/OceanMoon/Tests/bootstrap.php"
+    bootstrap="src/Mossy2100/Tests/bootstrap.php"
     colors="true"
     beStrictAboutTestsThatDoNotTestAnything="false"
     failOnWarning="true"
 >
     <testsuites>
-        <testsuite name="OceanMoon Sniff Tests">
-            <directory suffix="UnitTest.php">src/OceanMoon/Tests</directory>
+        <testsuite name="Mossy2100 Sniff Tests">
+            <directory suffix="UnitTest.php">src/Mossy2100/Tests</directory>
         </testsuite>
     </testsuites>
 </phpunit>

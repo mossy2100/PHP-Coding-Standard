@@ -1,6 +1,6 @@
-# OceanMoon Coding Standard - Inherited Sniffs
+# Mossy2100 Coding Standard - Inherited Sniffs
 
-This document lists the PHP_CodeSniffer sniffs inherited from other coding standards by the [OceanMoon Coding Standard](../README.md).
+This document lists the PHP_CodeSniffer sniffs inherited from other coding standards by the [Mossy2100 Coding Standard](../README.md).
 
 PHP_CodeSniffer provides the PSR-12, Generic, and Squiz sniffs out of the box. Documentation is found in the [repository](https://github.com/PHPCSStandards/PHP_CodeSniffer) and
   [wiki](https://github.com/PHPCSStandards/PHP_CodeSniffer/wiki).
@@ -14,9 +14,9 @@ The complete PSR-12 coding standard is included, with the following exceptions:
 
 - **PSR1.Classes.ClassDeclaration.MultipleClasses** is disabled for files in `tests` folders, because PHPUnit test files
   often include small additional classes for testing purposes.
-- **PSR2.Classes.PropertyDeclaration** is excluded, replaced by `OceanMoon.Classes.PropertyDeclaration`, which adds
+- **PSR2.Classes.PropertyDeclaration** is excluded, replaced by `Mossy2100.Classes.PropertyDeclaration`, which adds
   support for property hooks (PHP 8.4) (see [Custom Sniffs](CustomSniffs.md)).
-- **Generic.WhiteSpace.ScopeIndent** is excluded, replaced by `OceanMoon.WhiteSpace.ScopeIndent`, which also adds
+- **Generic.WhiteSpace.ScopeIndent** is excluded, replaced by `Mossy2100.WhiteSpace.ScopeIndent`, which also adds
   support for property hooks (see [Custom Sniffs](CustomSniffs.md)).
 
 ---

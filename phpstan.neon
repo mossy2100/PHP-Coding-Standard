@@ -4,7 +4,7 @@ parameters:
     paths:
         - src
     excludePaths:
-        - src/OceanMoon/Sniffs/WhiteSpace/ScopeIndentSniff.php
+        - src/Mossy2100/Sniffs/WhiteSpace/ScopeIndentSniff.php
     treatPhpDocTypesAsCertain: false
     scanDirectories:
         - vendor/squizlabs/php_codesniffer

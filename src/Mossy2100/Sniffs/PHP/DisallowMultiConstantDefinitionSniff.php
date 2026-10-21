@@ -16,7 +16,7 @@
 
 declare(strict_types=1);
 
-namespace OceanMoon\Sniffs\PHP;
+namespace Mossy2100\Sniffs\PHP;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;

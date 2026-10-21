@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace OceanMoon\Tests\Classes;
+namespace Mossy2100\Tests\Classes;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffTestCase;
 
 /**
- * Unit tests for OceanMoon.Classes.ClassInstantiationNoBrackets sniff.
+ * Unit tests for Mossy2100.Classes.ClassInstantiationNoBrackets sniff.
  */
 class ClassInstantiationNoBracketsUnitTest extends AbstractSniffTestCase
 {

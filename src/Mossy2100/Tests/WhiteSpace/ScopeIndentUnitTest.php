@@ -2,14 +2,17 @@
 
 declare(strict_types=1);
 
-namespace OceanMoon\Tests\PHP;
+namespace Mossy2100\Tests\WhiteSpace;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffTestCase;
 
 /**
- * Unit tests for OceanMoon.PHP.DisallowMultiConstantDefinition sniff.
+ * Unit tests for Mossy2100.WhiteSpace.ScopeIndent sniff.
+ *
+ * Focuses on PHP 8.4 property hook indentation, which is the reason this
+ * sniff was forked from Generic.WhiteSpace.ScopeIndent.
  */
-class DisallowMultiConstantDefinitionUnitTest extends AbstractSniffTestCase
+class ScopeIndentUnitTest extends AbstractSniffTestCase
 {
     /**
      * Returns the lines where errors should occur.
@@ -20,14 +23,10 @@ class DisallowMultiConstantDefinitionUnitTest extends AbstractSniffTestCase
     protected function getErrorList(string $testFile = ''): array
     {
         return [
-            // Basic multi-constant definition.
-            23 => 1,
-            // Still detected after a parenthesized call.
-            27 => 1,
-            // Still detected after a short array literal.
-            30 => 1,
-            // Multi-constant definition at file scope.
-            37 => 1,
+            // Hook body under-indented.
+            89 => 1,
+            // Code after hooks over-indented.
+            94 => 1,
         ];
     }
 

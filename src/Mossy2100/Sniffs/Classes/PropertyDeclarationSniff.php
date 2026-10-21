@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace OceanMoon\Sniffs\Classes;
+namespace Mossy2100\Sniffs\Classes;
 
 use Exception;
-use OceanMoon\Helpers\PropertyHookHelper;
+use Mossy2100\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\AbstractVariableSniff;
 use PHP_CodeSniffer\Util\Tokens;

@@ -1,5 +1,5 @@
 {
-    "name": "oceanmoon/coding-standard",
+    "name": "mossy2100/coding-standard",
     "description": "PHP_CodeSniffer coding standard extending PSR-12 with lowerCamelCase naming and modern PHP 8.4+ rules.",
     "type": "phpcodesniffer-standard",
     "license": "MIT",

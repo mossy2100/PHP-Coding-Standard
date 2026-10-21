@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace OceanMoon\Tests\Arrays;
+namespace Mossy2100\Tests\Arrays;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffTestCase;
 
 /**
- * Unit tests for OceanMoon.Arrays.ArrayDeclaration sniff.
+ * Unit tests for Mossy2100.Arrays.ArrayDeclaration sniff.
  */
 class ArrayDeclarationUnitTest extends AbstractSniffTestCase
 {

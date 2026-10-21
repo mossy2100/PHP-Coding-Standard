@@ -1,4 +1,4 @@
-# OceanMoon Coding Standard for PHP
+# Mossy2100 Coding Standard for PHP
 
 A PHP_CodeSniffer coding standard for PHP 8.4, developed by Shaun Moss.
 
@@ -23,12 +23,12 @@ This package provides a custom PHP_CodeSniffer coding standard for PHP, which ex
 
 The package provides several custom sniffs to cover gaps in the available standards. These include:
 
-- **OceanMoon.Arrays.ArrayDeclaration**: Enforces consistent array formatting with lists and associative arrays.
-- **OceanMoon.Classes.ClassInstantiationNoBrackets**: Removes unnecessary parentheses around class instantiation when
+- **Mossy2100.Arrays.ArrayDeclaration**: Enforces consistent array formatting with lists and associative arrays.
+- **Mossy2100.Classes.ClassInstantiationNoBrackets**: Removes unnecessary parentheses around class instantiation when
   accessing members (PHP 8.4+).
-- **OceanMoon.Classes.PropertyDeclaration**: Verifies property declarations, with property hook support (PHP 8.4+).
-- **OceanMoon.WhiteSpace.ScopeIndent**: Checks that control structures and code are indented correctly, with property hook support (PHP 8.4+).
-- **OceanMoon.PHP.DisallowMultiConstantDefinition**: Disallows defining multiple constants in one statement. A fork
+- **Mossy2100.Classes.PropertyDeclaration**: Verifies property declarations, with property hook support (PHP 8.4+).
+- **Mossy2100.WhiteSpace.ScopeIndent**: Checks that control structures and code are indented correctly, with property hook support (PHP 8.4+).
+- **Mossy2100.PHP.DisallowMultiConstantDefinition**: Disallows defining multiple constants in one statement. A fork
   of `SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition` fixing a false positive on constants with a
   parenthesized multi-argument value (e.g. `const I = new Complex(0, 1);`).
 
@@ -58,7 +58,7 @@ This collaborative approach has produced a well-designed, production-ready packa
 ## Installation
 
 ```bash
-composer require --dev oceanmoon/coding-standard
+composer require --dev mossy2100/coding-standard
 ```
 
 The standard is automatically registered with PHP_CodeSniffer via the `dealerdirect/phpcodesniffer-composer-installer`
@@ -78,7 +78,7 @@ Create a `phpcs.xml` file in your project root:
     <file>src</file>
     <file>tests</file>
 
-    <rule ref="OceanMoon"/>
+    <rule ref="Mossy2100"/>
 </ruleset>
 ```
 
@@ -93,7 +93,7 @@ vendor/bin/phpcbf       # Auto-fix issues
 
 ## Included Sniffs
 
-The OceanMoon Coding Standard extends PSR-12, borrows from existing standards, and adds several custom sniffs.
+The Mossy2100 Coding Standard extends PSR-12, borrows from existing standards, and adds several custom sniffs.
 
 1. [Inherited Sniffs](docs/InheritedSniffs.md) - From PSR-12 and other standards.
 2. [Custom Sniffs](docs/CustomSniffs.md) - Developed for this standard.
@@ -185,7 +185,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 ## Support
 
 - **Issues**: https://github.com/mossy2100/PHP-Coding-Standard/issues
-- **Examples**: See `phpcs.xml` files in other OceanMoon packages
+- **Examples**: See `phpcs.xml` files in other Mossy2100 packages
 
 For questions or suggestions, please [open an issue](https://github.com/mossy2100/PHP-Coding-Standard/issues).
 

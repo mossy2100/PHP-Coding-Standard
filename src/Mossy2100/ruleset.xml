@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
-<ruleset name="OceanMoon">
-    <description>OceanMoon PHP Coding Standard</description>
+<ruleset name="Mossy2100">
+    <description>Mossy2100 PHP Coding Standard</description>
 
     <!-- ====== PSR ====== -->
 
     <!-- Inherit from PSR-12 -->
     <rule ref="PSR12">
-        <!-- Exclude PSR2 PropertyDeclaration - replaced by OceanMoon version for PHP 8.4 property hook support -->
+        <!-- Exclude PSR2 PropertyDeclaration - replaced by Mossy2100 version for PHP 8.4 property hook support -->
         <exclude name="PSR2.Classes.PropertyDeclaration"/>
-        <!-- Exclude Generic ScopeIndent - replaced by OceanMoon version for PHP 8.4 property hook support -->
+        <!-- Exclude Generic ScopeIndent - replaced by Mossy2100 version for PHP 8.4 property hook support -->
         <exclude name="Generic.WhiteSpace.ScopeIndent"/>
     </rule>
 
@@ -244,22 +244,22 @@
     <rule ref="SlevomatCodingStandard.Variables.DuplicateAssignmentToVariable"/>
     <rule ref="SlevomatCodingStandard.Variables.UselessVariable"/>
 
-    <!-- ===== OCEAN MOON ====== -->
+    <!-- ===== MOSSY2100 ====== -->
 
     <!-- Array formatting with aligned arrows for associative arrays -->
-    <rule ref="OceanMoon.Arrays.ArrayDeclaration"/>
+    <rule ref="Mossy2100.Arrays.ArrayDeclaration"/>
 
     <!-- Scope indent with PHP 8.4 property hook support -->
-    <rule ref="OceanMoon.WhiteSpace.ScopeIndent"/>
+    <rule ref="Mossy2100.WhiteSpace.ScopeIndent"/>
 
     <!-- Property declaration with PHP 8.4 property hook support -->
-    <rule ref="OceanMoon.Classes.PropertyDeclaration"/>
+    <rule ref="Mossy2100.Classes.PropertyDeclaration"/>
 
     <!-- Remove useless parentheses around new (PHP 8.4+) -->
-    <rule ref="OceanMoon.Classes.ClassInstantiationNoBrackets"/>
+    <rule ref="Mossy2100.Classes.ClassInstantiationNoBrackets"/>
 
     <!-- Disallow multi constant definitions; fork of SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition
          fixing a false positive on constants with a parenthesized multi-argument value (e.g. new Foo(1, 2)) -->
-    <rule ref="OceanMoon.PHP.DisallowMultiConstantDefinition"/>
+    <rule ref="Mossy2100.PHP.DisallowMultiConstantDefinition"/>
 
 </ruleset>

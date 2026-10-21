@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace OceanMoon\Sniffs\Classes;
+namespace Mossy2100\Sniffs\Classes;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;

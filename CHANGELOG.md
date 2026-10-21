@@ -7,6 +7,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [Unreleased]
+
+### Changed
+
+- **Renamed the package from `oceanmoon/coding-standard` to `mossy2100/coding-standard`, and the standard from
+  `OceanMoon` to `Mossy2100` (breaking),** matching the author's GitHub and Packagist name. Use
+  `<rule ref="Mossy2100"/>` in `phpcs.xml`. Sniff codes change to match, e.g. `Mossy2100.Arrays.ArrayDeclaration`, as
+  do the sniff class namespaces (`Mossy2100\Sniffs\...`).
+
+---
+
 ## [2.2.0] - 2026-08-23
 
 ### Removed

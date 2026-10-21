@@ -1,9 +1,9 @@
-# OceanMoon Coding Standard - Custom Sniffs
+# Mossy2100 Coding Standard - Custom Sniffs
 
-This document describes the custom PHP_CodeSniffer sniffs created for the [OceanMoon Coding Standard](../README.md).
+This document describes the custom PHP_CodeSniffer sniffs created for the [Mossy2100 Coding Standard](../README.md).
 
 ---
-## OceanMoon.Arrays.ArrayDeclaration
+## Mossy2100.Arrays.ArrayDeclaration
 
 Enforces consistent array formatting based on array type. The sniff differentiates between _lists_ (no array keys
 appearing in the code), and _associative arrays_ (at least one key appearing in the code). Technically, a list in PHP is
@@ -11,7 +11,7 @@ any array with sequential integer keys starting from 0, but since we don't want 
 code, we treat any array with keys as an associative array and format it as such, even if those keys are 0, 1, 2, etc.
 
 The format is chosen automatically based on array type and content, loosely mirroring how
-`OceanMoon\Core\Stringify::stringifyArray()` pretty-prints a value at runtime:
+`Mossy2100\Core\Stringify::stringifyArray()` pretty-prints a value at runtime:
 
 - List arrays where every element is **simple** — a scalar literal, `null`/`true`/`false`, a bare variable, or a bare
   constant — use a compact single-line format if it fits within the line length, or a grid format with uniform padding
@@ -96,7 +96,7 @@ $user = ['name' => 'John', 'email' => 'john@example.com', 'age' => 30];
 | `indent`        | int  | 4       | Number of spaces to indent array elements.                          |
 
 ```xml
-<rule ref="OceanMoon.Arrays.ArrayDeclaration">
+<rule ref="Mossy2100.Arrays.ArrayDeclaration">
     <properties>
         <property name="maxLineLength" value="100"/>
         <property name="indent" value="2"/>
@@ -106,7 +106,7 @@ $user = ['name' => 'John', 'email' => 'john@example.com', 'age' => 30];
 
 ---
 
-## OceanMoon.Classes.ClassInstantiationNoBrackets
+## Mossy2100.Classes.ClassInstantiationNoBrackets
 
 Removes unnecessary parentheses around `new` expressions when accessing members (PHP 8.4+).
 
@@ -130,7 +130,7 @@ new Bar()->property;
 ```
 
 ---
-## OceanMoon.Classes.PropertyDeclaration
+## Mossy2100.Classes.PropertyDeclaration
 
 Verifies that properties are declared correctly. This is a replacement for `PSR2.Classes.PropertyDeclaration` that
 properly handles PHP 8.4 property hooks.
@@ -145,7 +145,7 @@ properly handles PHP 8.4 property hooks.
 - Enforces correct ordering of modifiers: `abstract`/`final` before visibility, `static`/`readonly` after visibility.
 
 ---
-## OceanMoon.WhiteSpace.ScopeIndent
+## Mossy2100.WhiteSpace.ScopeIndent
 
 Checks that control structures and code are indented correctly. This is a fork of `Generic.WhiteSpace.ScopeIndent` with
 PHP 8.4 property hook support.
@@ -178,7 +178,7 @@ class User
 | `indent` | int  | 4       | Number of spaces per indentation level. |
 
 ```xml
-<rule ref="OceanMoon.WhiteSpace.ScopeIndent">
+<rule ref="Mossy2100.WhiteSpace.ScopeIndent">
     <properties>
         <property name="indent" value="2"/>
     </properties>
@@ -186,7 +186,7 @@ class User
 ```
 
 ---
-## OceanMoon.PHP.DisallowMultiConstantDefinition
+## Mossy2100.PHP.DisallowMultiConstantDefinition
 
 Disallows defining multiple constants in a single statement (e.g. `const A = 1, B = 2;`). This is a fork of
 `SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition`.
