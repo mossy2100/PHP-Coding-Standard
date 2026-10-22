@@ -46,7 +46,7 @@ class ArrayDeclarationSniff implements Sniff
     private function initIgnoreTokens(): void
     {
         if (empty($this->ignoreTokens)) {
-            $this->ignoreTokens = Tokens::$emptyTokens;
+            $this->ignoreTokens = Tokens::EMPTY_TOKENS;
             // Also ignore comments.
             $this->ignoreTokens[T_COMMENT] = T_COMMENT;
             $this->ignoreTokens[T_DOC_COMMENT] = T_DOC_COMMENT;
