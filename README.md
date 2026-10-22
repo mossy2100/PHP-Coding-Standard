@@ -17,15 +17,12 @@ This package provides a custom PHP_CodeSniffer coding standard for PHP, which ex
 - Extends PSR-12 coding standard.
 - Enforces "camelCase" naming for variables, parameters, and properties.
 - Enforces consistent array formatting: single-line, grid, one-per-line, and associative with aligned arrows.
-- Removes unnecessary parentheses around class instantiation (PHP 8.4+).
 - Enforces correct indentation for property hooks.
 - Automatic registration with PHP_CodeSniffer.
 
 The package provides several custom sniffs to cover gaps in the available standards. These include:
 
 - **Mossy2100.Arrays.ArrayDeclaration**: Enforces consistent array formatting with lists and associative arrays.
-- **Mossy2100.Classes.ClassInstantiationNoBrackets**: Removes unnecessary parentheses around class instantiation when
-  accessing members (PHP 8.4+).
 - **Mossy2100.Classes.PropertyDeclaration**: Verifies property declarations, with property hook support (PHP 8.4+).
 - **Mossy2100.WhiteSpace.ScopeIndent**: Checks that control structures and code are indented correctly, with property hook support (PHP 8.4+).
 - **Mossy2100.PHP.DisallowMultiConstantDefinition**: Disallows defining multiple constants in one statement. A fork

@@ -16,6 +16,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `<rule ref="Mossy2100"/>` in `phpcs.xml`. Sniff codes change to match, e.g. `Mossy2100.Arrays.ArrayDeclaration`, as
   do the sniff class namespaces (`Mossy2100\Sniffs\...`).
 
+### Removed
+
+- **`OceanMoon.Classes.ClassInstantiationNoBrackets` (breaking).** The standard doesn't otherwise flag redundant
+  parentheses in expressions, and they can aid readability. Both `(new Foo())->bar()` and `new Foo()->bar()` are now
+  accepted. Remove any references to the sniff code from `phpcs.xml` and `phpcs:ignore` comments.
+
 ---
 
 ## [2.2.0] - 2026-08-23

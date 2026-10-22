@@ -106,30 +106,6 @@ $user = ['name' => 'John', 'email' => 'john@example.com', 'age' => 30];
 
 ---
 
-## Mossy2100.Classes.ClassInstantiationNoBrackets
-
-Removes unnecessary parentheses around `new` expressions when accessing members (PHP 8.4+).
-
-PHP 8.4 introduced the ability to access properties and methods on newly instantiated objects without wrapping the
-instantiation in parentheses. This sniff enforces that modern syntax.
-
-**Good:**
-
-```php
-new DateTime()->format('Y-m-d');
-new Foo()->method();
-new Bar()->property;
-```
-
-**Bad:**
-
-```php
-(new DateTime())->format('Y-m-d');  // Unnecessary parentheses
-(new Foo())->method();              // Unnecessary parentheses
-(new Bar())->property;              // Unnecessary parentheses
-```
-
----
 ## Mossy2100.Classes.PropertyDeclaration
 
 Verifies that properties are declared correctly. This is a replacement for `PSR2.Classes.PropertyDeclaration` that
