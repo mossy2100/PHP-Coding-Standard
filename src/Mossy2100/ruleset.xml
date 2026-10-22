@@ -10,6 +10,8 @@
         <exclude name="PSR2.Classes.PropertyDeclaration"/>
         <!-- Exclude Generic ScopeIndent - replaced by Mossy2100 version for PHP 8.4 property hook support -->
         <exclude name="Generic.WhiteSpace.ScopeIndent"/>
+        <!-- Exclude Generic LineLength - replaced by SlevomatCodingStandard.Files.LineLength -->
+        <exclude name="Generic.Files.LineLength"/>
     </rule>
 
     <!-- ====== GENERIC ====== -->
@@ -22,11 +24,6 @@
 
     <!-- CodeAnalysis -->
     <rule ref="Generic.CodeAnalysis.AssignmentInCondition"/>
-
-    <!-- Line length. This warning is replaced by an error from SlevomatCodingStandard.Files.LineLength.LineTooLong -->
-    <rule ref="Generic.Files.LineLength">
-        <exclude name="Generic.Files.LineLength.TooLong"/>
-    </rule>
 
     <!-- ====== SQUIZ ====== -->
 

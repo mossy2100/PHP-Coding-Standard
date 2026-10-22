@@ -18,6 +18,8 @@ The complete PSR-12 coding standard is included, with the following exceptions:
   support for property hooks (PHP 8.4) (see [Custom Sniffs](CustomSniffs.md)).
 - **Generic.WhiteSpace.ScopeIndent** is excluded, replaced by `Mossy2100.WhiteSpace.ScopeIndent`, which also adds
   support for property hooks (see [Custom Sniffs](CustomSniffs.md)).
+- **Generic.Files.LineLength** is excluded, replaced by `SlevomatCodingStandard.Files.LineLength`, which reports an error
+  rather than a warning (see [Files](#files)).
 
 ---
 ## Generic
