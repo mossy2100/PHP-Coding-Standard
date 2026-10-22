@@ -93,3 +93,25 @@ class ErrorHookIndent
     // Incorrect: code after hooks over-indented (exact check after closer).
     public string $afterHooksWrong = 'bad';
 }
+
+class ClosureInMethodWithTypedParameters
+{
+    // Correct: a typed parameter is not a property, so the closure body is not a property hook.
+    public function run(Foo $foo, int $count): array
+    {
+        return array_map(
+            static function (int $value) use ($count): int {
+                return $value * $count;
+            },
+            $foo->values
+        );
+    }
+
+    // Correct: a promoted constructor parameter with a hook.
+    public function __construct(
+        public string $name {
+            set => trim($value);
+        },
+    ) {
+    }
+}

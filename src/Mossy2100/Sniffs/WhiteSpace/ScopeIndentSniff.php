@@ -130,8 +130,14 @@ class ScopeIndentSniff implements Sniff
                 continue;
             }
 
-            // Must be inside a class/trait/interface.
-            if (empty($tokens[$i]['conditions'])) {
+            // Must be directly inside a class, trait or interface, not in a method body.
+            if (empty($tokens[$i]['conditions']) || !isset(Tokens::OO_SCOPE_TOKENS[end($tokens[$i]['conditions'])])) {
+                continue;
+            }
+
+            // Inside parentheses, only a promoted constructor parameter is a property. Without this check, a typed
+            // method parameter would match, and the scan below could reach an unrelated brace such as a closure's.
+            if (isset($tokens[$i]['nested_parenthesis']) && !$this->isPromotedParameter($phpcsFile, $i)) {
                 continue;
             }
 
@@ -192,8 +198,9 @@ class ScopeIndentSniff implements Sniff
                     $depth--;
                 }
 
-                // Found semicolon - no hooks.
-                if ($depth === 0 && $code === T_SEMICOLON) {
+                // Found semicolon - no hooks. For a promoted parameter, a comma or the closing parenthesis of the
+                // parameter list also means no hooks.
+                if ($depth < 0 || ($depth === 0 && ($code === T_SEMICOLON || $code === T_COMMA))) {
                     break;
                 }
 
@@ -215,6 +222,33 @@ class ScopeIndentSniff implements Sniff
         }
 
         return $scopes;
+    }
+
+    /**
+     * Check whether a variable inside parentheses is a promoted constructor parameter, i.e. whether its parameter
+     * declaration includes a visibility or readonly modifier.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $varPtr The position of the T_VARIABLE token.
+     * @return bool True if the variable is a promoted parameter.
+     */
+    private function isPromotedParameter(File $phpcsFile, int $varPtr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $nestedParenthesis = $tokens[$varPtr]['nested_parenthesis'];
+        $opener = array_key_last($nestedParenthesis);
+
+        // Find the start of this parameter: the previous comma at the same nesting level, or the opening parenthesis.
+        $start = $opener;
+        for ($j = ($varPtr - 1); $j > $opener; $j--) {
+            if ($tokens[$j]['code'] === T_COMMA && ($tokens[$j]['nested_parenthesis'] ?? []) === $nestedParenthesis) {
+                $start = $j;
+                break;
+            }
+        }
+
+        $modifiers = [T_PUBLIC, T_PROTECTED, T_PRIVATE, T_READONLY, T_PUBLIC_SET, T_PROTECTED_SET, T_PRIVATE_SET];
+        return $phpcsFile->findPrevious($modifiers, ($varPtr - 1), $start) !== false;
     }
 
     /**
