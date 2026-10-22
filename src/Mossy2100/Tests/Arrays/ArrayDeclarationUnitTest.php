@@ -75,6 +75,16 @@ class ArrayDeclarationUnitTest extends AbstractSniffTestCase
             // Comments: commented list too long for one line goes one per line.
             229 => 10,
             230 => 2,
+            // Multibyte keys: arrows misaligned by character count.
+            257 => 1,
+            259 => 1,
+            // Long array syntax: should be single line.
+            268 => 1,
+            // indent property: elements indented by 4 spaces instead of 2.
+            286 => 1,
+            287 => 1,
+            // maxLineLength property: too long for one line at 40 characters.
+            294 => 1,
         ];
     }
 

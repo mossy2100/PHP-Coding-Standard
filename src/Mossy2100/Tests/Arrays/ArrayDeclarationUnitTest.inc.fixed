@@ -270,3 +270,54 @@ $ac = [
     1,
     2,
 ];
+
+// === Multibyte keys ===
+
+// Valid: arrows aligned by character, not byte, count.
+$ad = [
+    'café'  => 1,
+    'naïve' => 2,
+    'π'     => 3,
+];
+
+// AssocArrowAlignment: aligned by byte count, so misaligned by character count.
+$ae = [
+    'café'  => 1,
+    'naïve' => 2,
+    'π'     => 3,
+];
+
+// === Long array syntax ===
+
+// Valid: a simple long-syntax list on one line.
+$af = array('red', 'green', 'blue');
+
+// ListShouldBeSingleLine: a multi-line simple long-syntax list that fits on one line.
+$ag = array('red', 'green', 'blue');
+
+// === Configurable properties ===
+
+// phpcs:set Mossy2100.Arrays.ArrayDeclaration indent 2
+
+// Valid: elements indented by 2 spaces.
+$ah = [
+  'one' => 1,
+  'two' => 2,
+];
+
+// AssocElementIndent: elements indented by 4 spaces.
+$ai = [
+  'one' => 1,
+  'two' => 2,
+];
+
+// phpcs:set Mossy2100.Arrays.ArrayDeclaration indent 4
+// phpcs:set Mossy2100.Arrays.ArrayDeclaration maxLineLength 40
+
+// ListShouldBeGrid: too long for one line at a 40-character limit.
+$aj = [
+    'alpha',   'bravo',   'charlie',
+    'delta',
+];
+
+// phpcs:set Mossy2100.Arrays.ArrayDeclaration maxLineLength 120

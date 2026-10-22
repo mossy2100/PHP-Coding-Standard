@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 /**
- * Tests of the full Mossy2100 ruleset.
+ * Tests of the full Mossy2100 ruleset, and of sniff properties that can only be set in a ruleset.
  *
  * The per-sniff tests run each sniff alone. These run phpcs and phpcbf as a user would, so they catch conflicts
  * between sniffs, such as two fixers undoing each other's changes.
@@ -65,6 +65,47 @@ class RulesetUnitTest extends TestCase
         } finally {
             unlink($file);
         }
+    }
+
+    #endregion
+
+    #region Configurable property tests.
+
+    /**
+     * Test that ScopeIndent's indent property, set in a ruleset, changes the expected indent.
+     *
+     * ScopeIndent checks the whole file when it reaches the open tag, before any `phpcs:set` comment, so this
+     * property can't be set in a sniff test's `.inc` file.
+     */
+    public function testScopeIndentIndentProperty(): void
+    {
+        $fixture = self::FIXTURES . '/ScopeIndentTwoSpaces.inc';
+        $ruleset = $this->copyToTempFile(null, <<<'XML'
+            <?xml version="1.0"?>
+            <ruleset name="ScopeIndentTwoSpaces">
+                <rule ref="Mossy2100.WhiteSpace.ScopeIndent">
+                    <properties>
+                        <property name="indent" value="2"/>
+                    </properties>
+                </rule>
+            </ruleset>
+            XML, '.xml');
+
+        try {
+            $twoSpaces = $this->runTool('phpcs', [
+                "--standard=$ruleset",
+                $fixture,
+            ]);
+            $default = $this->runTool(
+                'phpcs',
+                ['--standard=Mossy2100', '--sniffs=Mossy2100.WhiteSpace.ScopeIndent', $fixture]
+            );
+        } finally {
+            unlink($ruleset);
+        }
+
+        $this->assertSame(0, $twoSpaces['exitCode'], $twoSpaces['output']);
+        $this->assertNotSame(0, $default['exitCode']);
     }
 
     #endregion
