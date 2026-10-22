@@ -27,6 +27,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`Mossy2100.Arrays.ArrayDeclaration` no longer deletes comments.** The grid fix rebuilt the array from its elements
   alone, so `phpcbf` silently dropped any comment inside a long simple list. A simple list containing a comment now uses
   one element per line, which keeps every comment.
+- **`Mossy2100.Arrays.ArrayDeclaration` no longer reports an unfixable error on short commented lists.** A short simple
+  list with a comment was flagged as `ListShouldBeSingleLine`, which `phpcbf` couldn't fix without losing the comment.
+  It now stays one element per line.
 
 ---
 

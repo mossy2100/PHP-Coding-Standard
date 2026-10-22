@@ -229,3 +229,16 @@ $aa = [
     'alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta', 'iota', 'kappa', 'lambda', // first row
     'mu', 'nu', 'xi', // second row
 ];
+
+// Valid: a short list with trailing comments stays one per line, rather than being collapsed.
+$ab = [
+    1, // one
+    2, // two
+];
+
+// Valid: a short list with a leading comment stays one per line.
+$ac = [
+    // Leading comment.
+    1,
+    2,
+];
