@@ -34,6 +34,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `final public const int A = 1, B = 2;` gave `public const B = 2;`, dropping the type, and indented the new line
   with a tab. Each constant now keeps the full declaration, e.g. `final public const int B = 2;`, with the original
   indentation.
+- **`Mossy2100.Arrays.ArrayDeclaration` fixes keep the file's line endings.** They always inserted `\n`, which mixed
+  line endings in a CRLF file.
 
 ---
 

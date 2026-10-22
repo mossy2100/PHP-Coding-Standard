@@ -785,7 +785,7 @@ class ArrayDeclarationSniff implements Sniff
         }
 
         // Add newline + indent after the previous token.
-        $phpcsFile->fixer->addContent($prev, "\n" . str_repeat(' ', $indent));
+        $phpcsFile->fixer->addContent($prev, $phpcsFile->eolChar . str_repeat(' ', $indent));
 
         $phpcsFile->fixer->endChangeset();
     }
@@ -901,7 +901,7 @@ class ArrayDeclarationSniff implements Sniff
         $bracketIndent = str_repeat(' ', $baseIndent);
         $nElements = count($elements);
 
-        $grid = $tokens[$openPtr]['content'] . "\n";
+        $grid = $tokens[$openPtr]['content'] . $phpcsFile->eolChar;
         $itemCountThisLine = 0;
 
         foreach ($elements as $i => $element) {
@@ -917,7 +917,7 @@ class ArrayDeclarationSniff implements Sniff
 
             if ($isLastOnRow) {
                 // Last item on row: value + comma, no padding (avoids trailing whitespace).
-                $grid .= $value . ",\n";
+                $grid .= $value . ',' . $phpcsFile->eolChar;
                 $itemCountThisLine = 0;
             } else {
                 // Non-last item on row: pad value+comma to uniform width, then space.
