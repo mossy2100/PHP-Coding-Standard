@@ -27,7 +27,10 @@ class Foo
     public const int E = add(1, 2), F = 3;
 
     // DisallowedMultiConstantDefinition: still detected after a short array literal.
-    public const array G = [1, 2], H = 3;
+    public const array G = [1, 2], H = [3];
+
+    // DisallowedMultiConstantDefinition: modifiers before the visibility, such as final, are kept.
+    final public const int J = 1, K = 2;
 }
 
 // Valid: single file-scope (non-class) constant. T_CONST isn't class-specific, so this must also be checked.

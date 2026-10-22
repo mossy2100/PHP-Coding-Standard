@@ -26,8 +26,10 @@ class DisallowMultiConstantDefinitionUnitTest extends AbstractSniffTestCase
             27 => 1,
             // Still detected after a short array literal.
             30 => 1,
+            // Modifiers before the visibility are kept.
+            33 => 1,
             // Multi-constant definition at file scope.
-            37 => 1,
+            40 => 1,
         ];
     }
 

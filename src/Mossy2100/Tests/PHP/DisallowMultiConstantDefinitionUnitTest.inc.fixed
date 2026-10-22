@@ -21,16 +21,20 @@ class Foo
 
     // DisallowedMultiConstantDefinition: basic multi-constant definition.
     public const int C = 1;
-    public const D = 2;
+    public const int D = 2;
 
     // DisallowedMultiConstantDefinition: still detected after a parenthesized call - the comma inside add(1, 2)
     // must be skipped, but the comma separating F must still be caught.
     public const int E = add(1, 2);
-    public const F = 3;
+    public const int F = 3;
 
     // DisallowedMultiConstantDefinition: still detected after a short array literal.
     public const array G = [1, 2];
-    public const H = 3;
+    public const array H = [3];
+
+    // DisallowedMultiConstantDefinition: modifiers before the visibility, such as final, are kept.
+    final public const int J = 1;
+    final public const int K = 2;
 }
 
 // Valid: single file-scope (non-class) constant. T_CONST isn't class-specific, so this must also be checked.

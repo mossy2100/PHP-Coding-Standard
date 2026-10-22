@@ -23,12 +23,20 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 use SlevomatCodingStandard\Helpers\DocCommentHelper;
 use SlevomatCodingStandard\Helpers\FixerHelper;
-use SlevomatCodingStandard\Helpers\IndentationHelper;
 use SlevomatCodingStandard\Helpers\TokenHelper;
 
 class DisallowMultiConstantDefinitionSniff implements Sniff
 {
     public const string CODE_DISALLOWED_MULTI_CONSTANT_DEFINITION = 'DisallowedMultiConstantDefinition';
+
+    /**
+     * Modifier tokens that can come before `const`.
+     *
+     * @var array<int|string, int|string>
+     */
+    private const array MODIFIER_TOKENS = [
+        T_FINAL => T_FINAL,
+    ] + Tokens::SCOPE_MODIFIERS;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -94,19 +102,16 @@ class DisallowMultiConstantDefinitionSniff implements Sniff
             return;
         }
 
-        $possibleVisibilityPointer = TokenHelper::findPreviousEffective($phpcsFile, $constantPointer - 1);
-        $visibilityPointer = in_array($tokens[$possibleVisibilityPointer]['code'], Tokens::SCOPE_MODIFIERS, true)
-            ? $possibleVisibilityPointer
-            : null;
-        $visibility = $visibilityPointer !== null ? $tokens[$possibleVisibilityPointer]['content'] : null;
+        // Each constant split off gets the same modifiers (e.g. `final public`) and type as the first one.
+        [$indentation, $modifiers] = $this->getIndentationAndModifiers($phpcsFile, $constantPointer);
 
         $pointerAfterConst = TokenHelper::findNextEffective($phpcsFile, $constantPointer + 1);
         assert(is_int($pointerAfterConst));
 
+        $type = $this->getType($phpcsFile, $pointerAfterConst, $semicolonPointer);
+
         $pointerBeforeSemicolon = TokenHelper::findPreviousEffective($phpcsFile, $semicolonPointer - 1);
         assert(is_int($pointerBeforeSemicolon));
-
-        $indentation = IndentationHelper::getIndentation($phpcsFile, $visibilityPointer ?? $constantPointer);
 
         $docCommentPointer = DocCommentHelper::findDocCommentOpenPointer($phpcsFile, $constantPointer);
         $docComment = $docCommentPointer !== null
@@ -137,17 +142,19 @@ class DisallowMultiConstantDefinitionSniff implements Sniff
 
         foreach ($commaPointers as $commaPointer) {
             FixerHelper::removeBetween($phpcsFile, $data[$commaPointer]['pointerBeforeComma'], $commaPointer);
-            FixerHelper::replace(
-                $phpcsFile,
+            // Not FixerHelper::replace(), which converts leading spaces to tabs whenever tab-width is set (PSR-12
+            // sets it to 4).
+            $phpcsFile->fixer->replaceToken(
                 $commaPointer,
                 sprintf(
-                    ';%s%s%s%sconst ',
+                    ';%s%s%s%sconst %s',
                     $phpcsFile->eolChar,
                     $docComment !== null
                         ? sprintf('%s%s%s', $indentation, $docComment, $phpcsFile->eolChar)
                         : '',
                     $indentation,
-                    $visibility !== null ? sprintf('%s ', $visibility) : ''
+                    $modifiers,
+                    $type
                 )
             );
 
@@ -157,5 +164,58 @@ class DisallowMultiConstantDefinitionSniff implements Sniff
         FixerHelper::removeBetween($phpcsFile, $pointerBeforeSemicolon, $semicolonPointer);
 
         $phpcsFile->fixer->endChangeset();
+    }
+
+    /**
+     * Get the indentation of the declaration, and the modifiers before `const` (e.g. 'final public '), as written.
+     *
+     * The indentation is the whitespace at the start of the line. IndentationHelper::getIndentation() isn't used,
+     * because it converts spaces to tabs and includes any tokens before the pointer on the line.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $constantPointer The position of the `const` token.
+     * @return array{string, string} The indentation, and the modifiers each followed by a space.
+     */
+    private function getIndentationAndModifiers(File $phpcsFile, int $constantPointer): array
+    {
+        $tokens = $phpcsFile->getTokens();
+        $firstPointer = $constantPointer;
+        $modifiers = '';
+
+        $pointer = TokenHelper::findPreviousEffective($phpcsFile, $constantPointer - 1);
+        while ($pointer !== null && isset(self::MODIFIER_TOKENS[$tokens[$pointer]['code']])) {
+            $firstPointer = $pointer;
+            $modifiers = $tokens[$pointer]['content'] . ' ' . $modifiers;
+            $pointer = TokenHelper::findPreviousEffective($phpcsFile, $pointer - 1);
+        }
+
+        $firstPointerOnLine = TokenHelper::findFirstTokenOnLine($phpcsFile, $firstPointer);
+        $isIndented = $firstPointerOnLine < $firstPointer && $tokens[$firstPointerOnLine]['code'] === T_WHITESPACE;
+        $indentation = $isIndented ? $tokens[$firstPointerOnLine]['content'] : '';
+
+        return [$indentation, $modifiers];
+    }
+
+    /**
+     * Get the constant type, if any, followed by a space (e.g. 'int ').
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $pointerAfterConst The position of the first effective token after `const`.
+     * @param int $semicolonPointer The position of the semicolon that ends the statement.
+     * @return string The type followed by a space, or an empty string for an untyped constant.
+     */
+    private function getType(File $phpcsFile, int $pointerAfterConst, int $semicolonPointer): string
+    {
+        // The first constant's name is the last effective token before its `=`; anything before the name is the type.
+        $equalsPointer = TokenHelper::findNext($phpcsFile, T_EQUAL, $pointerAfterConst, $semicolonPointer);
+        assert(is_int($equalsPointer));
+        $namePointer = TokenHelper::findPreviousEffective($phpcsFile, $equalsPointer - 1);
+        assert(is_int($namePointer));
+
+        if ($namePointer === $pointerAfterConst) {
+            return '';
+        }
+
+        return trim(TokenHelper::getContent($phpcsFile, $pointerAfterConst, $namePointer - 1)) . ' ';
     }
 }

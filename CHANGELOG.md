@@ -30,6 +30,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`Mossy2100.Arrays.ArrayDeclaration` no longer reports an unfixable error on short commented lists.** A short simple
   list with a comment was flagged as `ListShouldBeSingleLine`, which `phpcbf` couldn't fix without losing the comment.
   It now stays one element per line.
+- **`Mossy2100.PHP.DisallowMultiConstantDefinition` fixer keeps the type and modifiers.** Splitting
+  `final public const int A = 1, B = 2;` gave `public const B = 2;`, dropping the type, and indented the new line
+  with a tab. Each constant now keeps the full declaration, e.g. `final public const int B = 2;`, with the original
+  indentation.
 
 ---
 
