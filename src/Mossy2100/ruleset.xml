@@ -252,6 +252,9 @@
     <!-- Property declaration with PHP 8.4 property hook support -->
     <rule ref="Mossy2100.Classes.PropertyDeclaration"/>
 
+    <!-- Disallow property hooks on promoted constructor parameters, which several inherited sniffs misread -->
+    <rule ref="Mossy2100.Classes.DisallowPromotedPropertyHooks"/>
+
     <!-- Disallow multi constant definitions; fork of SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition
          fixing a false positive on constants with a parenthesized multi-argument value (e.g. new Foo(1, 2)) -->
     <rule ref="Mossy2100.PHP.DisallowMultiConstantDefinition"/>

@@ -121,6 +121,55 @@ properly handles PHP 8.4 property hooks.
 - Enforces correct ordering of modifiers: `abstract`/`final` before visibility, `static`/`readonly` after visibility.
 
 ---
+
+## Mossy2100.Classes.DisallowPromotedPropertyHooks
+
+Disallows property hooks on promoted constructor parameters (PHP 8.4+). Hook bodies inside a constructor signature are
+hard to read, so declare the property in the class body instead. Promoted parameters without hooks are still allowed.
+
+This is stricter than [PER Coding Style 3.0](https://www.php-fig.org/per/coding-style/#49-property-hooks), which allows
+a single short hook on one line.
+
+Inherited sniffs also misread these hooks. Two Slevomat sniffs treat a variable in the hook body, such as `$value` or
+`$this`, as another constructor parameter, and report errors that `phpcbf` can't fix:
+
+- `SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint`
+- `SlevomatCodingStandard.TypeHints.ParameterTypeHintSpacing.NoSpaceBetweenTypeHintAndParameter`
+
+A multi-line hook also gets `Squiz.Functions.MultiLineFunctionDeclaration.Indent`.
+
+Not auto-fixable, because moving a property and its hooks into the class body is a bigger rewrite than a fixer should
+risk.
+
+**Good:**
+
+```php
+class User
+{
+    public string $name {
+        set => trim($value);
+    }
+
+    public function __construct(string $name, public readonly int $age)
+    {
+        $this->name = $name;
+    }
+}
+```
+
+**Bad:**
+
+```php
+class User
+{
+    public function __construct(public string $name { set => trim($value); }, public readonly int $age)
+    {
+    }
+}
+```
+
+---
+
 ## Mossy2100.WhiteSpace.ScopeIndent
 
 Checks that control structures and code are indented correctly. This is a fork of `Generic.WhiteSpace.ScopeIndent` with

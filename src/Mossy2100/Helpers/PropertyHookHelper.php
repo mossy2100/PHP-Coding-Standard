@@ -137,47 +137,63 @@ class PropertyHookHelper
                 continue;
             }
 
-            // Look forward for { or ;, skipping past any default value assignment.
-            $next = $i + 1;
-            $depth = 0;
+            $opener = self::findHookListOpener($phpcsFile, $i);
+            if ($opener === false) {
+                continue;
+            }
 
-            while ($next < $phpcsFile->numTokens) {
-                $code = $tokens[$next]['code'];
+            $closer = self::findMatchingCloseBrace($phpcsFile, $opener);
+            if ($closer !== false) {
+                $scopes[$opener] = $closer;
 
-                // Track nesting.
-                if ($code === T_OPEN_PARENTHESIS || $code === T_OPEN_SQUARE_BRACKET || $code === T_OPEN_SHORT_ARRAY) {
-                    $depth++;
-                } elseif (
-                    $code === T_CLOSE_PARENTHESIS
-                    || $code === T_CLOSE_SQUARE_BRACKET
-                    || $code === T_CLOSE_SHORT_ARRAY
-                ) {
-                    $depth--;
-                }
-
-                // Found semicolon - no hooks. For a promoted parameter, a comma or the closing parenthesis of the
-                // parameter list also means no hooks.
-                if ($depth < 0 || ($depth === 0 && ($code === T_SEMICOLON || $code === T_COMMA))) {
-                    break;
-                }
-
-                // Found opening brace at base level - this is the hook list opener.
-                if ($depth === 0 && $code === T_OPEN_CURLY_BRACKET) {
-                    $containerCloser = self::findMatchingCloseBrace($phpcsFile, $next);
-                    if ($containerCloser !== false) {
-                        $scopes[$next] = $containerCloser;
-
-                        // Now scan inside the hook list for get/set block bodies.
-                        self::findHookBodies($phpcsFile, $next, $containerCloser, $scopes);
-                    }
-                    break;
-                }
-
-                $next++;
+                // Now scan inside the hook list for get/set block bodies.
+                self::findHookBodies($phpcsFile, $opener, $closer, $scopes);
             }
         }
 
         return $scopes;
+    }
+
+    /**
+     * Find the opening brace of a property's hook list.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $varPtr The position of the property's T_VARIABLE token.
+     * @return int|false The position of the hook list's opening brace, or false if the property has no hooks.
+     */
+    public static function findHookListOpener(File $phpcsFile, int $varPtr): int|false
+    {
+        $tokens = $phpcsFile->getTokens();
+        $depth = 0;
+
+        // Look forward for { or ;, skipping past any default value assignment.
+        for ($next = $varPtr + 1; $next < $phpcsFile->numTokens; $next++) {
+            $code = $tokens[$next]['code'];
+
+            // Track nesting.
+            if ($code === T_OPEN_PARENTHESIS || $code === T_OPEN_SQUARE_BRACKET || $code === T_OPEN_SHORT_ARRAY) {
+                $depth++;
+            } elseif (
+                $code === T_CLOSE_PARENTHESIS
+                || $code === T_CLOSE_SQUARE_BRACKET
+                || $code === T_CLOSE_SHORT_ARRAY
+            ) {
+                $depth--;
+            }
+
+            // Found semicolon - no hooks. For a promoted parameter, a comma or the closing parenthesis of the
+            // parameter list also means no hooks.
+            if ($depth < 0 || ($depth === 0 && ($code === T_SEMICOLON || $code === T_COMMA))) {
+                return false;
+            }
+
+            // Found opening brace at base level - this is the hook list opener.
+            if ($depth === 0 && $code === T_OPEN_CURLY_BRACKET) {
+                return $next;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -187,7 +203,7 @@ class PropertyHookHelper
      * @param int $stackPtr The position of the token to check.
      * @return bool True if the token is a property's variable.
      */
-    private static function isPropertyVariable(File $phpcsFile, int $stackPtr): bool
+    public static function isPropertyVariable(File $phpcsFile, int $stackPtr): bool
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -219,7 +235,7 @@ class PropertyHookHelper
      * @param int $varPtr The position of the T_VARIABLE token.
      * @return bool True if the variable is a promoted parameter.
      */
-    private static function isPromotedParameter(File $phpcsFile, int $varPtr): bool
+    public static function isPromotedParameter(File $phpcsFile, int $varPtr): bool
     {
         $tokens = $phpcsFile->getTokens();
         $nestedParenthesis = $tokens[$varPtr]['nested_parenthesis'];

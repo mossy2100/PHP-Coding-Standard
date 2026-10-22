@@ -24,6 +24,8 @@ The package provides several custom sniffs to cover gaps in the available standa
 
 - **Mossy2100.Arrays.ArrayDeclaration**: Enforces consistent array formatting with lists and associative arrays.
 - **Mossy2100.Classes.PropertyDeclaration**: Verifies property declarations, with property hook support (PHP 8.4+).
+- **Mossy2100.Classes.DisallowPromotedPropertyHooks**: Disallows property hooks on promoted constructor parameters,
+  which are hard to read in a constructor signature (PHP 8.4+).
 - **Mossy2100.WhiteSpace.ScopeIndent**: Checks that control structures and code are indented correctly, with property hook support (PHP 8.4+).
 - **Mossy2100.PHP.DisallowMultiConstantDefinition**: Disallows defining multiple constants in one statement. A fork
   of `SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition` fixing a false positive on constants with a

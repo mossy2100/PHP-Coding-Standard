@@ -16,6 +16,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `<rule ref="Mossy2100"/>` in `phpcs.xml`. Sniff codes change to match, e.g. `Mossy2100.Arrays.ArrayDeclaration`, as
   do the sniff class namespaces (`Mossy2100\Sniffs\...`).
 
+### Added
+
+- **`Mossy2100.Classes.DisallowPromotedPropertyHooks` (breaking).** Disallows property hooks on promoted constructor
+  parameters, e.g. `public function __construct(public string $name { set => trim($value); })`, because hooks are hard
+  to read in a constructor signature. Declare the property in the class body instead. This is stricter than PER Coding
+  Style 3.0, which allows a single short hook on one line. Inherited Slevomat sniffs also misread such hooks and report
+  errors that `phpcbf` can't fix. Not auto-fixable.
+
 ### Removed
 
 - **`OceanMoon.Classes.ClassInstantiationNoBrackets` (breaking).** The standard doesn't otherwise flag redundant
