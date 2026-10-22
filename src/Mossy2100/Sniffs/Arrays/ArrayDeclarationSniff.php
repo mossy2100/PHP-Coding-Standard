@@ -34,47 +34,6 @@ use PHP_CodeSniffer\Util\Tokens;
 class ArrayDeclarationSniff implements Sniff
 {
     /**
-     * Tokens to ignore when looking for array content.
-     *
-     * @var array<int|string, int|string>
-     */
-    private array $ignoreTokens = [];
-
-    /**
-     * Initialize ignore tokens list.
-     */
-    private function initIgnoreTokens(): void
-    {
-        if (empty($this->ignoreTokens)) {
-            $this->ignoreTokens = Tokens::EMPTY_TOKENS;
-            // Also ignore comments.
-            $this->ignoreTokens[T_COMMENT] = T_COMMENT;
-            $this->ignoreTokens[T_DOC_COMMENT] = T_DOC_COMMENT;
-            $this->ignoreTokens[T_DOC_COMMENT_OPEN_TAG] = T_DOC_COMMENT_OPEN_TAG;
-            $this->ignoreTokens[T_DOC_COMMENT_CLOSE_TAG] = T_DOC_COMMENT_CLOSE_TAG;
-            $this->ignoreTokens[T_DOC_COMMENT_STAR] = T_DOC_COMMENT_STAR;
-            $this->ignoreTokens[T_DOC_COMMENT_STRING] = T_DOC_COMMENT_STRING;
-            $this->ignoreTokens[T_DOC_COMMENT_TAG] = T_DOC_COMMENT_TAG;
-            $this->ignoreTokens[T_DOC_COMMENT_WHITESPACE] = T_DOC_COMMENT_WHITESPACE;
-        }
-    }
-
-    /**
-     * Check if a token is a comment.
-     */
-    private function isComment(int|string $code): bool
-    {
-        return $code === T_COMMENT
-            || $code === T_DOC_COMMENT
-            || $code === T_DOC_COMMENT_OPEN_TAG
-            || $code === T_DOC_COMMENT_CLOSE_TAG
-            || $code === T_DOC_COMMENT_STAR
-            || $code === T_DOC_COMMENT_STRING
-            || $code === T_DOC_COMMENT_TAG
-            || $code === T_DOC_COMMENT_WHITESPACE;
-    }
-
-    /**
      * Maximum line length before wrapping list arrays.
      *
      * @var int
@@ -106,7 +65,6 @@ class ArrayDeclarationSniff implements Sniff
      */
     public function process(File $phpcsFile, int $stackPtr): void
     {
-        $this->initIgnoreTokens();
         $tokens = $phpcsFile->getTokens();
         $token = $tokens[$stackPtr];
 
@@ -356,7 +314,7 @@ class ArrayDeclarationSniff implements Sniff
         $significant = [];
 
         for ($i = $element['start']; $i <= $element['end']; $i++) {
-            if (isset($this->ignoreTokens[$tokens[$i]['code']])) {
+            if (isset(Tokens::EMPTY_TOKENS[$tokens[$i]['code']])) {
                 continue;
             }
             $significant[] = $i;
@@ -442,7 +400,7 @@ class ArrayDeclarationSniff implements Sniff
         }
 
         // Check for trailing comma.
-        $lastContent = $phpcsFile->findPrevious($this->ignoreTokens, $closePtr - 1, $openPtr, true);
+        $lastContent = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, $closePtr - 1, $openPtr, true);
         if ($lastContent !== false && $tokens[$lastContent]['code'] !== T_COMMA) {
             $error = 'Dictionaries should have a trailing comma.';
             $fix = $phpcsFile->addFixableError($error, $lastContent, 'AssocMissingTrailingComma');
@@ -498,7 +456,6 @@ class ArrayDeclarationSniff implements Sniff
                 // Check space before arrow.
                 $prevToken = $phpcsFile->findPrevious(T_WHITESPACE, $element['arrow'] - 1, $element['start'], true);
                 if ($prevToken !== false) {
-                    $actualSpaces = $element['arrow'] - $prevToken - 1;
                     $actualSpaces = $tokens[$prevToken + 1]['code'] === T_WHITESPACE
                         ? strlen($tokens[$prevToken + 1]['content'])
                         : 0;
@@ -572,7 +529,7 @@ class ArrayDeclarationSniff implements Sniff
             $code = $tokens[$i]['code'];
 
             // Skip whitespace and comments when looking for element start.
-            if ($elementStart === null && ($code === T_WHITESPACE || $this->isComment($code))) {
+            if ($elementStart === null && isset(Tokens::EMPTY_TOKENS[$code])) {
                 continue;
             }
 
@@ -648,23 +605,10 @@ class ArrayDeclarationSniff implements Sniff
     private function getBaseIndent(File $phpcsFile, int $openPtr): int
     {
         $tokens = $phpcsFile->getTokens();
-        $line = $tokens[$openPtr]['line'];
-
-        // Find the first token on this line.
-        for ($i = $openPtr - 1; $i >= 0; $i--) {
-            if ($tokens[$i]['line'] < $line) {
-                break;
-            }
-        }
-
-        $firstOnLine = $i + 1;
+        $firstOnLine = $this->findLineStart($phpcsFile, $openPtr);
 
         // If the first token is whitespace, that's the indent.
-        if ($tokens[$firstOnLine]['code'] === T_WHITESPACE) {
-            return strlen($tokens[$firstOnLine]['content']);
-        }
-
-        return 0;
+        return $tokens[$firstOnLine]['code'] === T_WHITESPACE ? strlen($tokens[$firstOnLine]['content']) : 0;
     }
 
     /**
@@ -704,16 +648,11 @@ class ArrayDeclarationSniff implements Sniff
      */
     private function findLineStart(File $phpcsFile, int $ptr): int
     {
-        $tokens = $phpcsFile->getTokens();
-        $line = $tokens[$ptr]['line'];
+        // With no types and $exclude true, every token matches, so this returns the first token on the line.
+        $lineStart = $phpcsFile->findFirstOnLine([], $ptr, true);
+        assert(is_int($lineStart));
 
-        for ($i = $ptr - 1; $i >= 0; $i--) {
-            if ($tokens[$i]['line'] < $line) {
-                return $i + 1;
-            }
-        }
-
-        return 0;
+        return $lineStart;
     }
 
     /**
@@ -996,7 +935,7 @@ class ArrayDeclarationSniff implements Sniff
     private function checkListTrailingComma(File $phpcsFile, int $openPtr, int $closePtr, bool $required): void
     {
         $tokens = $phpcsFile->getTokens();
-        $lastContent = $phpcsFile->findPrevious($this->ignoreTokens, $closePtr - 1, $openPtr, true);
+        $lastContent = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, $closePtr - 1, $openPtr, true);
 
         if ($lastContent === false) {
             return;
