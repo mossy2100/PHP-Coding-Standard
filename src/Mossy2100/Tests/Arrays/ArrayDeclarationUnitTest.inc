@@ -221,3 +221,11 @@ $z = [
     'red', 'green', 'blue', 'cyan', 'magenta', 'yellow', 'black', 'white', 'orange', 'purple',
     'brown', 'pink', 'grey', 'navy', 'teal',
 ];
+
+// === Comments in simple lists ===
+
+// ListElementNewLine: a commented list too long for one line goes one per line, not grid, keeping the comments.
+$aa = [
+    'alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta', 'iota', 'kappa', 'lambda', // first row
+    'mu', 'nu', 'xi', // second row
+];

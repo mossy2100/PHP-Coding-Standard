@@ -186,8 +186,12 @@ class ArrayDeclarationSniff implements Sniff
 
         $baseIndent = $this->getBaseIndent($phpcsFile, $openPtr);
 
-        // Any element that isn't a plain scalar literal or null forces one element per line, unconditionally.
-        if (!$this->allElementsSimple($phpcsFile, $elements)) {
+        // Any element that isn't a plain scalar literal or null forces one element per line, unconditionally. So does
+        // a comment, because the single-line and grid fixes rebuild the array from its elements and would lose it.
+        if (
+            !$this->allElementsSimple($phpcsFile, $elements)
+            || $this->containsComment($phpcsFile, $openPtr, $closePtr)
+        ) {
             $this->processOnePerLineList($phpcsFile, $openPtr, $closePtr, $elements, $baseIndent);
             return;
         }
@@ -408,6 +412,19 @@ class ArrayDeclarationSniff implements Sniff
         }
 
         return true;
+    }
+
+    /**
+     * Check whether there's a comment anywhere between an array's brackets.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $openPtr The opening bracket token position.
+     * @param int $closePtr The closing bracket token position.
+     * @return bool True if the array contains a comment, otherwise false.
+     */
+    private function containsComment(File $phpcsFile, int $openPtr, int $closePtr): bool
+    {
+        return $phpcsFile->findNext(Tokens::COMMENT_TOKENS, $openPtr + 1, $closePtr) !== false;
     }
 
     /**

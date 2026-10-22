@@ -22,6 +22,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   parentheses in expressions, and they can aid readability. Both `(new Foo())->bar()` and `new Foo()->bar()` are now
   accepted. Remove any references to the sniff code from `phpcs.xml` and `phpcs:ignore` comments.
 
+### Fixed
+
+- **`Mossy2100.Arrays.ArrayDeclaration` no longer deletes comments.** The grid fix rebuilt the array from its elements
+  alone, so `phpcbf` silently dropped any comment inside a long simple list. A simple list containing a comment now uses
+  one element per line, which keeps every comment.
+
 ---
 
 ## [2.2.0] - 2026-08-23

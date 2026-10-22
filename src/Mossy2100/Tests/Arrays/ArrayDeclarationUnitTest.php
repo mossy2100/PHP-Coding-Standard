@@ -72,6 +72,9 @@ class ArrayDeclarationUnitTest extends AbstractSniffTestCase
             217 => 1,
             // Grid: grid with wrong padding.
             220 => 1,
+            // Comments: commented list too long for one line goes one per line.
+            229 => 10,
+            230 => 2,
         ];
     }
 
