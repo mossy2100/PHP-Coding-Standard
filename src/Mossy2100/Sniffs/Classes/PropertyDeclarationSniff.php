@@ -301,7 +301,7 @@ class PropertyDeclarationSniff extends AbstractVariableSniff
         int $targetPtr
     ): void {
         $phpcsFile->fixer->beginChangeset();
-        for ($i = ($modifierPtr + 1); $modifierPtr < $stackPtr; $i++) {
+        for ($i = ($modifierPtr + 1); $i < $stackPtr; $i++) {
             if ($tokens[$i]['code'] !== T_WHITESPACE) {
                 break;
             }
@@ -333,7 +333,7 @@ class PropertyDeclarationSniff extends AbstractVariableSniff
         $content = $tokens[$modifierPtr]['content'];
         assert(is_string($content));
         $phpcsFile->fixer->beginChangeset();
-        for ($i = ($modifierPtr + 1); $modifierPtr < $stackPtr; $i++) {
+        for ($i = ($modifierPtr + 1); $i < $stackPtr; $i++) {
             if ($tokens[$i]['code'] !== T_WHITESPACE) {
                 break;
             }
