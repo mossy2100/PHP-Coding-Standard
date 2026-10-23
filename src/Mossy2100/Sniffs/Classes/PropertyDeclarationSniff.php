@@ -17,6 +17,13 @@ use PHP_CodeSniffer\Util\Tokens;
  * PHP 8.4 property hooks. Variables inside property hook bodies are not
  * property declarations and should be ignored. Also, properties with hooks
  * don't end with a semicolon, they end with a closing brace.
+ *
+ * Portions of this file are from PHP_CodeSniffer's PSR2.Classes.PropertyDeclaration sniff:
+ *
+ * @author    Greg Sherwood <gsherwood@squiz.net>
+ * @copyright 2006-2023 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2023 PHPCSStandards and contributors
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
  */
 class PropertyDeclarationSniff extends AbstractVariableSniff
 {

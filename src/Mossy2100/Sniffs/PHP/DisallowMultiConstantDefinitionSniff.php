@@ -12,6 +12,11 @@
  *
  * Applies to constants declared at namespace/file scope as well as class constants, since T_CONST isn't
  * class-specific.
+ *
+ * Portions of this file are from Slevomat Coding Standard:
+ *
+ * @copyright 2015 Slevomat.cz, s.r.o.
+ * @license   https://github.com/slevomat/coding-standard/blob/master/LICENSE.md MIT License
  */
 
 declare(strict_types=1);
