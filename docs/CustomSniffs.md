@@ -220,20 +220,26 @@ Disallows defining multiple constants in a single statement (e.g. `const A = 1, 
 
 The original sniff scans for commas between `const` and the closing `;`, skipping over commas inside a short array
 (`[...]`) so it doesn't mistake them for constant separators. It doesn't do the same for a parenthesized argument list.
-That makes it misfire on a single, valid constant whose value is a multi-argument `new` expression or function call,
-e.g. `const I = new Complex(0, 1);` is wrongly flagged, because the comma inside `Complex(0, 1)` is miscounted as a
-constant separator. This fork also skips over parenthesized expressions, fixing the false positive while still catching
-genuine multi-constant statements.
+That makes it misfire on a single, valid constant whose value has a comma inside parentheses. For example, the
+file-scope constant `const I = new Complex(0, 1);` is wrongly flagged, because the comma inside `Complex(0, 1)` is
+miscounted as a constant separator. The same happens with a long-syntax array (`array(1, 2)`), or a closure with more
+than one parameter (PHP 8.5+). This fork also skips over parenthesized expressions, fixing the false positive while
+still catching genuine multi-constant statements.
 
 Applies equally to class constants and namespace/file-scope constants, since `T_CONST` isn't class-specific.
 
 **Good:**
 
 ```php
-public const int A = 1;
-public const int B = 2;
-public const array SCORES = [42, 33, 12, 99]; // Not flagged: the commas belong to the array literal.
-public const Complex I = new Complex(0, 1);   // Not flagged: the comma belongs to the constructor call.
+class Example
+{
+    public const int A = 1;
+    public const int B = 2;
+    public const array SCORES = [42, 33, 12, 99]; // Not flagged: the commas belong to the array literal.
+    public const array SIZES = array(1, 2);       // Not flagged: the comma is inside the parentheses.
+}
+
+const I = new Complex(0, 1); // Not flagged: the comma belongs to the constructor call (PHP 8.1+).
 ```
 
 **Bad:**

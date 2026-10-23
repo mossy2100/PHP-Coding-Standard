@@ -22,7 +22,7 @@ class DisallowMultiConstantDefinitionUnitTest extends AbstractSniffTestCase
         return [
             // Basic multi-constant definition.
             23 => 1,
-            // Still detected after a parenthesized call.
+            // Still detected after parentheses.
             27 => 1,
             // Still detected after a short array literal.
             30 => 1,
@@ -32,6 +32,8 @@ class DisallowMultiConstantDefinitionUnitTest extends AbstractSniffTestCase
             40 => 1,
             // A doc comment is copied to each constant.
             47 => 1,
+            // Still detected after a multi-argument new expression at file scope.
+            54 => 1,
         ];
     }
 

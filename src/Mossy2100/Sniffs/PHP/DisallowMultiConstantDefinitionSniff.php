@@ -6,9 +6,10 @@
  * Forked from SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition to fix a false positive: the
  * upstream sniff scans for T_COMMA between `const` and the closing `;`, only skipping over commas inside a
  * short array (`[...]`) to avoid miscounting them as constant separators. It doesn't do the same for a
- * parenthesized argument list, so a single, valid constant declaration whose value is a multi-argument `new`
- * expression or function call (e.g. `const I = new Complex(0, 1);`) is misdetected as a multi-constant
- * definition. This version also skips over parenthesized expressions.
+ * parenthesized list, so a single, valid constant declaration is misdetected as a multi-constant definition when its
+ * value is a multi-argument `new` expression at file scope (e.g. `const I = new Complex(0, 1);`), a long-syntax array
+ * (`array(1, 2)`) or a closure with more than one parameter (PHP 8.5+). This version also skips over parenthesized
+ * expressions.
  *
  * Applies to constants declared at namespace/file scope as well as class constants, since T_CONST isn't
  * class-specific.

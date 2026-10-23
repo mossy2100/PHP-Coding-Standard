@@ -11,11 +11,11 @@ class Foo
     // Valid: comma inside a short array literal is not a constant separator.
     public const array SCORES = [42, 33, 12, 99];
 
-    // Valid: comma inside a parenthesized constructor call is not a constant separator.
-    public const Complex I = new Complex(0, 1);
+    // Valid: comma inside a long-syntax array is not a constant separator.
+    public const array SIZES = array(1, 2);
 
-    // Valid: comma inside a parenthesized function call is not a constant separator.
-    public const int SUM = add(1, 2);
+    // Valid: comma inside a closure's parameter list is not a constant separator (PHP 8.5+).
+    public const Closure ADD = static function (int $a, int $b): int { return $a + $b; };
 
     // === ERRORS: multiple constants in one statement ===
 
@@ -23,10 +23,10 @@ class Foo
     public const int C = 1;
     public const int D = 2;
 
-    // DisallowedMultiConstantDefinition: still detected after a parenthesized call - the comma inside add(1, 2)
-    // must be skipped, but the comma separating F must still be caught.
-    public const int E = add(1, 2);
-    public const int F = 3;
+    // DisallowedMultiConstantDefinition: still detected after parentheses. The comma inside array(1, 2) must be
+    // skipped, but the comma separating F must still be caught.
+    public const array E = array(1, 2);
+    public const array F = [3];
 
     // DisallowedMultiConstantDefinition: still detected after a short array literal.
     public const array G = [1, 2];
@@ -55,3 +55,10 @@ class Documented
      */
     public const int O = 2;
 }
+
+// Valid: a file-scope constant initialised with a multi-argument new expression (PHP 8.1+).
+const I = new Complex(0, 1);
+
+// DisallowedMultiConstantDefinition: still detected after a multi-argument new expression at file scope.
+const ONE = new Complex(1, 0);
+const TWO = 2;
