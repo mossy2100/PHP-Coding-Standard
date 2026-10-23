@@ -30,6 +30,8 @@ class DisallowMultiConstantDefinitionUnitTest extends AbstractSniffTestCase
             33 => 1,
             // Multi-constant definition at file scope.
             40 => 1,
+            // A doc comment is copied to each constant.
+            47 => 1,
         ];
     }
 

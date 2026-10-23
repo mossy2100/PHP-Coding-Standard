@@ -43,3 +43,15 @@ const TOP_LEVEL_A = 1;
 // DisallowedMultiConstantDefinition: multi-constant definition at file scope.
 const TOP_LEVEL_B = 1;
 const TOP_LEVEL_C = 2;
+
+class Documented
+{
+    /**
+     * DisallowedMultiConstantDefinition: the doc comment is copied to each constant.
+     */
+    public const int N = 1;
+    /**
+     * DisallowedMultiConstantDefinition: the doc comment is copied to each constant.
+     */
+    public const int O = 2;
+}

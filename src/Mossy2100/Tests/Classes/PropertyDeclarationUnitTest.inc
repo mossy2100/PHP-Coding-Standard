@@ -89,3 +89,33 @@ abstract class ErrorAbstractProperties
     // AbstractAfterVisibility (fixable).
     public abstract string $abstractAfter { get; set; }
 }
+
+class MoreProperties
+{
+    // Valid: a set hook with an explicit parameter.
+    public string $explicit {
+        set(string $value) {
+            $this->explicit = trim($value);
+        }
+    }
+
+    // SpacingAfterType: the type and variable on separate lines (fixable).
+    public string
+        $splitType;
+
+    // SpacingAfterType: a comment between the type and variable (not fixable).
+    public string  /* note */ $commented;
+
+    // Valid: local variables and variables in strings are not properties.
+    public function run(): string
+    {
+        $local = 'x';
+        return "Value: $local";
+    }
+}
+
+enum Status
+{
+    // Not reported: a property in an enum is a parse error, which getMemberProperties() rejects.
+    public $invalid;
+}

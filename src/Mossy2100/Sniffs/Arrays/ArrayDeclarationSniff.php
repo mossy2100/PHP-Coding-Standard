@@ -77,11 +77,9 @@ class ArrayDeclarationSniff implements Sniff
             }
             $closePtr = $tokens[$openPtr]['parenthesis_closer'];
         } else {
-            // Short array syntax: [...]
+            // Short array syntax: [...]. The tokenizer only marks a bracket as T_OPEN_SHORT_ARRAY once it has found
+            // the closer, so this is always set.
             $openPtr = $stackPtr;
-            if (!isset($token['bracket_closer'])) {
-                return;
-            }
             $closePtr = $token['bracket_closer'];
         }
 
@@ -395,9 +393,8 @@ class ArrayDeclarationSniff implements Sniff
         // Collect all key-value pairs at the top level.
         $elements = $this->getArrayElements($phpcsFile, $openPtr, $closePtr);
 
-        if (empty($elements)) {
-            return;
-        }
+        // A dictionary has at least one `=>`, so it has at least one element.
+        assert($elements !== []);
 
         // Check for trailing comma.
         $lastContent = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, $closePtr - 1, $openPtr, true);
@@ -586,11 +583,10 @@ class ArrayDeclarationSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
         $length = 0;
 
-        // Find the last non-whitespace token before the arrow.
+        // Find the last non-whitespace token before the arrow. The search includes $start, the first token of the key,
+        // so it always finds one.
         $keyEnd = $phpcsFile->findPrevious(T_WHITESPACE, $arrowPtr - 1, $start, true);
-        if ($keyEnd === false) {
-            $keyEnd = $arrowPtr - 1;
-        }
+        assert(is_int($keyEnd));
 
         for ($i = $start; $i <= $keyEnd; $i++) {
             $length += mb_strlen($tokens[$i]['content']);
@@ -710,11 +706,10 @@ class ArrayDeclarationSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
         $phpcsFile->fixer->beginChangeset();
 
-        // Find the previous non-whitespace token before the target.
+        // Find the previous non-whitespace token before the target. The search includes $afterPtr, the opening bracket,
+        // so it always finds one.
         $prev = $phpcsFile->findPrevious(T_WHITESPACE, $targetPtr - 1, $afterPtr, true);
-        if ($prev === false) {
-            $prev = $afterPtr;
-        }
+        assert(is_int($prev));
 
         // Remove all whitespace tokens between the previous token and the target.
         for ($i = $prev + 1; $i < $targetPtr; $i++) {
@@ -935,11 +930,9 @@ class ArrayDeclarationSniff implements Sniff
     private function checkListTrailingComma(File $phpcsFile, int $openPtr, int $closePtr, bool $required): void
     {
         $tokens = $phpcsFile->getTokens();
+        // The search includes $openPtr, the opening bracket, so it always finds a token.
         $lastContent = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, $closePtr - 1, $openPtr, true);
-
-        if ($lastContent === false) {
-            return;
-        }
+        assert(is_int($lastContent));
 
         $hasTrailingComma = ($tokens[$lastContent]['code'] === T_COMMA);
 

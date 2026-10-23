@@ -321,3 +321,29 @@ $aj = [
 ];
 
 // phpcs:set Mossy2100.Arrays.ArrayDeclaration maxLineLength 120
+
+// === Edge cases ===
+
+// Valid: a list containing only a comment has no elements to format.
+$ak = [/* Nothing yet. */];
+
+// Valid: simple elements too wide for even a single-column grid stay one per line.
+$al = [
+    'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+    'y',
+];
+
+// AssocArrowAlignment: no space before the arrow.
+$am = [
+    'name' => 'John',
+    'age'  => 30,
+];
+
+// AssocElementIndent: an element at column 1.
+$an = [
+    'one' => 1,
+    'two' => 2,
+];
+
+// ListShouldBeGrid: a signed element split across lines, so it can't be single-line as written.
+$ao = [- 1, 2];

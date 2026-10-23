@@ -142,13 +142,11 @@ class PropertyHookHelper
                 continue;
             }
 
-            $closer = self::findMatchingCloseBrace($phpcsFile, $opener);
-            if ($closer !== false) {
-                $scopes[$opener] = $closer;
+            $closer = self::findCloser($phpcsFile, $opener);
+            $scopes[$opener] = $closer;
 
-                // Now scan inside the hook list for get/set block bodies.
-                self::findHookBodies($phpcsFile, $opener, $closer, $scopes);
-            }
+            // Now scan inside the hook list for get/set block bodies.
+            self::findHookBodies($phpcsFile, $opener, $closer, $scopes);
         }
 
         return $scopes;
@@ -254,29 +252,21 @@ class PropertyHookHelper
     }
 
     /**
-     * Find the matching close brace for an open brace.
+     * Find the closing brace that matches an opening brace.
+     *
+     * The tokenizer matches every curly brace. A property's braces are inside its class's braces, which the tokenizer
+     * could only match if everything between them is balanced, so the closer is always set.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $openPtr Position of the opening brace.
-     * @return int|false Position of the closing brace, or false if not found.
+     * @return int Position of the closing brace.
      */
-    private static function findMatchingCloseBrace(File $phpcsFile, int $openPtr): int|false
+    private static function findCloser(File $phpcsFile, int $openPtr): int
     {
-        $tokens = $phpcsFile->getTokens();
-        $depth = 1;
+        $closer = $phpcsFile->getTokens()[$openPtr]['bracket_closer'];
+        assert(is_int($closer));
 
-        for ($i = ($openPtr + 1); $i < $phpcsFile->numTokens; $i++) {
-            if ($tokens[$i]['code'] === T_OPEN_CURLY_BRACKET) {
-                $depth++;
-            } elseif ($tokens[$i]['code'] === T_CLOSE_CURLY_BRACKET) {
-                $depth--;
-                if ($depth === 0) {
-                    return $i;
-                }
-            }
-        }
-
-        return false;
+        return $closer;
     }
 
     /**
@@ -327,12 +317,11 @@ class PropertyHookHelper
 
                 // Found opening brace - this is a hook body.
                 if ($parenDepth === 0 && $code === T_OPEN_CURLY_BRACKET) {
-                    $bodyCloser = self::findMatchingCloseBrace($phpcsFile, $next);
-                    if ($bodyCloser !== false) {
-                        $scopes[$next] = $bodyCloser;
-                    }
+                    $bodyCloser = self::findCloser($phpcsFile, $next);
+                    $scopes[$next] = $bodyCloser;
+
                     // Skip past this hook body.
-                    $i = $bodyCloser !== false ? $bodyCloser : $next;
+                    $i = $bodyCloser;
                     break;
                 }
 

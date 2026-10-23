@@ -19,6 +19,11 @@ class ArrayDeclarationUnitTest extends AbstractSniffTestCase
      */
     protected function getErrorList(string $testFile = ''): array
     {
+        // ArrayDeclarationUnitTest.1.inc is a live-coding case with an unclosed array, which must produce no errors.
+        if ($testFile !== 'ArrayDeclarationUnitTest.inc') {
+            return [];
+        }
+
         return [
             // Simple list: trailing comma.
             26  => 1,
@@ -85,6 +90,10 @@ class ArrayDeclarationUnitTest extends AbstractSniffTestCase
             287 => 1,
             // maxLineLength property: too long for one line at 40 characters.
             294 => 1,
+            // Edge cases: no space before an arrow, an element at column 1, and a signed element split across lines.
+            311 => 1,
+            317 => 1,
+            322 => 1,
         ];
     }
 
