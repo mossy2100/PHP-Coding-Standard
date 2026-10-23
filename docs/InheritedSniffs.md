@@ -12,8 +12,6 @@ Reference: [PSR-12 standard](https://www.php-fig.org/psr/psr-12/)
 
 The complete PSR-12 coding standard is included, with the following exceptions:
 
-- **PSR1.Classes.ClassDeclaration.MultipleClasses** is disabled for files in `tests` folders, because PHPUnit test files
-  often include small additional classes for testing purposes.
 - **PSR2.Classes.PropertyDeclaration** is excluded, replaced by `Mossy2100.Classes.PropertyDeclaration`, which adds
   support for property hooks (PHP 8.4) (see [Custom Sniffs](CustomSniffs.md)).
 - **Generic.WhiteSpace.ScopeIndent** is excluded, replaced by `Mossy2100.WhiteSpace.ScopeIndent`, which also adds
