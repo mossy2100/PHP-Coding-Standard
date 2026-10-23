@@ -63,7 +63,8 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **EmptyLinesAroundClassBraces**: Enforces no empty lines after opening or before closing class braces.
 - **EnumCaseSpacing**: Enforces spacing between enum cases.
 - **MethodSpacing**: Enforces spacing between methods.
-- **ModernClassNameReference**: Requires ::class syntax for class name references.
+- **ModernClassNameReference**: Requires `::class` instead of `get_class()`, `get_parent_class()` and
+  `get_called_class()`.
 - **PropertyDeclaration**: Enforces proper property declaration format including promoted properties.
 - **PropertySpacing**: Enforces spacing between properties.
 - **RequireMultiLineMethodSignature**: Requires multi-line format for long method signatures.
@@ -84,7 +85,7 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 
 - **DisallowContinueWithoutIntegerOperandInSwitch**: Disallows continue without integer operand in switch.
 - **DisallowTrailingMultiLineTernaryOperator**: Requires leading operators in multi-line ternary expressions.
-- **LanguageConstructWithParentheses**: Requires parentheses for language constructs.
+- **LanguageConstructWithParentheses**: Disallows parentheses around language construct arguments, e.g. `echo('x')`.
 - **RequireMultiLineCondition**: Requires multi-line format for long conditions with boolean operators.
 - **RequireMultiLineTernaryOperator**: Requires multi-line format for long ternary operators.
 - **RequireNullCoalesceEqualOperator**: Requires ??= operator when possible.
@@ -97,7 +98,7 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 
 ### Exceptions
 
-- **DeadCatch**: Disallows empty catch blocks that don't handle exceptions.
+- **DeadCatch**: Disallows unreachable catch blocks, e.g. a catch after `catch (Throwable)`.
 - **RequireNonCapturingCatch**: Requires catch without variable when exception is not used.
 
 ### Files
@@ -117,7 +118,7 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **DisallowTrailingCommaInClosureUse**: Disallows trailing comma in closure use statements.
 - **DisallowTrailingCommaInDeclaration**: Disallows trailing comma in function declarations.
 - **StaticClosure**: Requires static keyword for closures that don't use $this.
-- **StrictCall**: Enforces strict call_user_func_array and call_user_func usage.
+- **StrictCall**: Requires the strict argument in `in_array()`, `array_search()`, `array_keys()` and `base64_decode()`.
 - **UselessParameterDefaultValue**: Disallows useless parameter default values.
 
 ### Namespaces
