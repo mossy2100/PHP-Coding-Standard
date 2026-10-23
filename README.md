@@ -55,7 +55,7 @@ documentation.
 
 - PHP ^8.4
 - squizlabs/php_codesniffer ^4.0
-- slevomat/coding-standard ^8.25
+- slevomat/coding-standard ^8.27
 - dealerdirect/phpcodesniffer-composer-installer ^1.0
 
 ---

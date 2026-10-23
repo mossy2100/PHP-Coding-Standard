@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `OceanMoon` to `Mossy2100` (breaking),** matching the author's GitHub and Packagist name. Use
   `<rule ref="Mossy2100"/>` in `phpcs.xml`. Sniff codes change to match, e.g. `Mossy2100.Arrays.ArrayDeclaration`, as
   do the sniff class namespaces (`Mossy2100\Sniffs\...`).
+- **Requires `slevomat/coding-standard` 8.27 or later** (was 8.25). Earlier versions report
+  `SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification` on `#[Override]` methods
+  that inherit their array shape from the parent's docblock, and 8.25.0 also misreports hooked properties as multiple
+  property definitions.
 
 ### Added
 
