@@ -144,7 +144,7 @@ class ArrayDeclarationSniff implements Sniff
 
         $baseIndent = $this->getBaseIndent($phpcsFile, $openPtr);
 
-        // Any element that isn't a plain scalar literal or null forces one element per line, unconditionally. So does
+        // Any element that isn't simple (see isSimpleElement()) forces one element per line, unconditionally. So does
         // a comment, because the single-line and grid fixes rebuild the array from its elements and would lose it.
         if (
             !$this->allElementsSimple($phpcsFile, $elements)
@@ -158,7 +158,7 @@ class ArrayDeclarationSniff implements Sniff
     }
 
     /**
-     * Process a list array whose elements are all simple (scalar literals or null). Uses compact single-line
+     * Process a list array whose elements are all simple (see isSimpleElement()). Uses compact single-line
      * format if it fits within the line length, otherwise grid format with uniform padding, falling back to
      * one element per line if even a single-column grid would be too wide.
      *
@@ -228,10 +228,10 @@ class ArrayDeclarationSniff implements Sniff
     }
 
     /**
-     * Process a list array containing at least one non-simple element (nested array, enum case access,
-     * function/method call, variable, constant, arithmetic, or any other expression): one element per line,
-     * trailing comma required. Applied unconditionally, even if the whole array would otherwise fit on one
-     * line, since a grid or compact layout only reads unambiguously when every element is a plain literal.
+     * Process a list array containing at least one element that isn't simple (see isSimpleElement()), such as a
+     * nested array, a function call or arithmetic, or containing a comment: one element per line, trailing comma
+     * required. Applied unconditionally, even if the whole array would otherwise fit on one line, since a grid or
+     * compact layout only reads unambiguously when every element is a literal, a bare variable or a bare constant.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $openPtr The opening bracket token position.
