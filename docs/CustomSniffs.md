@@ -3,6 +3,7 @@
 This document describes the custom PHP_CodeSniffer sniffs created for the [Mossy2100 Coding Standard](../README.md).
 
 ---
+
 ## Mossy2100.Arrays.ArrayDeclaration
 
 Enforces consistent array formatting based on array type. The sniff differentiates between _lists_ (no array keys
@@ -13,13 +14,14 @@ code, we treat any array with keys as an associative array and format it as such
 The format is chosen automatically based on array type and content, loosely mirroring how
 `Mossy2100\Core\Stringify::stringifyArray()` pretty-prints a value at runtime:
 
-- List arrays where every element is **simple** — a scalar literal, `null`/`true`/`false`, a bare variable, or a bare
-  constant — use a compact single-line format if it fits within the line length, or a grid format with uniform padding
-  if it doesn't.
-- List arrays containing at least one **complex** element — a nested array, a function/method call, a `new` expression,
-  arithmetic, enum case access, property/static access, or any other expression — always use one element per line, _even
+- List arrays where every element is **simple** (a scalar literal, `null`/`true`/`false`, a bare variable, or a bare
+  constant) use a compact single-line format if it fits within the line length, or a grid format with uniform padding if
+  it doesn't.
+- List arrays containing at least one **complex** element (a nested array, a function/method call, a `new` expression,
+  arithmetic, enum case access, property/static access, or any other expression) always use one element per line, _even
   if the whole array would otherwise fit on one line_. A grid or compact layout only reads unambiguously when every
-  element is a plain literal, variable, or constant; anything more involved needs its own line.
+  element is a plain literal, variable, or constant. Anything more involved needs its own line.
+- List arrays containing a comment also use one element per line, so the comment is kept where it was written.
 - Associative arrays always use one key-value pair per line, arrows aligned.
 
 Array indentation defaults to 4 spaces per nesting level; this is configurable. The sniff uses `mb_strlen()` for proper
@@ -54,9 +56,9 @@ $colors = [
 ];
 ```
 
-**One per line**: Lists containing at least one complex element — function/method calls, `new` expressions, arithmetic,
-enum case access, property/static access, or nested arrays — always use one element per line with a trailing comma,
-regardless of whether the array would fit on one line.
+**One per line**: Lists containing at least one complex element (function/method calls, `new` expressions, arithmetic,
+enum case access, property/static access, or nested arrays), or a comment, always use one element per line with a
+trailing comma, regardless of whether the array would fit on one line.
 
 ```php
 // Good
@@ -70,7 +72,7 @@ $points = [
     [3, 4],
 ];
 
-// Bad — forces reformatting even though it fits on one line
+// Bad: reformatted even though it fits on one line
 $results = [strtoupper('red'), strtolower('GREEN'), trim('  blue  ')];
 ```
 
@@ -127,8 +129,7 @@ properly handles PHP 8.4 property hooks.
 Disallows property hooks on promoted constructor parameters (PHP 8.4+). Hook bodies inside a constructor signature are
 hard to read, so declare the property in the class body instead. Promoted parameters without hooks are still allowed.
 
-This is stricter than [PER Coding Style 3.0](https://www.php-fig.org/per/coding-style/#49-property-hooks), which allows
-a single short hook on one line.
+This is stricter than [PER Coding Style 3.0](https://www.php-fig.org/per/coding-style/#49-property-hooks), which allows a single short hook on one line.
 
 Inherited sniffs also misread these hooks. Two Slevomat sniffs treat a variable in the hook body, such as `$value` or
 `$this`, as another constructor parameter, and report errors that `phpcbf` can't fix:
@@ -211,27 +212,28 @@ class User
 ```
 
 ---
+
 ## Mossy2100.PHP.DisallowMultiConstantDefinition
 
 Disallows defining multiple constants in a single statement (e.g. `const A = 1, B = 2;`). This is a fork of
 `SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition`.
 
 The original sniff scans for commas between `const` and the closing `;`, skipping over commas inside a short array
-(`[...]`) so it doesn't mistake them for constant separators — but it doesn't do the same for a parenthesized
-argument list. That makes it misfire on a single, valid constant whose value is a multi-argument `new` expression or
-function call, e.g. `const I = new Complex(0, 1);` is wrongly flagged, because the comma inside `Complex(0, 1)` is
-miscounted as a constant separator. This fork also skips over parenthesized expressions, fixing the false positive
-while still catching genuine multi-constant statements.
+(`[...]`) so it doesn't mistake them for constant separators. It doesn't do the same for a parenthesized argument list.
+That makes it misfire on a single, valid constant whose value is a multi-argument `new` expression or function call,
+e.g. `const I = new Complex(0, 1);` is wrongly flagged, because the comma inside `Complex(0, 1)` is miscounted as a
+constant separator. This fork also skips over parenthesized expressions, fixing the false positive while still catching
+genuine multi-constant statements.
 
-Applies equally to class constants and namespace/file-scope constants — `T_CONST` isn't class-specific.
+Applies equally to class constants and namespace/file-scope constants, since `T_CONST` isn't class-specific.
 
 **Good:**
 
 ```php
 public const int A = 1;
 public const int B = 2;
-public const array scores = [42, 33, 12, 99]; // not flagged - comma belongs to the array literal
-public const Complex I = new Complex(0, 1);  // not flagged — comma belongs to the constructor call
+public const array SCORES = [42, 33, 12, 99]; // Not flagged: the commas belong to the array literal.
+public const Complex I = new Complex(0, 1);   // Not flagged: the comma belongs to the constructor call.
 ```
 
 **Bad:**

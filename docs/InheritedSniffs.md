@@ -2,10 +2,11 @@
 
 This document lists the PHP_CodeSniffer sniffs inherited from other coding standards by the [Mossy2100 Coding Standard](../README.md).
 
-PHP_CodeSniffer provides the PSR-12, Generic, and Squiz sniffs out of the box. Documentation is found in the [repository](https://github.com/PHPCSStandards/PHP_CodeSniffer) and
-  [wiki](https://github.com/PHPCSStandards/PHP_CodeSniffer/wiki).
+PHP_CodeSniffer provides the PSR-12, Generic, and Squiz sniffs out of the box. Documentation is found in the [repository](https://github.com/PHPCSStandards/PHP_CodeSniffer)
+and [wiki](https://github.com/PHPCSStandards/PHP_CodeSniffer/wiki).
 
 ---
+
 ## PSR-12
 
 Reference: [PSR-12 standard](https://www.php-fig.org/psr/psr-12/)
@@ -16,10 +17,11 @@ The complete PSR-12 coding standard is included, with the following exceptions:
   support for property hooks (PHP 8.4) (see [Custom Sniffs](CustomSniffs.md)).
 - **Generic.WhiteSpace.ScopeIndent** is excluded, replaced by `Mossy2100.WhiteSpace.ScopeIndent`, which also adds
   support for property hooks (see [Custom Sniffs](CustomSniffs.md)).
-- **Generic.Files.LineLength** is excluded, replaced by `SlevomatCodingStandard.Files.LineLength`, which reports an error
-  rather than a warning (see [Files](#files)).
+- **Generic.Files.LineLength** is excluded, replaced by `SlevomatCodingStandard.Files.LineLength`, which reports an
+  error rather than a warning (see [Files](#files)).
 
 ---
+
 ## Generic
 
 - **Generic.Arrays.DisallowLongArraySyntax**: Requires short array syntax `[]` instead of `array()`.
@@ -28,12 +30,14 @@ The complete PSR-12 coding standard is included, with the following exceptions:
   `case`, and `match` conditions/expressions.
 
 ---
+
 ## Squiz
 
 - **Squiz.NamingConventions.ValidVariableName**: Enforces `$camelCase` for variables, parameters, and properties.
 - **Squiz.Strings.DoubleQuoteUsage.NotRequired**: Ensures strings use single quotes unless double quotes are necessary.
 
 ---
+
 ## Slevomat
 
 Reference: [Slevomat coding standard repository and documentation](https://github.com/slevomat/coding-standard)
@@ -140,7 +144,7 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 
 - **NegationOperatorSpacing**: Enforces spacing around negation operator.
 - **RequireCombinedAssignmentOperator**: Requires combined assignment operators (+=, -=, etc.).
-- **RequireOnlyStandaloneIncrementAndDecrementOperators**: Requires ++ and -- to be used standalone.
+- **RequireOnlyStandaloneIncrementAndDecrementOperators**: Requires `++` and `--` to be used standalone.
 - **SpreadOperatorSpacing**: Enforces spacing around spread operator.
 
 ### PHP
