@@ -10,7 +10,7 @@
  * expression or function call (e.g. `const I = new Complex(0, 1);`) is misdetected as a multi-constant
  * definition. This version also skips over parenthesized expressions.
  *
- * Applies to constants declared at namespace/file scope as well as class constants -- T_CONST isn't
+ * Applies to constants declared at namespace/file scope as well as class constants, since T_CONST isn't
  * class-specific.
  */
 

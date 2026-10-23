@@ -14,7 +14,7 @@ $w3 = [$alpha, $beta, $gamma];
 // Valid: bare constants (fits on one line).
 $w7 = [PHP_EOL, PHP_INT_MAX, M_PI];
 
-// Valid: mixed simple items -- literals, null, booleans, variables, and constants.
+// Valid: mixed simple items: literals, null, booleans, variables and constants.
 $w8 = [1, 'two', 3.0, null, true, $x, MY_CONST];
 
 // Valid: signed constants and variables (not just signed number literals).
@@ -99,7 +99,7 @@ $w5 = [Suit::Hearts, Suit::Spades];
 // All on one line: arithmetic expressions.
 $w6 = [1 + 1, 2 + 2];
 
-// Function call list too long for single line -- already one error per line missing.
+// Function call list too long for a single line, so it's forced one per line.
 $w = [strtoupper('red'), strtolower('GREEN'), trim('  blue  '), substr('yellow', 0, 3), str_repeat('x', 10), ucfirst('test')];
 
 // === VALID: Associative arrays ===

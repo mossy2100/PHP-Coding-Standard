@@ -4,23 +4,23 @@
  * Sniff for array declaration formatting.
  *
  * Loosely mirrors Mossy2100\Core\Stringify::stringifyArray() with pretty-printing enabled, but also treats bare
- * variables and constants as "simple" (see isSimpleElement()) -- Stringify has no equivalent concept, since it
- * works on runtime values rather than source code, but in source, a bare `$var` or `CONST_NAME` is typically
- * short and always single-line, same as a scalar literal:
+ * variables and constants as "simple" (see isSimpleElement()). Stringify has no equivalent concept, since it works
+ * on runtime values rather than source code. In source, a bare `$var` or `CONST_NAME` is typically short and always
+ * single-line, same as a scalar literal.
  *
- * 1. List arrays where every element is "simple" (a scalar literal, null, a bare variable, or a bare constant --
- *    see isSimpleElement()): compact format (single line, no trailing comma) if it fits within the line length.
+ * 1. List arrays where every element is simple (a scalar literal, null, a bare variable or a bare constant; see
+ *    isSimpleElement()): compact format (single line, no trailing comma) if it fits within the line length.
  * 2. List arrays where every element is simple, but the compact format doesn't fit: grid format with uniform
  *    padding, trailing comma on all items. Falls back to one element per line if even a single-column grid
  *    would be too wide.
  * 3. List arrays containing at least one non-simple element (nested array, enum case access, function/method
- *    call, property/static access, arithmetic, or any other expression): one element per line, trailing comma
- *    required -- unconditionally, even if the whole array would otherwise fit on one line, since a grid or
- *    compact layout only reads unambiguously when every element is a plain literal, variable, or constant.
+ *    call, property/static access, arithmetic, or any other expression), or a comment: one element per line,
+ *    trailing comma required. This applies unconditionally, even if the whole array would otherwise fit on one
+ *    line, since a grid or compact layout only reads unambiguously when every element is simple.
  * 4. Dictionaries (at least one explicit `key => value` pair): one key-value pair per line, arrows aligned,
  *    4-space indent, trailing comma required. This includes list-shaped arrays written with explicit sequential
- *    integer keys (e.g. `[0 => 'a', 1 => 'b']`) -- technically a list, but formatted as a dictionary to preserve
- *    and correctly display the keys as written in the code.
+ *    integer keys (e.g. `[0 => 'a', 1 => 'b']`). That's technically a list, but it's formatted as a dictionary to
+ *    preserve and correctly display the keys as written in the code.
  */
 
 declare(strict_types=1);
@@ -190,12 +190,12 @@ class ArrayDeclarationSniff implements Sniff
         $hasMultilineElements = $this->hasMultilineElements($phpcsFile, $elements);
         if ($totalLength <= $this->maxLineLength && !$hasMultilineElements) {
             if ($openLine === $closeLine) {
-                // Already single-line — just check trailing comma.
+                // Already single-line, so just check the trailing comma.
                 $this->checkListTrailingComma($phpcsFile, $openPtr, $closePtr, false);
                 return;
             }
 
-            // Multi-line but fits on one line — fix it (buildSingleLineArray already strips trailing comma).
+            // Multi-line but fits on one line, so fix it. buildSingleLineArray() already strips the trailing comma.
             $error = 'Simple list array should be on a single line when it fits within line length.';
             $fix = $phpcsFile->addFixableError($error, $openPtr, 'ListShouldBeSingleLine');
             if ($fix === true) {
@@ -204,7 +204,7 @@ class ArrayDeclarationSniff implements Sniff
             return;
         }
 
-        // Too long for single line — try grid format.
+        // Too long for a single line, so try grid format.
         $elementIndentSpaces = $baseIndent + $this->indent;
         $maxValueWidth = $this->getMaxElementWidth($phpcsFile, $elements);
         $itemsPerLine = (int) floor(($this->maxLineLength + 1 - $elementIndentSpaces) / ($maxValueWidth + 2));
@@ -223,7 +223,7 @@ class ArrayDeclarationSniff implements Sniff
             return;
         }
 
-        // Items too wide for even a single-column grid — fall back to one per line.
+        // Items too wide for even a single-column grid, so fall back to one per line.
         $this->processOnePerLineList($phpcsFile, $openPtr, $closePtr, $elements, $baseIndent);
     }
 
@@ -301,8 +301,8 @@ class ArrayDeclarationSniff implements Sniff
      * Check whether an array element is "simple".
      *
      * A simple element is a scalar literal, null, a bare variable, or a bare constant, optionally with a single
-     * leading unary +/- sign (e.g. -100, -INF, -PHP_INT_MAX). Anything else -- property or static access,
-     * function/method calls, arithmetic, enum case access, nested arrays, closures, etc. -- is "complex".
+     * leading unary +/- sign (e.g. -100, -INF, -PHP_INT_MAX). Anything else is "complex", e.g. property or static
+     * access, function/method calls, arithmetic, enum case access, nested arrays and closures.
      *
      * @param File $phpcsFile The file being scanned.
      * @param array{start: int, end: int, arrow: int|null} $element The array element to inspect.
@@ -338,8 +338,8 @@ class ArrayDeclarationSniff implements Sniff
      * keyword, a bare variable, or a bare constant reference. PHP_CodeSniffer remaps the `true`/`false`/`null`
      * keywords from the raw T_STRING PHP's own tokenizer gives them to its own T_TRUE/T_FALSE/T_NULL constants,
      * so those need checking separately from plain constant names. A lone T_STRING here is always a bare constant
-     * reference, never a function call -- a call would tokenize as multiple tokens (name, parentheses, arguments),
-     * so it's already excluded by isSimpleElement()'s single-token check before reaching this method.
+     * reference, never a function call. A call would tokenize as multiple tokens (name, parentheses, arguments),
+     * so isSimpleElement()'s single-token check has already excluded it before reaching this method.
      *
      * @param array{code: int|string, content: string} $token The token to check.
      */
@@ -846,7 +846,7 @@ class ArrayDeclarationSniff implements Sniff
         foreach ($elements as $i => $element) {
             $value = $this->getElementContent($phpcsFile, $element);
 
-            // Start of line — add indent.
+            // Start of line, so add the indent.
             if ($itemCountThisLine === 0) {
                 $grid .= $elementIndent;
             }
