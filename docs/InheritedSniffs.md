@@ -36,8 +36,9 @@ The complete PSR-12 coding standard is included, with the following exceptions:
 ## Squiz
 
 - **Squiz.Arrays.ArrayDeclaration**: Requires one element per line in a multi-line array, and a trailing comma only on
-  multi-line arrays. Its alignment checks are excluded, so keys, values and arrows are not aligned. Single-line
-  associative arrays are allowed. `Mossy2100.Arrays.ArrayDeclaration` requires single-line where it fits.
+  multi-line arrays. Its alignment checks are excluded, so keys, values and arrows are not aligned. Its
+  `SingleLineNotAllowed` check is also excluded, since it would force every array with more than one value, list or
+  associative, onto several lines. `Mossy2100.Arrays.ArrayDeclaration` requires single-line where it fits.
 - **Squiz.NamingConventions.ValidVariableName**: Enforces `$camelCase` for variables, parameters, and properties.
 - **Squiz.Strings.DoubleQuoteUsage.NotRequired**: Ensures strings use single quotes unless double quotes are necessary.
 - **Squiz.WhiteSpace.OperatorSpacing**: Requires a single space around operators, including before `=` and `=>`, so

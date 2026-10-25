@@ -42,7 +42,7 @@
         <exclude name="Squiz.Arrays.ArrayDeclaration.CloseBraceNotAligned"/>
         <!-- No arrow alignment; Squiz.WhiteSpace.OperatorSpacing requires a single space instead -->
         <exclude name="Squiz.Arrays.ArrayDeclaration.DoubleArrowNotAligned"/>
-        <!-- Allow single-line associative arrays -->
+        <!-- Allow single-line arrays with more than one value, whether lists or associative -->
         <exclude name="Squiz.Arrays.ArrayDeclaration.SingleLineNotAllowed"/>
         <!-- Allow a single long value to be split over several lines -->
         <exclude name="Squiz.Arrays.ArrayDeclaration.MultiLineNotAllowed"/>
