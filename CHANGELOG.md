@@ -33,6 +33,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`Mossy2100.ControlStructures.RequireSingleLineHeader` (breaking).** Requires a multi-line `foreach`, `for`,
+  `switch` or `match` header to be written on one line if it fits, as Slevomat's `RequireSingleLineCondition` does for
+  `if` and `while`. Auto-fixable.
 - **`Mossy2100.ControlStructures.MatchArrowSpacing` (breaking).** Requires one space before and after `=>` in a
   `match` arm, so arms aren't aligned. No stock sniff checks these. Auto-fixable.
 - **`Mossy2100.Classes.DisallowPromotedPropertyHooks` (breaking).** Disallows property hooks on promoted constructor

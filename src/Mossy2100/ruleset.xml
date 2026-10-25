@@ -283,6 +283,14 @@
     <!-- Single space around => in match arms, which Squiz.WhiteSpace.OperatorSpacing doesn't check -->
     <rule ref="Mossy2100.ControlStructures.MatchArrowSpacing"/>
 
+    <!-- Multi-line foreach, for, switch and match headers that fit must be written on one line; Slevomat's
+         RequireSingleLineCondition covers if, elseif, while and do-while -->
+    <rule ref="Mossy2100.ControlStructures.RequireSingleLineHeader">
+        <properties>
+            <property name="maxLineLength" value="&lineLength;"/>
+        </properties>
+    </rule>
+
     <!-- Scope indent with PHP 8.4 property hook support -->
     <rule ref="Mossy2100.WhiteSpace.ScopeIndent"/>
 

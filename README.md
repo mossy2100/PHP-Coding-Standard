@@ -30,6 +30,8 @@ The package provides several custom sniffs to cover gaps in the available standa
   which are hard to read in a constructor signature (PHP 8.4+).
 - **Mossy2100.ControlStructures.MatchArrowSpacing**: Requires one space around `=>` in `match` arms, so arms aren't
   aligned.
+- **Mossy2100.ControlStructures.RequireSingleLineHeader**: Requires a multi-line `foreach`, `for`, `switch` or `match`
+  header to be written on one line if it fits.
 - **Mossy2100.WhiteSpace.ScopeIndent**: Checks that control structures and code are indented correctly, with property
   hook support (PHP 8.4+).
 - **Mossy2100.PHP.DisallowMultiConstantDefinition**: Disallows defining multiple constants in one statement. A fork of

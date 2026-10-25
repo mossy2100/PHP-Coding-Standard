@@ -159,6 +159,44 @@ $label = match ($size) {
 
 ---
 
+## Mossy2100.ControlStructures.RequireSingleLineHeader
+
+Requires a multi-line `foreach`, `for`, `switch` or `match` header to be written on one line if it fits.
+`SlevomatCodingStandard.ControlStructures.RequireSingleLineCondition` does the same for `if`, `elseif`, `while` and
+`do-while`. A multi-line header is often left over after the array inside it is collapsed.
+
+**Fits** and **skipped** mean the same as for [Mossy2100.Arrays.ArrayDeclaration](#mossy2100arraysarraydeclaration):
+the whole resulting line, up to and including ` {`, must be within `maxLineLength`, and a header containing a comment,
+heredoc, multi-line string or brace body is left alone.
+
+**Good:**
+
+```php
+foreach ([$m->inv(), $m->pow(-1)] as $inverse) {
+    // ...
+}
+```
+
+**Bad:**
+
+```php
+foreach (
+    [$m->inv(), $m->pow(-1)] as $inverse
+) {
+    // ...
+}
+```
+
+**Configuration:**
+
+| Property        | Type | Default | Description                                 |
+| --------------- | ---- | ------- | ------------------------------------------- |
+| `maxLineLength` | int  | 120     | Maximum line length for a collapsed header. |
+
+Keep it the same as the other line-length settings, as described for `Mossy2100.Arrays.ArrayDeclaration`.
+
+---
+
 ## Mossy2100.WhiteSpace.ScopeIndent
 
 Checks that control structures and code are indented correctly. This is a fork of `Generic.WhiteSpace.ScopeIndent` with
