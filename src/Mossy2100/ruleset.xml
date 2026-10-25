@@ -1,4 +1,10 @@
 <?xml version="1.0"?>
+<!-- Line length limit, used by every sniff that checks or wraps long lines. XML can't do arithmetic, so the "plus one"
+     value is for sniffs whose threshold is the first length that's too long. -->
+<!DOCTYPE ruleset [
+    <!ENTITY lineLength "120">
+    <!ENTITY lineLengthPlusOne "121">
+]>
 <ruleset name="Mossy2100">
     <description>Mossy2100 PHP Coding Standard</description>
 
@@ -136,12 +142,12 @@
     <rule ref="SlevomatCodingStandard.ControlStructures.LanguageConstructWithParentheses"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.RequireMultiLineCondition">
         <properties>
-            <property name="minLineLength" value="121"/>
+            <property name="minLineLength" value="&lineLengthPlusOne;"/>
         </properties>
     </rule>
     <rule ref="SlevomatCodingStandard.ControlStructures.RequireMultiLineTernaryOperator">
         <properties>
-            <property name="lineLengthLimit" value="120"/>
+            <property name="lineLengthLimit" value="&lineLength;"/>
         </properties>
     </rule>
     <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceEqualOperator"/>
@@ -149,7 +155,7 @@
     <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullSafeObjectOperator"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.RequireSingleLineCondition">
         <properties>
-            <property name="maxLineLength" value="120"/>
+            <property name="maxLineLength" value="&lineLength;"/>
         </properties>
     </rule>
     <rule ref="SlevomatCodingStandard.ControlStructures.RequireShortTernaryOperator"/>
@@ -163,7 +169,7 @@
     <!-- Files -->
     <rule ref="SlevomatCodingStandard.Files.LineLength">
         <properties>
-            <property name="lineLengthLimit" value="120"/>
+            <property name="lineLengthLimit" value="&lineLength;"/>
         </properties>
     </rule>
 
@@ -178,12 +184,12 @@
     <rule ref="SlevomatCodingStandard.Functions.RequireArrowFunction"/>
     <rule ref="SlevomatCodingStandard.Functions.RequireMultiLineCall">
         <properties>
-            <property name="minLineLength" value="121"/>
+            <property name="minLineLength" value="&lineLengthPlusOne;"/>
         </properties>
     </rule>
     <rule ref="SlevomatCodingStandard.Functions.RequireSingleLineCall">
         <properties>
-            <property name="maxLineLength" value="120"/>
+            <property name="maxLineLength" value="&lineLength;"/>
         </properties>
     </rule>
     <rule ref="SlevomatCodingStandard.Functions.NamedArgumentSpacing"/>
@@ -268,7 +274,11 @@
     <!-- ===== MOSSY2100 ====== -->
 
     <!-- Multi-line arrays that fit on one line must be written on one line -->
-    <rule ref="Mossy2100.Arrays.ArrayDeclaration"/>
+    <rule ref="Mossy2100.Arrays.ArrayDeclaration">
+        <properties>
+            <property name="maxLineLength" value="&lineLength;"/>
+        </properties>
+    </rule>
 
     <!-- Single space around => in match arms, which Squiz.WhiteSpace.OperatorSpacing doesn't check -->
     <rule ref="Mossy2100.ControlStructures.MatchArrowSpacing"/>
