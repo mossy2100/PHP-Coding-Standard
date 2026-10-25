@@ -1,4 +1,4 @@
-# Mossy2100 Coding Standard for PHP
+# Mossy2100 PHP Coding Standard
 
 A PHP_CodeSniffer coding standard for PHP 8.4, developed by Shaun Moss.
 
