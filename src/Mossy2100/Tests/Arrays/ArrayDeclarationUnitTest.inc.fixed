@@ -1,349 +1,92 @@
 <?php
 
-// === VALID: Simple list arrays ===
+// Single-line arrays are fine.
+$colors = ['red', 'green', 'blue'];
+$user = ['name' => 'John', 'email' => 'john@example.com'];
 
-// Valid: simple list on one line.
-$a = ['red', 'green', 'blue'];
+// A list that fits.
+$colors = ['red', 'green', 'blue'];
 
-// Valid: empty array.
-$b = [];
+// An associative array that fits, with aligned arrows.
+$user = ['name' => 'John', 'email' => 'john@example.com'];
 
-// Valid: bare variables (fits on one line).
-$w3 = [$alpha, $beta, $gamma];
+// An empty array.
+$empty = [];
 
-// Valid: bare constants (fits on one line).
-$w7 = [PHP_EOL, PHP_INT_MAX, M_PI];
+// Destructuring.
+[$first, $second] = $pair;
 
-// Valid: mixed simple items: literals, null, booleans, variables and constants.
-$w8 = [1, 'two', 3.0, null, true, $x, MY_CONST];
+// Nested arrays that fit: only the outer array is reported.
+$matrix = [[1, 2], [3, 4]];
 
-// Valid: signed constants and variables (not just signed number literals).
-$w9 = [-INF, INF, -PHP_INT_MAX, -$x];
-
-// === ERRORS: Simple list arrays ===
-
-// ListTrailingComma: trailing comma in simple list.
-$c = ['red', 'green', 'blue'];
-
-// ListShouldBeSingleLine: multi-line simple list that fits on one line.
-$d = ['red', 'green', 'blue'];
-
-// === VALID: Complex list arrays (nested arrays) ===
-
-// Valid: list of arrays, one per line, trailing comma.
-$e = [
-    [1, 2],
-    [3, 4],
-    [5, 6],
+// The outer array is too long, but the nested one fits.
+$config = [
+    'description' => 'Stock levels for every warehouse, refreshed nightly from the supplier feed for reporting.',
+    'limits' => ['min' => 0, 'max' => 100],
 ];
 
-// === ERRORS: Complex list arrays (nested arrays) ===
+// A call with trailing commas inside the array.
+$results = [strtoupper('red'), strtolower('GREEN')];
 
-// ListMissingTrailingComma: missing trailing comma.
-$f = [
-    [1, 2],
-    [3, 4],
-    [5, 6],
+// An array passed to a call, followed by more arguments.
+$process = proc_open($command, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
+
+// Fits up to the closing bracket, but not with the rest of the line.
+$process = proc_open($command, [
+    1 => ['pipe', 'w'],
+    2 => ['pipe', 'w'],
+], $pipes, $workingDirectory, $environmentVariables, ['bypass_shell' => true, 'suppress_errors' => true]);
+
+// Too long for one line.
+$words = [
+    'The quick brown fox jumps over the lazy dog.',
+    'Pack my box with five dozen liquor jugs, please.',
+    'How vexingly quick daft zebras jump!',
 ];
 
-// ListFirstElementNewLine: first element on same line as bracket.
-$g = [
-    [1, 2],
-    [3, 4],
-    [5, 6],
+// Contains a comment.
+$colors = [
+    'red', // Warm.
+    'blue',
 ];
 
-// ListElementNewLine: elements on same line.
-$h = [
-    [1, 2],
-    [3, 4],
-    [5, 6],
+// Contains a closure.
+$callbacks = [
+    static function (): int {
+        return 1;
+    },
 ];
 
-// ListClosingBracketNewLine: closing bracket on same line as last element.
-$i = [
-    [1, 2],
-    [3, 4],
-    [5, 6],
+// Contains an arrow function, which is fine.
+$callbacks = [static fn (int $x): int => $x * 2];
+
+// Contains a match expression.
+$labels = [
+    match ($size) {
+        1 => 'one',
+        default => 'many',
+    },
 ];
 
-// ListElementIndent: wrong indentation.
-$j = [
-    [1, 2],
-    [3, 4],
-    [5, 6],
+// Contains a heredoc.
+$texts = [
+    <<<EOT
+    Hello
+    EOT,
 ];
 
-// ListClosingBracketIndent: wrong indentation on closing bracket.
-$k = [
-    [1, 2],
-    [3, 4],
-    [5, 6],
+// Contains a multi-line string.
+$texts = [
+    'Hello
+    world',
 ];
 
-// All on one line: first element, elements, closing bracket on same line + missing trailing comma.
-$l2 = [
-    [1, 2],
-    [3, 4],
-    [5, 6],
-];
-
-// === ERRORS: Complex list arrays (non-literal items) ===
-
-// All on one line: function calls.
-$w2 = [
-    strlen('hi'),
-    ucfirst('bye'),
-    trim('x'),
-];
-
-// All on one line: new expressions.
-$w4 = [
-    new stdClass(),
-    new stdClass(),
-    new stdClass(),
-];
-
-// All on one line: enum case access.
-$w5 = [
-    Suit::Hearts,
-    Suit::Spades,
-];
-
-// All on one line: arithmetic expressions.
-$w6 = [
-    1 + 1,
-    2 + 2,
-];
-
-// Function call list too long for a single line, so it's forced one per line.
-$w = [
-    strtoupper('red'),
-    strtolower('GREEN'),
-    trim('  blue  '),
-    substr('yellow', 0, 3),
-    str_repeat('x', 10),
-    ucfirst('test'),
-];
-
-// === VALID: Associative arrays ===
-
-// Valid: associative array, one pair per line, aligned arrows, trailing comma.
-$l = [
-    'name'  => 'John',
-    'email' => 'john@example.com',
-    'age'   => 30,
-];
-
-// Valid: explicit sequential integer keys treated as associative.
-$l3 = [
-    0 => 'red',
-    1 => 'green',
-    2 => 'blue',
-];
-
-// Valid: mixed keyed and unkeyed elements, arrows aligned.
-$l4 = [
-    'first',
-    'key'   => 'value',
-    'second',
-    'other' => 'thing',
-];
-
-// === ERRORS: Associative arrays ===
-
-// AssocMissingTrailingComma: missing trailing comma.
-$m = [
-    'name'  => 'John',
-    'email' => 'john@example.com',
-    'age'   => 30,
-];
-
-// AssocFirstElementNewLine: first element on same line as bracket.
-$n = [
-    'name'  => 'John',
-    'email' => 'john@example.com',
-    'age'   => 30,
-];
-
-// AssocElementNewLine: elements on same line.
-$o = [
-    'name'  => 'John',
-    'email' => 'john@example.com',
-    'age'   => 30,
-];
-
-// AssocClosingBracketNewLine: closing bracket on same line as last element.
-$p = [
-    'name'  => 'John',
-    'email' => 'john@example.com',
-    'age'   => 30,
-];
-
-// AssocArrowAlignment: arrows not aligned.
-$q = [
-    'name'  => 'John',
-    'email' => 'john@example.com',
-    'age'   => 30,
-];
-
-// AssocElementIndent: wrong indentation.
-$r = [
-    'name'  => 'John',
-    'email' => 'john@example.com',
-    'age'   => 30,
-];
-
-// AssocClosingBracketIndent: wrong indentation on closing bracket.
-$s = [
-    'name'  => 'John',
-    'email' => 'john@example.com',
-    'age'   => 30,
-];
-
-// AssocValueNotOnArrowLine: value on next line after arrow.
-$t = [
-    'name' => 'John',
-    'age'  => 30,
-];
-
-// === VALID: Grid format ===
-
-// Valid: grid format with uniform padding.
-$u = [
-    'red',     'green',   'blue',    'cyan',    'magenta', 'yellow',  'black',   'white',   'orange',  'purple',
-    'brown',   'pink',    'grey',    'navy',    'teal',
-];
-
-// Valid: negative numbers that fit on one line (no grid needed).
-$v = [-100, -200, -300, -400, -500, -600];
-
-// === ERRORS: Grid format ===
-
-// ListShouldBeGrid: one-per-line list that should be grid.
-$x = [
-    'red',     'green',   'blue',    'cyan',    'magenta', 'yellow',  'black',   'white',   'orange',  'purple',
-    'brown',   'pink',    'grey',    'navy',    'teal',
-];
-
-// ListShouldBeGrid: single long line that should be grid.
-$y = [
-    'apple',      'banana',     'cherry',     'date',       'elderberry', 'fig',        'grape',      'honeydew',
-    'kiwi',       'lemon',      'mango',      'nectarine',  'orange',     'papaya',
-];
-
-// ListShouldBeGrid: grid with wrong padding.
-$z = [
-    'red',     'green',   'blue',    'cyan',    'magenta', 'yellow',  'black',   'white',   'orange',  'purple',
-    'brown',   'pink',    'grey',    'navy',    'teal',
-];
-
-// === Comments in simple lists ===
-
-// ListElementNewLine: a commented list too long for one line goes one per line, not grid, keeping the comments.
-$aa = [
-    'alpha',
-    'beta',
-    'gamma',
-    'delta',
-    'epsilon',
-    'zeta',
-    'eta',
-    'theta',
-    'iota',
-    'kappa',
-    'lambda', // first row
-    'mu',
-    'nu',
-    'xi', // second row
-];
-
-// Valid: a short list with trailing comments stays one per line, rather than being collapsed.
-$ab = [
-    1, // one
-    2, // two
-];
-
-// Valid: a short list with a leading comment stays one per line.
-$ac = [
-    // Leading comment.
-    1,
-    2,
-];
-
-// === Multibyte keys ===
-
-// Valid: arrows aligned by character, not byte, count.
-$ad = [
-    'café'  => 1,
-    'naïve' => 2,
-    'π'     => 3,
-];
-
-// AssocArrowAlignment: aligned by byte count, so misaligned by character count.
-$ae = [
-    'café'  => 1,
-    'naïve' => 2,
-    'π'     => 3,
-];
-
-// === Long array syntax ===
-
-// Valid: a simple long-syntax list on one line.
-$af = array('red', 'green', 'blue');
-
-// ListShouldBeSingleLine: a multi-line simple long-syntax list that fits on one line.
-$ag = array('red', 'green', 'blue');
-
-// === Configurable properties ===
-
-// phpcs:set Mossy2100.Arrays.ArrayDeclaration indent 2
-
-// Valid: elements indented by 2 spaces.
-$ah = [
-  'one' => 1,
-  'two' => 2,
-];
-
-// AssocElementIndent: elements indented by 4 spaces.
-$ai = [
-  'one' => 1,
-  'two' => 2,
-];
-
-// phpcs:set Mossy2100.Arrays.ArrayDeclaration indent 4
+// A configured maximum line length.
 // phpcs:set Mossy2100.Arrays.ArrayDeclaration maxLineLength 40
-
-// ListShouldBeGrid: too long for one line at a 40-character limit.
-$aj = [
-    'alpha',   'bravo',   'charlie',
-    'delta',
+$colors = [
+    'red',
+    'green',
+    'blue',
+    'yellow',
 ];
-
-// phpcs:set Mossy2100.Arrays.ArrayDeclaration maxLineLength 120
-
-// === Edge cases ===
-
-// Valid: a list containing only a comment has no elements to format.
-$ak = [/* Nothing yet. */];
-
-// Valid: simple elements too wide for even a single-column grid stay one per line.
-$al = [
-    'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-    'y',
-];
-
-// AssocArrowAlignment: no space before the arrow.
-$am = [
-    'name' => 'John',
-    'age'  => 30,
-];
-
-// AssocElementIndent: an element at column 1.
-$an = [
-    'one' => 1,
-    'two' => 2,
-];
-
-// ListShouldBeGrid: a signed element split across lines, so it can't be single-line as written.
-$ao = [- 1, 2];
+$colors = ['red', 'green'];

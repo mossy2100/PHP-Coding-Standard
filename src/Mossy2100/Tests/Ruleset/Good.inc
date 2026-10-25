@@ -21,11 +21,7 @@ final class Inventory implements Countable, Stringable
 
     public const array COLORS = ['red', 'green', 'blue'];
 
-    public const array LIMITS = [
-        'small'  => 10,
-        'medium' => 50,
-        'large'  => 100,
-    ];
+    public const array LIMITS = ['small' => 10, 'medium' => 50, 'large' => 100];
 
     /**
      * The item names.
@@ -89,10 +85,10 @@ final class Inventory implements Countable, Stringable
         $count = count($this->items);
 
         return match (true) {
-            $count === 0                       => 'empty',
-            $count < self::LIMITS['small']     => 'small',
-            $count < self::LIMITS['medium']    => 'medium',
-            default                            => 'large',
+            $count === 0 => 'empty',
+            $count < self::LIMITS['small'] => 'small',
+            $count < self::LIMITS['medium'] => 'medium',
+            default => 'large',
         };
     }
 
@@ -104,13 +100,10 @@ final class Inventory implements Countable, Stringable
     public function summary(): array
     {
         return [
-            'name'    => $this->name,
-            'count'   => count($this->items),
+            'name' => $this->name,
+            'count' => count($this->items),
             'version' => (int) $this->version,
-            'samples' => [
-                strtoupper($this->items[0] ?? ''),
-                strtolower($this->items[1] ?? ''),
-            ],
+            'samples' => [strtoupper($this->items[0] ?? ''), strtolower($this->items[1] ?? '')],
         ];
     }
 

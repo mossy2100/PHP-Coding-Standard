@@ -11,10 +11,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- **Array formatting follows PER Coding Style, with no alignment (breaking).** `Mossy2100.Arrays.ArrayDeclaration` was
+  rewritten to do one thing: collapse a multi-line array that fits on one line. Stock sniffs handle the rest:
+  - An array is single-line if it fits, otherwise one element per line. Grid layout is gone, and a single-line
+    associative array is now allowed.
+  - Trailing commas are required on multi-line arrays and disallowed on single-line ones, as before.
+  - Arrows and assignments aren't aligned. A single space is required before `=>` and `=`, since alignment makes
+    noisy diffs.
+
+  The added stock sniffs are `Generic.Arrays.ArrayIndent`, `Squiz.Arrays.ArrayDeclaration` (alignment checks
+  excluded), `Squiz.WhiteSpace.OperatorSpacing` and `SlevomatCodingStandard.Arrays.MultiLineArrayEndBracketPlacement`.
+  The sniff's `indent` property was removed; `maxLineLength` remains. Run `phpcbf` to reformat existing code.
 - **Renamed the package from `oceanmoon/coding-standard` to `mossy2100/coding-standard`, and the standard from
   `OceanMoon` to `Mossy2100` (breaking),** matching the author's GitHub and Packagist name. Use
-  `<rule ref="Mossy2100"/>` in `phpcs.xml`. Sniff codes change to match, e.g. `Mossy2100.Arrays.ArrayDeclaration`, as
-  do the sniff class namespaces (`Mossy2100\Sniffs\...`).
+  `<rule ref="Mossy2100"/>` in `phpcs.xml`. Sniff codes change to match, e.g. `Mossy2100.Classes.PropertyDeclaration`,
+  as do the sniff class namespaces (`Mossy2100\Sniffs\...`).
 - **Requires `slevomat/coding-standard` 8.27 or later** (was 8.25). Earlier versions report
   `SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification` on `#[Override]` methods
   that inherit their array shape from the parent's docblock, and 8.25.0 also misreports hooked properties as multiple
@@ -22,6 +33,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`Mossy2100.ControlStructures.MatchArrowSpacing` (breaking).** Requires one space before and after `=>` in a
+  `match` arm, so arms aren't aligned. No stock sniff checks these. Auto-fixable.
 - **`Mossy2100.Classes.DisallowPromotedPropertyHooks` (breaking).** Disallows property hooks on promoted constructor
   parameters, e.g. `public function __construct(public string $name { set => trim($value); })`, because hooks are hard
   to read in a constructor signature. Declare the property in the class body instead. This is stricter than PER Coding
@@ -36,18 +49,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
-- **`Mossy2100.Arrays.ArrayDeclaration` no longer deletes comments.** The grid fix rebuilt the array from its elements
-  alone, so `phpcbf` silently dropped any comment inside a long simple list. A simple list containing a comment now uses
-  one element per line, which keeps every comment.
-- **`Mossy2100.Arrays.ArrayDeclaration` no longer reports an unfixable error on short commented lists.** A short simple
-  list with a comment was flagged as `ListShouldBeSingleLine`, which `phpcbf` couldn't fix without losing the comment.
-  It now stays one element per line.
 - **`Mossy2100.PHP.DisallowMultiConstantDefinition` fixer keeps the type and modifiers.** Splitting
   `final public const int A = 1, B = 2;` gave `public const B = 2;`, dropping the type, and indented the new line
   with a tab. Each constant now keeps the full declaration, e.g. `final public const int B = 2;`, with the original
   indentation.
-- **`Mossy2100.Arrays.ArrayDeclaration` fixes keep the file's line endings.** They always inserted `\n`, which mixed
-  line endings in a CRLF file.
 
 ---
 

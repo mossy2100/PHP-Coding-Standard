@@ -63,9 +63,7 @@ class DisallowPromotedPropertyHooksSniff implements Sniff
                 . 'class body instead.',
             $stackPtr,
             self::CODE_PROMOTED_PROPERTY_HOOK,
-            [
-                $tokens[$stackPtr]['content'],
-            ]
+            [$tokens[$stackPtr]['content']]
         );
     }
 }

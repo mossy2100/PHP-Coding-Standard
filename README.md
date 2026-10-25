@@ -17,16 +17,19 @@ consistent naming conventions and modern PHP 8.4+ syntax.
 
 - Extends PSR-12 coding standard.
 - Enforces "camelCase" naming for variables, parameters, and properties.
-- Enforces consistent array formatting: single-line, grid, one-per-line, and associative with aligned arrows.
+- Enforces consistent array formatting: single-line if it fits, otherwise one element per line with a trailing comma.
+  No alignment of arrows or assignments, to keep diffs small.
 - Enforces correct indentation for property hooks.
 - Automatic registration with PHP_CodeSniffer.
 
 The package provides several custom sniffs to cover gaps in the available standards. These include:
 
-- **Mossy2100.Arrays.ArrayDeclaration**: Enforces consistent array formatting with lists and associative arrays.
+- **Mossy2100.Arrays.ArrayDeclaration**: Requires a multi-line array to be written on one line if it fits.
 - **Mossy2100.Classes.PropertyDeclaration**: Verifies property declarations, with property hook support (PHP 8.4+).
 - **Mossy2100.Classes.DisallowPromotedPropertyHooks**: Disallows property hooks on promoted constructor parameters,
   which are hard to read in a constructor signature (PHP 8.4+).
+- **Mossy2100.ControlStructures.MatchArrowSpacing**: Requires one space around `=>` in `match` arms, so arms aren't
+  aligned.
 - **Mossy2100.WhiteSpace.ScopeIndent**: Checks that control structures and code are indented correctly, with property
   hook support (PHP 8.4+).
 - **Mossy2100.PHP.DisallowMultiConstantDefinition**: Disallows defining multiple constants in one statement. A fork of

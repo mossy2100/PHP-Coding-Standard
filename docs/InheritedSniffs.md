@@ -24,6 +24,8 @@ The complete PSR-12 coding standard is included, with the following exceptions:
 
 ## Generic
 
+- **Generic.Arrays.ArrayIndent**: Indents multi-line array elements one level, with the closing bracket on its own line
+  at the indent of the statement.
 - **Generic.Arrays.DisallowLongArraySyntax**: Requires short array syntax `[]` instead of `array()`.
 - **Generic.Formatting.SpaceAfterCast**: Enforces a space after type casts (e.g. `(int) $value`).
 - **Generic.CodeAnalysis.AssignmentInCondition**: Warns about assignments in `if`, `elseif`, `while`, `for`, `switch`,
@@ -33,8 +35,14 @@ The complete PSR-12 coding standard is included, with the following exceptions:
 
 ## Squiz
 
+- **Squiz.Arrays.ArrayDeclaration**: Requires one element per line in a multi-line array, and a trailing comma only on
+  multi-line arrays. Its alignment checks are excluded, so keys, values and arrows are not aligned. Single-line
+  associative arrays are allowed. `Mossy2100.Arrays.ArrayDeclaration` requires single-line where it fits.
 - **Squiz.NamingConventions.ValidVariableName**: Enforces `$camelCase` for variables, parameters, and properties.
 - **Squiz.Strings.DoubleQuoteUsage.NotRequired**: Ensures strings use single quotes unless double quotes are necessary.
+- **Squiz.WhiteSpace.OperatorSpacing**: Requires a single space around operators, including before `=` and `=>`, so
+  assignments and array arrows are not aligned. `match` arms are covered by
+  `Mossy2100.ControlStructures.MatchArrowSpacing` instead (see [Custom Sniffs](CustomSniffs.md)).
 
 ---
 
@@ -47,6 +55,7 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **ArrayAccess**: Disallows whitespace between array access operators.
 - **DisallowImplicitArrayCreation**: Disallows implicit array creation.
 - **DisallowPartiallyKeyed**: Requires arrays to have keys for all or none of the values.
+- **MultiLineArrayEndBracketPlacement**: Requires the closing bracket of a multi-line array on its own line.
 - **SingleLineArrayWhitespace**: Checks whitespace in single-line array declarations.
 
 ### Attributes

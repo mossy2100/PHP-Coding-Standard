@@ -29,11 +29,7 @@ class RulesetUnitTest extends TestCase
      */
     public function testGoodFixtureHasNoViolations(): void
     {
-        $result = $this->runTool('phpcs', [
-            '--standard=Mossy2100',
-            '--report=json',
-            self::FIXTURES . '/Good.inc',
-        ]);
+        $result = $this->runTool('phpcs', ['--standard=Mossy2100', '--report=json', self::FIXTURES . '/Good.inc']);
 
         $this->assertSame(0, $result['exitCode'], $result['output']);
     }
@@ -43,11 +39,7 @@ class RulesetUnitTest extends TestCase
      */
     public function testBadFixtureHasViolations(): void
     {
-        $result = $this->runTool('phpcs', [
-            '--standard=Mossy2100',
-            '--report=json',
-            self::FIXTURES . '/Bad.inc',
-        ]);
+        $result = $this->runTool('phpcs', ['--standard=Mossy2100', '--report=json', self::FIXTURES . '/Bad.inc']);
 
         $this->assertNotSame(0, $result['exitCode']);
     }
@@ -92,10 +84,7 @@ class RulesetUnitTest extends TestCase
             XML, '.xml');
 
         try {
-            $twoSpaces = $this->runTool('phpcs', [
-                "--standard=$ruleset",
-                $fixture,
-            ]);
+            $twoSpaces = $this->runTool('phpcs', ["--standard=$ruleset", $fixture]);
             $default = $this->runTool(
                 'phpcs',
                 ['--standard=Mossy2100', '--sniffs=Mossy2100.WhiteSpace.ScopeIndent', $fixture]
@@ -121,16 +110,8 @@ class RulesetUnitTest extends TestCase
      */
     private function runTool(string $tool, array $args): array
     {
-        $command = [
-            PHP_BINARY,
-            dirname(__DIR__, 3) . "/vendor/bin/$tool",
-            '-q',
-            ...$args,
-        ];
-        $process = proc_open($command, [
-            1 => ['pipe', 'w'],
-            2 => ['pipe', 'w'],
-        ], $pipes);
+        $command = [PHP_BINARY, dirname(__DIR__, 3) . "/vendor/bin/$tool", '-q', ...$args];
+        $process = proc_open($command, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
         if ($process === false) {
             throw new RuntimeException("Couldn't run $tool.");
         }
@@ -139,10 +120,7 @@ class RulesetUnitTest extends TestCase
         fclose($pipes[1]);
         fclose($pipes[2]);
 
-        return [
-            'exitCode' => proc_close($process),
-            'output'   => $output,
-        ];
+        return ['exitCode' => proc_close($process), 'output' => $output];
     }
 
     /**

@@ -40,9 +40,7 @@ class DisallowMultiConstantDefinitionSniff implements Sniff
      *
      * @var array<int|string, int|string>
      */
-    private const array MODIFIER_TOKENS = [
-        T_FINAL => T_FINAL,
-    ] + Tokens::SCOPE_MODIFIERS;
+    private const array MODIFIER_TOKENS = [T_FINAL => T_FINAL] + Tokens::SCOPE_MODIFIERS;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -136,7 +134,7 @@ class DisallowMultiConstantDefinitionSniff implements Sniff
 
             $data[$commaPointer] = [
                 'pointerBeforeComma' => $pointerBeforeComma,
-                'pointerAfterComma'  => $pointerAfterComma,
+                'pointerAfterComma' => $pointerAfterComma,
             ];
         }
 

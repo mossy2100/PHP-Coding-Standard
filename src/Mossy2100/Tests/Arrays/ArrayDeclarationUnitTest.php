@@ -19,81 +19,27 @@ class ArrayDeclarationUnitTest extends AbstractSniffTestCase
      */
     protected function getErrorList(string $testFile = ''): array
     {
-        // ArrayDeclarationUnitTest.1.inc is a live-coding case with an unclosed array, which must produce no errors.
-        if ($testFile !== 'ArrayDeclarationUnitTest.inc') {
-            return [];
-        }
-
         return [
-            // Simple list: trailing comma.
-            26  => 1,
-            // Simple list: should be single line (trailing comma handled by fix).
-            29  => 1,
-            // Complex list (nested arrays): missing trailing comma.
-            50  => 1,
-            // Complex list (nested arrays): first element on same line.
-            54  => 1,
-            // Complex list (nested arrays): element on same line.
-            61  => 1,
-            // Complex list (nested arrays): closing bracket on same line.
-            69  => 1,
-            // Complex list (nested arrays): wrong indentation.
-            73  => 1,
-            // Complex list (nested arrays): wrong closing bracket indentation.
-            83  => 1,
-            // Complex list (nested arrays): all on one line.
-            86  => 5,
-            // Complex list (function calls): all on one line.
-            91  => 5,
-            // Complex list (new expressions): all on one line.
-            94  => 5,
-            // Complex list (enum case access): all on one line.
-            97  => 4,
-            // Complex list (arithmetic expressions): all on one line.
-            100 => 4,
-            // Complex list (function calls): too long for single line, forced one per line unconditionally.
-            103 => 8,
-            // Assoc: missing trailing comma.
-            135 => 1,
-            // Assoc: first element on same line.
-            139 => 1,
-            // Assoc: element on same line + arrow alignment.
-            146 => 2,
-            147 => 1,
-            // Assoc: closing bracket on same line.
-            154 => 1,
-            // Assoc: arrow alignment.
-            158 => 1,
-            160 => 1,
-            // Assoc: wrong indentation.
-            165 => 1,
-            // Assoc: wrong closing bracket indentation.
-            175 => 1,
-            // Assoc: value not on arrow line.
-            180 => 1,
-            // Grid: one-per-line list that should be grid.
-            198 => 1,
-            // Grid: single long line that should be grid.
-            217 => 1,
-            // Grid: grid with wrong padding.
-            220 => 1,
-            // Comments: commented list too long for one line goes one per line.
-            229 => 10,
-            230 => 2,
-            // Multibyte keys: arrows misaligned by character count.
-            257 => 1,
-            259 => 1,
-            // Long array syntax: should be single line.
-            268 => 1,
-            // indent property: elements indented by 4 spaces instead of 2.
-            286 => 1,
-            287 => 1,
-            // maxLineLength property: too long for one line at 40 characters.
-            294 => 1,
-            // Edge cases: no space before an arrow, an element at column 1, and a signed element split across lines.
-            311 => 1,
-            317 => 1,
-            322 => 1,
+            // List.
+            8 => 1,
+            // Associative array with aligned arrows.
+            15 => 1,
+            // Empty array.
+            21 => 1,
+            // Destructuring.
+            25 => 1,
+            // Nested arrays: outer array only.
+            31 => 1,
+            // Nested array inside a too-long array.
+            42 => 1,
+            // Call with trailing commas.
+            49 => 1,
+            // Array passed to a call.
+            57 => 1,
+            // Arrow function.
+            89 => 1,
+            // Configured maximum line length.
+            122 => 1,
         ];
     }
 

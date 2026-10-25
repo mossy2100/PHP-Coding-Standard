@@ -18,11 +18,7 @@ final class Inventory implements Countable, Stringable
 {
     public const int MAX_ITEMS = 100, MIN_ITEMS = 0;
 
-    public const array COLORS = [
-        'red',
-        'green',
-        'blue',
-    ];
+    public const array COLORS = ['red', 'green', 'blue',];
 
     public const array LIMITS = [
         'small' => 10,

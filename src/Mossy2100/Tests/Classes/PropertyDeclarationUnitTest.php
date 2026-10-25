@@ -27,23 +27,23 @@ class PropertyDeclarationUnitTest extends AbstractSniffTestCase
 
         return [
             // VarUsed + ScopeMissing.
-            61  => 2,
+            61 => 2,
             // Multiple.
-            64  => 1,
+            64 => 1,
             // SpacingAfterType: 0 spaces.
-            67  => 1,
+            67 => 1,
             // SpacingAfterType: 2 spaces.
-            70  => 1,
+            70 => 1,
             // StaticBeforeVisibility.
-            73  => 1,
+            73 => 1,
             // ReadonlyBeforeVisibility.
-            76  => 1,
+            76 => 1,
             // AvizKeywordOrder.
-            79  => 1,
+            79 => 1,
             // FinalAfterVisibility.
-            82  => 1,
+            82 => 1,
             // AbstractAfterVisibility.
-            90  => 1,
+            90 => 1,
             // SpacingAfterType: type and variable on separate lines.
             103 => 1,
             // SpacingAfterType: a comment between the type and variable.

@@ -6,102 +6,47 @@ This document describes the custom PHP_CodeSniffer sniffs created for the [Mossy
 
 ## Mossy2100.Arrays.ArrayDeclaration
 
-Enforces consistent array formatting based on array type. The sniff differentiates between _lists_ (no array keys
-appearing in the code), and _associative arrays_ (at least one key appearing in the code). Technically, a list in PHP is
-any array with sequential integer keys starting from 0, but since we don't want to remove keys if they exist in the
-code, we treat any array with keys as an associative array and format it as such, even if those keys are 0, 1, 2, etc.
+Requires a multi-line array to be written on one line if it fits. The rest of the array layout is enforced by stock
+sniffs (see [Inherited Sniffs](InheritedSniffs.md)), but none of them collapses a multi-line array.
 
-The format is chosen automatically based on array type and content, loosely mirroring how
-`Mossy2100\Core\Stringify::stringifyArray()` pretty-prints a value at runtime:
+- **Fits** means the whole resulting line is within `maxLineLength`: the text before the opening bracket, the collapsed
+  array, and the text after the closing bracket on its line. A fix never creates a line-length error.
+- **Outermost first.** If an enclosing array fits, only that one is reported, as fixing it collapses the nested ones.
+- **Clean output.** The fix uses single spaces, no space inside brackets, and no trailing commas.
+- **Skipped** if the array contains a comment, a heredoc or nowdoc, a multi-line string, or a brace body such as a
+  closure, anonymous class or `match` expression.
 
-- List arrays where every element is **simple** (a scalar literal, `null`/`true`/`false`, a bare variable, or a bare
-  constant) use a compact single-line format if it fits within the line length, or a grid format with uniform padding if
-  it doesn't.
-- List arrays containing at least one **complex** element (a nested array, a function/method call, a `new` expression,
-  arithmetic, enum case access, property/static access, or any other expression) always use one element per line, _even
-  if the whole array would otherwise fit on one line_. A grid or compact layout only reads unambiguously when every
-  element is a plain literal, variable, or constant. Anything more involved needs its own line.
-- List arrays containing a comment also use one element per line, so the comment is kept where it was written.
-- Associative arrays always use one key-value pair per line, arrows aligned.
-
-Array indentation defaults to 4 spaces per nesting level; this is configurable. The sniff uses `mb_strlen()` for proper
-Unicode character support when aligning arrows and grid padding. Values in associative arrays must start on the same
-line as the double arrow.
-
-**Single-line lists**: Lists where every element is simple (a scalar literal, `null`/`true`/`false`, a bare variable, or
-a bare constant) use a compact format with no trailing comma, if they fit within the line length.
+**Good:**
 
 ```php
-// Good
-$colors = ['red', 'green', 'blue'];
-$values = [1, 'two', 3.0, null, true, $x, MY_CONST];
+$user = ['name' => 'John', 'email' => 'john@example.com'];
 
-// Bad
-$colors = [
-    'red',
-    'green',
-    'blue',
+$words = [
+    'The quick brown fox jumps over the lazy dog.',
+    'Pack my box with five dozen liquor jugs, please.',
+    'How vexingly quick daft zebras jump!',
 ];
 ```
 
-**Grid format**: Simple-element lists too long for a single line are arranged in a grid with uniform padding. A trailing
-comma is included.
+**Bad:**
 
 ```php
-// Good
-$colors = [
-    'red',     'green',   'blue',    'cyan',    'magenta', 'yellow',
-    'black',   'white',   'orange',  'purple',  'brown',   'pink',
-    'grey',    'navy',    'teal',
-];
-```
-
-**One per line**: Lists containing at least one complex element (function/method calls, `new` expressions, arithmetic,
-enum case access, property/static access, or nested arrays), or a comment, always use one element per line with a
-trailing comma, regardless of whether the array would fit on one line.
-
-```php
-// Good
-$results = [
-    strtoupper('red'),
-    strtolower('GREEN'),
-    trim('  blue  '),
-];
-$points = [
-    [1, 2],
-    [3, 4],
-];
-
-// Bad: reformatted even though it fits on one line
-$results = [strtoupper('red'), strtolower('GREEN'), trim('  blue  ')];
-```
-
-**Associative arrays**: One key-value pair per line, arrows aligned, trailing comma required.
-
-```php
-// Good
 $user = [
-    'name'  => 'John',
+    'name' => 'John',
     'email' => 'john@example.com',
-    'age'   => 30,
 ];
-
-// Bad
-$user = ['name' => 'John', 'email' => 'john@example.com', 'age' => 30];
 ```
 
 **Configuration:**
 
-| Property        | Type | Default | Description                                                         |
-| --------------- | ---- | ------- | ------------------------------------------------------------------- |
-| `maxLineLength` | int  | 120     | Maximum line length before wrapping to grid or one-per-line format. |
-| `indent`        | int  | 4       | Number of spaces to indent array elements.                          |
+| Property        | Type | Default | Description                                |
+| --------------- | ---- | ------- | ------------------------------------------ |
+| `maxLineLength` | int  | 120     | Maximum line length for a collapsed array. |
 
 ```xml
 <rule ref="Mossy2100.Arrays.ArrayDeclaration">
     <properties>
         <property name="maxLineLength" value="100"/>
-        <property name="indent" value="2"/>
     </properties>
 </rule>
 ```
@@ -167,6 +112,33 @@ class User
     {
     }
 }
+```
+
+---
+
+## Mossy2100.ControlStructures.MatchArrowSpacing
+
+Requires exactly one space before and after the `=>` in a `match` arm, so arms aren't aligned, since aligned columns
+make noisy diffs. `Squiz.WhiteSpace.OperatorSpacing` covers `=>` in arrays and `foreach` loops, but not `match` arms.
+
+A line break before or after the arrow is allowed, for wrapping a long arm.
+
+**Good:**
+
+```php
+$label = match ($size) {
+    1 => 'one',
+    default => 'many',
+};
+```
+
+**Bad:**
+
+```php
+$label = match ($size) {
+    1       => 'one',
+    default => 'many',
+};
 ```
 
 ---

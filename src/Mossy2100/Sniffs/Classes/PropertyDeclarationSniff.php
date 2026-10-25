@@ -70,9 +70,7 @@ class PropertyDeclarationSniff extends AbstractVariableSniff
         assert(is_string($content));
         if (isset($content[1]) && $content[1] === '_') {
             $error = 'Property name "%s" should not be prefixed with an underscore to indicate visibility';
-            $data = [
-                $tokens[$stackPtr]['content'],
-            ];
+            $data = [$tokens[$stackPtr]['content']];
             $phpcsFile->addWarning($error, $stackPtr, 'Underscore', $data);
         }
     }
@@ -182,9 +180,7 @@ class PropertyDeclarationSniff extends AbstractVariableSniff
     {
         if ($propertyInfo['scope_specified'] === false && $propertyInfo['set_scope'] === false) {
             $error = 'Visibility must be declared on property "%s"';
-            $data = [
-                $tokens[$stackPtr]['content'],
-            ];
+            $data = [$tokens[$stackPtr]['content']];
             $phpcsFile->addError($error, $stackPtr, 'ScopeMissing', $data);
         }
     }
