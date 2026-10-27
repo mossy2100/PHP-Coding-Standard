@@ -92,6 +92,7 @@ class SingleLineHelper
         }
 
         $result = '';
+        $lineLength = $tokens[$openPtr]['column'] - 1;
         $pendingSpace = false;
         for ($i = $openPtr; $i <= $closePtr; $i++) {
             $code = $tokens[$i]['code'];
@@ -124,18 +125,26 @@ class SingleLineHelper
                 $noSpaceBefore = in_array($code, [...self::CLOSERS, ...self::OBJECT_OPERATORS], true);
                 if (!$noSpaceAfter && !$noSpaceBefore) {
                     $result .= ' ';
+                    $lineLength++;
                 }
             }
             $pendingSpace = false;
             $result .= $tokens[$i]['content'];
+            $lineLength += mb_strlen($tokens[$i]['content']);
+
+            // Stop as soon as it can't fit. An enclosing array is usually far too long, and building all of it for each
+            // nested array would be quadratic.
+            if ($lineLength > $maxLineLength) {
+                return null;
+            }
         }
 
-        // Measure the whole resulting line.
+        // Add the text after the closing bracket on its line.
         $after = '';
         for ($i = $closePtr + 1; isset($tokens[$i]) && !str_contains($tokens[$i]['content'], "\n"); $i++) {
             $after .= $tokens[$i]['content'];
         }
-        $lineLength = $tokens[$openPtr]['column'] - 1 + mb_strlen($result) + mb_strlen(rtrim($after));
+        $lineLength += mb_strlen(rtrim($after));
 
         return $lineLength <= $maxLineLength ? $result : null;
     }
