@@ -81,6 +81,18 @@ $texts = [
     world',
 ];
 
+// Two arrays that each fit, but not once joined: only the first is collapsed.
+$defaults = ['alpha' => 'first value here', 'beta' => 'second value here'] + [
+    'gamma' => 'third value here',
+    'delta' => 'fourth value here',
+];
+
+// A too-long array, then one that fits on the joined line.
+$defaults = [
+    'alpha' => 'a first value that is long enough to keep this array from fitting on one line',
+    'beta' => 'second value',
+] + ['gamma' => 'third value'];
+
 // A configured maximum line length.
 // phpcs:set Mossy2100.Arrays.ArrayDeclaration maxLineLength 40
 $colors = [

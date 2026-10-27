@@ -38,8 +38,12 @@ class ArrayDeclarationUnitTest extends AbstractSniffTestCase
             57 => 1,
             // Arrow function.
             89 => 1,
+            // Two arrays on one line: the first only, as the joined line is too long.
+            115 => 1,
+            // A too-long array, then one that fits on the joined line.
+            127 => 1,
             // Configured maximum line length.
-            122 => 1,
+            139 => 1,
         ];
     }
 

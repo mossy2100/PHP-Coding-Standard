@@ -58,6 +58,9 @@ class SingleLineHelper
      * The whole resulting line must fit: the text before the opening bracket, the collapsed text, and the text after
      * the closing bracket on its line. This means a fix can never create a line-length error.
      *
+     * If the line starts with the closer of an earlier multi-line array that will also be collapsed, this one is left
+     * for the next fixer pass. Both would be fixed in the same pass, and the joined line could be too long.
+     *
      * @param File $phpcsFile The file being scanned.
      * @param int $openPtr The position of the opening bracket.
      * @param int $closePtr The position of the closing bracket.
@@ -67,6 +70,18 @@ class SingleLineHelper
     public static function collapse(File $phpcsFile, int $openPtr, int $closePtr, int $maxLineLength): ?string
     {
         $tokens = $phpcsFile->getTokens();
+
+        // Defer to the next pass if an earlier array on this line will be collapsed in this one.
+        $firstPtr = $phpcsFile->findFirstOnLine(T_WHITESPACE, $openPtr, true);
+        if ($firstPtr !== false && $firstPtr !== $openPtr && $tokens[$firstPtr]['code'] === T_CLOSE_SHORT_ARRAY) {
+            $prevOpenPtr = $tokens[$firstPtr]['bracket_opener'];
+            if (
+                $tokens[$prevOpenPtr]['line'] !== $tokens[$firstPtr]['line']
+                && self::collapse($phpcsFile, $prevOpenPtr, $firstPtr, $maxLineLength) !== null
+            ) {
+                return null;
+            }
+        }
 
         $result = '';
         $pendingSpace = false;
