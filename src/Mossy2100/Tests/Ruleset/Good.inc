@@ -108,6 +108,23 @@ final class Inventory implements Countable, Stringable
     }
 
     /**
+     * Check whether an item is in the inventory, ignoring case.
+     *
+     * @param string $item The item name.
+     * @return bool True if the item is found.
+     */
+    public function has(string $item): bool
+    {
+        foreach ($this->items as $existing) {
+            if (strcasecmp($existing, $item) === 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Count the items.
      *
      * @return int The number of items.

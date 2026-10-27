@@ -44,8 +44,12 @@ class ArrayDeclarationUnitTest extends AbstractSniffTestCase
             123 => 1,
             // A too-long array, then one that fits on the joined line.
             135 => 1,
+            // Inner array after a call and an index, and inside a call: outer array only.
+            140 => 1,
+            // Inner array after a brace group.
+            151 => 1,
             // Configured maximum line length.
-            147 => 1,
+            164 => 1,
         ];
     }
 

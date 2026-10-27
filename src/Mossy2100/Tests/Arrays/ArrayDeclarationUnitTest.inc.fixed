@@ -96,6 +96,15 @@ $defaults = [
     'beta' => 'second value',
 ] + ['gamma' => 'third value'];
 
+// An inner array after a call and an index, and inside a call: outer array only.
+$values = [foo(1), $a[0], bar([1])];
+
+// An inner array after a brace group: the outer array can't be collapsed, so the inner one is reported.
+$values = [
+    $obj->{'name'},
+    [1],
+];
+
 // A configured maximum line length.
 // phpcs:set Mossy2100.Arrays.ArrayDeclaration maxLineLength 40
 $colors = [

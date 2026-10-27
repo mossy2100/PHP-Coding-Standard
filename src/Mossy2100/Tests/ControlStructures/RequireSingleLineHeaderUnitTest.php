@@ -19,6 +19,12 @@ class RequireSingleLineHeaderUnitTest extends AbstractSniffTestCase
      */
     protected function getErrorList(string $testFile = ''): array
     {
+        // RequireSingleLineHeaderUnitTest.1.inc is a live-coding case with an unclosed header, which must produce no
+        // errors.
+        if ($testFile !== 'RequireSingleLineHeaderUnitTest.inc') {
+            return [];
+        }
+
         return [
             // foreach.
             9 => 1,
