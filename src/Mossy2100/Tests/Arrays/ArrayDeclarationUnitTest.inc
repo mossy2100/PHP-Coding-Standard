@@ -90,6 +90,14 @@ $callbacks = [
     static fn (int $x): int => $x * 2,
 ];
 
+// A wrapped method chain.
+$values = [
+    $a
+        ->b()
+        ?->c()
+        ::d(),
+];
+
 // Contains a match expression.
 $labels = [
     match ($size) {

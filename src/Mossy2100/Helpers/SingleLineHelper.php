@@ -10,7 +10,8 @@ use PHP_CodeSniffer\Files\File;
  * Helper class for collapsing a multi-line bracketed construct, such as an array or a control structure header, onto
  * one line.
  *
- * The collapsed text has single spaces between tokens, no space inside brackets or parentheses, and no trailing commas.
+ * The collapsed text has single spaces between tokens, no space inside brackets or parentheses or around `->`, `?->`
+ * and `::`, and no trailing commas.
  *
  * A construct is never collapsed if it contains:
  * - A comment, which would be lost or would comment out the rest of the line.
@@ -32,6 +33,13 @@ class SingleLineHelper
      * @var list<int|string>
      */
     private const array CLOSERS = [T_CLOSE_SHORT_ARRAY, T_CLOSE_SQUARE_BRACKET, T_CLOSE_PARENTHESIS];
+
+    /**
+     * Tokens with no space on either side.
+     *
+     * @var list<int|string>
+     */
+    private const array OBJECT_OPERATORS = [T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR, T_DOUBLE_COLON];
 
     /**
      * Tokens that stop a construct from being collapsed.
@@ -109,10 +117,12 @@ class SingleLineHelper
                 }
             }
 
-            // One space between tokens, but none just inside brackets and parentheses.
+            // One space between tokens, but none just inside brackets and parentheses or around object operators.
             if ($pendingSpace && $result !== '') {
                 $prevCode = $tokens[$phpcsFile->findPrevious(T_WHITESPACE, $i - 1, $openPtr, true)]['code'];
-                if (!in_array($prevCode, self::OPENERS, true) && !in_array($code, self::CLOSERS, true)) {
+                $noSpaceAfter = in_array($prevCode, [...self::OPENERS, ...self::OBJECT_OPERATORS], true);
+                $noSpaceBefore = in_array($code, [...self::CLOSERS, ...self::OBJECT_OPERATORS], true);
+                if (!$noSpaceAfter && !$noSpaceBefore) {
                     $result .= ' ';
                 }
             }

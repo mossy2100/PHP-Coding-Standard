@@ -30,6 +30,8 @@ class RequireSingleLineHeaderUnitTest extends AbstractSniffTestCase
             35 => 1,
             // match.
             43 => 1,
+            // Wrapped method chain.
+            50 => 1,
         ];
     }
 

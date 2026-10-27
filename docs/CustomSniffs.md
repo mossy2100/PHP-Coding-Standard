@@ -12,7 +12,8 @@ sniffs (see [Inherited Sniffs](InheritedSniffs.md)), but none of them collapses 
 - **Fits** means the whole resulting line is within `maxLineLength`: the text before the opening bracket, the collapsed
   array, and the text after the closing bracket on its line. A fix never creates a line-length error.
 - **Outermost first.** If an enclosing array fits, only that one is reported, as fixing it collapses the nested ones.
-- **Clean output.** The fix uses single spaces, no space inside brackets, and no trailing commas.
+- **Clean output.** The fix uses single spaces, no space inside brackets or around `->`, `?->` and `::`, and no
+  trailing commas.
 - **Skipped** if the array contains a comment, a heredoc or nowdoc, a multi-line string, or a brace body such as a
   closure, anonymous class or `match` expression.
 

@@ -46,6 +46,14 @@ $label = match (
     default => 'any',
 };
 
+// A wrapped method chain.
+foreach (
+    $repository
+        ->findAll() as $item
+) {
+    echo $item;
+}
+
 // Too long for one line.
 foreach (
     $this->someVeryLongRepositoryName->findEverythingMatchingTheseCriteria($firstCriterion, $second) as $key => $value

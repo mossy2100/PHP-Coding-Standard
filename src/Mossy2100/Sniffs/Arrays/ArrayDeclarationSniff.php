@@ -17,9 +17,9 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  * An array fits if the whole resulting line does: the text before the opening bracket, the collapsed array, and the
  * text after the closing bracket on its line. This means the fix can never create a line-length error.
  *
- * The collapsed array has single spaces between tokens, no space inside brackets or parentheses, and no trailing
- * commas, so the fixed line needs no further fixes from the other array sniffs. See SingleLineHelper for the arrays
- * that are never collapsed, such as those containing a comment.
+ * The collapsed array has single spaces between tokens, no space inside brackets or parentheses or around `->`, `?->`
+ * and `::`, and no trailing commas, so the fixed line needs no further fixes from the other array sniffs. See
+ * SingleLineHelper for the arrays that are never collapsed, such as those containing a comment.
  *
  * Arrays are checked outermost first. If an enclosing array fits on one line, only that array is reported, as fixing it
  * also collapses the nested ones.
