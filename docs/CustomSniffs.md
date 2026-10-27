@@ -241,7 +241,6 @@ class Example
     public const int A = 1;
     public const int B = 2;
     public const array SCORES = [42, 33, 12, 99]; // Not flagged: the commas belong to the array literal.
-    public const array SIZES = array(1, 2);       // Not flagged: the comma is inside the parentheses.
 }
 
 const I = new Complex(0, 1); // Not flagged: the comma belongs to the constructor call (PHP 8.1+).
@@ -250,5 +249,10 @@ const I = new Complex(0, 1); // Not flagged: the comma belongs to the constructo
 **Bad:**
 
 ```php
-public const int A = 1, B = 2; // comma detected as indicating multi-constant definition
+class Example
+{
+    public const int A = 1, B = 2; // Flagged: two constants in one statement.
+}
+
+const C = 3, D = 4; // Flagged: the same applies outside a class.
 ```
