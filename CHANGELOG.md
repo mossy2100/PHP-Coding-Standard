@@ -21,7 +21,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
   The added stock sniffs are `Generic.Arrays.ArrayIndent`, `Squiz.Arrays.ArrayDeclaration` (alignment checks
   excluded), `Squiz.WhiteSpace.OperatorSpacing` and `SlevomatCodingStandard.Arrays.MultiLineArrayEndBracketPlacement`.
-  The sniff's `indent` property was removed; `maxLineLength` remains. Run `phpcbf` to reformat existing code.
+  The sniff's `indent` property was removed; `maxLineLength` remains. Run `phpcbf` to reformat existing code. Its
+  error codes are replaced by one, `Mossy2100.Arrays.ArrayDeclaration.ShouldBeSingleLine`. Update any `phpcs:ignore`
+  comments or `<exclude>` rules that name an old code, such as `ListShouldBeSingleLine`.
 - **Renamed the package from `oceanmoon/coding-standard` to `mossy2100/coding-standard`, and the standard from
   `OceanMoon` to `Mossy2100` (breaking),** matching the author's GitHub and Packagist name. Use
   `<rule ref="Mossy2100"/>` in `phpcs.xml`. Sniff codes change to match, e.g. `Mossy2100.Classes.PropertyDeclaration`,
