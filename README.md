@@ -44,15 +44,19 @@ See [Custom Sniffs](docs/CustomSniffs.md) for details.
 
 ## Development and Quality Assurance
 
-[Claude Chat](https://claude.ai) and [Claude Code](https://www.claude.com/product/claude-code) were used in the development of this package. The core classes were designed, coded, and
-commented primarily by the author, with Claude providing substantial assistance with code review, suggesting
-improvements, debugging, and generating tests and documentation.
+This package was developed with [Claude Code](https://claude.com/product/claude-code):
 
-All code was thoroughly reviewed by the author, and validated using industry-standard tools including [PHP_CodeSniffer](https://github.com/PHPCSStandards/PHP_CodeSniffer/)
-and [PHPStan](https://phpstan.org/) (to level 9) to ensure full compliance with [PSR-12](https://www.php-fig.org/psr/psr-12/) coding standards.
+- The author developed the initial concept, designed the rules, and did most of the initial coding.
+- Claude Code wrote the tests and most of the documentation.
+- Claude Code also assisted with multiple code reviews, which led to bug fixes, performance improvements and other
+  refinements.
 
-This collaborative approach has produced a well-designed, production-ready package with thorough test coverage and
-documentation.
+The code is checked with:
+
+- [PHP_CodeSniffer](https://github.com/PHPCSStandards/PHP_CodeSniffer/), for [PSR-12](https://www.php-fig.org/psr/psr-12/)
+  compliance plus the Mossy2100 coding standard
+- [PHPStan](https://phpstan.org/), at level 9
+- [PHPUnit](https://phpunit.de/index.html), with a unit test for each custom sniff
 
 ---
 
