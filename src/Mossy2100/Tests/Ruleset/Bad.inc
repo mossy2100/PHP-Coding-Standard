@@ -62,7 +62,7 @@ final class Inventory implements Countable, Stringable
         }
 
         $this->items[] = $item;
-        $this->version++;
+        $this -> version++;
 
         return $this;
     }

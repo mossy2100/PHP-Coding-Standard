@@ -44,6 +44,8 @@ The complete PSR-12 coding standard is included, with the following exceptions:
 - **Squiz.WhiteSpace.OperatorSpacing**: Requires a single space around operators, including before `=` and `=>`, so
   assignments and array arrows are not aligned. `match` arms are covered by
   `Mossy2100.ControlStructures.MatchArrowSpacing` instead (see [Custom Sniffs](CustomSniffs.md)).
+- **Squiz.WhiteSpace.ObjectOperatorSpacing**: Disallows spaces around `->`, `?->` and `::`, e.g. `$a -> b()`. A line
+  break before one, in a wrapped method chain, is allowed.
 
 ---
 

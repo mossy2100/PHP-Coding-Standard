@@ -43,6 +43,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   to read in a constructor signature. Declare the property in the class body instead. This is stricter than PER Coding
   Style 3.0, which allows a single short hook on one line. Inherited Slevomat sniffs also misread such hooks and report
   errors that `phpcbf` can't fix. Not auto-fixable.
+- **`Squiz.WhiteSpace.ObjectOperatorSpacing` (breaking).** Disallows spaces around `->`, `?->` and `::`, e.g.
+  `$a -> b()` or `Foo :: bar()`. A line break before one, in a wrapped method chain, is allowed. Auto-fixable.
 
 ### Removed
 
