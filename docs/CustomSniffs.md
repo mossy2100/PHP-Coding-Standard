@@ -43,29 +43,7 @@ $user = [
 | --------------- | ---- | ------- | ------------------------------------------ |
 | `maxLineLength` | int  | 120     | Maximum line length for a collapsed array. |
 
-Keep `maxLineLength` the same as `lineLengthLimit` on `SlevomatCodingStandard.Files.LineLength`. They are set
-separately, so if you lower only the general limit, collapsed arrays can exceed it. An XML entity keeps them in step:
-
-```xml
-<?xml version="1.0"?>
-<!DOCTYPE ruleset [
-    <!ENTITY lineLength "100">
-]>
-<ruleset name="MyProject">
-    <rule ref="Mossy2100"/>
-
-    <rule ref="Mossy2100.Arrays.ArrayDeclaration">
-        <properties>
-            <property name="maxLineLength" value="&lineLength;"/>
-        </properties>
-    </rule>
-    <rule ref="SlevomatCodingStandard.Files.LineLength">
-        <properties>
-            <property name="lineLengthLimit" value="&lineLength;"/>
-        </properties>
-    </rule>
-</ruleset>
-```
+To use a different limit, set every line-length property, as described in [Changing the Line Length](../README.md#changing-the-line-length).
 
 ---
 
@@ -193,7 +171,7 @@ foreach (
 | --------------- | ---- | ------- | ------------------------------------------- |
 | `maxLineLength` | int  | 120     | Maximum line length for a collapsed header. |
 
-Keep it the same as the other line-length settings, as described for `Mossy2100.Arrays.ArrayDeclaration`.
+To use a different limit, set every line-length property, as described in [Changing the Line Length](../README.md#changing-the-line-length).
 
 ---
 

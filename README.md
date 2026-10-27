@@ -103,6 +103,90 @@ vendor/bin/phpcs        # Check for issues
 vendor/bin/phpcbf       # Auto-fix issues
 ```
 
+### Changing the Line Length
+
+The line length limit is 120. Ten sniffs check or wrap long lines, and each has its own property. The standard sets
+them all from one XML entity, but your ruleset can't change that entity, so override every property:
+
+| Sniff                                                                      | Property          | Value      |
+| -------------------------------------------------------------------------- | ----------------- | ---------- |
+| `SlevomatCodingStandard.Files.LineLength`                                  | `lineLengthLimit` | length     |
+| `SlevomatCodingStandard.Classes.RequireSingleLineMethodSignature`          | `maxLineLength`   | length     |
+| `SlevomatCodingStandard.Classes.RequireMultiLineMethodSignature`           | `minLineLength`   | length + 1 |
+| `SlevomatCodingStandard.ControlStructures.RequireSingleLineCondition`      | `maxLineLength`   | length     |
+| `SlevomatCodingStandard.ControlStructures.RequireMultiLineCondition`       | `minLineLength`   | length + 1 |
+| `SlevomatCodingStandard.ControlStructures.RequireMultiLineTernaryOperator` | `lineLengthLimit` | length     |
+| `SlevomatCodingStandard.Functions.RequireSingleLineCall`                   | `maxLineLength`   | length     |
+| `SlevomatCodingStandard.Functions.RequireMultiLineCall`                    | `minLineLength`   | length + 1 |
+| `Mossy2100.Arrays.ArrayDeclaration`                                        | `maxLineLength`   | length     |
+| `Mossy2100.ControlStructures.RequireSingleLineHeader`                      | `maxLineLength`   | length     |
+
+If you set only some of them, the fixers can create lines over your limit, or leave lines short that could be joined.
+
+Two entities keep the values in step. XML can't do arithmetic, so the "plus one" value is set separately:
+
+```xml
+<?xml version="1.0"?>
+<!DOCTYPE ruleset [
+    <!ENTITY lineLength "100">
+    <!ENTITY lineLengthPlusOne "101">
+]>
+<ruleset name="My Project">
+    <rule ref="Mossy2100"/>
+
+    <rule ref="SlevomatCodingStandard.Files.LineLength">
+        <properties>
+            <property name="lineLengthLimit" value="&lineLength;"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Classes.RequireSingleLineMethodSignature">
+        <properties>
+            <property name="maxLineLength" value="&lineLength;"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Classes.RequireMultiLineMethodSignature">
+        <properties>
+            <property name="minLineLength" value="&lineLengthPlusOne;"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.ControlStructures.RequireSingleLineCondition">
+        <properties>
+            <property name="maxLineLength" value="&lineLength;"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.ControlStructures.RequireMultiLineCondition">
+        <properties>
+            <property name="minLineLength" value="&lineLengthPlusOne;"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.ControlStructures.RequireMultiLineTernaryOperator">
+        <properties>
+            <property name="lineLengthLimit" value="&lineLength;"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Functions.RequireSingleLineCall">
+        <properties>
+            <property name="maxLineLength" value="&lineLength;"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Functions.RequireMultiLineCall">
+        <properties>
+            <property name="minLineLength" value="&lineLengthPlusOne;"/>
+        </properties>
+    </rule>
+    <rule ref="Mossy2100.Arrays.ArrayDeclaration">
+        <properties>
+            <property name="maxLineLength" value="&lineLength;"/>
+        </properties>
+    </rule>
+    <rule ref="Mossy2100.ControlStructures.RequireSingleLineHeader">
+        <properties>
+            <property name="maxLineLength" value="&lineLength;"/>
+        </properties>
+    </rule>
+</ruleset>
+```
+
 ---
 
 ## Included Sniffs

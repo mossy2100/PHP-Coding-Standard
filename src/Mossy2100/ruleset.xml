@@ -118,9 +118,17 @@
             <property name="minLinesCountBeforeWithoutComment" value="1"/>
         </properties>
     </rule>
-    <rule ref="SlevomatCodingStandard.Classes.RequireMultiLineMethodSignature"/>
+    <rule ref="SlevomatCodingStandard.Classes.RequireMultiLineMethodSignature">
+        <properties>
+            <property name="minLineLength" value="&lineLengthPlusOne;"/>
+        </properties>
+    </rule>
     <rule ref="SlevomatCodingStandard.Classes.RequireSelfReference"/>
-    <rule ref="SlevomatCodingStandard.Classes.RequireSingleLineMethodSignature"/>
+    <rule ref="SlevomatCodingStandard.Classes.RequireSingleLineMethodSignature">
+        <properties>
+            <property name="maxLineLength" value="&lineLength;"/>
+        </properties>
+    </rule>
     <rule ref="SlevomatCodingStandard.Classes.TraitUseDeclaration"/>
     <rule ref="SlevomatCodingStandard.Classes.TraitUseSpacing">
         <properties>
