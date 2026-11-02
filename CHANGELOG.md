@@ -10,8 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- **`SlevomatCodingStandard.Classes.ClassKeywordOrder` (breaking).** Requires `abstract` or `final` before `readonly`
-  on a class, e.g. `final readonly class`, not `readonly final class`, as PER Coding Style 3.0 requires. Auto-fixable.
+- **`Mossy2100.NamingConventions.ValidConstantName` (breaking).** Disallows a constant name that starts with an
+  underscore, e.g. `public const int _LIMIT = 10;`, as PER Coding Style 3.0 requires. Not auto-fixable.
+- **`SlevomatCodingStandard.Classes.ClassKeywordOrder` (breaking).** Requires `abstract` or `final` before `readonly` on
+  a class, e.g. `final readonly class`, not `readonly final class`, as PER Coding Style 3.0 requires. Auto-fixable.
 - **`Mossy2100.Formatting.EmptyBody` (breaking).** Warns about an empty class or function body that isn't written as
   `{}` on the same line as the declaration, as PER Coding Style 3.0 recommends, e.g. `public function reset(): void {}`.
   Auto-fixable.

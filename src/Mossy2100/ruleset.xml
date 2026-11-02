@@ -358,6 +358,9 @@
     <!-- An attribute on the line before its target, except on a parameter in a single-line list -->
     <rule ref="Mossy2100.Attributes.AttributePlacement"/>
 
+    <!-- No leading underscore on a constant (PER Coding Style 4.3) -->
+    <rule ref="Mossy2100.NamingConventions.ValidConstantName"/>
+
     <!-- Leading underscore on a variable or parameter inside a class, which Squiz.NamingConventions.ValidVariableName
          allows there -->
     <rule ref="Mossy2100.NamingConventions.ValidVariableName"/>

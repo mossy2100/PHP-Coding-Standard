@@ -386,6 +386,35 @@ can't be run on its own. See [Mossy2100.Formatting.EmptyBody](#mossy2100formatti
 
 ---
 
+## Mossy2100.NamingConventions.ValidConstantName
+
+Disallows a constant name that starts with an underscore, for class constants and `const` statements at file scope.
+
+**Why:** [PER Coding Style 3.0, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says constant names MUST NOT start with an underscore.
+`Generic.NamingConventions.UpperCaseConstantName` only checks the case, so `const _HIDDEN = 1;` passes it.
+
+**Auto-fixable:** no. Renaming a constant is a refactor, not a fix.
+
+**Good:**
+
+```php
+final class Config
+{
+    public const int LIMIT = 10;
+}
+```
+
+**Bad:**
+
+```php
+final class Config
+{
+    public const int _LIMIT = 10;
+}
+```
+
+---
+
 ## Mossy2100.NamingConventions.ValidVariableName
 
 Warns about a variable or parameter whose name starts with an underscore, inside a class, enum, trait or interface.

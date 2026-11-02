@@ -110,6 +110,7 @@ for PHP 8.4 features such as property hooks, or set house-style choices. Each on
 | `Mossy2100.Formatting.DisallowMultipleStatements`     | One statement per line, allowing `{ get; set; }`              | Yes     |
 | `Mossy2100.Formatting.EmptyBody`                      | An empty class or function body is `{}` (a warning)           | Yes     |
 | `Mossy2100.Functions.MultiLineFunctionDeclaration`    | Function declarations, allowing an empty body as `{}`         | Yes     |
+| `Mossy2100.NamingConventions.ValidConstantName`       | No leading underscore on a constant                           | No      |
 | `Mossy2100.NamingConventions.ValidVariableName`       | No leading underscore on a variable or parameter in a class   | No      |
 | `Mossy2100.PHP.DisallowMultiConstantDefinition`       | One constant per statement                                    | Yes     |
 | `Mossy2100.WhiteSpace.ScopeClosingBrace`              | A closing brace on its own line, allowing `{}`                | Yes     |
