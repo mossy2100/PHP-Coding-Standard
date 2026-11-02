@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`Mossy2100.ControlStructures.MultiLineTernaryOperator` (breaking).** Requires a ternary that spans lines to take
+  three, with `?` and `:` each starting a line, indented once, as PER Coding Style 3.0 requires. Replaces
+  `SlevomatCodingStandard.ControlStructures.DisallowTrailingMultiLineTernaryOperator`, which only reported a trailing
+  `?`. Auto-fixable.
 - **`Mossy2100.NamingConventions.ValidConstantName` (breaking).** Disallows a constant name that starts with an
   underscore, e.g. `public const int _LIMIT = 10;`, as PER Coding Style 3.0 requires. Not auto-fixable.
 - **`SlevomatCodingStandard.Classes.ClassKeywordOrder` (breaking).** Requires `abstract` or `final` before `readonly` on

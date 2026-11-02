@@ -106,7 +106,6 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 ### Control Structures
 
 - **DisallowContinueWithoutIntegerOperandInSwitch**: Disallows `continue` without an operand in `switch`.
-- **DisallowTrailingMultiLineTernaryOperator**: Requires leading operators in multi-line ternary expressions.
 - **LanguageConstructWithParentheses**: Disallows parentheses around language construct arguments, e.g. `echo('x')`.
 - **RequireMultiLineCondition**: Requires multi-line format for long conditions with boolean operators.
 - **RequireMultiLineTernaryOperator**: Requires multi-line format for long ternary operators.

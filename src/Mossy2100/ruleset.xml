@@ -173,7 +173,6 @@
 
     <!-- ControlStructures -->
     <rule ref="SlevomatCodingStandard.ControlStructures.DisallowContinueWithoutIntegerOperandInSwitch"/>
-    <rule ref="SlevomatCodingStandard.ControlStructures.DisallowTrailingMultiLineTernaryOperator"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.LanguageConstructWithParentheses"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.RequireMultiLineCondition">
         <properties>
@@ -351,6 +350,9 @@
 
     <!-- A warning for an empty class or function body that isn't written as {} (PER Coding Style 4, 4.4) -->
     <rule ref="Mossy2100.Formatting.EmptyBody"/>
+
+    <!-- A ternary that spans lines takes three, with ? and : leading, indented once (PER Coding Style 6.4) -->
+    <rule ref="Mossy2100.ControlStructures.MultiLineTernaryOperator"/>
 
     <!-- One statement per line, allowing { get; set; } on an abstract or interface property (PER Coding Style 4.10) -->
     <rule ref="Mossy2100.Formatting.DisallowMultipleStatements"/>

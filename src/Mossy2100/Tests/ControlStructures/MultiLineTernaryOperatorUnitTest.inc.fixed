@@ -1,0 +1,59 @@
+<?php
+
+// === VALID ===
+
+$single = $a ? $b : $c;
+
+$threeLines = $a
+    ? $b
+    : $c;
+
+$inCall = max(
+    $a
+        ? $b
+        : $c,
+    1,
+);
+
+$longCondition = $a
+    && $b
+    ? $c
+    : $d;
+
+$multiLineElse = $a
+    ? []
+    : [
+        'first' => $c,
+    ];
+
+$short = $a
+    ?: $c;
+
+// === INVALID ===
+
+$twoLinesThenLeading = $a
+    ? $b
+    : $c;
+
+$twoLinesElseLeading = $a
+    ? $b
+    : $c;
+
+$trailingBoth = $a
+    ? $b
+    : $c;
+
+$trailingElse = $a
+    ? $b
+    : $c;
+
+$notIndented = $a
+    ? $b
+    : $c;
+
+$indentedTwice = $a
+    ? $b
+    : $c;
+
+$commented = $a // Why.
+    ? $b : $c;

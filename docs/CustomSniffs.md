@@ -210,6 +210,11 @@ class User
     private string $secret = '';
     public static int $total = 0;
 
+    public string $name {
+        get => ucfirst($this->name);
+        set => trim($value);
+    }
+
     public function __construct(private int $id) {}
 }
 ```
@@ -222,6 +227,12 @@ class User
     private string $_secret = '';  // Leading underscore.
     var $legacy;                   // The var keyword.
     static int $total = 0;         // No visibility.
+
+    // The set hook before the get hook.
+    public string $name {
+        set => trim($value);
+        get => ucfirst($this->name);
+    }
 
     // Leading underscore on a promoted parameter.
     public function __construct(private int $_id) {}
@@ -257,6 +268,38 @@ $label = match ($size) {
     1       => 'one',
     default => 'many',
 };
+```
+
+---
+
+## Mossy2100.ControlStructures.MultiLineTernaryOperator
+
+Requires a ternary that spans lines to take three, with `?` and `:` each starting a line, indented once. This replaces
+`SlevomatCodingStandard.ControlStructures.DisallowTrailingMultiLineTernaryOperator`.
+
+**Why:** [PER Coding Style 3.0, Section 6.4](https://www.php-fig.org/per/coding-style/#64-operators-placement) says a multi-line ternary MUST occupy three lines, never two, with each
+operator at the start of its line. The Slevomat sniff only reports a `?` at the end of a line. No inherited sniff
+reports a ternary on two lines, a trailing `:`, or the wrong indentation. A short ternary (`?:`) is a binary operator in
+PER, so it isn't checked here.
+
+**Auto-fixable:** yes, unless a comment is next to `?` or `:`.
+
+**Good:**
+
+```php
+$label = $isActive
+    ? 'Active'
+    : 'Inactive';
+```
+
+**Bad:**
+
+```php
+$label = $isActive
+    ? 'Active' : 'Inactive';
+
+$label = $isActive ? 'Active' :
+    'Inactive';
 ```
 
 ---
