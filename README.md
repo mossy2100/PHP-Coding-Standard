@@ -107,58 +107,10 @@ The standard is PSR-12, plus sniffs from PHP_CodeSniffer and Slevomat, plus thes
 
 ---
 
-## Variable and Property Naming Convention
+## Variable and Property Names
 
-Variables, parameters and properties must use `$camelCase`, with no leading underscore. Superglobals such as `$_GET` are
-exempt.
-
-| Name                                                      | Severity | Sniff                                           |
-| --------------------------------------------------------- | -------- | ----------------------------------------------- |
-| Not camelCase, e.g. `$user_name`                          | Error    | `Squiz.NamingConventions.ValidVariableName`     |
-| Property with a leading `_`, including promoted ones      | Error    | `Mossy2100.Classes.PropertyDeclaration`         |
-| Variable or parameter with a leading `_`, outside a class | Error    | `Squiz.NamingConventions.ValidVariableName`     |
-| Variable or parameter with a leading `_`, inside a class  | Warning  | `Mossy2100.NamingConventions.ValidVariableName` |
-
-Squiz allows a leading underscore inside a class, because the Squiz convention prefixes private members with one. The
-Mossy2100 sniffs fill that gap.
-
-**Good:**
-
-```php
-$userName = 'John';
-$orderTotal = 100;
-$isValid = true;
-```
-
-**Bad:**
-
-```php
-$user_name = 'John';   // snake_case not allowed
-$_private = 'value';   // leading underscore not allowed
-$UserName = 'John';    // UpperCamelCase not allowed
-```
-
-### Why camelCase
-
-PSR-1, PSR-12 and PER Coding Style 3.0 don't set a naming convention for variables or properties.
-[PSR-1, Section 4.2 "Properties"](https://www.php-fig.org/psr/psr-1/#42-properties) only asks for consistency:
-
-> This guide intentionally avoids any recommendation regarding the use of \$StudlyCaps, \$camelCase, or \$under_score
-> property names. Whatever naming convention is used SHOULD be applied consistently within a reasonable scope. That
-> scope may be vendor-level, package-level, class-level, or method-level.
-
-[PER Coding Style 3.0, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) rules out the underscore prefix:
-
-> Property or constant names MUST NOT be prefixed with a single underscore to indicate protected or private visibility.
-> That is, an underscore prefix explicitly has no meaning.
-
-`$camelCase` is now the common choice in object-oriented PHP, and matches most major conventions:
-
-- [Symfony](https://symfony.com/doc/current/contributing/code/standards.html#naming-conventions) requires `$camelCase`.
-- [Spatie's Laravel guidelines](https://spatie.be/guidelines/laravel-php#content-general-php-rules) require `$camelCase`. Laravel itself has no official rule.
-- [Drupal](https://project.pages.drupalcode.org/coding_standards/php/coding/#functions-and-variables) allows `$camelCase` or `$snake_case` for variables, if consistent. [Drupal properties](https://project.pages.drupalcode.org/coding_standards/php/coding/#classes-methods-and-properties) use `$camelCase`, with no
-  underscore prefix.
-- WordPress is the exception: `$snake_case` for variables, and either style for properties.
+Variables, parameters and properties must use `$camelCase`, with no leading underscore. See [Variable and Property Names](docs/VariableAndPropertyNames.md)
+for which sniff checks each kind of name, and why the standard uses camelCase.
 
 ---
 

@@ -40,7 +40,7 @@ The complete PSR-12 coding standard is included, with the following exceptions:
   associative, onto several lines. `Mossy2100.Arrays.ArrayDeclaration` requires single-line where it fits.
 - **Squiz.NamingConventions.ValidVariableName**: Enforces `$camelCase` for variables, parameters, and properties. Its
   checks for an underscore on properties are excluded, as one requires it on private properties. See
-  [Variable and Property Naming Convention](../README.md#variable-and-property-naming-convention).
+  [Variable and Property Names](VariableAndPropertyNames.md).
 - **Squiz.Strings.DoubleQuoteUsage.NotRequired**: Ensures strings use single quotes unless double quotes are necessary.
 - **Squiz.WhiteSpace.OperatorSpacing**: Requires a single space around operators, including before `=` and `=>`, so
   assignments and array arrows are not aligned. `match` arms are covered by
