@@ -53,6 +53,7 @@ class PropertyDeclarationSniff extends AbstractVariableSniff
         $this->checkUnderscore($phpcsFile, $stackPtr, $tokens);
         $this->checkVarKeyword($phpcsFile, $stackPtr, $tokens);
         $this->checkVisibility($phpcsFile, $stackPtr, $tokens, $propertyInfo);
+        $this->checkHookOrder($phpcsFile, $stackPtr, $tokens);
     }
 
     /**
@@ -103,6 +104,72 @@ class PropertyDeclarationSniff extends AbstractVariableSniff
         if ($tokens[$prev]['code'] === T_VAR) {
             $error = 'The var keyword must not be used to declare a property';
             $phpcsFile->addError($error, $stackPtr, 'VarUsed');
+        }
+    }
+
+    /**
+     * Check that `get` comes before `set` in a list of operations with no bodies, e.g. `{ get; set; }`.
+     *
+     * PER Coding Style 3.0, section 4.10, requires this order for an abstract or interface property. A list where any
+     * hook has a body isn't checked, as PER doesn't set an order for those.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the property token.
+     * @param array<int, array<string, mixed>> $tokens The token stack.
+     */
+    private function checkHookOrder(File $phpcsFile, int $stackPtr, array $tokens): void
+    {
+        $opener = PropertyHookHelper::findHookListOpener($phpcsFile, $stackPtr);
+        $closer = $opener === false ? null : ($tokens[$opener]['bracket_closer'] ?? null);
+        if (!is_int($opener) || !is_int($closer)) {
+            return;
+        }
+
+        // Operation name => [position, content as written].
+        $operations = [];
+        $simple = true;
+        for ($i = ($opener + 1); $i < $closer; $i++) {
+            $code = $tokens[$i]['code'];
+            if ($code === T_WHITESPACE || $code === T_SEMICOLON) {
+                continue;
+            }
+
+            $content = $tokens[$i]['content'];
+            assert(is_string($content));
+            $name = strtolower($content);
+            if ($code === T_STRING && ($name === 'get' || $name === 'set')) {
+                // A hook with a body (`{`, `=>` or a parameter list) means PER sets no order.
+                $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), $closer, true);
+                if ($next === false || $tokens[$next]['code'] !== T_SEMICOLON) {
+                    return;
+                }
+
+                $operations[$name] = [$i, $content];
+                continue;
+            }
+
+            // Anything else, such as & or an attribute, isn't safe to move in a fix.
+            $simple = false;
+        }
+
+        if (!isset($operations['get'], $operations['set']) || $operations['get'][0] < $operations['set'][0]) {
+            return;
+        }
+
+        [$getPtr, $getContent] = $operations['get'];
+        [$setPtr, $setContent] = $operations['set'];
+        $error = 'The get operation must be listed before the set operation';
+        if (!$simple) {
+            $phpcsFile->addError($error, $setPtr, 'HookOrder');
+            return;
+        }
+
+        $fix = $phpcsFile->addFixableError($error, $setPtr, 'HookOrder');
+        if ($fix) {
+            $phpcsFile->fixer->beginChangeset();
+            $phpcsFile->fixer->replaceToken($setPtr, $getContent);
+            $phpcsFile->fixer->replaceToken($getPtr, $setContent);
+            $phpcsFile->fixer->endChangeset();
         }
     }
 

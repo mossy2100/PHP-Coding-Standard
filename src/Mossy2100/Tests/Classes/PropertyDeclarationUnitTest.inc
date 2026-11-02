@@ -131,3 +131,24 @@ class PromotedProperties
     ) {
     }
 }
+
+interface HookOrder
+{
+    // Valid.
+    public string $getFirst { get; set; }
+
+    // HookOrder: set before get (fixable).
+    public string $setFirst { set; get; }
+
+    // HookOrder: set before get, with & (not fixable).
+    public string $byReference { set; &get; }
+}
+
+abstract class HookOrderWithBodies
+{
+    // Valid: PER sets no order when a hook has a body.
+    public string $withBodies {
+        set => $value;
+        get => 'x';
+    }
+}

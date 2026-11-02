@@ -33,6 +33,9 @@ class PropertyDeclarationUnitTest extends AbstractSniffTestCase
             // Underscore: promoted constructor parameters.
             127 => 1,
             128 => 1,
+            // HookOrder: set before get, fixable and not.
+            141 => 1,
+            144 => 1,
         ];
     }
 
