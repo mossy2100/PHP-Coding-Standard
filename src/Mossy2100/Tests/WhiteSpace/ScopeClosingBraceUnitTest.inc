@@ -21,3 +21,8 @@ if (true) {
 function notEmpty(): int
 {
     return 1; }
+
+function anonymous(): object
+{
+    return new class {};
+}

@@ -10,17 +10,18 @@ use PHP_CodeSniffer\Files\File;
  * Helper class for empty class and function bodies.
  *
  * PER Coding Style 3.0, sections 4 and 4.4, says an empty class or function body should be abbreviated as `{}` on the
- * same line as the previous symbol. Several inherited sniffs require the braces on separate lines, so the Mossy2100
- * versions of them skip a body that this helper says is already on one line.
+ * same line as the previous symbol. An empty anonymous class is treated the same way, for consistency. Several
+ * inherited sniffs require the braces on separate lines, so the Mossy2100 versions of them skip a body that this
+ * helper says is already on one line.
  */
 class EmptyBodyHelper
 {
     /**
-     * The tokens whose empty body PER says to abbreviate.
+     * The tokens whose empty body PER says to abbreviate, plus anonymous classes.
      *
      * @var list<int|string>
      */
-    public const array OWNER_TOKENS = [T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM, T_FUNCTION];
+    public const array OWNER_TOKENS = [T_CLASS, T_ANON_CLASS, T_INTERFACE, T_TRAIT, T_ENUM, T_FUNCTION];
 
     /**
      * Check whether a body contains nothing but whitespace.

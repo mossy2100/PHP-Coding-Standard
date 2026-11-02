@@ -28,3 +28,8 @@ final class BlankBeforeClosing
     public int $a = 1;
 
 }
+
+function anonymous(): object
+{
+    return new class {};
+}

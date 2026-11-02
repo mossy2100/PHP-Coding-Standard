@@ -339,7 +339,8 @@ as the declaration, after a single space.
 
 **Why:** [PER Coding Style 3.0, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says an empty body SHOULD be abbreviated that way, including a
 constructor that only promotes properties. No inherited sniff checks it. As it's a SHOULD, this is a warning, not an
-error. A body containing a comment isn't empty, and closures aren't covered by PER 3.0.
+error. An empty anonymous class is treated the same way, for consistency. A body containing a comment isn't empty, and
+closures aren't covered by PER 3.0.
 
 **Auto-fixable:** yes, unless a comment is between the declaration and the opening brace.
 

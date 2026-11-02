@@ -14,7 +14,8 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * PER Coding Style 3.0, sections 4 and 4.4, says an empty class, interface, trait, enum, function or method body
  * should be abbreviated as `{}` on the same line as the previous symbol, separated by a space. It's a SHOULD, so this
- * sniff gives a warning. A body containing a comment isn't empty. Closures aren't covered by PER 3.0.
+ * sniff gives a warning. An empty anonymous class is treated the same way, for consistency. A body containing a comment
+ * isn't empty. Closures aren't covered by PER 3.0.
  */
 class EmptyBodySniff implements Sniff
 {

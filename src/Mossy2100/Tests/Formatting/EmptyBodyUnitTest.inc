@@ -55,3 +55,17 @@ final class Holder
 function splitFunction(): void
 {
 }
+
+function anonymousClasses(): array
+{
+    return [
+        new class {},
+        new readonly class {},
+        new class {
+        },
+        new class{},
+        new class {
+            public int $x = 1;
+        },
+    ];
+}

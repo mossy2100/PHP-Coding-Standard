@@ -45,6 +45,10 @@ class EmptyBodyUnitTest extends AbstractSniffTestCase
             32 => 1,
             // Function.
             56 => 1,
+            // Anonymous class with the braces on separate lines.
+            64 => 1,
+            // Anonymous class with no space before the braces.
+            66 => 1,
         ];
     }
 }
