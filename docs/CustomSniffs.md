@@ -14,7 +14,7 @@ Requires a multi-line array to be written on one line if it fits.
 **Auto-fixable:** yes.
 
 - **Fits** means the whole resulting line is within `maxLineLength`: the text before the opening bracket, the collapsed
-  array, and the text after the closing bracket on its line. A fix never creates a line-length error.
+  array, and the text after the closing bracket on its line. A fix never creates a line that's too long.
 - **Outermost first.** If an enclosing array fits, only that one is reported, as fixing it collapses the nested ones.
 - **Clean output.** The fix uses single spaces, no space inside brackets or around `->`, `?->` and `::`, and no trailing
   commas.
@@ -107,6 +107,32 @@ final class Session
 
 ---
 
+## Mossy2100.Classes.ClassDeclaration
+
+Checks the declaration of a class, interface, trait or enum, and the placement of its braces. This replaces
+`PSR2.Classes.ClassDeclaration`.
+
+**Why:** `PSR2.Classes.ClassDeclaration` rejects an empty body written as `{}` on one line, which
+[PER Coding Style 3.0, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the
+parent. For an empty body, the checks on `extends` and `implements` still run. See [Mossy2100.Formatting.EmptyBody](#mossy2100formattingemptybody).
+
+**Auto-fixable:** yes, as the parent.
+
+---
+
+## Mossy2100.Classes.EmptyLinesAroundClassBraces
+
+Disallows blank lines after a class's opening brace and before its closing brace. This replaces
+`SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces`.
+
+**Why:** `SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces` rejects an empty body written as `{}` on one line,
+which [PER Coding Style 3.0, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the
+parent. See [Mossy2100.Formatting.EmptyBody](#mossy2100formattingemptybody).
+
+**Auto-fixable:** yes, as the parent.
+
+---
+
 ## Mossy2100.Classes.DisallowPromotedPropertyHooks
 
 Disallows property hooks on promoted constructor parameters (PHP 8.4+). Declare the property in the class body instead.
@@ -146,9 +172,7 @@ class User
 ```php
 class User
 {
-    public function __construct(public string $name { set => trim($value); }, public readonly int $age)
-    {
-    }
+    public function __construct(public string $name { set => trim($value); }, public readonly int $age) {}
 }
 ```
 
@@ -182,9 +206,7 @@ class User
     private string $secret = '';
     public static int $total = 0;
 
-    public function __construct(private int $id)
-    {
-    }
+    public function __construct(private int $id) {}
 }
 ```
 
@@ -197,9 +219,8 @@ class User
     var $legacy;                   // The var keyword.
     static int $total = 0;         // No visibility.
 
-    public function __construct(private int $_id) // Leading underscore on a promoted parameter.
-    {
-    }
+    // Leading underscore on a promoted parameter.
+    public function __construct(private int $_id) {}
 }
 ```
 
@@ -308,6 +329,63 @@ $a = 1; $b = 2;
 
 ---
 
+## Mossy2100.Formatting.EmptyBody
+
+Warns about an empty class, interface, trait, enum, function or method body that isn't written as `{}` on the same line
+as the declaration, after a single space.
+
+**Why:** [PER Coding Style 3.0, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says an empty body SHOULD be abbreviated that way, including a
+constructor that only promotes properties. No inherited sniff checks it. As it's a SHOULD, this is a warning, not an
+error. A body containing a comment isn't empty, and closures aren't covered by PER 3.0.
+
+**Auto-fixable:** yes, unless a comment is between the declaration and the opening brace.
+
+**Good:**
+
+```php
+final class NotFoundException extends Exception {}
+
+final class Point
+{
+    public function __construct(public readonly int $x, public readonly int $y) {}
+
+    public function reset(): void {}
+}
+```
+
+**Bad:**
+
+```php
+final class NotFoundException extends Exception
+{
+}
+
+final class Point
+{
+    public function __construct(public readonly int $x, public readonly int $y)
+    {
+    }
+
+    public function reset(): void{}
+}
+```
+
+---
+
+## Mossy2100.Functions.MultiLineFunctionDeclaration
+
+Checks the layout of function declarations, including the placement of the opening brace. This replaces
+`Squiz.Functions.MultiLineFunctionDeclaration`.
+
+**Why:** `Squiz.Functions.MultiLineFunctionDeclaration` rejects an empty body written as `{}` on one line, which
+[PER Coding Style 3.0, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the
+parent. For an empty body after a single-line signature, the parent's `CloseBracketNewLine` check is skipped too, as it
+can't be run on its own. See [Mossy2100.Formatting.EmptyBody](#mossy2100formattingemptybody).
+
+**Auto-fixable:** yes, as the parent.
+
+---
+
 ## Mossy2100.NamingConventions.ValidVariableName
 
 Warns about a variable or parameter whose name starts with an underscore, inside a class, enum, trait or interface.
@@ -396,6 +474,19 @@ class Example
 
 const C = 3, D = 4; // Flagged: the same applies outside a class.
 ```
+
+---
+
+## Mossy2100.WhiteSpace.ScopeClosingBrace
+
+Checks that a scope's closing brace is on a line by itself, and indented to match. This replaces
+`Squiz.WhiteSpace.ScopeClosingBrace`.
+
+**Why:** `Squiz.WhiteSpace.ScopeClosingBrace` rejects an empty body written as `{}` on one line, which
+[PER Coding Style 3.0, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the
+parent. See [Mossy2100.Formatting.EmptyBody](#mossy2100formattingemptybody).
+
+**Auto-fixable:** yes, as the parent.
 
 ---
 

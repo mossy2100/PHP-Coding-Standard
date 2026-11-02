@@ -1,0 +1,28 @@
+<?php
+
+// The values the Mossy2100 ruleset sets.
+// phpcs:set Mossy2100.Classes.EmptyLinesAroundClassBraces linesCountAfterOpeningBrace 0
+// phpcs:set Mossy2100.Classes.EmptyLinesAroundClassBraces linesCountBeforeClosingBrace 0
+
+// === VALID: an empty body on one line ===
+
+final class EmptyException extends Exception {}
+
+interface EmptyInterface {}
+
+final class Normal
+{
+    public int $a = 1;
+}
+
+// === INVALID: the parent's checks still run ===
+
+final class BlankAfterOpening
+{
+    public int $a = 1;
+}
+
+final class BlankBeforeClosing
+{
+    public int $a = 1;
+}

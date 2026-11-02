@@ -1,0 +1,50 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Mossy2100\Tests\Formatting;
+
+use PHP_CodeSniffer\Tests\Standards\AbstractSniffTestCase;
+
+/**
+ * Unit tests for Mossy2100.Formatting.EmptyBody sniff.
+ */
+class EmptyBodyUnitTest extends AbstractSniffTestCase
+{
+    /**
+     * Returns the lines where errors should occur.
+     *
+     * @param string $testFile The name of the test input file.
+     * @return array<int, int> Line number => error count.
+     */
+    protected function getErrorList(string $testFile = ''): array
+    {
+        return [];
+    }
+
+    /**
+     * Returns the lines where warnings should occur.
+     *
+     * @param string $testFile The name of the test input file.
+     * @return array<int, int> Line number => warning count.
+     */
+    protected function getWarningList(string $testFile = ''): array
+    {
+        return [
+            // Class with the braces on separate lines.
+            10 => 1,
+            // No space before the braces.
+            13 => 1,
+            // Two spaces before the braces.
+            15 => 1,
+            // A space inside the braces.
+            17 => 1,
+            // Promoted constructor.
+            26 => 1,
+            // Multi-line signature.
+            32 => 1,
+            // Function.
+            56 => 1,
+        ];
+    }
+}

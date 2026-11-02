@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`Mossy2100.Formatting.EmptyBody` (breaking).** Warns about an empty class or function body that isn't written as
+  `{}` on the same line as the declaration, as PER Coding Style 3.0 recommends, e.g. `public function reset(): void {}`.
+  Auto-fixable.
 - **`Mossy2100.Formatting.DisallowMultipleStatements`.** Replaces `Generic.Formatting.DisallowMultipleStatements`, which
   reported `{ get; set; }` on an abstract or interface property as two statements on one line. PER Coding Style 3.0
   requires them on one line. Update any `phpcs:ignore` comments or `<exclude>` rules that name the Generic code.
@@ -41,6 +44,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   closure `use` list now requires a trailing comma, and a single-line one still disallows it. Adds
   `SlevomatCodingStandard.Functions.RequireTrailingCommaInCall`, `...InDeclaration` and `...InClosureUse`. Run `phpcbf`
   to add the commas.
+- **Line length is a soft limit (breaking).** A line over 120 characters is now a warning from
+  `Generic.Files.LineLength`, PSR-12's own sniff, not an error from `SlevomatCodingStandard.Files.LineLength`, as PER
+  Coding Style 3.0 says there must be no hard limit. `phpcs` still exits with a non-zero code on warnings by default. To
+  change the limit, set `lineLimit` on the Generic sniff (see `docs/LineLength.md`). Update any `phpcs:ignore` comments
+  or `<exclude>` rules that name `SlevomatCodingStandard.Files.LineLength.LineTooLong`.
+- **An empty class or function body can be `{}` (breaking).** `PSR2.Classes.ClassDeclaration`,
+  `Squiz.Functions.MultiLineFunctionDeclaration`, `Squiz.WhiteSpace.ScopeClosingBrace` and
+  `SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces` rejected it. Each is replaced by a Mossy2100 version that
+  allows it, e.g. `Mossy2100.Classes.ClassDeclaration`, so their error codes change prefix. Update any `phpcs:ignore`
+  comments or `<exclude>` rules that name them.
 - **No space after `fn` (breaking).** Arrow functions are now written `fn($x) => $x`, not `fn ($x) => $x`, as PER Coding
   Style 3.0 requires. Run `phpcbf` to reformat.
 - **Array formatting follows PER Coding Style, with no alignment (breaking).** `Mossy2100.Arrays.ArrayDeclaration` was
@@ -66,6 +79,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+- **`SlevomatCodingStandard.Functions.DisallowEmptyFunction`.** It required a comment in an empty function body, so PER
+  Coding Style 3.0's recommended `public function reset(): void {}` was an error.
 - **Seven `Mossy2100.Classes.PropertyDeclaration` error codes, which duplicated Slevomat sniffs already in the
   standard.** Each case is still reported, and fixed, by the Slevomat sniff. Remove any references to the old codes:
   - `Multiple`, now reported by `SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition`.

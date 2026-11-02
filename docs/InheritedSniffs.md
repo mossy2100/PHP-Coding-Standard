@@ -17,10 +17,11 @@ The complete PSR-12 coding standard is included, with the following exceptions:
   property hooks (PHP 8.4).
 - **Generic.WhiteSpace.ScopeIndent** is excluded, replaced by [`Mossy2100.WhiteSpace.ScopeIndent`](CustomSniffs.md#mossy2100whitespacescopeindent), which also supports
   property hooks.
-- **Generic.Files.LineLength** is excluded, replaced by `SlevomatCodingStandard.Files.LineLength`, which reports an
-  error rather than a warning (see [Files](#files)).
 - **Generic.Formatting.DisallowMultipleStatements** is excluded, replaced by
   [`Mossy2100.Formatting.DisallowMultipleStatements`](CustomSniffs.md#mossy2100formattingdisallowmultiplestatements), which allows `{ get; set; }` on an abstract or interface property.
+- **PSR2.Classes.ClassDeclaration**, **Squiz.Functions.MultiLineFunctionDeclaration** and
+  **Squiz.WhiteSpace.ScopeClosingBrace** are excluded, replaced by Mossy2100 versions that allow an empty body as `{}`
+  (see [Custom Sniffs](CustomSniffs.md)).
 
 ---
 
@@ -31,6 +32,8 @@ The complete PSR-12 coding standard is included, with the following exceptions:
 - **Generic.Arrays.DisallowLongArraySyntax**: Requires short array syntax `[]` instead of `array()`.
 - **Generic.Formatting.SpaceAfterCast**: Enforces a space after type casts (e.g. `(int) $value`).
 - **Generic.CodeAnalysis.AssignmentInCondition**: Warns about assignments in conditions. See [Yoda-style Comparisons](../README.md#yoda-style-comparisons).
+- **Generic.Files.LineLength**: Warns about a line over 120 characters, with no hard limit, as PER Coding Style 3.0
+  requires. See [Line Length](LineLength.md).
 
 ---
 
@@ -80,7 +83,6 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **ConstantSpacing**: Enforces spacing around class constants.
 - **DisallowMultiPropertyDefinition**: Disallows defining multiple properties in one statement.
 - **DisallowStringExpressionPropertyFetch**: Disallows string expressions for property access.
-- **EmptyLinesAroundClassBraces**: Enforces no empty lines after opening or before closing class braces.
 - **EnumCaseSpacing**: Enforces spacing between enum cases.
 - **MethodSpacing**: Enforces spacing between methods.
 - **ModernClassNameReference**: Requires `::class` instead of `get_class()`, `get_parent_class()` and
@@ -121,14 +123,9 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **DeadCatch**: Disallows unreachable catch blocks, e.g. a catch after `catch (Throwable)`.
 - **RequireNonCapturingCatch**: Requires catch without variable when exception is not used.
 
-### Files
-
-- **LineLength**: Enforces a maximum line length of 120 characters. See [Line Length](LineLength.md).
-
 ### Functions
 
 - **ArrowFunctionDeclaration**: Enforces arrow function spacing, with no space after `fn`, e.g. `fn($x) => $x`.
-- **DisallowEmptyFunction**: Disallows empty function bodies.
 - **DisallowTrailingCommaInCall**: Disallows a trailing comma in a single-line function call.
 - **DisallowTrailingCommaInClosureUse**: Disallows a trailing comma in a single-line closure `use` list.
 - **DisallowTrailingCommaInDeclaration**: Disallows a trailing comma in a single-line function declaration.

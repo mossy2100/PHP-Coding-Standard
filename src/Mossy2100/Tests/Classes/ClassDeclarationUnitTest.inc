@@ -1,0 +1,25 @@
+<?php
+
+// === VALID: an empty body on one line ===
+
+final class EmptyException extends Exception {}
+
+interface EmptyInterface {}
+
+trait EmptyTrait {}
+
+enum EmptyEnum {}
+
+final class Implementer implements EmptyInterface, Countable {}
+
+// === INVALID: the parent's checks still run ===
+
+final class NotEmpty {
+    public int $a = 1;
+}
+
+final class  BadSpacing extends Exception {}
+
+final class Split extends Exception
+{
+}

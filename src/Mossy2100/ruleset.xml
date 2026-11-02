@@ -16,10 +16,12 @@
         <exclude name="PSR2.Classes.PropertyDeclaration"/>
         <!-- Exclude Generic ScopeIndent - replaced by Mossy2100 version for PHP 8.4 property hook support -->
         <exclude name="Generic.WhiteSpace.ScopeIndent"/>
-        <!-- Exclude Generic LineLength - replaced by SlevomatCodingStandard.Files.LineLength -->
-        <exclude name="Generic.Files.LineLength"/>
         <!-- Exclude Generic DisallowMultipleStatements - replaced by Mossy2100 version, which allows { get; set; } -->
         <exclude name="Generic.Formatting.DisallowMultipleStatements"/>
+        <!-- Exclude three brace sniffs - replaced by Mossy2100 versions, which allow an empty body as {} -->
+        <exclude name="PSR2.Classes.ClassDeclaration"/>
+        <exclude name="Squiz.Functions.MultiLineFunctionDeclaration"/>
+        <exclude name="Squiz.WhiteSpace.ScopeClosingBrace"/>
     </rule>
 
     <!-- ====== GENERIC ====== -->
@@ -33,6 +35,14 @@
 
     <!-- CodeAnalysis -->
     <rule ref="Generic.CodeAnalysis.AssignmentInCondition"/>
+
+    <!-- Line length: a warning over the limit, with no hard limit (PER Coding Style 2.3) -->
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="&lineLength;"/>
+            <property name="absoluteLineLimit" value="0"/>
+        </properties>
+    </rule>
 
     <!-- ====== SQUIZ ====== -->
 
@@ -110,7 +120,8 @@
     </rule>
     <rule ref="SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition"/>
     <rule ref="SlevomatCodingStandard.Classes.DisallowStringExpressionPropertyFetch"/>
-    <rule ref="SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces">
+    <!-- Replaced by Mossy2100.Classes.EmptyLinesAroundClassBraces, which allows an empty body as {} -->
+    <rule ref="Mossy2100.Classes.EmptyLinesAroundClassBraces">
         <properties>
             <property name="linesCountAfterOpeningBrace" value="0"/>
             <property name="linesCountBeforeClosingBrace" value="0"/>
@@ -189,13 +200,6 @@
     <rule ref="SlevomatCodingStandard.Exceptions.DeadCatch"/>
     <rule ref="SlevomatCodingStandard.Exceptions.RequireNonCapturingCatch"/>
 
-    <!-- Files -->
-    <rule ref="SlevomatCodingStandard.Files.LineLength">
-        <properties>
-            <property name="lineLengthLimit" value="&lineLength;"/>
-        </properties>
-    </rule>
-
     <!-- Functions -->
     <!-- No space after fn (PER Coding Style 7.1) -->
     <rule ref="SlevomatCodingStandard.Functions.ArrowFunctionDeclaration">
@@ -203,7 +207,6 @@
             <property name="spacesCountAfterKeyword" value="0"/>
         </properties>
     </rule>
-    <rule ref="SlevomatCodingStandard.Functions.DisallowEmptyFunction"/>
     <rule ref="SlevomatCodingStandard.Functions.FunctionLength">
         <properties>
             <property name="maxLinesLength" value="100"/>
@@ -340,6 +343,14 @@
 
     <!-- Property declaration with PHP 8.4 property hook support -->
     <rule ref="Mossy2100.Classes.PropertyDeclaration"/>
+
+    <!-- PSR-12 brace sniffs, extended to allow an empty class or function body as {} (PER Coding Style 4, 4.4) -->
+    <rule ref="Mossy2100.Classes.ClassDeclaration"/>
+    <rule ref="Mossy2100.Functions.MultiLineFunctionDeclaration"/>
+    <rule ref="Mossy2100.WhiteSpace.ScopeClosingBrace"/>
+
+    <!-- A warning for an empty class or function body that isn't written as {} (PER Coding Style 4, 4.4) -->
+    <rule ref="Mossy2100.Formatting.EmptyBody"/>
 
     <!-- One statement per line, allowing { get; set; } on an abstract or interface property (PER Coding Style 4.10) -->
     <rule ref="Mossy2100.Formatting.DisallowMultipleStatements"/>
