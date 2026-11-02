@@ -178,7 +178,8 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 
 - **ClassConstantTypeHint**: Requires class constant type hints.
 - **DeclareStrictTypes**: Requires `declare(strict_types=1)`.
-- **DNFTypeHintFormat**: Enforces DNF type format without spaces.
+- **DNFTypeHintFormat**: Enforces the format of union, intersection and DNF types: no spaces, `?T` for a single
+  nullable type, and `null` last, e.g. `int|string|null`.
 - **LongTypeHints**: Requires long type hints (`int` instead of `integer`).
 - **NullableTypeForNullDefaultValue**: Requires nullable type for parameters with null default.
 - **ParameterTypeHint**: Requires parameter type hints.

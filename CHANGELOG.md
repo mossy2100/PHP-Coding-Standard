@@ -56,6 +56,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   comments or `<exclude>` rules that name them.
 - **No space after `fn` (breaking).** Arrow functions are now written `fn($x) => $x`, not `fn ($x) => $x`, as PER Coding
   Style 3.0 requires. Run `phpcbf` to reformat.
+- **`null` must be last in a union type (breaking).** `int|null` and `null|int|string` are now errors, as PER Coding
+  Style 3.0 requires `null` last. Set by `nullPosition` on `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat`.
+  Auto-fixable.
 - **An arrow function may span lines.** Its expression can go on the next line, as PER Coding Style 3.0 allows.
   `SlevomatCodingStandard.Functions.ArrowFunctionDeclaration` previously required it on one line.
 - **Array formatting follows PER Coding Style, with no alignment (breaking).** `Mossy2100.Arrays.ArrayDeclaration` was

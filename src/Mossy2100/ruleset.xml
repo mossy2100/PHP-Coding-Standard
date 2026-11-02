@@ -293,6 +293,8 @@
             <property name="withSpacesAroundOperators" value="no"/>
             <property name="withSpacesInsideParentheses" value="no"/>
             <property name="shortNullable" value="yes"/>
+            <!-- null last in a union type (PER Coding Style 2.5) -->
+            <property name="nullPosition" value="last"/>
         </properties>
     </rule>
     <rule ref="SlevomatCodingStandard.TypeHints.NullableTypeForNullDefaultValue"/>
