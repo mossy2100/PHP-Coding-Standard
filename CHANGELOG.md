@@ -56,6 +56,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   comments or `<exclude>` rules that name them.
 - **No space after `fn` (breaking).** Arrow functions are now written `fn($x) => $x`, not `fn ($x) => $x`, as PER Coding
   Style 3.0 requires. Run `phpcbf` to reformat.
+- **An arrow function may span lines.** Its expression can go on the next line, as PER Coding Style 3.0 allows.
+  `SlevomatCodingStandard.Functions.ArrowFunctionDeclaration` previously required it on one line.
 - **Array formatting follows PER Coding Style, with no alignment (breaking).** `Mossy2100.Arrays.ArrayDeclaration` was
   rewritten to do one thing: collapse a multi-line array that fits on one line. Stock sniffs handle the rest:
   - An array is single-line if it fits, otherwise one element per line. Grid layout is gone, and a single-line
@@ -79,6 +81,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+- **`SlevomatCodingStandard.Namespaces.UseSpacing`.** `PSR12.Files.FileHeader` already reports, and fixes, the same
+  blank lines before, between and after `use` statements. Update any `phpcs:ignore` comments or `<exclude>` rules that
+  name a `UseSpacing` code.
+- **`SlevomatCodingStandard.Attributes.DisallowAttributesJoining`.** Several attributes in one block, e.g.
+  `#[Attribute, Deprecated]`, are now allowed, as PER Coding Style 3.0 allows them.
 - **`SlevomatCodingStandard.Functions.DisallowEmptyFunction`.** It required a comment in an empty function body, so PER
   Coding Style 3.0's recommended `public function reset(): void {}` was an error.
 - **Seven `Mossy2100.Classes.PropertyDeclaration` error codes, which duplicated Slevomat sniffs already in the

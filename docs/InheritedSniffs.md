@@ -72,7 +72,6 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **AttributeAndTargetSpacing**: Disallows blank lines between an attribute and its target. An attribute on the same
   line as its target is allowed here, and checked by [`Mossy2100.Attributes.AttributePlacement`](CustomSniffs.md#mossy2100attributesattributeplacement).
 - **AttributesOrder**: Requires attributes to be ordered alphabetically.
-- **DisallowAttributesJoining**: Disallows joining multiple attributes with commas.
 - **DisallowMultipleAttributesPerLine**: Requires each attribute on its own line.
 - **RequireAttributeAfterDocComment**: Requires attributes to appear after doc comments.
 
@@ -125,7 +124,8 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 
 ### Functions
 
-- **ArrowFunctionDeclaration**: Enforces arrow function spacing, with no space after `fn`, e.g. `fn($x) => $x`.
+- **ArrowFunctionDeclaration**: Enforces arrow function spacing, with no space after `fn`, e.g. `fn($x) => $x`. The
+  expression may be on the next line.
 - **DisallowTrailingCommaInCall**: Disallows a trailing comma in a single-line function call.
 - **DisallowTrailingCommaInClosureUse**: Disallows a trailing comma in a single-line closure `use` list.
 - **DisallowTrailingCommaInDeclaration**: Disallows a trailing comma in a single-line function declaration.
@@ -153,7 +153,6 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **UnusedUses**: Disallows unused use statements including in annotations.
 - **UseDoesNotStartWithBackslash**: Disallows leading backslash in use statements.
 - **UseFromSameNamespace**: Disallows use statements from the same namespace.
-- **UseSpacing**: Enforces spacing between use statements.
 - **UselessAlias**: Disallows useless use statement aliases.
 
 ### Operators

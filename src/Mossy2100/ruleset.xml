@@ -105,7 +105,6 @@
             <property name="orderAlphabetically" value="true"/>
         </properties>
     </rule>
-    <rule ref="SlevomatCodingStandard.Attributes.DisallowAttributesJoining"/>
     <rule ref="SlevomatCodingStandard.Attributes.DisallowMultipleAttributesPerLine"/>
     <rule ref="SlevomatCodingStandard.Attributes.RequireAttributeAfterDocComment"/>
 
@@ -201,10 +200,11 @@
     <rule ref="SlevomatCodingStandard.Exceptions.RequireNonCapturingCatch"/>
 
     <!-- Functions -->
-    <!-- No space after fn (PER Coding Style 7.1) -->
+    <!-- No space after fn, and the expression may be on the next line (PER Coding Style 7.1) -->
     <rule ref="SlevomatCodingStandard.Functions.ArrowFunctionDeclaration">
         <properties>
             <property name="spacesCountAfterKeyword" value="0"/>
+            <property name="allowMultiLine" value="true"/>
         </properties>
     </rule>
     <rule ref="SlevomatCodingStandard.Functions.FunctionLength">
@@ -249,6 +249,7 @@
 
     <!-- Namespaces -->
     <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses"/>
+    <!-- Slevomat's namespace sniffs skip a group use, so it would hide unused and unsorted imports -->
     <rule ref="SlevomatCodingStandard.Namespaces.DisallowGroupUse"/>
     <rule ref="SlevomatCodingStandard.Namespaces.MultipleUsesPerLine"/>
     <rule ref="SlevomatCodingStandard.Namespaces.NamespaceDeclaration"/>
@@ -262,11 +263,6 @@
     </rule>
     <rule ref="SlevomatCodingStandard.Namespaces.UseDoesNotStartWithBackslash"/>
     <rule ref="SlevomatCodingStandard.Namespaces.UseFromSameNamespace"/>
-    <rule ref="SlevomatCodingStandard.Namespaces.UseSpacing">
-        <properties>
-            <property name="linesCountBetweenUseTypes" value="1"/>
-        </properties>
-    </rule>
     <rule ref="SlevomatCodingStandard.Namespaces.UselessAlias"/>
 
     <!-- Operators -->
