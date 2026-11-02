@@ -113,7 +113,7 @@ class PropertyDeclarationSniff extends AbstractVariableSniff
      * PER Coding Style 3.0, section 4.10, requires this order for an abstract or interface property with no hook
      * bodies. The Mossy2100 standard applies it to every hook list, including ones with bodies, `&` or attributes. The
      * fix swaps the two hooks, with their attributes, modifiers and bodies. It isn't offered if there's a comment
-     * between the hooks, or the list has more than two hooks.
+     * between the hooks.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the property token.
@@ -149,7 +149,7 @@ class PropertyDeclarationSniff extends AbstractVariableSniff
         $error = 'The get hook must come before the set hook';
         $setHook = $hooks[$setIndex];
         $getHook = $hooks[$getIndex];
-        if (count($hooks) !== 2 || $this->hasCommentBetweenHooks($phpcsFile, $opener, $closer, $hooks)) {
+        if ($this->hasCommentBetweenHooks($phpcsFile, $opener, $closer, $hooks)) {
             $phpcsFile->addError($error, $setHook['namePtr'], 'HookOrder');
             return;
         }
