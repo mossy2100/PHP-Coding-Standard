@@ -55,6 +55,22 @@ The complete PSR-12 coding standard is included, with the following exceptions:
 
 ---
 
+## PHPCSExtra
+
+Reference: [PHPCSExtra repository and documentation](https://github.com/PHPCSStandards/PHPCSExtra)
+
+- **Universal.Attributes.DisallowAttributeParentheses**: Disallows `()` on an attribute with no arguments, e.g.
+  `#[Override()]`.
+- **Universal.Classes.DisallowAnonClassParentheses**: Disallows `()` on an anonymous class with no arguments, e.g.
+  `new class () {}`.
+- **Universal.Constants.LowercaseClassResolutionKeyword**: Requires `::class` in lower case.
+- **Universal.PHP.LowercasePHPTag**: Requires the `<?php` tag in lower case.
+- **Universal.PHP.RequireExitDieParentheses**: Warns about `exit` or `die` without parentheses.
+- **Universal.UseStatements.LowercaseFunctionConst**: Requires `function` and `const` in lower case in a `use`
+  statement.
+
+---
+
 ## Slevomat
 
 Reference: [Slevomat coding standard repository and documentation](https://github.com/slevomat/coding-standard)
@@ -106,7 +122,6 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 ### Control Structures
 
 - **DisallowContinueWithoutIntegerOperandInSwitch**: Disallows `continue` without an operand in `switch`.
-- **LanguageConstructWithParentheses**: Disallows parentheses around language construct arguments, e.g. `echo('x')`.
 - **RequireMultiLineCondition**: Requires multi-line format for long conditions with boolean operators.
 - **RequireMultiLineTernaryOperator**: Requires multi-line format for long ternary operators.
 - **RequireNullCoalesceEqualOperator**: Requires `??=` when possible.
@@ -178,8 +193,8 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 
 - **ClassConstantTypeHint**: Requires class constant type hints.
 - **DeclareStrictTypes**: Requires `declare(strict_types=1)`.
-- **DNFTypeHintFormat**: Enforces the format of union, intersection and DNF types: no spaces, `?T` for a single
-  nullable type, and `null` last, e.g. `int|string|null`.
+- **DNFTypeHintFormat**: Enforces the format of union, intersection and DNF types: no spaces, `?T` for a single nullable
+  type, and `null` last, e.g. `int|string|null`.
 - **LongTypeHints**: Requires long type hints (`int` instead of `integer`).
 - **NullableTypeForNullDefaultValue**: Requires nullable type for parameters with null default.
 - **ParameterTypeHint**: Requires parameter type hints.

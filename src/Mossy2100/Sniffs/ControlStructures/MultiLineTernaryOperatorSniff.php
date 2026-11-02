@@ -59,7 +59,8 @@ class MultiLineTernaryOperatorSniff implements Sniff
             return;
         }
 
-        // One level (4 spaces) past the indentation of the line the ternary starts on.
+        // One level past the indentation of the line the ternary starts on. A level is always 4 spaces, as PER Coding
+        // Style 3.0, section 2.4, requires, so ScopeIndent's indent property isn't used.
         $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $startPointer, true);
         assert(is_int($firstOnLine));
         $indentation = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1 + 4));

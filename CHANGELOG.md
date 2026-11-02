@@ -10,6 +10,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **PHPCSExtra as a base standard (breaking).** `phpcsstandards/phpcsextra` is now required, and six of its sniffs are
+  used, each for a PER Coding Style 3.0 rule:
+  - `Universal.Attributes.DisallowAttributeParentheses`: no `()` on an attribute with no arguments.
+  - `Universal.Classes.DisallowAnonClassParentheses`: no `()` on an anonymous class with no arguments.
+  - `Universal.Constants.LowercaseClassResolutionKeyword`: `::class` in lower case.
+  - `Universal.PHP.LowercasePHPTag`: `<?php` in lower case.
+  - `Universal.PHP.RequireExitDieParentheses`: a warning for `exit` or `die` without parentheses.
+  - `Universal.UseStatements.LowercaseFunctionConst`: `function` and `const` in lower case in a `use` statement.
+- **`Mossy2100.ControlStructures.LanguageConstructWithParentheses`.** Replaces
+  `SlevomatCodingStandard.ControlStructures.LanguageConstructWithParentheses`, which removed the parentheses from
+  `die()`, against PER Coding Style 3.0. It still reports `echo('x')` and the like.
 - **`Mossy2100.ControlStructures.MultiLineTernaryOperator` (breaking).** Requires a ternary that spans lines to take
   three, with `?` and `:` each starting a line, indented once, as PER Coding Style 3.0 requires. Replaces
   `SlevomatCodingStandard.ControlStructures.DisallowTrailingMultiLineTernaryOperator`, which only reported a trailing

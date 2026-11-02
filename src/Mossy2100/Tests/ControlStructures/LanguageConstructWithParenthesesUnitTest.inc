@@ -1,0 +1,13 @@
+<?php
+
+// === VALID ===
+
+echo 'x';
+exit();
+die();
+exit(1);
+
+// === INVALID: the parent's checks still run ===
+
+echo('x');
+print('x');

@@ -84,6 +84,26 @@
         </properties>
     </rule>
 
+    <!-- ====== PHPCSEXTRA ====== -->
+
+    <!-- No () on an attribute without arguments (PER Coding Style 12.1) -->
+    <rule ref="Universal.Attributes.DisallowAttributeParentheses"/>
+
+    <!-- No () on an anonymous class without arguments (PER Coding Style 8) -->
+    <rule ref="Universal.Classes.DisallowAnonClassParentheses"/>
+
+    <!-- Keywords in lower case (PER Coding Style 2.5): ::class, and function and const in a use statement -->
+    <rule ref="Universal.Constants.LowercaseClassResolutionKeyword"/>
+    <rule ref="Universal.UseStatements.LowercaseFunctionConst"/>
+
+    <!-- The <?php tag in lower case (PER Coding Style 3) -->
+    <rule ref="Universal.PHP.LowercasePHPTag"/>
+
+    <!-- exit() and die() with parentheses; a warning, as PER Coding Style 4.7 says SHOULD -->
+    <rule ref="Universal.PHP.RequireExitDieParentheses">
+        <type>warning</type>
+    </rule>
+
     <!-- ====== SLEVOMAT ======  -->
     <!-- Arrays -->
     <rule ref="SlevomatCodingStandard.Arrays.ArrayAccess"/>
@@ -173,7 +193,8 @@
 
     <!-- ControlStructures -->
     <rule ref="SlevomatCodingStandard.ControlStructures.DisallowContinueWithoutIntegerOperandInSwitch"/>
-    <rule ref="SlevomatCodingStandard.ControlStructures.LanguageConstructWithParentheses"/>
+    <!-- Replaced by Mossy2100.ControlStructures.LanguageConstructWithParentheses, which leaves exit() and die() alone -->
+    <rule ref="Mossy2100.ControlStructures.LanguageConstructWithParentheses"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.RequireMultiLineCondition">
         <properties>
             <property name="minLineLength" value="&lineLengthPlusOne;"/>

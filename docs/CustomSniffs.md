@@ -241,6 +241,19 @@ class User
 
 ---
 
+## Mossy2100.ControlStructures.LanguageConstructWithParentheses
+
+Disallows parentheses around the argument of a language construct, such as `echo('x')`, except `exit` and `die`. This
+replaces `SlevomatCodingStandard.ControlStructures.LanguageConstructWithParentheses`.
+
+**Why:** the Slevomat sniff reports `die()` and fixes it to `die`. [PER Coding Style 3.0, Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) says `exit()` and
+`die()` SHOULD have parentheses, which `Universal.PHP.RequireExitDieParentheses` checks, so the two sniffs would undo
+each other's fixes. This sniff skips `exit` and `die`, and leaves everything else to the parent.
+
+**Auto-fixable:** yes, as the parent.
+
+---
+
 ## Mossy2100.ControlStructures.MatchArrowSpacing
 
 Requires exactly one space before and after the `=>` in a `match` arm. Aligned arms make noisy diffs.
@@ -283,6 +296,9 @@ reports a ternary on two lines, a trailing `:`, or the wrong indentation. A shor
 PER, so it isn't checked here.
 
 **Auto-fixable:** yes, unless a comment is next to `?` or `:`.
+
+The indentation is always 4 spaces, as [PER Coding Style 3.0, Section 2.4](https://www.php-fig.org/per/coding-style/#24-indenting) requires. This sniff doesn't use the `indent`
+property of `Mossy2100.WhiteSpace.ScopeIndent`.
 
 **Good:**
 

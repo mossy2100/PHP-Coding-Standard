@@ -3,6 +3,7 @@
 .idea/
 _old
 _dev
+_reference
 build/
 planning/
 vendor/
