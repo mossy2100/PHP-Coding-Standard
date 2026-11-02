@@ -137,18 +137,43 @@ interface HookOrder
     // Valid.
     public string $getFirst { get; set; }
 
-    // HookOrder: set before get (fixable).
+    // HookOrder: set before get.
     public string $setFirst { set; get; }
 
-    // HookOrder: set before get, with & (not fixable).
+    // HookOrder: set before get, with &.
     public string $byReference { set; &get; }
+
+    // HookOrder: set before get, with an attribute.
+    public string $withAttribute { #[Pure] set; get; }
 }
 
 abstract class HookOrderWithBodies
 {
-    // Valid: PER sets no order when a hook has a body.
-    public string $withBodies {
+    // HookOrder: arrow hooks.
+    public string $arrows {
         set => $value;
         get => 'x';
+    }
+
+    // HookOrder: block hooks, with a parameter list.
+    public string $blocks {
+        set(string $value) {
+            $this->blocks = $value;
+        }
+        get {
+            return $this->blocks;
+        }
+    }
+
+    // HookOrder: a comment between the hooks (not fixable).
+    public string $commented {
+        set => $value; // Why.
+        get => 'x';
+    }
+
+    // Valid.
+    public string $ordered {
+        get => 'x';
+        set => $value;
     }
 }

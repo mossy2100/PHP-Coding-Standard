@@ -108,10 +108,12 @@ class PropertyDeclarationSniff extends AbstractVariableSniff
     }
 
     /**
-     * Check that `get` comes before `set` in a list of operations with no bodies, e.g. `{ get; set; }`.
+     * Check that the `get` hook comes before the `set` hook, when a property has both.
      *
-     * PER Coding Style 3.0, section 4.10, requires this order for an abstract or interface property. A list where any
-     * hook has a body isn't checked, as PER doesn't set an order for those.
+     * PER Coding Style 3.0, section 4.10, requires this order for an abstract or interface property with no hook
+     * bodies. The Mossy2100 standard applies it to every hook list, including ones with bodies, `&` or attributes. The
+     * fix swaps the two hooks, with their attributes, modifiers and bodies. It isn't offered if there's a comment
+     * between the hooks, or the list has more than two hooks.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the property token.
@@ -125,52 +127,127 @@ class PropertyDeclarationSniff extends AbstractVariableSniff
             return;
         }
 
-        // Operation name => [position, content as written].
-        $operations = [];
-        $simple = true;
-        for ($i = ($opener + 1); $i < $closer; $i++) {
-            $code = $tokens[$i]['code'];
-            if ($code === T_WHITESPACE || $code === T_SEMICOLON) {
-                continue;
+        $hooks = $this->findHooks($phpcsFile, $opener, $closer, $tokens);
+        if ($hooks === null) {
+            return;
+        }
+
+        $getIndex = null;
+        $setIndex = null;
+        foreach ($hooks as $index => $hook) {
+            if ($hook['name'] === 'get') {
+                $getIndex = $index;
+            } elseif ($hook['name'] === 'set') {
+                $setIndex = $index;
+            }
+        }
+
+        if ($getIndex === null || $setIndex === null || $getIndex < $setIndex) {
+            return;
+        }
+
+        $error = 'The get hook must come before the set hook';
+        $setHook = $hooks[$setIndex];
+        $getHook = $hooks[$getIndex];
+        if (count($hooks) !== 2 || $this->hasCommentBetweenHooks($phpcsFile, $opener, $closer, $hooks)) {
+            $phpcsFile->addError($error, $setHook['namePtr'], 'HookOrder');
+            return;
+        }
+
+        $fix = $phpcsFile->addFixableError($error, $setHook['namePtr'], 'HookOrder');
+        if (!$fix) {
+            return;
+        }
+
+        $setText = $phpcsFile->getTokensAsString($setHook['start'], ($setHook['end'] - $setHook['start'] + 1));
+        $getText = $phpcsFile->getTokensAsString($getHook['start'], ($getHook['end'] - $getHook['start'] + 1));
+        $phpcsFile->fixer->beginChangeset();
+        foreach ([[$setHook, $getText], [$getHook, $setText]] as [$hook, $text]) {
+            $phpcsFile->fixer->replaceToken($hook['start'], $text);
+            for ($i = ($hook['start'] + 1); $i <= $hook['end']; $i++) {
+                $phpcsFile->fixer->replaceToken($i, '');
+            }
+        }
+
+        $phpcsFile->fixer->endChangeset();
+    }
+
+    /**
+     * Find the hooks in a hook list, from the first token of each (an attribute, modifier, `&` or the name) to its
+     * last (the `;` or the closing brace of its body).
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the hook list's opening brace.
+     * @param int $closer The position of the hook list's closing brace.
+     * @param array<int, array<string, mixed>> $tokens The token stack.
+     * @return list<array{name: string, start: int, end: int, namePtr: int}>|null The hooks, or null if the list can't
+     *     be parsed.
+     */
+    private function findHooks(File $phpcsFile, int $opener, int $closer, array $tokens): ?array
+    {
+        $hooks = [];
+        $i = $opener + 1;
+        while (true) {
+            $i = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, $i, $closer, true);
+            if ($i === false) {
+                return $hooks;
             }
 
-            $content = $tokens[$i]['content'];
-            assert(is_string($content));
-            $name = strtolower($content);
-            if ($code === T_STRING && ($name === 'get' || $name === 'set')) {
-                // A hook with a body (`{`, `=>` or a parameter list) means PER sets no order.
-                $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), $closer, true);
-                if ($next === false || $tokens[$next]['code'] !== T_SEMICOLON) {
-                    return;
+            $start = $i;
+            $name = null;
+            $namePtr = null;
+            $afterArrow = false;
+            $end = null;
+            while ($i < $closer) {
+                $code = $tokens[$i]['code'];
+                $jumpTo = $tokens[$i]['attribute_closer'] ?? $tokens[$i]['parenthesis_closer']
+                    ?? $tokens[$i]['bracket_closer'] ?? null;
+                if ($code === T_STRING && $name === null) {
+                    $content = $tokens[$i]['content'];
+                    assert(is_string($content));
+                    $name = strtolower($content);
+                    $namePtr = $i;
+                } elseif ($code === T_DOUBLE_ARROW) {
+                    $afterArrow = true;
+                } elseif ($code === T_SEMICOLON || ($code === T_OPEN_CURLY_BRACKET && !$afterArrow)) {
+                    $end = $code === T_SEMICOLON ? $i : $jumpTo;
+                    break;
                 }
 
-                $operations[$name] = [$i, $content];
-                continue;
+                // Skip over attributes, parameter lists, and brackets inside an expression.
+                $i = is_int($jumpTo) && $jumpTo > $i ? $jumpTo + 1 : $i + 1;
             }
 
-            // Anything else, such as & or an attribute, isn't safe to move in a fix.
-            $simple = false;
+            if ($name === null || !is_int($namePtr) || !is_int($end)) {
+                return null;
+            }
+
+            $hooks[] = ['name' => $name, 'start' => $start, 'end' => $end, 'namePtr' => $namePtr];
+            $i = $end + 1;
+        }
+    }
+
+    /**
+     * Check whether there's a comment in the hook list outside the hooks themselves.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the hook list's opening brace.
+     * @param int $closer The position of the hook list's closing brace.
+     * @param list<array{name: string, start: int, end: int, namePtr: int}> $hooks The hooks.
+     * @return bool True if there's a comment between, before or after the hooks.
+     */
+    private function hasCommentBetweenHooks(File $phpcsFile, int $opener, int $closer, array $hooks): bool
+    {
+        $from = $opener + 1;
+        foreach ([...$hooks, ['start' => $closer, 'end' => $closer]] as $hook) {
+            if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, $from, $hook['start']) !== false) {
+                return true;
+            }
+
+            $from = $hook['end'] + 1;
         }
 
-        if (!isset($operations['get'], $operations['set']) || $operations['get'][0] < $operations['set'][0]) {
-            return;
-        }
-
-        [$getPtr, $getContent] = $operations['get'];
-        [$setPtr, $setContent] = $operations['set'];
-        $error = 'The get operation must be listed before the set operation';
-        if (!$simple) {
-            $phpcsFile->addError($error, $setPtr, 'HookOrder');
-            return;
-        }
-
-        $fix = $phpcsFile->addFixableError($error, $setPtr, 'HookOrder');
-        if ($fix) {
-            $phpcsFile->fixer->beginChangeset();
-            $phpcsFile->fixer->replaceToken($setPtr, $getContent);
-            $phpcsFile->fixer->replaceToken($getPtr, $setContent);
-            $phpcsFile->fixer->endChangeset();
-        }
+        return false;
     }
 
     /**

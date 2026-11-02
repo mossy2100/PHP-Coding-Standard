@@ -63,9 +63,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`null` must be last in a union type (breaking).** `int|null` and `null|int|string` are now errors, as PER Coding
   Style 3.0 requires `null` last. Set by `nullPosition` on `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat`.
   Auto-fixable.
-- **`Mossy2100.Classes.PropertyDeclaration` checks `get` before `set` (breaking).** In an abstract or interface property
-  with no hook bodies, `{ set; get; }` is now an error (`HookOrder`), as PER Coding Style 3.0 requires `{ get; set; }`.
-  Auto-fixable.
+- **`Mossy2100.Classes.PropertyDeclaration` checks `get` before `set` (breaking).** When a property has both hooks,
+  `set` before `get` is now an error (`HookOrder`), with or without hook bodies. PER Coding Style 3.0 requires
+  `{ get; set; }` on an abstract or interface property, and the Mossy2100 standard applies the same order everywhere.
+  Auto-fixable, unless there's a comment between the hooks.
 - **An arrow function may span lines.** Its expression can go on the next line, as PER Coding Style 3.0 allows.
   `SlevomatCodingStandard.Functions.ArrowFunctionDeclaration` previously required it on one line.
 - **Array formatting follows PER Coding Style, with no alignment (breaking).** `Mossy2100.Arrays.ArrayDeclaration` was

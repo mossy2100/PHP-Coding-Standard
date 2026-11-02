@@ -185,9 +185,9 @@ Verifies that properties are declared correctly. This replaces `PSR2.Classes.Pro
 **Why:** PSR-12's `PSR2.Classes.PropertyDeclaration` misreads variables in PHP 8.4 property hook bodies, such as
 `$value` and `$this`, as property declarations, and reports false errors on them. It also only warns about a leading
 underscore, and doesn't check promoted constructor properties, where [PER Coding Style 3.0, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says MUST NOT.
-This sniff also checks the order of `get` and `set` in an abstract or interface property, which no inherited sniff does.
+This sniff also checks that `get` comes before `set` in a property's hooks, which no inherited sniff does.
 
-**Auto-fixable:** only `HookOrder`, unless the list contains `&` or an attribute.
+**Auto-fixable:** only `HookOrder`, unless there's a comment between the hooks.
 
 It reports:
 
@@ -195,8 +195,9 @@ It reports:
   parameters. PER Coding Style 3.0 disallows it too.
 - The `var` keyword (`VarUsed`).
 - A property with no visibility (`ScopeMissing`).
-- `set` before `get` in a list of operations with no bodies, e.g. `{ set; get; }` (`HookOrder`), as
-  [PER Coding Style 3.0, Section 4.10](https://www.php-fig.org/per/coding-style/#410-interface-and-abstract-properties) requires. A list where a hook has a body isn't checked.
+- `set` before `get` in a property's hooks (`HookOrder`). [PER Coding Style 3.0, Section 4.10](https://www.php-fig.org/per/coding-style/#410-interface-and-abstract-properties) requires this for an
+  abstract or interface property with no hook bodies, e.g. `{ get; set; }`. The Mossy2100 standard applies it to every
+  hook list, including ones with bodies, `&` or attributes.
 
 `SlevomatCodingStandard.Classes.PropertyDeclaration` checks modifier order and the spacing after the type, and
 `SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition` checks for several properties in one statement.
