@@ -8,6 +8,11 @@
 <ruleset name="Mossy2100">
     <description>Mossy2100 PHP Coding Standard</description>
 
+    <!-- ARGUMENTS -->
+    <arg value="v"/>
+    <arg value="s"/>
+    <arg name="colors"/>
+
     <!-- ====== PSR ====== -->
 
     <!-- Inherit from PSR-12 -->
@@ -311,6 +316,10 @@
 
     <!-- Property declaration with PHP 8.4 property hook support -->
     <rule ref="Mossy2100.Classes.PropertyDeclaration"/>
+
+    <!-- Leading underscore on a variable or parameter inside a class, which Squiz.NamingConventions.ValidVariableName
+         allows there -->
+    <rule ref="Mossy2100.NamingConventions.ValidVariableName"/>
 
     <!-- Disallow property hooks on promoted constructor parameters, which several inherited sniffs misread -->
     <rule ref="Mossy2100.Classes.DisallowPromotedPropertyHooks"/>

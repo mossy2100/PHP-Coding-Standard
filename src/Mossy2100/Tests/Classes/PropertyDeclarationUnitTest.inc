@@ -54,31 +54,31 @@ abstract class ValidAbstractProperties
 
 class ErrorProperties
 {
-    // Underscore: warning.
+    // Underscore: error.
     public string $_underscored = 'bad';
 
     // VarUsed + ScopeMissing: 2 errors.
     var $oldStyle;
 
-    // Multiple: 1 error on $first.
+    // Multiple: no error, as Slevomat's DisallowMultiPropertyDefinition reports it.
     public $first, $second;
 
-    // SpacingAfterType: 0 spaces (fixable).
+    // Spacing after the type: no error, as Slevomat's PropertyDeclaration reports it.
     public string$noSpace = '';
 
-    // SpacingAfterType: 2 spaces (fixable).
+    // Spacing after the type: no error (Slevomat).
     public string  $twoSpaces = '';
 
-    // StaticBeforeVisibility (fixable).
+    // Modifier order: no error, as Slevomat's PropertyDeclaration reports it.
     static public int $staticFirst = 0;
 
-    // ReadonlyBeforeVisibility (fixable).
+    // Modifier order: no error (Slevomat).
     readonly public string $readonlyFirst = 'a';
 
-    // AvizKeywordOrder: write-visibility before read-visibility (fixable).
+    // Modifier order: no error (Slevomat).
     protected(set) public string $avizWrong = '';
 
-    // FinalAfterVisibility (fixable).
+    // Modifier order: no error (Slevomat).
     public final string $finalAfter {
         get => '';
     }
@@ -86,7 +86,7 @@ class ErrorProperties
 
 abstract class ErrorAbstractProperties
 {
-    // AbstractAfterVisibility (fixable).
+    // Modifier order: no error (Slevomat).
     public abstract string $abstractAfter { get; set; }
 }
 
@@ -99,11 +99,11 @@ class MoreProperties
         }
     }
 
-    // SpacingAfterType: the type and variable on separate lines (fixable).
+    // Spacing after the type: no error (Slevomat).
     public string
         $splitType;
 
-    // SpacingAfterType: a comment between the type and variable (not fixable).
+    // Spacing after the type: no error (Slevomat).
     public string  /* note */ $commented;
 
     // Valid: local variables and variables in strings are not properties.
@@ -118,4 +118,16 @@ enum Status
 {
     // Not reported: a property in an enum is a parse error, which getMemberProperties() rejects.
     public $invalid;
+}
+
+class PromotedProperties
+{
+    // Underscore: an error on each promoted parameter, but not on the plain one.
+    public function __construct(
+        public readonly int $_promoted,
+        private string $_alsoPromoted,
+        int $_notPromoted,
+        public int $fine,
+    ) {
+    }
 }

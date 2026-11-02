@@ -26,28 +26,13 @@ class PropertyDeclarationUnitTest extends AbstractSniffTestCase
         }
 
         return [
+            // Underscore.
+            58 => 1,
             // VarUsed + ScopeMissing.
             61 => 2,
-            // Multiple.
-            64 => 1,
-            // SpacingAfterType: 0 spaces.
-            67 => 1,
-            // SpacingAfterType: 2 spaces.
-            70 => 1,
-            // StaticBeforeVisibility.
-            73 => 1,
-            // ReadonlyBeforeVisibility.
-            76 => 1,
-            // AvizKeywordOrder.
-            79 => 1,
-            // FinalAfterVisibility.
-            82 => 1,
-            // AbstractAfterVisibility.
-            90 => 1,
-            // SpacingAfterType: type and variable on separate lines.
-            103 => 1,
-            // SpacingAfterType: a comment between the type and variable.
-            107 => 1,
+            // Underscore: promoted constructor parameters.
+            127 => 1,
+            128 => 1,
         ];
     }
 
@@ -59,13 +44,6 @@ class PropertyDeclarationUnitTest extends AbstractSniffTestCase
      */
     protected function getWarningList(string $testFile = ''): array
     {
-        if ($testFile !== 'PropertyDeclarationUnitTest.inc') {
-            return [];
-        }
-
-        return [
-            // Underscore prefix.
-            58 => 1,
-        ];
+        return [];
     }
 }

@@ -13,10 +13,10 @@ Reference: [PSR-12 standard](https://www.php-fig.org/psr/psr-12/)
 
 The complete PSR-12 coding standard is included, with the following exceptions:
 
-- **PSR2.Classes.PropertyDeclaration** is excluded, replaced by `Mossy2100.Classes.PropertyDeclaration`, which adds
-  support for property hooks (PHP 8.4) (see [Custom Sniffs](CustomSniffs.md)).
-- **Generic.WhiteSpace.ScopeIndent** is excluded, replaced by `Mossy2100.WhiteSpace.ScopeIndent`, which also adds
-  support for property hooks (see [Custom Sniffs](CustomSniffs.md)).
+- **PSR2.Classes.PropertyDeclaration** is excluded, replaced by [`Mossy2100.Classes.PropertyDeclaration`](CustomSniffs.md#mossy2100classespropertydeclaration), which supports
+  property hooks (PHP 8.4).
+- **Generic.WhiteSpace.ScopeIndent** is excluded, replaced by [`Mossy2100.WhiteSpace.ScopeIndent`](CustomSniffs.md#mossy2100whitespacescopeindent), which also supports
+  property hooks.
 - **Generic.Files.LineLength** is excluded, replaced by `SlevomatCodingStandard.Files.LineLength`, which reports an
   error rather than a warning (see [Files](#files)).
 
@@ -28,8 +28,7 @@ The complete PSR-12 coding standard is included, with the following exceptions:
   at the indent of the statement.
 - **Generic.Arrays.DisallowLongArraySyntax**: Requires short array syntax `[]` instead of `array()`.
 - **Generic.Formatting.SpaceAfterCast**: Enforces a space after type casts (e.g. `(int) $value`).
-- **Generic.CodeAnalysis.AssignmentInCondition**: Warns about assignments in `if`, `elseif`, `while`, `for`, `switch`,
-  `case`, and `match` conditions/expressions.
+- **Generic.CodeAnalysis.AssignmentInCondition**: Warns about assignments in conditions. See [Yoda-style Comparisons](../README.md#yoda-style-comparisons).
 
 ---
 
@@ -39,11 +38,13 @@ The complete PSR-12 coding standard is included, with the following exceptions:
   multi-line arrays. Its alignment checks are excluded, so keys, values and arrows are not aligned. Its
   `SingleLineNotAllowed` check is also excluded, since it would force every array with more than one value, list or
   associative, onto several lines. `Mossy2100.Arrays.ArrayDeclaration` requires single-line where it fits.
-- **Squiz.NamingConventions.ValidVariableName**: Enforces `$camelCase` for variables, parameters, and properties.
+- **Squiz.NamingConventions.ValidVariableName**: Enforces `$camelCase` for variables, parameters, and properties. Its
+  checks for an underscore on properties are excluded, as one requires it on private properties. See
+  [Variable and Property Naming Convention](../README.md#variable-and-property-naming-convention).
 - **Squiz.Strings.DoubleQuoteUsage.NotRequired**: Ensures strings use single quotes unless double quotes are necessary.
 - **Squiz.WhiteSpace.OperatorSpacing**: Requires a single space around operators, including before `=` and `=>`, so
   assignments and array arrows are not aligned. `match` arms are covered by
-  `Mossy2100.ControlStructures.MatchArrowSpacing` instead (see [Custom Sniffs](CustomSniffs.md)).
+  [`Mossy2100.ControlStructures.MatchArrowSpacing`](CustomSniffs.md#mossy2100controlstructuresmatcharrowspacing).
 - **Squiz.WhiteSpace.ObjectOperatorSpacing**: Disallows spaces around `->`, `?->` and `::`, e.g. `$a -> b()`. A line
   break before one, in a wrapped method chain, is allowed.
 
@@ -81,10 +82,10 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **MethodSpacing**: Enforces spacing between methods.
 - **ModernClassNameReference**: Requires `::class` instead of `get_class()`, `get_parent_class()` and
   `get_called_class()`.
-- **PropertyDeclaration**: Enforces proper property declaration format including promoted properties.
+- **PropertyDeclaration**: Enforces modifier order and the spacing around the type, including on promoted properties.
 - **PropertySpacing**: Enforces spacing between properties.
 - **RequireMultiLineMethodSignature**: Requires multi-line format for long method signatures.
-- **RequireSelfReference**: Requires self:: instead of ClassName:: for self-references.
+- **RequireSelfReference**: Requires `self::` instead of `ClassName::` for self-references.
 - **RequireSingleLineMethodSignature**: Requires single-line format for short method signatures.
 - **TraitUseDeclaration**: Enforces proper trait use declaration format.
 - **TraitUseSpacing**: Enforces spacing around trait use statements.
@@ -92,23 +93,23 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 ### Commenting
 
 - **AnnotationName**: Enforces correct annotation names.
-- **DeprecatedAnnotationDeclaration**: Enforces proper @deprecated annotation format.
+- **DeprecatedAnnotationDeclaration**: Enforces the `@deprecated` annotation format.
 - **EmptyComment**: Disallows empty comments.
 - **RequireOneLinePropertyDocComment**: Requires one-line format for short property doc comments.
-- **UselessInheritDocComment**: Disallows useless @inheritDoc comments.
+- **UselessInheritDocComment**: Disallows useless `@inheritDoc` comments.
 
 ### Control Structures
 
-- **DisallowContinueWithoutIntegerOperandInSwitch**: Disallows continue without integer operand in switch.
+- **DisallowContinueWithoutIntegerOperandInSwitch**: Disallows `continue` without an operand in `switch`.
 - **DisallowTrailingMultiLineTernaryOperator**: Requires leading operators in multi-line ternary expressions.
 - **LanguageConstructWithParentheses**: Disallows parentheses around language construct arguments, e.g. `echo('x')`.
 - **RequireMultiLineCondition**: Requires multi-line format for long conditions with boolean operators.
 - **RequireMultiLineTernaryOperator**: Requires multi-line format for long ternary operators.
-- **RequireNullCoalesceEqualOperator**: Requires ??= operator when possible.
-- **RequireNullCoalesceOperator**: Requires ?? operator when possible.
-- **RequireNullSafeObjectOperator**: Requires ?-> operator when possible.
+- **RequireNullCoalesceEqualOperator**: Requires `??=` when possible.
+- **RequireNullCoalesceOperator**: Requires `??` when possible.
+- **RequireNullSafeObjectOperator**: Requires `?->` when possible.
 - **RequireSingleLineCondition**: Requires single-line format for short conditions.
-- **RequireShortTernaryOperator**: Requires short ternary operator ?: when possible.
+- **RequireShortTernaryOperator**: Requires the short ternary `?:` when possible.
 - **RequireTernaryOperator**: Requires ternary operator when possible.
 - **UselessIfConditionWithReturn**: Disallows useless if conditions returning true or false.
 
@@ -119,21 +120,21 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 
 ### Files
 
-- **LineLength**: Enforces maximum line length of 120 characters.
+- **LineLength**: Enforces a maximum line length of 120 characters. See [Line Length](LineLength.md).
 
 ### Functions
 
 - **ArrowFunctionDeclaration**: Enforces proper arrow function declaration format.
 - **DisallowEmptyFunction**: Disallows empty function bodies.
-- **FunctionLength**: Enforces maximum function length of 100 lines.
-- **RequireArrowFunction**: Requires arrow functions for simple closures.
-- **RequireMultiLineCall**: Requires multi-line format for long function calls.
-- **RequireSingleLineCall**: Requires single-line format for short function calls.
-- **NamedArgumentSpacing**: Enforces spacing around named arguments.
 - **DisallowTrailingCommaInCall**: Disallows trailing comma in function calls.
 - **DisallowTrailingCommaInClosureUse**: Disallows trailing comma in closure use statements.
 - **DisallowTrailingCommaInDeclaration**: Disallows trailing comma in function declarations.
-- **StaticClosure**: Requires static keyword for closures that don't use $this.
+- **FunctionLength**: Enforces maximum function length of 100 lines.
+- **NamedArgumentSpacing**: Enforces spacing around named arguments.
+- **RequireArrowFunction**: Requires arrow functions for simple closures.
+- **RequireMultiLineCall**: Requires multi-line format for long function calls.
+- **RequireSingleLineCall**: Requires single-line format for short function calls.
+- **StaticClosure**: Requires the `static` keyword for closures that don't use `$this`.
 - **StrictCall**: Requires the strict argument in `in_array()`, `array_search()`, `array_keys()` and `base64_decode()`.
 - **UselessParameterDefaultValue**: Disallows useless parameter default values.
 
@@ -155,15 +156,15 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 ### Operators
 
 - **NegationOperatorSpacing**: Enforces spacing around negation operator.
-- **RequireCombinedAssignmentOperator**: Requires combined assignment operators (+=, -=, etc.).
+- **RequireCombinedAssignmentOperator**: Requires combined assignment operators (`+=`, `-=`, etc.).
 - **RequireOnlyStandaloneIncrementAndDecrementOperators**: Requires `++` and `--` to be used standalone.
 - **SpreadOperatorSpacing**: Enforces spacing around spread operator.
 
 ### PHP
 
-- **DisallowDirectMagicInvokeCall**: Disallows direct \_\_invoke() calls.
+- **DisallowDirectMagicInvokeCall**: Disallows direct `__invoke()` calls.
 - **ReferenceSpacing**: Enforces spacing around reference operator.
-- **ShortList**: Requires short list syntax [].
+- **ShortList**: Requires short list syntax `[]`.
 - **TypeCast**: Enforces proper type cast format.
 - **UselessSemicolon**: Disallows useless semicolons.
 
@@ -173,19 +174,19 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 
 ### Type Hints
 
-- **DeclareStrictTypes**: Requires declare(strict_types=1).
-- **ParameterTypeHintSpacing**: Enforces spacing around parameter type hints.
-- **ReturnTypeHintSpacing**: Enforces spacing around return type hints.
-- **LongTypeHints**: Requires long type hints (int instead of integer).
+- **ClassConstantTypeHint**: Requires class constant type hints.
+- **DeclareStrictTypes**: Requires `declare(strict_types=1)`.
 - **DNFTypeHintFormat**: Enforces DNF type format without spaces.
+- **LongTypeHints**: Requires long type hints (`int` instead of `integer`).
 - **NullableTypeForNullDefaultValue**: Requires nullable type for parameters with null default.
 - **ParameterTypeHint**: Requires parameter type hints.
+- **ParameterTypeHintSpacing**: Enforces spacing around parameter type hints.
 - **PropertyTypeHint**: Requires property type hints.
 - **ReturnTypeHint**: Requires return type hints.
-- **ClassConstantTypeHint**: Requires class constant type hints.
+- **ReturnTypeHintSpacing**: Enforces spacing around return type hints.
 
 ### Variables
 
-- **DisallowVariableVariable**: Disallows variable variables (\$$var).
+- **DisallowVariableVariable**: Disallows variable variables (`$$var`).
 - **DuplicateAssignmentToVariable**: Disallows duplicate assignments to the same variable.
 - **UselessVariable**: Disallows useless variables.

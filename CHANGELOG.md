@@ -2,54 +2,62 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
-[Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
 ## [Unreleased]
 
+### Added
+
+- **`Mossy2100.NamingConventions.ValidVariableName` (breaking).** Warns about a variable or parameter that starts with
+  an underscore, inside a class, enum, trait or interface. `Squiz.NamingConventions.ValidVariableName` reports these
+  outside a class, but allows them inside one. Superglobals such as `$_GET` are exempt. Not auto-fixable.
+- **`Mossy2100.ControlStructures.RequireSingleLineHeader` (breaking).** Requires a multi-line `foreach`, `for`, `switch`
+  or `match` header to be written on one line if it fits, as Slevomat's `RequireSingleLineCondition` does for `if` and
+  `while`. Auto-fixable.
+- **`Mossy2100.ControlStructures.MatchArrowSpacing` (breaking).** Requires one space before and after `=>` in a `match`
+  arm, so arms aren't aligned. No stock sniff checks these. Auto-fixable.
+- **`Mossy2100.Classes.DisallowPromotedPropertyHooks` (breaking).** Disallows property hooks on promoted constructor
+  parameters, e.g. `public function __construct(public string $name { set => trim($value); })`. Declare the property in
+  the class body instead. Not auto-fixable.
+- **`Squiz.WhiteSpace.ObjectOperatorSpacing` (breaking).** Disallows spaces around `->`, `?->` and `::`, e.g.
+  `$a -> b()` or `Foo :: bar()`. A line break before one, in a wrapped method chain, is allowed. Auto-fixable.
+
 ### Changed
 
+- **Renamed the package from `oceanmoon/coding-standard` to `mossy2100/coding-standard`, and the standard from
+  `OceanMoon` to `Mossy2100` (breaking),** matching the author's GitHub and Packagist name. Use
+  `<rule ref="Mossy2100"/>` in `phpcs.xml`. Sniff codes change to match, e.g. `Mossy2100.Classes.PropertyDeclaration`,
+  as do the sniff class namespaces (`Mossy2100\Sniffs\...`).
 - **Array formatting follows PER Coding Style, with no alignment (breaking).** `Mossy2100.Arrays.ArrayDeclaration` was
   rewritten to do one thing: collapse a multi-line array that fits on one line. Stock sniffs handle the rest:
   - An array is single-line if it fits, otherwise one element per line. Grid layout is gone, and a single-line
     associative array is now allowed.
   - Trailing commas are required on multi-line arrays and disallowed on single-line ones, as before.
-  - Arrows and assignments aren't aligned. A single space is required before `=>` and `=`, since alignment makes
-    noisy diffs.
+  - Arrows and assignments aren't aligned. A single space is required before `=>` and `=`, since alignment makes noisy
+    diffs.
 
-  The added stock sniffs are `Generic.Arrays.ArrayIndent`, `Squiz.Arrays.ArrayDeclaration` (alignment checks
-  excluded), `Squiz.WhiteSpace.OperatorSpacing` and `SlevomatCodingStandard.Arrays.MultiLineArrayEndBracketPlacement`.
-  The sniff's `indent` property was removed; `maxLineLength` remains. Run `phpcbf` to reformat existing code. Its
-  error codes are replaced by one, `Mossy2100.Arrays.ArrayDeclaration.ShouldBeSingleLine`. Update any `phpcs:ignore`
-  comments or `<exclude>` rules that name an old code, such as `ListShouldBeSingleLine`.
-- **Renamed the package from `oceanmoon/coding-standard` to `mossy2100/coding-standard`, and the standard from
-  `OceanMoon` to `Mossy2100` (breaking),** matching the author's GitHub and Packagist name. Use
-  `<rule ref="Mossy2100"/>` in `phpcs.xml`. Sniff codes change to match, e.g. `Mossy2100.Classes.PropertyDeclaration`,
-  as do the sniff class namespaces (`Mossy2100\Sniffs\...`).
+  The added stock sniffs are `Generic.Arrays.ArrayIndent`, `Squiz.Arrays.ArrayDeclaration` (alignment checks excluded),
+  `Squiz.WhiteSpace.OperatorSpacing` and `SlevomatCodingStandard.Arrays.MultiLineArrayEndBracketPlacement`. The sniff's
+  `indent` property was removed; `maxLineLength` remains. Run `phpcbf` to reformat existing code. Its error codes are
+  replaced by one, `Mossy2100.Arrays.ArrayDeclaration.ShouldBeSingleLine`. Update any `phpcs:ignore` comments or
+  `<exclude>` rules that name an old code, such as `ListShouldBeSingleLine`.
+- **`Mossy2100.Classes.PropertyDeclaration.Underscore` is an error, not a warning, and covers promoted constructor
+  parameters (breaking).** A property named like `$_name` was a warning, and a promoted one wasn't reported at all. PER
+  Coding Style 3.0 says property names must not start with an underscore.
 - **Requires `slevomat/coding-standard` 8.27 or later** (was 8.25). Earlier versions report
   `SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification` on `#[Override]` methods
   that inherit their array shape from the parent's docblock, and 8.25.0 also misreports hooked properties as multiple
   property definitions.
 
-### Added
-
-- **`Mossy2100.ControlStructures.RequireSingleLineHeader` (breaking).** Requires a multi-line `foreach`, `for`,
-  `switch` or `match` header to be written on one line if it fits, as Slevomat's `RequireSingleLineCondition` does for
-  `if` and `while`. Auto-fixable.
-- **`Mossy2100.ControlStructures.MatchArrowSpacing` (breaking).** Requires one space before and after `=>` in a
-  `match` arm, so arms aren't aligned. No stock sniff checks these. Auto-fixable.
-- **`Mossy2100.Classes.DisallowPromotedPropertyHooks` (breaking).** Disallows property hooks on promoted constructor
-  parameters, e.g. `public function __construct(public string $name { set => trim($value); })`, because hooks are hard
-  to read in a constructor signature. Declare the property in the class body instead. This is stricter than PER Coding
-  Style 3.0, which allows a single short hook on one line. Inherited Slevomat sniffs also misread such hooks and report
-  errors that `phpcbf` can't fix. Not auto-fixable.
-- **`Squiz.WhiteSpace.ObjectOperatorSpacing` (breaking).** Disallows spaces around `->`, `?->` and `::`, e.g.
-  `$a -> b()` or `Foo :: bar()`. A line break before one, in a wrapped method chain, is allowed. Auto-fixable.
-
 ### Removed
 
+- **Seven `Mossy2100.Classes.PropertyDeclaration` error codes, which duplicated Slevomat sniffs already in the
+  standard.** Each case is still reported, and fixed, by the Slevomat sniff. Remove any references to the old codes:
+  - `Multiple`, now reported by `SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition`.
+  - `SpacingAfterType`, `AvizKeywordOrder`, `StaticBeforeVisibility`, `ReadonlyBeforeVisibility`, `FinalAfterVisibility`
+    and `AbstractAfterVisibility`, now reported by `SlevomatCodingStandard.Classes.PropertyDeclaration`.
 - **`OceanMoon.Classes.ClassInstantiationNoBrackets` (breaking).** The standard doesn't otherwise flag redundant
   parentheses in expressions, and they can aid readability. Both `(new Foo())->bar()` and `new Foo()->bar()` are now
   accepted. Remove any references to the sniff code from `phpcs.xml` and `phpcs:ignore` comments.
@@ -57,8 +65,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - **`Mossy2100.PHP.DisallowMultiConstantDefinition` fixer keeps the type and modifiers.** Splitting
-  `final public const int A = 1, B = 2;` gave `public const B = 2;`, dropping the type, and indented the new line
-  with a tab. Each constant now keeps the full declaration, e.g. `final public const int B = 2;`, with the original
+  `final public const int A = 1, B = 2;` gave `public const B = 2;`, dropping the type, and indented the new line with a
+  tab. Each constant now keeps the full declaration, e.g. `final public const int B = 2;`, with the original
   indentation.
 
 ---
@@ -67,28 +75,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
-- The `tests/*` exclude-pattern on `PSR1.Classes.ClassDeclaration.MultipleClasses`. Every class, interface, trait,
-  and enum must now live in its own file, test fixtures included — no exceptions for `tests/*` any more. Existing
+- The `tests/*` exclude-pattern on `PSR1.Classes.ClassDeclaration.MultipleClasses`. Every class, interface, trait, and
+  enum must now live in its own file, test fixtures included. There are no exceptions for `tests/*` any more. Existing
   multi-class test files should split their extra fixture classes into their own files (e.g. a `tests/Fixtures/`
   subdirectory), matching PSR-4 autoloading expectations.
+
+---
 
 ## [2.1.0] - 2026-08-16
 
 ### Added
 
-- **`OceanMoon.PHP.DisallowMultiConstantDefinition`** — disallows defining multiple constants in one statement (e.g.
+- **`OceanMoon.PHP.DisallowMultiConstantDefinition`**: disallows defining multiple constants in one statement (e.g.
   `const A = 1, B = 2;`), for both class constants and namespace/file-scope constants. A fork of
   `SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition`, which was removed in `2.0.1` because it false-
   positived on a single, valid constant whose value is a multi-argument `new` expression or function call (e.g.
-  `const I = new Complex(0, 1);`) — the upstream sniff skips commas inside a short array (`[...]`) when scanning for
+  `const I = new Complex(0, 1);`). The upstream sniff skips commas inside a short array (`[...]`) when scanning for
   constant separators, but not commas inside a parenthesized argument list. This fork adds that missing skip, fixing
   the false positive while still catching genuine multi-constant statements. See the "Custom Sniffs" section in
   `README.md`.
 - **`Generic.CodeAnalysis.AssignmentInCondition`**, replacing
-  `SlevomatCodingStandard.ControlStructures.AssignmentInCondition` (see Removed) — covers `if`, `elseif`, `while`,
+  `SlevomatCodingStandard.ControlStructures.AssignmentInCondition` (see Removed): covers `if`, `elseif`, `while`,
   `for` (condition clause only), `switch`, `case`, and `match`, and every assignment operator (`=`, `+=`, `??=`,
   etc.), not just `=` in `if`/`elseif`/`do`-`while`. Confirmed by testing directly: the Slevomat rule doesn't fire at
-  all on `while ($item = array_shift($items))`, `for ($i = 0; $x = $items[$i] ?? null; $i++)`, or `if ($y ??= 5)` —
+  all on `while ($item = array_shift($items))`, `for ($i = 0; $x = $items[$i] ?? null; $i++)`, or `if ($y ??= 5)`;
   only the `do`-`while` case overlaps between the two. Reports as a warning rather than an error, but `phpcs` still
   exits non-zero on warnings alone, so this doesn't weaken enforcement in CI.
 - **New "Yoda-style Comparisons" section in `README.md`**, explaining why this standard takes no position on Yoda
@@ -99,17 +109,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
-- `SlevomatCodingStandard.Operators.DisallowEqualOperators` — forcing `===`/`!==` everywhere is incompatible with common
+- `SlevomatCodingStandard.Operators.DisallowEqualOperators`: forcing `===`/`!==` everywhere is incompatible with common
   PHP ecosystem conventions (Drupal, Laravel, and, less strictly, WordPress all permit or rely on loose comparison in
   places), and it actively breaks code that intentionally overloads `==`/`!=` for value equality (e.g.
-  `oceanmoon/math-ext`'s `Rational`). Loose vs. strict comparison is now left to the developer's judgement per call
+  `oceanmoon/math-ext`'s `Rational`). Loose vs. strict comparison is now left to the developer's judgment per call
   site.
-- `SlevomatCodingStandard.ControlStructures.DisallowYodaComparison` — opinion is genuinely split across the PHP
+- `SlevomatCodingStandard.ControlStructures.DisallowYodaComparison`: opinion is genuinely split across the PHP
   ecosystem (see the new README section), so this standard no longer takes a position on Yoda-style comparisons
   either way.
-- `SlevomatCodingStandard.ControlStructures.AssignmentInCondition` — replaced by
+- `SlevomatCodingStandard.ControlStructures.AssignmentInCondition`: replaced by
   `Generic.CodeAnalysis.AssignmentInCondition` (see Added), which covers substantially more cases.
-- `SlevomatCodingStandard.Classes.ClassConstantVisibility` — duplicated `PSR12.Properties.ConstantVisibility.NotFound`
+- `SlevomatCodingStandard.Classes.ClassConstantVisibility`: duplicated `PSR12.Properties.ConstantVisibility.NotFound`
   exactly (same trigger condition: a class constant with no explicit visibility keyword), and neither sniff was
   configured to auto-fix, so it added nothing beyond the PSR-12 check already inherited from `PSR12`.
 
@@ -118,11 +128,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - The rule `Generic.Formatting.SpaceAfterCast` had been overridden to have no space between a cast operator and the
   operand (e.g. `(int)$x`). This was reset to the default setting, which includes a space (e.g. `(int) $x`).
 - **`OceanMoon.Arrays.ArrayDeclaration` reworked to classify list array elements as "simple" or "complex"**, loosely
-  mirroring `OceanMoon\Core\Stringify::stringifyArray()`'s pretty-print logic. Simple elements — scalar literals,
-  `null`/`true`/`false`, bare variables, and bare constants — are still eligible for the compact single-line or grid
+  mirroring `OceanMoon\Core\Stringify::stringifyArray()`'s pretty-print logic. Simple elements (scalar literals,
+  `null`/`true`/`false`, bare variables, and bare constants) are still eligible for the compact single-line or grid
   formats. Any complex element (nested array, function/method call, `new` expression, arithmetic, enum case access,
   property/static access, or any other expression) now forces one element per line **unconditionally**, even when
-  the whole array would otherwise fit on one line — previously, such lists stayed compact if they fit within the
+  the whole array would otherwise fit on one line. Previously, such lists stayed compact if they fit within the
   line length regardless of content, and only fell back to grid/one-per-line once they didn't. Nested arrays already
   behaved this way; the change is extending the same treatment to every other kind of complex element.
 
@@ -132,7 +142,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
-- `SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition` — this sniff is scoped to class constant lists (e.g.
+- `SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition`: this sniff is scoped to class constant lists (e.g.
   `public const A = 1, B = 2;`) but misfires on single top-level `const` statements whose value is a `new` expression
   with more than one constructor argument (e.g. `const I = new Complex(0, 1);`), apparently miscounting the comma inside
   the constructor call as a constant-list separator. Removed rather than suppressed, since it produced a false positive
@@ -144,9 +154,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- **Renamed package** from `galaxon/coding-standard` to `oceanmoon/coding-standard` — update your `composer.json`
+- **Renamed package** from `galaxon/coding-standard` to `oceanmoon/coding-standard`: update your `composer.json`
   require accordingly.
-- **Renamed sniffs** — all `Galaxon.*` sniff references must be updated to `OceanMoon.*` in `phpcs.xml` and any inline
+- **Renamed sniffs**: all `Galaxon.*` sniff references must be updated to `OceanMoon.*` in `phpcs.xml` and any inline
   `// phpcs:ignore` comments:
   - `Galaxon.Arrays.ArrayDeclaration` → `OceanMoon.Arrays.ArrayDeclaration`
   - `Galaxon.Classes.ClassInstantiationNoBrackets` → `OceanMoon.Classes.ClassInstantiationNoBrackets`
@@ -154,7 +164,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - `Galaxon.WhiteSpace.ScopeIndent` → `OceanMoon.WhiteSpace.ScopeIndent`
 - **Renamed PHP namespaces** from `Galaxon\*` to `OceanMoon\*` throughout all source and test files.
 - **Moved source tree** from `src/Galaxon/` to `src/OceanMoon/`.
-- **Ruleset name** changed from `Galaxon` to `OceanMoon` — update `<rule ref="Galaxon"/>` to `<rule ref="OceanMoon"/>`
+- **Ruleset name** changed from `Galaxon` to `OceanMoon`: update `<rule ref="Galaxon"/>` to `<rule ref="OceanMoon"/>`
   in your `phpcs.xml`.
 - `composer.json`: updated author email, homepage, and support URLs to Ocean Moon Software.
 
@@ -169,7 +179,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
-- **ClassInstantiationNoBracketsSniff** — No longer incorrectly removes parentheses from method/function call argument
+- **ClassInstantiationNoBracketsSniff**: No longer incorrectly removes parentheses from method/function call argument
   lists containing `new` expressions (e.g. `$obj->add(new Foo())->method()`).
 
 ### Documentation
@@ -182,20 +192,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- **Single-line arrays take priority** — any list (without nested arrays) that fits on one line without overflowing the
+- **Single-line arrays take priority**: any list (without nested arrays) that fits on one line without overflowing the
   maximum line length and without multiline elements now uses single-line format, regardless of content. Function calls
   and `new` expressions no longer force multiline when the array fits on one line. Lists with nested arrays always use
   one-per-line format.
-- **Nested arrays excluded from grid format** — lists containing nested arrays that are too long for a single line use
+- **Nested arrays excluded from grid format**: lists containing nested arrays that are too long for a single line use
   one-per-line format instead of grid.
-- **UseSpacing** — set `linesCountBetweenUseTypes` to 1 for a blank line between different import types (class,
+- **UseSpacing**: set `linesCountBetweenUseTypes` to 1 for a blank line between different import types (class,
   function, const).
 - Excluded `Generic.Files.LineLength.TooLong` warning (replaced by Slevomat's `Files.LineLength.LineTooLong` error).
 - Removed `UselessConstantTypeHint` sniff (not needed with `ClassConstantTypeHint`).
 
 ### Fixed
 
-- **Array fix bouncing** — fixed infinite loop in PHPCBF when collapsing a multiline list to single line. The trailing
+- **Array fix bouncing**: fixed infinite loop in PHPCBF when collapsing a multiline list to single line. The trailing
   comma removal and single-line collapse no longer conflict.
 
 ### Documentation
@@ -209,9 +219,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- **Grid format eligibility expanded** — variables, properties, constants, enums, and simple expressions (e.g. grouping
+- **Grid format eligibility expanded**: variables, properties, constants, enums, and simple expressions (e.g. grouping
   parentheses) are now eligible for single-line and grid formatting, not just scalar literals.
-- **Function/method calls, `new` expressions, and closures always one-per-line** — arrays containing these elements are
+- **Function/method calls, `new` expressions, and closures always one-per-line**: arrays containing these elements are
   formatted one item per line regardless of total length.
 - Updated README to reflect new grid eligibility rules and terminology.
 
@@ -221,17 +231,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- **Grid format** for scalar list arrays too long for a single line — items arranged in uniformly padded rows.
-- **One-per-line format** for non-scalar list arrays — function calls, expressions, etc. always formatted one element
+- **Grid format** for scalar list arrays too long for a single line, with items arranged in uniformly padded rows.
+- **One-per-line format** for non-scalar list arrays: function calls, expressions, etc. always formatted one element
   per line with trailing comma, regardless of length.
 - **Unit tests** for all four custom Galaxon sniffs:
-  - `Galaxon.Arrays.ArrayDeclaration` — covers scalar lists, grid format, one-per-line, list-of-arrays, associative
+  - `Galaxon.Arrays.ArrayDeclaration`: covers scalar lists, grid format, one-per-line, list-of-arrays, associative
     arrays, mixed keyed/unkeyed, and explicit sequential integer keys.
-  - `Galaxon.Classes.ClassInstantiationNoBrackets` — covers method calls, property access, nullsafe, constructor args,
+  - `Galaxon.Classes.ClassInstantiationNoBrackets`: covers method calls, property access, nullsafe, constructor args,
     chained calls.
-  - `Galaxon.Classes.PropertyDeclaration` — covers hooks, asymmetric visibility, modifier ordering, var keyword,
+  - `Galaxon.Classes.PropertyDeclaration`: covers hooks, asymmetric visibility, modifier ordering, var keyword,
     underscore warning.
-  - `Galaxon.WhiteSpace.ScopeIndent` — covers PHP 8.4 property hook indentation.
+  - `Galaxon.WhiteSpace.ScopeIndent`: covers PHP 8.4 property hook indentation.
 - PHPUnit configuration (`phpunit.xml.dist`) and test bootstrap.
 
 ### Changed
@@ -245,7 +255,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - `Galaxon.Classes.ClassInstantiationNoBrackets` namespace corrected from `dev\Sniffs\Classes` to
   `Galaxon\Sniffs\Classes`.
-- Trailing whitespace in `Core\Stringify::stringifyList()` grid format — last item on each row no longer padded.
+- Trailing whitespace in `Core\Stringify::stringifyList()` grid format: the last item on each row is no longer padded.
 
 ### Removed
 

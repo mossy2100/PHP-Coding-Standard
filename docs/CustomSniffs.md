@@ -9,11 +9,13 @@ This document describes the custom PHP_CodeSniffer sniffs created for the [Mossy
 Requires a multi-line array to be written on one line if it fits. The rest of the array layout is enforced by stock
 sniffs (see [Inherited Sniffs](InheritedSniffs.md)), but none of them collapses a multi-line array.
 
+**Auto-fixable:** yes.
+
 - **Fits** means the whole resulting line is within `maxLineLength`: the text before the opening bracket, the collapsed
   array, and the text after the closing bracket on its line. A fix never creates a line-length error.
 - **Outermost first.** If an enclosing array fits, only that one is reported, as fixing it collapses the nested ones.
-- **Clean output.** The fix uses single spaces, no space inside brackets or around `->`, `?->` and `::`, and no
-  trailing commas.
+- **Clean output.** The fix uses single spaces, no space inside brackets or around `->`, `?->` and `::`, and no trailing
+  commas.
 - **Skipped** if the array contains a comment, a heredoc or nowdoc, a multi-line string, or a brace body such as a
   closure, anonymous class or `match` expression.
 
@@ -44,23 +46,7 @@ $user = [
 | --------------- | ---- | ------- | ------------------------------------------ |
 | `maxLineLength` | int  | 120     | Maximum line length for a collapsed array. |
 
-To use a different limit, set every line-length property, as described in [Changing the Line Length](../README.md#changing-the-line-length).
-
----
-
-## Mossy2100.Classes.PropertyDeclaration
-
-Verifies that properties are declared correctly. This is a replacement for `PSR2.Classes.PropertyDeclaration` that
-properly handles PHP 8.4 property hooks.
-
-**Improvements over the PSR2 version:**
-
-- Variables inside property hook bodies (e.g. `$this`, `$value`, local variables) are correctly ignored as non-property
-  declarations.
-- Properties with hooks end with a closing brace `}`, not a semicolon `;`, and are handled correctly.
-- Supports PHP 8.4 asymmetric visibility (`public private(set)`), enforcing that read-visibility comes before
-  write-visibility.
-- Enforces correct ordering of modifiers: `abstract`/`final` before visibility, `static`/`readonly` after visibility.
+To use a different limit, set every line-length property, as described in [Line Length](LineLength.md).
 
 ---
 
@@ -68,6 +54,8 @@ properly handles PHP 8.4 property hooks.
 
 Disallows property hooks on promoted constructor parameters (PHP 8.4+). Hook bodies inside a constructor signature are
 hard to read, so declare the property in the class body instead. Promoted parameters without hooks are still allowed.
+
+**Auto-fixable:** no. Moving a property and its hooks into the class body is a bigger rewrite than a fixer should risk.
 
 This is stricter than [PER Coding Style 3.0](https://www.php-fig.org/per/coding-style/#49-property-hooks), which allows a single short hook on one line.
 
@@ -78,9 +66,6 @@ Inherited sniffs also misread these hooks. Two Slevomat sniffs treat a variable 
 - `SlevomatCodingStandard.TypeHints.ParameterTypeHintSpacing.NoSpaceBetweenTypeHintAndParameter`
 
 A multi-line hook also gets `Squiz.Functions.MultiLineFunctionDeclaration.Indent`.
-
-Not auto-fixable, because moving a property and its hooks into the class body is a bigger rewrite than a fixer should
-risk.
 
 **Good:**
 
@@ -111,10 +96,60 @@ class User
 
 ---
 
+## Mossy2100.Classes.PropertyDeclaration
+
+Verifies that properties are declared correctly. This replaces `PSR2.Classes.PropertyDeclaration`, which misreads
+variables in PHP 8.4 property hook bodies, such as `$value` and `$this`, as property declarations.
+
+**Auto-fixable:** no.
+
+It reports:
+
+- A property name with a leading underscore (`Underscore`), for any visibility, including promoted constructor
+  parameters. PER Coding Style 3.0 disallows it too.
+- The `var` keyword (`VarUsed`).
+- A property with no visibility (`ScopeMissing`).
+
+`SlevomatCodingStandard.Classes.PropertyDeclaration` checks modifier order and the spacing after the type, and
+`SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition` checks for several properties in one statement.
+
+**Good:**
+
+```php
+class User
+{
+    private string $secret = '';
+    public static int $total = 0;
+
+    public function __construct(private int $id)
+    {
+    }
+}
+```
+
+**Bad:**
+
+```php
+class User
+{
+    private string $_secret = '';  // Leading underscore.
+    var $legacy;                   // The var keyword.
+    static int $total = 0;         // No visibility.
+
+    public function __construct(private int $_id) // Leading underscore on a promoted parameter.
+    {
+    }
+}
+```
+
+---
+
 ## Mossy2100.ControlStructures.MatchArrowSpacing
 
-Requires exactly one space before and after the `=>` in a `match` arm, so arms aren't aligned, since aligned columns
-make noisy diffs. `Squiz.WhiteSpace.OperatorSpacing` covers `=>` in arrays and `foreach` loops, but not `match` arms.
+Requires exactly one space before and after the `=>` in a `match` arm. Aligned arms make noisy diffs.
+`Squiz.WhiteSpace.OperatorSpacing` covers `=>` in arrays and `foreach` loops, but not `match` arms.
+
+**Auto-fixable:** yes.
 
 A line break before or after the arrow is allowed, for wrapping a long arm.
 
@@ -144,9 +179,11 @@ Requires a multi-line `foreach`, `for`, `switch` or `match` header to be written
 `SlevomatCodingStandard.ControlStructures.RequireSingleLineCondition` does the same for `if`, `elseif`, `while` and
 `do-while`. A multi-line header is often left over after the array inside it is collapsed.
 
-**Fits** and **skipped** mean the same as for [Mossy2100.Arrays.ArrayDeclaration](#mossy2100arraysarraydeclaration):
-the whole resulting line, up to and including ` {`, must be within `maxLineLength`, and a header containing a comment,
-heredoc, multi-line string or brace body is left alone.
+**Auto-fixable:** yes.
+
+**Fits** and **skipped** mean the same as for [Mossy2100.Arrays.ArrayDeclaration](#mossy2100arraysarraydeclaration): the whole resulting line, up to and
+including ` {`, must be within `maxLineLength`, and a header containing a comment, heredoc, multi-line string or brace
+body is left alone.
 
 **Good:**
 
@@ -172,66 +209,71 @@ foreach (
 | --------------- | ---- | ------- | ------------------------------------------- |
 | `maxLineLength` | int  | 120     | Maximum line length for a collapsed header. |
 
-To use a different limit, set every line-length property, as described in [Changing the Line Length](../README.md#changing-the-line-length).
+To use a different limit, set every line-length property, as described in [Line Length](LineLength.md).
 
 ---
 
-## Mossy2100.WhiteSpace.ScopeIndent
+## Mossy2100.NamingConventions.ValidVariableName
 
-Checks that control structures and code are indented correctly. This is a fork of `Generic.WhiteSpace.ScopeIndent` with
-PHP 8.4 property hook support.
+Warns about a variable or parameter whose name starts with an underscore, inside a class, enum, trait or interface.
 
-PHP_CodeSniffer's tokenizer does not recognize property hook braces as scope openers/closers, so the built-in
-`ScopeIndent` sniff cannot track their indentation. This sniff builds a map of property hook scopes (both the hook
-container `{ get ... set ... }` and individual hook bodies `get { ... }`) and tracks them alongside the standard scope
-stack.
+**Auto-fixable:** no. Renaming a variable is a refactor, not a fix.
+
+`Squiz.NamingConventions.ValidVariableName` reports a leading underscore as an error outside a class. Inside one, it
+strips the underscore before checking camelCase, because the Squiz convention prefixes private members with one. This
+sniff fills only that gap. It doesn't report:
+
+- Superglobals, such as `$_GET` and `$_SERVER`.
+- A name that Squiz already reports, because the rest of it isn't camelCase either, such as `$_user_name`.
+- Properties, including promoted constructor parameters, and static property access (`self::$_count`).
+  `Mossy2100.Classes.PropertyDeclaration` checks those where they're declared.
 
 **Good:**
 
 ```php
-class User
+class Order
 {
-    public string $name {
-        get {
-            return $this->name;
+    public function total(array $items): int
+    {
+        $sum = 0;
+        foreach ($items as $item) {
+            $sum += $item;
         }
-        set {
-            $this->name = trim($value);
-        }
+
+        return $sum;
     }
 }
 ```
 
-**Configuration:**
+**Bad:**
 
-| Property | Type | Default | Description                             |
-| -------- | ---- | ------- | --------------------------------------- |
-| `indent` | int  | 4       | Number of spaces per indentation level. |
+```php
+class Order
+{
+    public function total(array $_items): int
+    {
+        $_sum = 0;
+        foreach ($_items as $_item) {
+            $_sum += $_item;
+        }
 
-```xml
-<rule ref="Mossy2100.WhiteSpace.ScopeIndent">
-    <properties>
-        <property name="indent" value="2"/>
-    </properties>
-</rule>
+        return $_sum;
+    }
+}
 ```
 
 ---
 
 ## Mossy2100.PHP.DisallowMultiConstantDefinition
 
-Disallows defining multiple constants in a single statement (e.g. `const A = 1, B = 2;`). This is a fork of
-`SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition`.
+Disallows defining several constants in one statement (e.g. `const A = 1, B = 2;`), for class and file-scope constants.
 
-The original sniff scans for commas between `const` and the closing `;`, skipping over commas inside a short array
-(`[...]`) so it doesn't mistake them for constant separators. It doesn't do the same for a parenthesized argument list.
-That makes it misfire on a single, valid constant whose value has a comma inside parentheses. For example, the
-file-scope constant `const I = new Complex(0, 1);` is wrongly flagged, because the comma inside `Complex(0, 1)` is
-miscounted as a constant separator. The same happens with a long-syntax array (`array(1, 2)`), or a closure with more
-than one parameter (PHP 8.5+). This fork also skips over parenthesized expressions, fixing the false positive while
-still catching genuine multi-constant statements.
+**Auto-fixable:** yes.
 
-Applies equally to class constants and namespace/file-scope constants, since `T_CONST` isn't class-specific.
+This is a fork of `SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition`, which mistakes a comma inside
+parentheses for a constant separator. So it flags a single, valid constant such as `const I = new Complex(0, 1);`, or
+one whose value is `array(1, 2)` or a closure with two parameters (PHP 8.5+). This fork skips commas inside parentheses,
+as upstream already does inside `[...]`.
 
 **Good:**
 
@@ -255,4 +297,56 @@ class Example
 }
 
 const C = 3, D = 4; // Flagged: the same applies outside a class.
+```
+
+---
+
+## Mossy2100.WhiteSpace.ScopeIndent
+
+Checks that code is indented correctly. This is a fork of `Generic.WhiteSpace.ScopeIndent` that also checks property
+hooks (PHP 8.4+), whose braces PHP_CodeSniffer doesn't treat as scopes.
+
+**Auto-fixable:** yes.
+
+**Good:**
+
+```php
+class User
+{
+    public string $name {
+        get {
+            return $this->name;
+        }
+        set {
+            $this->name = trim($value);
+        }
+    }
+}
+```
+
+**Bad:**
+
+```php
+class User
+{
+    public string $name {
+    get {
+        return $this->name;
+    }
+    }
+}
+```
+
+**Configuration:**
+
+| Property | Type | Default | Description                             |
+| -------- | ---- | ------- | --------------------------------------- |
+| `indent` | int  | 4       | Number of spaces per indentation level. |
+
+```xml
+<rule ref="Mossy2100.WhiteSpace.ScopeIndent">
+    <properties>
+        <property name="indent" value="2"/>
+    </properties>
+</rule>
 ```
