@@ -19,6 +19,8 @@ The complete PSR-12 coding standard is included, with the following exceptions:
   property hooks.
 - **Generic.Files.LineLength** is excluded, replaced by `SlevomatCodingStandard.Files.LineLength`, which reports an
   error rather than a warning (see [Files](#files)).
+- **Generic.Formatting.DisallowMultipleStatements** is excluded, replaced by
+  [`Mossy2100.Formatting.DisallowMultipleStatements`](CustomSniffs.md#mossy2100formattingdisallowmultiplestatements), which allows `{ get; set; }` on an abstract or interface property.
 
 ---
 
@@ -64,7 +66,8 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 
 ### Attributes
 
-- **AttributeAndTargetSpacing**: Enforces spacing between attributes and their targets.
+- **AttributeAndTargetSpacing**: Disallows blank lines between an attribute and its target. An attribute on the same
+  line as its target is allowed here, and checked by [`Mossy2100.Attributes.AttributePlacement`](CustomSniffs.md#mossy2100attributesattributeplacement).
 - **AttributesOrder**: Requires attributes to be ordered alphabetically.
 - **DisallowAttributesJoining**: Disallows joining multiple attributes with commas.
 - **DisallowMultipleAttributesPerLine**: Requires each attribute on its own line.
@@ -124,16 +127,19 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 
 ### Functions
 
-- **ArrowFunctionDeclaration**: Enforces proper arrow function declaration format.
+- **ArrowFunctionDeclaration**: Enforces arrow function spacing, with no space after `fn`, e.g. `fn($x) => $x`.
 - **DisallowEmptyFunction**: Disallows empty function bodies.
-- **DisallowTrailingCommaInCall**: Disallows trailing comma in function calls.
-- **DisallowTrailingCommaInClosureUse**: Disallows trailing comma in closure use statements.
-- **DisallowTrailingCommaInDeclaration**: Disallows trailing comma in function declarations.
+- **DisallowTrailingCommaInCall**: Disallows a trailing comma in a single-line function call.
+- **DisallowTrailingCommaInClosureUse**: Disallows a trailing comma in a single-line closure `use` list.
+- **DisallowTrailingCommaInDeclaration**: Disallows a trailing comma in a single-line function declaration.
 - **FunctionLength**: Enforces maximum function length of 100 lines.
 - **NamedArgumentSpacing**: Enforces spacing around named arguments.
 - **RequireArrowFunction**: Requires arrow functions for simple closures.
 - **RequireMultiLineCall**: Requires multi-line format for long function calls.
 - **RequireSingleLineCall**: Requires single-line format for short function calls.
+- **RequireTrailingCommaInCall**: Requires a trailing comma in a multi-line function call.
+- **RequireTrailingCommaInClosureUse**: Requires a trailing comma in a multi-line closure `use` list.
+- **RequireTrailingCommaInDeclaration**: Requires a trailing comma in a multi-line function declaration.
 - **StaticClosure**: Requires the `static` keyword for closures that don't use `$this`.
 - **StrictCall**: Requires the strict argument in `in_array()`, `array_search()`, `array_keys()` and `base64_decode()`.
 - **UselessParameterDefaultValue**: Disallows useless parameter default values.

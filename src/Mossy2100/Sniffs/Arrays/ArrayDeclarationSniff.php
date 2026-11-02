@@ -80,7 +80,7 @@ class ArrayDeclarationSniff implements Sniff
             'Multi-line array fits within %s characters, so it must be written on one line.',
             $stackPtr,
             self::CODE_SHOULD_BE_SINGLE_LINE,
-            [$this->maxLineLength]
+            [$this->maxLineLength],
         );
         if (!$fix) {
             return;

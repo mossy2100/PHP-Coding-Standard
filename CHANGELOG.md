@@ -10,6 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`Mossy2100.Formatting.DisallowMultipleStatements`.** Replaces `Generic.Formatting.DisallowMultipleStatements`, which
+  reported `{ get; set; }` on an abstract or interface property as two statements on one line. PER Coding Style 3.0
+  requires them on one line. Update any `phpcs:ignore` comments or `<exclude>` rules that name the Generic code.
+- **`Mossy2100.Attributes.AttributePlacement` (breaking).** Requires an attribute to be on the line before its target,
+  except on a parameter in a single-line parameter list, where it must be inline, as PER Coding Style 3.0 requires.
+  `SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing` now allows an attribute on the same line as its target,
+  and this sniff reports every other case. Auto-fixable.
 - **`Mossy2100.NamingConventions.ValidVariableName` (breaking).** Warns about a variable or parameter that starts with
   an underscore, inside a class, enum, trait or interface. `Squiz.NamingConventions.ValidVariableName` reports these
   outside a class, but allows them inside one. Superglobals such as `$_GET` are exempt. Not auto-fixable.
@@ -30,6 +37,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `OceanMoon` to `Mossy2100` (breaking),** matching the author's GitHub and Packagist name. Use
   `<rule ref="Mossy2100"/>` in `phpcs.xml`. Sniff codes change to match, e.g. `Mossy2100.Classes.PropertyDeclaration`,
   as do the sniff class namespaces (`Mossy2100\Sniffs\...`).
+- **Trailing commas follow PER Coding Style 3.0 (breaking).** A multi-line function call, function declaration or
+  closure `use` list now requires a trailing comma, and a single-line one still disallows it. Adds
+  `SlevomatCodingStandard.Functions.RequireTrailingCommaInCall`, `...InDeclaration` and `...InClosureUse`. Run `phpcbf`
+  to add the commas.
+- **No space after `fn` (breaking).** Arrow functions are now written `fn($x) => $x`, not `fn ($x) => $x`, as PER Coding
+  Style 3.0 requires. Run `phpcbf` to reformat.
 - **Array formatting follows PER Coding Style, with no alignment (breaking).** `Mossy2100.Arrays.ArrayDeclaration` was
   rewritten to do one thing: collapse a multi-line array that fits on one line. Stock sniffs handle the rest:
   - An array is single-line if it fits, otherwise one element per line. Grid layout is gone, and a single-line

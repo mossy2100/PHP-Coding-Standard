@@ -3,9 +3,9 @@
 The line length limit in the [Mossy2100 Coding Standard](../README.md) is 120. To use a different limit, override it in your project's
 `phpcs.xml` (see [Usage](../README.md#usage)).
 
-Ten sniffs check or wrap long lines, and each has its own line-length property. The standard sets all ten from an XML
-entity, `lineLength`, at the top of its `ruleset.xml`. An entity only applies within the file that defines it, so you
-can't override it from `phpcs.xml`. Set all ten properties instead:
+Ten sniffs check or wrap long lines, and each has its own line-length property. The Mossy2100 ruleset sets all ten from
+an XML entity, `lineLength`, at the top of its `ruleset.xml`. An entity only applies within the file that defines it, so
+you can't override it from `phpcs.xml`. Set all ten properties instead:
 
 | Sniff                                                                      | Property          | Value      |
 | -------------------------------------------------------------------------- | ----------------- | ---------- |

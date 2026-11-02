@@ -8,11 +8,6 @@
 <ruleset name="Mossy2100">
     <description>Mossy2100 PHP Coding Standard</description>
 
-    <!-- ARGUMENTS -->
-    <arg value="v"/>
-    <arg value="s"/>
-    <arg name="colors"/>
-
     <!-- ====== PSR ====== -->
 
     <!-- Inherit from PSR-12 -->
@@ -23,6 +18,8 @@
         <exclude name="Generic.WhiteSpace.ScopeIndent"/>
         <!-- Exclude Generic LineLength - replaced by SlevomatCodingStandard.Files.LineLength -->
         <exclude name="Generic.Files.LineLength"/>
+        <!-- Exclude Generic DisallowMultipleStatements - replaced by Mossy2100 version, which allows { get; set; } -->
+        <exclude name="Generic.Formatting.DisallowMultipleStatements"/>
     </rule>
 
     <!-- ====== GENERIC ====== -->
@@ -86,7 +83,13 @@
     <rule ref="SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace"/>
 
     <!-- Attributes -->
-    <rule ref="SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing"/>
+    <!-- Allow an attribute on the same line as its target, so a parameter's can be inline (PER Coding Style 12.2).
+         Mossy2100.Attributes.AttributePlacement reports every other same-line attribute. -->
+    <rule ref="SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing">
+        <properties>
+            <property name="allowOnSameLine" value="true"/>
+        </properties>
+    </rule>
     <rule ref="SlevomatCodingStandard.Attributes.AttributesOrder">
         <properties>
             <property name="orderAlphabetically" value="true"/>
@@ -194,7 +197,12 @@
     </rule>
 
     <!-- Functions -->
-    <rule ref="SlevomatCodingStandard.Functions.ArrowFunctionDeclaration"/>
+    <!-- No space after fn (PER Coding Style 7.1) -->
+    <rule ref="SlevomatCodingStandard.Functions.ArrowFunctionDeclaration">
+        <properties>
+            <property name="spacesCountAfterKeyword" value="0"/>
+        </properties>
+    </rule>
     <rule ref="SlevomatCodingStandard.Functions.DisallowEmptyFunction"/>
     <rule ref="SlevomatCodingStandard.Functions.FunctionLength">
         <properties>
@@ -213,9 +221,25 @@
         </properties>
     </rule>
     <rule ref="SlevomatCodingStandard.Functions.NamedArgumentSpacing"/>
-    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInCall"/>
-    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInClosureUse"/>
-    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInDeclaration"/>
+    <!-- Trailing commas: disallowed on single-line lists, required on multi-line ones (PER Coding Style 2.6) -->
+    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInCall">
+        <properties>
+            <property name="onlySingleLine" value="true"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInClosureUse">
+        <properties>
+            <property name="onlySingleLine" value="true"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInDeclaration">
+        <properties>
+            <property name="onlySingleLine" value="true"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInCall"/>
+    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInClosureUse"/>
+    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInDeclaration"/>
     <rule ref="SlevomatCodingStandard.Functions.StaticClosure"/>
     <rule ref="SlevomatCodingStandard.Functions.StrictCall"/>
     <rule ref="SlevomatCodingStandard.Functions.UselessParameterDefaultValue"/>
@@ -316,6 +340,12 @@
 
     <!-- Property declaration with PHP 8.4 property hook support -->
     <rule ref="Mossy2100.Classes.PropertyDeclaration"/>
+
+    <!-- One statement per line, allowing { get; set; } on an abstract or interface property (PER Coding Style 4.10) -->
+    <rule ref="Mossy2100.Formatting.DisallowMultipleStatements"/>
+
+    <!-- An attribute on the line before its target, except on a parameter in a single-line list -->
+    <rule ref="Mossy2100.Attributes.AttributePlacement"/>
 
     <!-- Leading underscore on a variable or parameter inside a class, which Squiz.NamingConventions.ValidVariableName
          allows there -->

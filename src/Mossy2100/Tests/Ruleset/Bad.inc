@@ -6,7 +6,9 @@ namespace Mossy2100\Fixtures;
 
 use Stringable;
 use Countable;
+use Deprecated;
 use InvalidArgumentException;
+use SensitiveParameter;
 
 use function count;
 use function sprintf;
@@ -127,6 +129,20 @@ final class Inventory implements Countable, Stringable
         }
 
         return false;
+    }
+
+    /**
+     * Check a password against the inventory's.
+     *
+     * @param string $password The password.
+     * @return bool True if the password matches.
+     */
+    #[Deprecated] public function checkPassword(#[SensitiveParameter] string $password): bool
+    {
+        return hash_equals(
+            hash('sha256', 'a fixed salt for the inventory fixture, long enough to keep this call off a single line'),
+            hash('sha256', $password)
+        );
     }
 
     /**

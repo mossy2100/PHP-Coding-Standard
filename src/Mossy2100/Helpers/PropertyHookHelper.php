@@ -286,7 +286,7 @@ class PropertyHookHelper
         File $phpcsFile,
         int $containerOpener,
         int $containerCloser,
-        array &$scopes
+        array &$scopes,
     ): void {
         $tokens = $phpcsFile->getTokens();
 

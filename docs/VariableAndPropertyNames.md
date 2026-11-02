@@ -30,8 +30,8 @@ Squiz allows a leading underscore inside a class, because the Squiz convention p
 two Mossy2100 sniffs fill that gap.
 
 For properties, `Mossy2100.Classes.PropertyDeclaration` replaces PSR-12's `PSR2.Classes.PropertyDeclaration`, which only
-warns about a leading underscore, and doesn't check promoted constructor properties. The Mossy2100 sniff reports both as
-errors, since [PER Coding Style 3.0, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says property names MUST NOT start with an underscore.
+issues a warning for a leading underscore, and doesn't check promoted constructor properties. The Mossy2100 sniff
+reports both as errors, since [PER Coding Style 3.0, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says property names MUST NOT start with an underscore.
 
 ---
 

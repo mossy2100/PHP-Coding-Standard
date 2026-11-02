@@ -65,7 +65,7 @@ class RequireSingleLineHeaderSniff implements Sniff
             'Multi-line %s header fits within %s characters, so it must be written on one line.',
             $stackPtr,
             self::CODE_SHOULD_BE_SINGLE_LINE,
-            [$tokens[$stackPtr]['content'], $this->maxLineLength]
+            [$tokens[$stackPtr]['content'], $this->maxLineLength],
         );
         if ($fix) {
             SingleLineHelper::replace($phpcsFile, $openPtr, $closePtr, $collapsed);

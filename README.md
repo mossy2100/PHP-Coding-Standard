@@ -89,21 +89,26 @@ The line length limit is 120. To change it, see [Line Length](docs/LineLength.md
 
 ## Included Sniffs
 
-The standard is PSR-12, plus sniffs from PHP_CodeSniffer and Slevomat, plus these custom sniffs:
+This coding standard is built on four base standards, each documented in [Inherited Sniffs](docs/InheritedSniffs.md):
+
+- **PSR-12**, **Generic** and **Squiz**, which come with PHP_CodeSniffer.
+- **Slevomat**, a separate package of sniffs for modern PHP.
+
+It adds the following custom sniffs, which fill gaps in the base standards, for compliance with PER Coding Style 3.0 and support
+for PHP 8.4 features such as property hooks, or set house-style choices. Each one's reason is in [Custom Sniffs](docs/CustomSniffs.md):
 
 | Sniff                                                 | Checks                                                        | Fixable |
 | ----------------------------------------------------- | ------------------------------------------------------------- | ------- |
 | `Mossy2100.Arrays.ArrayDeclaration`                   | A multi-line array is on one line if it fits                  | Yes     |
+| `Mossy2100.Attributes.AttributePlacement`             | An attribute is on its own line, except on a parameter        | Yes     |
 | `Mossy2100.Classes.DisallowPromotedPropertyHooks`     | No property hooks on promoted constructor parameters          | No      |
 | `Mossy2100.Classes.PropertyDeclaration`               | No leading `_`, no `var`, and a visibility, with hook support | No      |
 | `Mossy2100.ControlStructures.MatchArrowSpacing`       | One space around `=>` in `match` arms                         | Yes     |
 | `Mossy2100.ControlStructures.RequireSingleLineHeader` | A multi-line loop, `switch` or `match` header fits on a line  | Yes     |
+| `Mossy2100.Formatting.DisallowMultipleStatements`     | One statement per line, allowing `{ get; set; }`              | Yes     |
 | `Mossy2100.NamingConventions.ValidVariableName`       | No leading underscore on a variable or parameter in a class   | No      |
 | `Mossy2100.PHP.DisallowMultiConstantDefinition`       | One constant per statement                                    | Yes     |
 | `Mossy2100.WhiteSpace.ScopeIndent`                    | Indentation, including property hooks                         | Yes     |
-
-- [Custom Sniffs](docs/CustomSniffs.md): each sniff in detail.
-- [Inherited Sniffs](docs/InheritedSniffs.md): every sniff from PSR-12, Generic, Squiz and Slevomat.
 
 ---
 

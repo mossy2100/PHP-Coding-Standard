@@ -35,7 +35,7 @@
     },
     "scripts": {
         "fix": "vendor/bin/phpcbf -vp",
-        "check": "vendor/bin/phpcs -s",
+        "check": "vendor/bin/phpcs -sv --colors",
         "report": "vendor/bin/phpcs -q --report=summary",
         "analyze": "scripts/analyze",
         "test": "vendor/bin/phpunit",

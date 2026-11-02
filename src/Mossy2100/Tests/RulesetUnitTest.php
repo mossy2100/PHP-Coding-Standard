@@ -87,7 +87,7 @@ class RulesetUnitTest extends TestCase
             $twoSpaces = $this->runTool('phpcs', ["--standard=$ruleset", $fixture]);
             $default = $this->runTool(
                 'phpcs',
-                ['--standard=Mossy2100', '--sniffs=Mossy2100.WhiteSpace.ScopeIndent', $fixture]
+                ['--standard=Mossy2100', '--sniffs=Mossy2100.WhiteSpace.ScopeIndent', $fixture],
             );
         } finally {
             unlink($ruleset);

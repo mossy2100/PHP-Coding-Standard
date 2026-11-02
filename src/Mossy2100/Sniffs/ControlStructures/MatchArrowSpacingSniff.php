@@ -74,7 +74,7 @@ class MatchArrowSpacingSniff implements Sniff
             'Expected 1 space %s "=>" in match arm; %s found.',
             $arrowPtr,
             $code,
-            [$side, $found]
+            [$side, $found],
         );
         if (!$fix) {
             return;

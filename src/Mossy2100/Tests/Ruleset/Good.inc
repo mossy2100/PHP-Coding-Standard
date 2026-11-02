@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Mossy2100\Fixtures;
 
 use Countable;
+use Deprecated;
 use InvalidArgumentException;
+use SensitiveParameter;
 use Stringable;
 
 use function count;
@@ -72,7 +74,7 @@ final class Inventory implements Countable, Stringable
      */
     public function longerThan(int $length): array
     {
-        return array_values(array_filter($this->items, static fn (string $item): bool => strlen($item) > $length));
+        return array_values(array_filter($this->items, static fn(string $item): bool => strlen($item) > $length));
     }
 
     /**
@@ -122,6 +124,21 @@ final class Inventory implements Countable, Stringable
         }
 
         return false;
+    }
+
+    /**
+     * Check a password against the inventory's.
+     *
+     * @param string $password The password.
+     * @return bool True if the password matches.
+     */
+    #[Deprecated]
+    public function checkPassword(#[SensitiveParameter] string $password): bool
+    {
+        return hash_equals(
+            hash('sha256', 'a fixed salt for the inventory fixture, long enough to keep this call off a single line'),
+            hash('sha256', $password),
+        );
     }
 
     /**

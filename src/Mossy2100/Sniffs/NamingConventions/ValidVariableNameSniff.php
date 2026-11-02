@@ -70,7 +70,7 @@ class ValidVariableNameSniff extends AbstractVariableSniff
             'Variable "%s" should not be prefixed with an underscore',
             $stackPtr,
             self::CODE_UNDERSCORE,
-            [$content]
+            [$content],
         );
     }
 
