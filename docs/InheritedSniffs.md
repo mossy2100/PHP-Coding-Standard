@@ -78,6 +78,7 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 ### Classes
 
 - **BackedEnumTypeSpacing**: Enforces spacing around backed enum types.
+- **ClassKeywordOrder**: Requires `abstract` or `final` before `readonly` on a class, e.g. `final readonly class`.
 - **ClassMemberSpacing**: Enforces spacing between class members.
 - **ConstantSpacing**: Enforces spacing around class constants.
 - **DisallowMultiPropertyDefinition**: Disallows defining multiple properties in one statement.

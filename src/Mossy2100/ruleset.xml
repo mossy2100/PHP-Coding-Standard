@@ -110,6 +110,8 @@
 
     <!-- Classes -->
     <rule ref="SlevomatCodingStandard.Classes.BackedEnumTypeSpacing"/>
+    <!-- abstract or final before readonly on a class (PER Coding Style 4.6) -->
+    <rule ref="SlevomatCodingStandard.Classes.ClassKeywordOrder"/>
     <rule ref="SlevomatCodingStandard.Classes.ClassMemberSpacing"/>
     <rule ref="SlevomatCodingStandard.Classes.ConstantSpacing">
         <properties>
