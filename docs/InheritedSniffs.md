@@ -11,13 +11,15 @@ and [wiki](https://github.com/PHPCSStandards/PHP_CodeSniffer/wiki).
 ## PERCS31
 
 The Mossy2100 standard is built on [PERCS31](PERCS31.md), the package's standard for PER Coding Style 3.1, which is built on PSR-12.
-Everything PERCS31 includes is included here, with three changes:
+Everything PERCS31 includes is included here, with four changes:
 
 - `PERCS31.Classes.PropertyDeclaration` checks the hook order in every hook list, including ones with bodies
   (`orderHooksWithBodies` set to `true`).
 - `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat` reports `T|null`, which should be `?T`, as an error, not a
   warning.
 - `Squiz.Arrays.ArrayDeclaration` also runs the checks PERCS31 leaves out. See [Squiz](#squiz).
+- `PSR12.Keywords.ShortFormTypeKeywords` is excluded, as `SlevomatCodingStandard.PHP.TypeCast` reports the same casts.
+  See [Slevomat](#slevomat).
 
 The sniffs below are house style, not PER rules.
 
@@ -142,8 +144,9 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **DisallowDirectMagicInvokeCall**: Disallows direct `__invoke()` calls.
 - **ReferenceSpacing**: Enforces spacing around reference operator.
 - **ShortList**: Requires short list syntax `[]`.
-- **TypeCast**: Requires `(float)` instead of `(double)` or `(real)`, and forbids `(binary)` and `(unset)`. PERCS31
-  checks `(int)` and `(bool)` with `PSR12.Keywords.ShortFormTypeKeywords`, which this sniff repeats.
+- **TypeCast**: Requires `(int)`, `(bool)` and `(float)` instead of `(integer)`, `(boolean)`, `(double)` or `(real)`,
+  and forbids `(binary)` and `(unset)`. It replaces PERCS31's `PSR12.Keywords.ShortFormTypeKeywords`, which only checks
+  `(int)` and `(bool)`, so a long-form cast is reported once.
 - **UselessSemicolon**: Disallows useless semicolons.
 
 ### Strings

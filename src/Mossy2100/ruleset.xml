@@ -11,7 +11,10 @@
     <!-- ====== PERCS31 ====== -->
 
     <!-- PER Coding Style 3.1, on PSR-12. Everything below is house style. -->
-    <rule ref="PERCS31"/>
+    <rule ref="PERCS31">
+        <!-- SlevomatCodingStandard.PHP.TypeCast, below, reports the same long-form casts, and more -->
+        <exclude name="PSR12.Keywords.ShortFormTypeKeywords"/>
+    </rule>
 
     <!-- get before set in every hook list, including ones with bodies, not just abstract and interface properties -->
     <rule ref="PERCS31.Classes.PropertyDeclaration">
