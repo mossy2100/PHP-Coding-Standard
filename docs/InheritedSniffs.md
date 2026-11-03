@@ -131,7 +131,8 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 
 ### Operators
 
-- **NegationOperatorSpacing**: Disallows whitespace, including a line break, after a unary `-`.
+- **NegationOperatorSpacing**: Enforces the spacing after a unary `-`, including a line break. Its `spacesCount`
+  defaults to 0, so no whitespace is allowed.
 - **RequireCombinedAssignmentOperator**: Requires combined assignment operators (`+=`, `-=`, etc.).
 - **RequireOnlyStandaloneIncrementAndDecrementOperators**: Requires `++` and `--` to be used standalone.
 - **SpreadOperatorSpacing**: Enforces spacing around spread operator.
