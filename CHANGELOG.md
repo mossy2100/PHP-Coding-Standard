@@ -16,9 +16,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `phpcs:ignore` comments or `<exclude>` rules that name `Generic.Files.LineLength`.
 - **The PERCS31 standard (breaking).** A second standard in the package, for [PER Coding Style 3.1](https://www.php-fig.org/per/coding-style/) and nothing more,
   built on PSR-12. Use `<rule ref="PERCS31"/>` to follow PER Coding Style without the house rules. The Mossy2100
-  standard is now PERCS31 plus house rules, and reports the same violations as before. The sniffs for PER rules move to
-  PERCS31, so their codes change prefix, e.g. `Mossy2100.Formatting.EmptyBody` is now `PERCS31.Formatting.EmptyBody`.
-  Update any `phpcs:ignore` comments or `<exclude>` rules that name them. See [PERCS31](docs/PERCS31.md).
+  standard is now PERCS31 plus house rules. The sniffs for PER rules are in PERCS31, so four of 2.2.0's codes change to
+  `PERCS31.*`: `ClassInstantiationNoBrackets`, `PropertyDeclaration`, `DisallowMultiConstantDefinition` and
+  `ScopeIndent`, e.g. `OceanMoon.WhiteSpace.ScopeIndent` is now `PERCS31.WhiteSpace.ScopeIndent`. Update any
+  `phpcs:ignore` comments or `<exclude>` rules that name them. See [PERCS31](docs/PERCS31.md).
 - **`PERCS31.Operators.OperatorSpacing`.** Replaces `PSR12.Operators.OperatorSpacing`, requiring at least one space
   around a binary operator, and adds the pipe operator `|>`. The Mossy2100 standard still requires exactly one.
 - **`orderHooksWithBodies` on `PERCS31.Classes.PropertyDeclaration`.** `HookOrder` only checks a hook list with no
@@ -119,8 +120,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - **Renamed the package from `oceanmoon/coding-standard` to `mossy2100/coding-standard`, and the standard from
   `OceanMoon` to `Mossy2100` (breaking),** matching the author's GitHub and Packagist name. Use
-  `<rule ref="Mossy2100"/>` in `phpcs.xml`. Sniff codes change to match, e.g. `Mossy2100.Arrays.ArrayDeclaration`, as do
-  the sniff class namespaces (`Mossy2100\Sniffs\...`).
+  `<rule ref="Mossy2100"/>` in `phpcs.xml`. Sniff codes change to match: `OceanMoon.Arrays.ArrayDeclaration` becomes
+  `Mossy2100.Arrays.ArrayDeclaration`, and the other four become `PERCS31.*` (see the PERCS31 entry), as do the sniff
+  class namespaces (`Mossy2100\Sniffs\...`).
 - **`PERCS31.Classes.ClassInstantiationNoBrackets` is now a warning, and safer.** Renamed from
   `OceanMoon.Classes.ClassInstantiationNoBrackets`. As PER Coding Style 3.0 says SHOULD, `(new Foo())->bar()` is now a
   warning, not an error, fixed to `new Foo()->bar()`. It now covers `::` as well as `->` and `?->`, and only reports
