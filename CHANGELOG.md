@@ -83,6 +83,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `OceanMoon` to `Mossy2100` (breaking),** matching the author's GitHub and Packagist name. Use
   `<rule ref="Mossy2100"/>` in `phpcs.xml`. Sniff codes change to match, e.g. `Mossy2100.Classes.PropertyDeclaration`,
   as do the sniff class namespaces (`Mossy2100\Sniffs\...`).
+- **`Mossy2100.Classes.ClassInstantiationNoBrackets` is now a warning, and safer.** Renamed from
+  `OceanMoon.Classes.ClassInstantiationNoBrackets`. As PER Coding Style 3.0 says SHOULD, `(new Foo())->bar()` is now a
+  warning, not an error, fixed to `new Foo()->bar()`. It now covers `::` as well as `->` and `?->`, and only reports
+  parentheses holding exactly one `new` expression, so `(new Foo() ?: $default)->bar()` and `new self(new Foo())->bar()`
+  are no longer changed.
 - **Trailing commas follow PER Coding Style 3.0 (breaking).** A multi-line function call, function declaration or
   closure `use` list now requires a trailing comma, and a single-line one still disallows it. Adds
   `SlevomatCodingStandard.Functions.RequireTrailingCommaInCall`, `...InDeclaration` and `...InClosureUse`. Run `phpcbf`
@@ -143,9 +148,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - `Multiple`, now reported by `SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition`.
   - `SpacingAfterType`, `AvizKeywordOrder`, `StaticBeforeVisibility`, `ReadonlyBeforeVisibility`, `FinalAfterVisibility`
     and `AbstractAfterVisibility`, now reported by `SlevomatCodingStandard.Classes.PropertyDeclaration`.
-- **`OceanMoon.Classes.ClassInstantiationNoBrackets` (breaking).** The standard doesn't otherwise flag redundant
-  parentheses in expressions, and they can aid readability. Both `(new Foo())->bar()` and `new Foo()->bar()` are now
-  accepted. Remove any references to the sniff code from `phpcs.xml` and `phpcs:ignore` comments.
 
 ### Fixed
 

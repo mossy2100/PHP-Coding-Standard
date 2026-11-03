@@ -1,0 +1,48 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Mossy2100\Tests\Classes;
+
+use PHP_CodeSniffer\Tests\Standards\AbstractSniffTestCase;
+
+/**
+ * Unit tests for Mossy2100.Classes.ClassInstantiationNoBrackets sniff.
+ */
+class ClassInstantiationNoBracketsUnitTest extends AbstractSniffTestCase
+{
+    /**
+     * Returns the lines where errors should occur.
+     *
+     * @param string $testFile The name of the test input file.
+     * @return array<int, int> Line number => error count.
+     */
+    protected function getErrorList(string $testFile = ''): array
+    {
+        return [];
+    }
+
+    /**
+     * Returns the lines where warnings should occur.
+     *
+     * @param string $testFile The name of the test input file.
+     * @return array<int, int> Line number => warning count.
+     */
+    protected function getWarningList(string $testFile = ''): array
+    {
+        return [
+            // ->.
+            16 => 1,
+            // ?->.
+            17 => 1,
+            // ::.
+            18 => 1,
+            // Spaces inside the parentheses, and a fully qualified name.
+            19 => 1,
+            // A variable class name.
+            20 => 1,
+            // An anonymous class.
+            21 => 1,
+        ];
+    }
+}

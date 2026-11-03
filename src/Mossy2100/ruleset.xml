@@ -382,6 +382,9 @@
     <!-- Property declaration with PHP 8.4 property hook support -->
     <rule ref="Mossy2100.Classes.PropertyDeclaration"/>
 
+    <!-- A warning for new Foo() wrapped in parentheses before ->, ?-> or :: (PER Coding Style 4) -->
+    <rule ref="Mossy2100.Classes.ClassInstantiationNoBrackets"/>
+
     <!-- private, not protected, for a non-public method in an enum (PER Coding Style 9) -->
     <rule ref="Mossy2100.Classes.EnumMethodVisibility"/>
 

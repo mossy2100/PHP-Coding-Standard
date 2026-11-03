@@ -105,6 +105,7 @@ for PHP 8.4 features such as property hooks, or set house-style choices. Each on
 | `Mossy2100.Attributes.AttributePlacement`                      | An attribute is on its own line, except on a parameter            | Yes     |
 | `Mossy2100.Attributes.DisallowMultiLineAttributesJoining`      | One attribute per block when a block spans lines                  | Yes     |
 | `Mossy2100.Classes.ClassDeclaration`                           | Class declarations, allowing an empty body as `{}`                | Yes     |
+| `Mossy2100.Classes.ClassInstantiationNoBrackets`               | A warning for `(new Foo())->bar()`                                | Yes     |
 | `Mossy2100.Classes.DisallowPromotedPropertyHooks`              | No property hooks on promoted constructor parameters              | No      |
 | `Mossy2100.Classes.EmptyLinesAroundClassBraces`                | No blank lines inside class braces, allowing `{}`                 | Yes     |
 | `Mossy2100.Classes.EnumMethodVisibility`                       | `private`, not `protected`, for a method in an enum               | Yes     |

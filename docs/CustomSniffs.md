@@ -156,6 +156,35 @@ parent. For an empty body, the checks on `extends` and `implements` still run. S
 
 ---
 
+## Mossy2100.Classes.ClassInstantiationNoBrackets
+
+Warns about parentheses around a class instantiation that's immediately dereferenced with `->`, `?->` or `::`, such as
+`(new Foo())->bar()`.
+
+**Why:** [PER Coding Style 3.0, Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says the instantiation SHOULD NOT be wrapped in parentheses, and PHP 8.4 allows
+`new Foo()->bar()`. As it's a SHOULD, this is a warning. `SlevomatCodingStandard.PHP.UselessParentheses` has a similar
+check, but it misses `::`, and removes the parentheses from `(new Foo() ?: new Bar())->baz()`, changing its meaning.
+This sniff only reports parentheses holding exactly one `new` expression. A `new` without an argument list, such as
+`(new Foo)->bar()`, is left until `PSR12.Classes.ClassInstantiation` has added the `()`, as PHP needs them.
+
+**Auto-fixable:** yes.
+
+**Good:**
+
+```php
+$total = new Calculator()->add(1, 2);
+
+$fallback = ($cached ?: new Calculator())->add(1, 2);
+```
+
+**Bad:**
+
+```php
+$total = (new Calculator())->add(1, 2);
+```
+
+---
+
 ## Mossy2100.Classes.DisallowPromotedPropertyHooks
 
 Disallows property hooks on promoted constructor parameters (PHP 8.4+). Declare the property in the class body instead.

@@ -1,0 +1,23 @@
+<?php
+
+// === VALID ===
+
+$a = new Foo()->bar();
+$b = (new Foo() ?: new Bar())->baz();
+$c = ($condition ? new Foo() : new Bar())->baz();
+$d = new self(new Foo())->bar();
+$e = foo(new Foo())->bar();
+$f = (new Foo)->bar();
+$g = (new Foo() . 'x');
+$h = (new Foo());
+
+// === INVALID ===
+
+$i = (new Foo())->bar();
+$j = (new Foo())?->bar();
+$k = (new Foo())::CONSTANT;
+$l = ( new \Vendor\Foo() )->bar();
+$m = (new $class())->bar();
+$n = (new class {
+    public int $x = 1;
+})->x;
