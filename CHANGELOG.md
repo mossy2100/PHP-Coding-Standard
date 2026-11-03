@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`Mossy2100.PHP.RequireCloneParentheses`.** A warning for `clone $a`, which should be `clone($a)`, as PER Coding
+  Style 3.1 says `clone()` SHOULD be called with parentheses. Auto-fixable.
 - **`Generic.Strings.UnnecessaryHeredoc`.** A warning for a heredoc with no interpolation or escape sequences, which
   could be a nowdoc, as PER Coding Style 3.0 says a nowdoc SHOULD be used wherever possible. Auto-fixable.
 - **`Mossy2100.Attributes.DisallowMultiLineAttributesJoining` (breaking).** An attribute block split over several lines

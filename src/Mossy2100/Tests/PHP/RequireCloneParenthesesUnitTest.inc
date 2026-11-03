@@ -1,0 +1,21 @@
+<?php
+
+// === VALID ===
+
+$a = clone($b);
+$a = clone($b, ['x' => 1]);
+$a = $b->clone();
+$a = clone(...);
+
+// === INVALID ===
+
+$a = clone $b;
+$a = clone $b->c;
+$a = clone $b?->c()['d'] ?? $e;
+$a = clone self::$b;
+$a = clone \Vendor\Foo::instance();
+$a = clone new Foo();
+$a = clone ($b);
+$a = clone ($b)->c;
+$a = clone $$b;
+$a = clone /* the original */ $b;

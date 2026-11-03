@@ -790,6 +790,32 @@ const C = 3, D = 4; // Flagged: the same applies outside a class.
 
 ---
 
+## Mossy2100.PHP.RequireCloneParentheses
+
+Warns about `clone` without parentheses, such as `clone $a`, or with a space before them, such as `clone ($a)`.
+
+**Why:** [PER Coding Style 3.1, Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) says `clone()` SHOULD always be called with parentheses, as it's a function
+as of PHP 8.5. As it's a SHOULD, this is a warning. No inherited sniff checks it.
+
+**Auto-fixable:** yes, when the operand is a variable, name or `new` expression, followed by any `->`, `?->`, `::`, `[]`
+or call. A space before the parentheses isn't removed when something is dereferenced after them, as `clone ($a)->b`
+clones `$a->b` before PHP 8.5.
+
+**Good:**
+
+```php
+$copy = clone($original);
+```
+
+**Bad:**
+
+```php
+$copy = clone $original;
+$copy = clone ($original);
+```
+
+---
+
 ## Mossy2100.WhiteSpace.ScopeClosingBrace
 
 Checks that a scope's closing brace is on a line by itself, and indented to match. This replaces
