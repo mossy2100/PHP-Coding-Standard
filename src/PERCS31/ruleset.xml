@@ -172,7 +172,11 @@
 
     <!-- Brace sniffs, extended to allow an empty body as {} (4, 4.4, 7, 8) -->
     <rule ref="PERCS31.Classes.ClassDeclaration"/>
-    <rule ref="PERCS31.Functions.MultiLineFunctionDeclaration"/>
+    <rule ref="PERCS31.Functions.MultiLineFunctionDeclaration">
+        <!-- Replaced by the sniff's own BlankLine check, which allows a blank line before a parameter's attributes
+             (12.2) -->
+        <exclude name="PERCS31.Functions.MultiLineFunctionDeclaration.EmptyLine"/>
+    </rule>
     <rule ref="PERCS31.WhiteSpace.ScopeClosingBrace"/>
 
     <!-- An empty body as {}: a warning for a class or function (4, 4.4), an error for a closure or anonymous class (7, 8) -->

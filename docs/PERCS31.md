@@ -727,6 +727,10 @@ body written as `{}` on one line, e.g. `function reset(): void {}`. This replace
 case, and leaves everything else to the parent. For an empty body after a single-line signature, the parent's
 `CloseBracketNewLine` check is skipped too, as it can't be run on its own. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
 
+The parent also reports every blank line in a multi-line parameter or `use` list. [Section 12.2](https://www.php-fig.org/per/coding-style/#122-placement) allows one between a
+parameter and the attributes of the next, so the ruleset excludes the parent's `EmptyLine` code, and this sniff reports
+blank lines itself, as `BlankLine`, except that one.
+
 **Auto-fixable:** yes, as the parent.
 
 ---

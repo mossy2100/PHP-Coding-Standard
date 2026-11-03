@@ -10,6 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **One blank line before a parameter's attributes is allowed.** As PER Coding Style 3.1 allows, a multi-line parameter
+  list can have a blank line between a parameter and the attributes of the next.
+  `PERCS31.Functions.MultiLineFunctionDeclaration` now reports other blank lines in the list itself, as `BlankLine`, in
+  place of the parent's `EmptyLine`, which reported them all. Update any `phpcs:ignore` comments or `<exclude>` rules
+  that name `EmptyLine`.
 - **`PERCS31.NamingConventions.UpperCaseConstantName`.** Replaces `Generic.NamingConventions.UpperCaseConstantName`,
   which required an enum constant in UPPER_CASE. As PER Coding Style 3.1 allows, an enum constant can now be in
   PascalCase, and an UPPER_CASE one gets a warning with a severity of 4, as PascalCase is recommended. It's hidden by

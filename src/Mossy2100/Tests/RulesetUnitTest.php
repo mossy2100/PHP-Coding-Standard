@@ -106,6 +106,21 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that PERCS31 allows one blank line before a parameter's attributes, and reports every other blank line in a
+     * multi-line declaration. The parent's EmptyLine, which reports them all, is excluded in the ruleset.
+     */
+    public function testBlankLineAllowedOnlyBeforeParameterAttributes(): void
+    {
+        $fixture = dirname(__DIR__, 2) . '/PERCS31/Tests/Ruleset/BlankLinesInDeclaration.inc';
+        $sniff = '--sniffs=PERCS31.Functions.MultiLineFunctionDeclaration';
+        $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', $sniff, '--report=emacs', $fixture]);
+
+        preg_match_all('/:(\\d+):\\d+: error - .*\\.BlankLine\\)/', $result['output'], $matches);
+        $this->assertSame(['12', '15', '19', '31'], $matches[1], $result['output']);
+        $this->assertStringNotContainsString('EmptyLine', $result['output']);
+    }
+
+    /**
      * Test that an UPPER_CASE enum constant's warning is hidden by default, and shown at severity 4.
      */
     public function testEnumConstantCaseWarningNeedsWarningSeverity4(): void
