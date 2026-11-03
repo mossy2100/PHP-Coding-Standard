@@ -391,8 +391,8 @@
     <!-- A warning for new Foo() wrapped in parentheses before ->, ?-> or :: (PER Coding Style 4) -->
     <rule ref="Mossy2100.Classes.ClassInstantiationNoBrackets"/>
 
-    <!-- private, not protected, for a non-public method in an enum (PER Coding Style 9) -->
-    <rule ref="Mossy2100.Classes.EnumMethodVisibility"/>
+    <!-- private, not protected, for a non-public method or constant in an enum (PER Coding Style 9) -->
+    <rule ref="Mossy2100.Classes.EnumMemberVisibility"/>
 
     <!-- PSR-12 brace sniffs, extended to allow an empty class or function body as {} (PER Coding Style 4, 4.4) -->
     <rule ref="Mossy2100.Classes.ClassDeclaration"/>

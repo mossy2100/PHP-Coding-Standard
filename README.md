@@ -108,7 +108,7 @@ for PHP 8.4 features such as property hooks, or set house-style choices. Each on
 | `Mossy2100.Classes.ClassInstantiationNoBrackets`               | A warning for `(new Foo())->bar()`                                | Yes     |
 | `Mossy2100.Classes.DisallowPromotedPropertyHooks`              | No property hooks on promoted constructor parameters              | No      |
 | `Mossy2100.Classes.EmptyLinesAroundClassBraces`                | No blank lines inside class braces, allowing `{}`                 | Yes     |
-| `Mossy2100.Classes.EnumMethodVisibility`                       | `private`, not `protected`, for a method in an enum               | Yes     |
+| `Mossy2100.Classes.EnumMemberVisibility`                       | `private`, not `protected`, for a method or constant in an enum   | Yes     |
 | `Mossy2100.Classes.PropertyDeclaration`                        | No leading `_`, no `var`, a visibility, and `get` before `set`    | Partly  |
 | `Mossy2100.ControlStructures.LanguageConstructWithParentheses` | No `echo('x')`, allowing `exit()` and `die()`                     | Yes     |
 | `Mossy2100.ControlStructures.MatchArrowSpacing`                | One space around `=>` in `match` arms                             | Yes     |

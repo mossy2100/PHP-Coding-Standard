@@ -8,13 +8,14 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
- * Requires a non-public method in an enum to be `private`, not `protected`.
+ * Requires a non-public method or constant in an enum to be `private`, not `protected`.
  *
- * PER Coding Style 3.0, section 9, says non-public methods in an enum MUST use `private` instead of `protected`, as
- * enums don't support inheritance. The fix swaps the keyword, which doesn't change behaviour, since nothing can extend
- * an enum. It also removes `final` if present, as PHP warns that a private method can't be final.
+ * PER Coding Style 3.1, section 9, says non-public methods and constants in an enum MUST use `private` instead of
+ * `protected`, as enums don't support inheritance. The fix swaps the keyword, which doesn't change behaviour, since
+ * nothing can extend an enum. It also removes `final` if present, as PHP warns that a private method can't be final,
+ * and rejects a final private constant.
  */
-class EnumMethodVisibilitySniff implements Sniff
+class EnumMemberVisibilitySniff implements Sniff
 {
     public const string CODE_PROTECTED = 'Protected';
 
@@ -25,7 +26,7 @@ class EnumMethodVisibilitySniff implements Sniff
      */
     public function register(): array
     {
-        return [T_FUNCTION];
+        return [T_FUNCTION, T_CONST];
     }
 
     /**
@@ -42,10 +43,6 @@ class EnumMethodVisibilitySniff implements Sniff
             return;
         }
 
-        if ($phpcsFile->getMethodProperties($stackPtr)['scope'] !== 'protected') {
-            return;
-        }
-
         // The keyword is among the modifiers, after the previous member or the enum's opening brace.
         $start = $phpcsFile->findPrevious(
             [T_SEMICOLON, T_OPEN_CURLY_BRACKET, T_CLOSE_CURLY_BRACKET, T_ATTRIBUTE_END],
@@ -56,10 +53,12 @@ class EnumMethodVisibilitySniff implements Sniff
             return;
         }
 
+        $member = $tokens[$stackPtr]['code'] === T_CONST ? 'constant' : 'method';
         $fix = $phpcsFile->addFixableError(
-            'A non-public method in an enum must be private, not protected',
+            'A non-public %s in an enum must be private, not protected',
             $protectedPtr,
             self::CODE_PROTECTED,
+            [$member],
         );
         if (!$fix) {
             return;

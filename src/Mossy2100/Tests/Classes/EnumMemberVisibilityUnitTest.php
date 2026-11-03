@@ -7,9 +7,9 @@ namespace Mossy2100\Tests\Classes;
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffTestCase;
 
 /**
- * Unit tests for Mossy2100.Classes.EnumMethodVisibility sniff.
+ * Unit tests for Mossy2100.Classes.EnumMemberVisibility sniff.
  */
-class EnumMethodVisibilityUnitTest extends AbstractSniffTestCase
+class EnumMemberVisibilityUnitTest extends AbstractSniffTestCase
 {
     /**
      * Returns the lines where errors should occur.
@@ -21,11 +21,17 @@ class EnumMethodVisibilityUnitTest extends AbstractSniffTestCase
     {
         return [
             // A protected method.
-            35 => 1,
-            // A protected static method, after an attribute.
             41 => 1,
+            // A protected static method, after an attribute.
+            47 => 1,
             // A final protected method; the fix also removes final.
-            46 => 1,
+            52 => 1,
+            // A protected constant.
+            56 => 1,
+            // A final protected constant; the fix also removes final.
+            58 => 1,
+            // A protected constant, after an attribute.
+            61 => 1,
         ];
     }
 

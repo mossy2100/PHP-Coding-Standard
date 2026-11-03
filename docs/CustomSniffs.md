@@ -259,15 +259,15 @@ parent. See [Mossy2100.Formatting.EmptyBody](#mossy2100formattingemptybody).
 
 ---
 
-## Mossy2100.Classes.EnumMethodVisibility
+## Mossy2100.Classes.EnumMemberVisibility
 
-Requires a non-public method in an enum to be `private`, not `protected`.
+Requires a non-public method or constant in an enum to be `private`, not `protected`.
 
-**Why:** [PER Coding Style 3.0, Section 9](https://www.php-fig.org/per/coding-style/#9-enumerations) says non-public methods in an enum MUST use `private`, as enums don't support
-inheritance. No inherited sniff checks it.
+**Why:** [PER Coding Style 3.1, Section 9](https://www.php-fig.org/per/coding-style/#9-enumerations) says non-public methods and constants in an enum MUST use `private`, as enums
+don't support inheritance. PER 3.0 only covered methods. No inherited sniff checks it.
 
 **Auto-fixable:** yes. The fix doesn't change behaviour, since nothing can extend an enum. It also removes `final` if
-present, as PHP warns that a private method can't be final.
+present, as PHP warns that a private method can't be final, and rejects a final private constant.
 
 **Good:**
 
@@ -275,6 +275,8 @@ present, as PHP warns that a private method can't be final.
 enum Suit
 {
     case Hearts;
+
+    private const string RED = 'red';
 
     private function symbol(): string
     {
@@ -289,6 +291,8 @@ enum Suit
 enum Suit
 {
     case Hearts;
+
+    protected const string RED = 'red';
 
     protected function symbol(): string
     {

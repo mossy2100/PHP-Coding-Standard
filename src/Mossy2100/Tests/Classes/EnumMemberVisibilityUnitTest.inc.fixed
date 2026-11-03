@@ -6,6 +6,12 @@ enum Valid
 {
     case Hearts;
 
+    public const int SIZE = 1;
+
+    private const int LIMIT = 1;
+
+    const int DEFAULT = 1;
+
     public function label(): string
     {
         return $this->helper();
@@ -15,12 +21,12 @@ enum Valid
     {
         return 'x';
     }
-
-    protected const int LIMIT = 1;
 }
 
 class NotAnEnum
 {
+    protected const int LIMIT = 1;
+
     protected function helper(): void
     {
     }
@@ -46,4 +52,11 @@ enum Invalid
     private function locked(): void
     {
     }
+
+    private const int LIMIT = 1;
+
+    private const int MAX = 2;
+
+    #[Deprecated]
+    private const int OLD = 0;
 }
