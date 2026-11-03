@@ -6,6 +6,9 @@ The line length limit in the [Mossy2100 Coding Standard](../README.md) is 120. T
 A line over the limit gets a warning, `Generic.Files.LineLength.TooLong`, not an error, as PER Coding Style 3.0 requires
 a soft limit. `phpcs` still exits with a non-zero code on warnings, unless your project sets `ignore_warnings_on_exit`.
 
+PER also says lines SHOULD NOT be longer than 80 characters. That isn't checked: like PSR-12's own ruleset, the standard
+treats 120 as the one soft limit, and 80 as advice.
+
 Ten sniffs check or wrap long lines, and each has its own line-length property. The Mossy2100 ruleset sets all ten from
 an XML entity, `lineLength`, at the top of its `ruleset.xml`. An entity only applies within the file that defines it, so
 you can't override it from `phpcs.xml`. Set all ten properties instead:
