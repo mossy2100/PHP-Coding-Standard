@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`Generic.Strings.UnnecessaryHeredoc`.** A warning for a heredoc with no interpolation or escape sequences, which
+  could be a nowdoc, as PER Coding Style 3.0 says a nowdoc SHOULD be used wherever possible. Auto-fixable.
 - **`Mossy2100.Attributes.DisallowMultiLineAttributesJoining` (breaking).** An attribute block split over several lines
   must have one attribute per block, as PER Coding Style 3.0 requires. A joined block on one line, such as
   `#[Attribute, Deprecated]`, is still allowed. Auto-fixable.

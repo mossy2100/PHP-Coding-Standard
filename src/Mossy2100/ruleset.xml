@@ -50,6 +50,9 @@
         </properties>
     </rule>
 
+    <!-- A warning for a heredoc that could be a nowdoc (PER Coding Style 10) -->
+    <rule ref="Generic.Strings.UnnecessaryHeredoc"/>
+
     <!-- Line length: a warning over the limit, with no hard limit (PER Coding Style 2.3) -->
     <rule ref="Generic.Files.LineLength">
         <properties>
