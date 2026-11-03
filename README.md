@@ -116,8 +116,8 @@ for PHP 8.4 features such as property hooks, or set house-style choices. Each on
 | `Mossy2100.ControlStructures.RequireSingleLineHeader`          | A multi-line loop, `switch` or `match` header fits on a line      | Yes     |
 | `Mossy2100.ControlStructures.SwitchDeclaration`                | `switch` rules, with a `break` in the last case                   | Yes     |
 | `Mossy2100.Formatting.DisallowMultipleStatements`              | One statement per line, allowing `{ get; set; }`                  | Yes     |
-| `Mossy2100.Formatting.EmptyBody`                               | An empty class or function body is `{}` (a warning)               | Yes     |
-| `Mossy2100.Functions.MultiLineFunctionDeclaration`             | Function declarations, allowing an empty body as `{}`             | Yes     |
+| `Mossy2100.Formatting.EmptyBody`                               | An empty class, function or closure body is `{}`                  | Yes     |
+| `Mossy2100.Functions.MultiLineFunctionDeclaration`             | Function and closure declarations, allowing an empty body as `{}` | Yes     |
 | `Mossy2100.Namespaces.UnusedUses`                              | No unused `use` statements, safe with a miscased `use Function`   | Yes     |
 | `Mossy2100.NamingConventions.ValidConstantName`                | No leading underscore on a constant                               | No      |
 | `Mossy2100.NamingConventions.ValidEnumCaseName`                | Enum cases in PascalCase                                          | No      |

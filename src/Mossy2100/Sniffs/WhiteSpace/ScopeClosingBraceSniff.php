@@ -9,11 +9,11 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\ScopeClosingBraceSniff as SquizSniff;
 
 /**
- * Checks that the closing brace of a scope is on its own line, allowing an empty class or function body as `{}`.
+ * Checks that the closing brace of a scope is on its own line, allowing an empty body as `{}`.
  *
- * Squiz.WhiteSpace.ScopeClosingBrace reports the `}` of `class Foo {}` and `function foo(): void {}`. PER Coding Style
- * 3.0, sections 4 and 4.4, says an empty body should be written that way. This sniff skips an empty class or function
- * body on one line, and leaves everything else to the parent.
+ * Squiz.WhiteSpace.ScopeClosingBrace reports the `}` of `class Foo {}`, `function foo(): void {}` and
+ * `function () {}`. PER Coding Style 3.1, sections 4.4 and 7, says an empty function body should, and an empty closure
+ * body must, be written that way. This sniff skips an empty body on one line, and leaves everything else to the parent.
  */
 class ScopeClosingBraceSniff extends SquizSniff
 {

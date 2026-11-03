@@ -21,9 +21,9 @@ class ScopeClosingBraceUnitTest extends AbstractSniffTestCase
     {
         return [
             // An if body.
-            19 => 1,
+            22 => 1,
             // A non-empty function body.
-            23 => 1,
+            26 => 1,
         ];
     }
 

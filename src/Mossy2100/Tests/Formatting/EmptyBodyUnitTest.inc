@@ -69,3 +69,22 @@ function anonymousClasses(): array
         },
     ];
 }
+
+function closures(): array
+{
+    return [
+        static function (): void {},
+        static function () use ($a): void {},
+        static function (): void { },
+        static function (): void{},
+        static function () use ($a): void {
+        },
+        static function (
+            int $aLongParameterNameThatPushesTheSignatureOverTheLineLengthLimitSoItStaysMultiLine,
+        ): void {
+        },
+        static function (): void {
+            // Intentionally empty.
+        },
+    ];
+}

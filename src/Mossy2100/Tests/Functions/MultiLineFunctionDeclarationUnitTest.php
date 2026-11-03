@@ -21,9 +21,9 @@ class MultiLineFunctionDeclarationUnitTest extends AbstractSniffTestCase
     {
         return [
             // A non-empty single-line declaration.
-            19 => 1,
+            22 => 1,
             // A multi-line declaration with its brace on the next line.
-            27 => 1,
+            30 => 1,
         ];
     }
 

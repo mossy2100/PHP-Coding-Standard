@@ -19,7 +19,18 @@ class EmptyBodyUnitTest extends AbstractSniffTestCase
      */
     protected function getErrorList(string $testFile = ''): array
     {
-        return [];
+        return [
+            // Closure with the braces on separate lines.
+            50 => 1,
+            // Closure with a space inside the braces.
+            78 => 1,
+            // Closure with no space before the braces.
+            79 => 1,
+            // Closure with a use list, and the braces on separate lines.
+            80 => 1,
+            // Closure with a multi-line signature.
+            84 => 1,
+        ];
     }
 
     /**

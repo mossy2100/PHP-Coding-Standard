@@ -145,8 +145,8 @@ final class OldMarker {}
 
 ## Mossy2100.Classes.ClassDeclaration
 
-Checks the declaration of a class, interface, trait or enum, and the placement of its braces. This replaces
-`PSR2.Classes.ClassDeclaration`.
+Checks the declaration of a class, interface, trait or enum, and the placement of its braces, except in an empty body
+written as `{}` on one line, e.g. `class Foo {}`. This replaces `PSR2.Classes.ClassDeclaration`.
 
 **Why:** `PSR2.Classes.ClassDeclaration` rejects an empty body written as `{}` on one line, which
 [PER Coding Style 3.0, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the
@@ -543,13 +543,13 @@ $a = 1; $b = 2;
 
 ## Mossy2100.Formatting.EmptyBody
 
-Warns about an empty class, interface, trait, enum, function or method body that isn't written as `{}` on the same line
-as the declaration, after a single space.
+Reports an empty class, interface, trait, enum, function, method or closure body that isn't written as `{}` on the same
+line as the declaration, after a single space. It's a warning, except for a closure, where it's an error.
 
-**Why:** [PER Coding Style 3.0, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says an empty body SHOULD be abbreviated that way, including a
-constructor that only promotes properties. No inherited sniff checks it. As it's a SHOULD, this is a warning, not an
-error. An empty anonymous class is treated the same way, for consistency. A body containing a comment isn't empty, and
-closures aren't covered by PER 3.0.
+**Why:** [PER Coding Style 3.1, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says an empty class or function body SHOULD be abbreviated that way,
+including a constructor that only promotes properties. [Section 7](https://www.php-fig.org/per/coding-style/#7-closures) says an empty closure body MUST be. No inherited sniff
+checks either. An empty anonymous class is treated the same way, for consistency. A body containing a comment isn't
+empty.
 
 **Auto-fixable:** yes, unless a comment is between the declaration and the opening brace.
 
@@ -564,6 +564,8 @@ final class Point
 
     public function reset(): void {}
 }
+
+$noop = static function (): void {};
 ```
 
 **Bad:**
@@ -581,19 +583,23 @@ final class Point
 
     public function reset(): void{}
 }
+
+$noop = static function (): void {
+};
 ```
 
 ---
 
 ## Mossy2100.Functions.MultiLineFunctionDeclaration
 
-Checks the layout of function declarations, including the placement of the opening brace. This replaces
+Checks the layout of function and closure declarations, including the placement of the opening brace, except in an empty
+body written as `{}` on one line, e.g. `function reset(): void {}`. This replaces
 `Squiz.Functions.MultiLineFunctionDeclaration`.
 
 **Why:** `Squiz.Functions.MultiLineFunctionDeclaration` rejects an empty body written as `{}` on one line, which
-[PER Coding Style 3.0, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the
-parent. For an empty body after a single-line signature, the parent's `CloseBracketNewLine` check is skipped too, as it
-can't be run on its own. See [Mossy2100.Formatting.EmptyBody](#mossy2100formattingemptybody).
+[PER Coding Style 3.1, Sections 4.4 and 7](https://www.php-fig.org/per/coding-style/#7-closures) requires for a closure and recommends for a function. This sniff skips that
+case, and leaves everything else to the parent. For an empty body after a single-line signature, the parent's
+`CloseBracketNewLine` check is skipped too, as it can't be run on its own. See [Mossy2100.Formatting.EmptyBody](#mossy2100formattingemptybody).
 
 **Auto-fixable:** yes, as the parent.
 
@@ -889,12 +895,12 @@ $slug = $title|>trim(...)|>strtolower(...);
 
 ## Mossy2100.WhiteSpace.ScopeClosingBrace
 
-Checks that a scope's closing brace is on a line by itself, and indented to match. This replaces
-`Squiz.WhiteSpace.ScopeClosingBrace`.
+Checks that a scope's closing brace is on a line by itself, and indented to match, except in an empty body written as
+`{}` on one line, e.g. `class Foo {}` or `function () {}`. This replaces `Squiz.WhiteSpace.ScopeClosingBrace`.
 
 **Why:** `Squiz.WhiteSpace.ScopeClosingBrace` rejects an empty body written as `{}` on one line, which
-[PER Coding Style 3.0, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the
-parent. See [Mossy2100.Formatting.EmptyBody](#mossy2100formattingemptybody).
+[PER Coding Style 3.1, Sections 4.4 and 7](https://www.php-fig.org/per/coding-style/#7-closures) requires for a closure and recommends for a class or function. This sniff skips
+that case, and leaves everything else to the parent. See [Mossy2100.Formatting.EmptyBody](#mossy2100formattingemptybody).
 
 **Auto-fixable:** yes, as the parent.
 

@@ -13,6 +13,9 @@ final class Holder
     public function noop(): void {}
 }
 
+$closure = static function (): void {};
+$closureWithUse = static function () use ($a): void {};
+
 // === INVALID: the parent's checks still run ===
 
 if (true) {
