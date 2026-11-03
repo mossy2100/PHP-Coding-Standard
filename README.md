@@ -117,7 +117,7 @@ for PHP 8.4 features such as property hooks, or set house-style choices. Each on
 | `Mossy2100.ControlStructures.RequireSingleLineHeader`          | A multi-line loop, `switch` or `match` header fits on a line      | Yes     |
 | `Mossy2100.ControlStructures.SwitchDeclaration`                | `switch` rules, with a `break` in the last case                   | Yes     |
 | `Mossy2100.Formatting.DisallowMultipleStatements`              | One statement per line, allowing `{ get; set; }`                  | Yes     |
-| `Mossy2100.Formatting.EmptyBody`                               | An empty class, function or closure body is `{}`                  | Yes     |
+| `Mossy2100.Formatting.EmptyBody`                               | An empty class, function, closure or anonymous class body is `{}` | Yes     |
 | `Mossy2100.Functions.MultiLineFunctionDeclaration`             | Function and closure declarations, allowing an empty body as `{}` | Yes     |
 | `Mossy2100.Functions.RequireSingleLineCall`                    | A call that fits is on one line, skipping an anonymous class      | Yes     |
 | `Mossy2100.Namespaces.UnusedUses`                              | No unused `use` statements, safe with a miscased `use Function`   | Yes     |

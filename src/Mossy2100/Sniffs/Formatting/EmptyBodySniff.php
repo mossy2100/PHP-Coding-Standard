@@ -10,12 +10,13 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Reports an empty class, function or closure body that isn't written as `{}` after a single space.
+ * Reports an empty class, function, closure or anonymous class body that isn't written as `{}` after a single space.
  *
  * PER Coding Style 3.1, sections 4 and 4.4, says an empty class, interface, trait, enum, function or method body
  * should be abbreviated as `{}` on the same line as the previous symbol, separated by a space. It's a SHOULD, so this
- * sniff gives a warning. An empty anonymous class is treated the same way, for consistency. Section 7 says an empty
- * closure body MUST be abbreviated the same way, so that's an error. A body containing a comment isn't empty.
+ * sniff gives a warning. Section 7 says an empty closure body MUST be abbreviated the same way, and section 8 says an
+ * anonymous class MUST follow the same rules as a closure, so those are errors. A body containing a comment isn't
+ * empty.
  */
 class EmptyBodySniff implements Sniff
 {
@@ -62,6 +63,9 @@ class EmptyBodySniff implements Sniff
         $message = 'An empty %s body %s be written as {} on the same line as the declaration, after a single space.';
         if ($tokens[$stackPtr]['code'] === T_CLOSURE) {
             $fix = $phpcsFile->addFixableError($message, $opener, self::CODE_NOT_ABBREVIATED, ['closure', 'must']);
+        } elseif ($tokens[$stackPtr]['code'] === T_ANON_CLASS) {
+            $data = ['anonymous class', 'must'];
+            $fix = $phpcsFile->addFixableError($message, $opener, self::CODE_NOT_ABBREVIATED, $data);
         } else {
             $data = [strtolower($tokens[$stackPtr]['content']), 'should'];
             $fix = $phpcsFile->addFixableWarning($message, $opener, self::CODE_NOT_ABBREVIATED, $data);

@@ -7,17 +7,17 @@ namespace Mossy2100\Helpers;
 use PHP_CodeSniffer\Files\File;
 
 /**
- * Helper class for empty class, function and closure bodies.
+ * Helper class for empty class, function, closure and anonymous class bodies.
  *
  * PER Coding Style 3.1, sections 4 and 4.4, says an empty class or function body should be abbreviated as `{}` on the
- * same line as the previous symbol, and section 7 says an empty closure body must be. An empty anonymous class is
- * treated the same way, for consistency. Several inherited sniffs require the braces on separate lines, so the
+ * same line as the previous symbol. Section 7 says an empty closure body must be, and section 8 says an anonymous class
+ * must follow the same rules as a closure. Several inherited sniffs require the braces on separate lines, so the
  * Mossy2100 versions of them skip a body that this helper says is already on one line.
  */
 class EmptyBodyHelper
 {
     /**
-     * The tokens whose empty body PER says to abbreviate, plus anonymous classes.
+     * The tokens whose empty body PER says to abbreviate.
      *
      * @var list<int|string>
      */

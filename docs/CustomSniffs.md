@@ -610,13 +610,14 @@ $a = 1; $b = 2;
 
 ## Mossy2100.Formatting.EmptyBody
 
-Reports an empty class, interface, trait, enum, function, method or closure body that isn't written as `{}` on the same
-line as the declaration, after a single space. It's a warning, except for a closure, where it's an error.
+Reports an empty class, interface, trait, enum, function, method, closure or anonymous class body that isn't written as
+`{}` on the same line as the declaration, after a single space. It's a warning, except for a closure or anonymous class,
+where it's an error.
 
 **Why:** [PER Coding Style 3.1, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says an empty class or function body SHOULD be abbreviated that way,
-including a constructor that only promotes properties. [Section 7](https://www.php-fig.org/per/coding-style/#7-closures) says an empty closure body MUST be. No inherited sniff
-checks either. An empty anonymous class is treated the same way, for consistency. A body containing a comment isn't
-empty.
+including a constructor that only promotes properties. [Section 7](https://www.php-fig.org/per/coding-style/#7-closures) says an empty closure body MUST be, and [section 8](https://www.php-fig.org/per/coding-style/#8-anonymous-classes) says
+an anonymous class MUST follow the same rules as a closure. No inherited sniff checks any of these. A body containing a
+comment isn't empty.
 
 **Auto-fixable:** yes, unless a comment is between the declaration and the opening brace.
 

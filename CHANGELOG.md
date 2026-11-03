@@ -72,8 +72,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   a class, e.g. `final readonly class`, not `readonly final class`, as PER Coding Style 3.0 requires. Auto-fixable.
 - **`Mossy2100.Formatting.EmptyBody` (breaking).** Warns about an empty class or function body that isn't written as
   `{}` on the same line as the declaration, as PER Coding Style 3.1 recommends, e.g. `public function reset(): void {}`.
-  An empty anonymous class is treated the same way, e.g. `new class {}`. An empty closure body that isn't `{}` is an
-  error, as PER 3.1 requires it, e.g. `static function (): void {}`. Auto-fixable.
+  An empty closure or anonymous class body that isn't `{}` is an error, as PER 3.1 requires it, e.g.
+  `static function (): void {}` or `new class {}`. Auto-fixable.
 - **`Mossy2100.Formatting.DisallowMultipleStatements`.** Replaces `Generic.Formatting.DisallowMultipleStatements`, which
   reported `{ get; set; }` on an abstract or interface property as two statements on one line. PER Coding Style 3.0
   requires them on one line. Update any `phpcs:ignore` comments or `<exclude>` rules that name the Generic code.

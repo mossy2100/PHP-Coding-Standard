@@ -22,6 +22,10 @@ class EmptyBodyUnitTest extends AbstractSniffTestCase
         return [
             // Closure with the braces on separate lines.
             50 => 1,
+            // Anonymous class with the braces on separate lines.
+            64 => 1,
+            // Anonymous class with no space before the braces.
+            66 => 1,
             // Closure with a space inside the braces.
             78 => 1,
             // Closure with no space before the braces.
@@ -56,10 +60,6 @@ class EmptyBodyUnitTest extends AbstractSniffTestCase
             32 => 1,
             // Function.
             56 => 1,
-            // Anonymous class with the braces on separate lines.
-            64 => 1,
-            // Anonymous class with no space before the braces.
-            66 => 1,
         ];
     }
 }
