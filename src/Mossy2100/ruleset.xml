@@ -33,6 +33,13 @@
     <!-- Casting -->
     <rule ref="Generic.Formatting.SpaceAfterCast"/>
 
+    <!-- No whitespace after ! -->
+    <rule ref="Generic.Formatting.SpaceAfterNot">
+        <properties>
+            <property name="spacing" value="0"/>
+        </properties>
+    </rule>
+
     <!-- CodeAnalysis -->
     <rule ref="Generic.CodeAnalysis.AssignmentInCondition"/>
 
@@ -388,6 +395,9 @@
 
     <!-- Any other wrapped binary operator, and an arrow function's =>, at the start of the line (PER 6.4, 7.1) -->
     <rule ref="Mossy2100.Operators.OperatorPlacement"/>
+
+    <!-- No whitespace after a prefix unary +, ~ or @ -->
+    <rule ref="Mossy2100.Operators.UnaryOperatorSpacing"/>
 
     <!-- One statement per line, allowing { get; set; } on an abstract or interface property (PER Coding Style 4.10) -->
     <rule ref="Mossy2100.Formatting.DisallowMultipleStatements"/>

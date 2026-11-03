@@ -118,6 +118,7 @@ for PHP 8.4 features such as property hooks, or set house-style choices. Each on
 | `Mossy2100.NamingConventions.ValidConstantName`                | No leading underscore on a constant                               | No      |
 | `Mossy2100.NamingConventions.ValidVariableName`                | No leading underscore on a variable or parameter in a class       | No      |
 | `Mossy2100.Operators.OperatorPlacement`                        | A wrapped binary operator starts the next line, not ends this one | Yes     |
+| `Mossy2100.Operators.UnaryOperatorSpacing`                     | No whitespace after a prefix `+`, `~` or `@`                      | Yes     |
 | `Mossy2100.PHP.DisallowMultiConstantDefinition`                | One constant per statement                                        | Yes     |
 | `Mossy2100.WhiteSpace.ScopeClosingBrace`                       | A closing brace on its own line, allowing `{}`                    | Yes     |
 | `Mossy2100.WhiteSpace.ScopeIndent`                             | Indentation, including property hooks                             | Yes     |

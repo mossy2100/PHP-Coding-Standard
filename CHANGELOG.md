@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **No whitespace after a prefix unary operator (breaking).** A space or line break between a prefix operator and its
+  operand is now an error for `!` (`Generic.Formatting.SpaceAfterNot`, with `spacing` set to 0), and for `+`, `~` and
+  `@` (`Mossy2100.Operators.UnaryOperatorSpacing`, a new sniff). `-`, `++`, `--`, `&` and `...` were already checked.
+  Auto-fixable.
 - **A wrapped operator must start the next line (breaking).** As PER Coding Style 3.0 requires, a statement that wraps
   at an operator has the operator at the start of the new line, not the end of the previous one, e.g. `$total = $a` then
   `+ $b` on the next line. Three sniffs check this:

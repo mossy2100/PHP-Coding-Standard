@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mossy2100\Sniffs\Operators;
 
+use Mossy2100\Helpers\OperatorHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -32,32 +33,6 @@ class OperatorPlacementSniff implements Sniff
      * @var list<int|string>
      */
     private const array CONDITION_OWNERS = [T_IF, T_ELSEIF, T_WHILE, T_SWITCH, T_MATCH];
-
-    /**
-     * Tokens that can only come before a unary `+`, `-` or `&`, not a binary one.
-     *
-     * @var list<int|string>
-     */
-    private const array BEFORE_UNARY = [
-        T_OPEN_PARENTHESIS,
-        T_OPEN_SQUARE_BRACKET,
-        T_OPEN_SHORT_ARRAY,
-        T_COMMA,
-        T_RETURN,
-        T_ECHO,
-        T_PRINT,
-        T_YIELD,
-        T_YIELD_FROM,
-        T_THROW,
-        T_INLINE_THEN,
-        T_INLINE_ELSE,
-        T_DOUBLE_ARROW,
-        T_MATCH_ARROW,
-        T_FN_ARROW,
-        T_COLON,
-        T_CASE,
-        T_SEMICOLON,
-    ];
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -162,27 +137,12 @@ class OperatorPlacementSniff implements Sniff
      */
     private function isUnaryOrReference(File $phpcsFile, int $stackPtr): bool
     {
-        $tokens = $phpcsFile->getTokens();
-        $code = $tokens[$stackPtr]['code'];
+        $code = $phpcsFile->getTokens()[$stackPtr]['code'];
         if ($code === T_BITWISE_AND && $phpcsFile->isReference($stackPtr)) {
             return true;
         }
 
-        if ($code !== T_PLUS && $code !== T_MINUS && $code !== T_BITWISE_AND) {
-            return false;
-        }
-
-        $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
-        if ($previous === false) {
-            return true;
-        }
-
-        $previousCode = $tokens[$previous]['code'];
-
-        return in_array($previousCode, self::BEFORE_UNARY, true)
-            || isset(Tokens::ASSIGNMENT_TOKENS[$previousCode])
-            || isset(Tokens::COMPARISON_TOKENS[$previousCode])
-            || isset(Tokens::OPERATORS[$previousCode])
-            || isset(Tokens::BOOLEAN_OPERATORS[$previousCode]);
+        return ($code === T_PLUS || $code === T_MINUS || $code === T_BITWISE_AND)
+            && OperatorHelper::isUnary($phpcsFile, $stackPtr);
     }
 }

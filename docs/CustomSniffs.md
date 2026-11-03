@@ -584,6 +584,34 @@ $label =
 
 ---
 
+## Mossy2100.Operators.UnaryOperatorSpacing
+
+Disallows whitespace, including a line break, between a prefix unary `+`, `~` or `@` and its operand.
+
+**Why:** there should be no whitespace between a prefix unary operator and its operand. Inherited sniffs check the
+others: `SlevomatCodingStandard.Operators.NegationOperatorSpacing` for `-`, `Generic.Formatting.SpaceAfterNot` for `!`,
+`Generic.WhiteSpace.IncrementDecrementSpacing` for `++` and `--`, and Slevomat's `ReferenceSpacing` and
+`SpreadOperatorSpacing` for `&` and `...`. Nothing checks `+`, `~` or `@`. A cast keeps the single space after it that
+[PER Coding Style 3.0, Section 6.1](https://www.php-fig.org/per/coding-style/#61-unary-operators) requires.
+
+**Auto-fixable:** yes, unless a comment is between the operator and its operand.
+
+**Good:**
+
+```php
+$flags = ~$mask;
+$contents = @file_get_contents($path);
+```
+
+**Bad:**
+
+```php
+$flags = ~ $mask;
+$contents = @ file_get_contents($path);
+```
+
+---
+
 ## Mossy2100.PHP.DisallowMultiConstantDefinition
 
 Disallows defining several constants in one statement (e.g. `const A = 1, B = 2;`), for class and file-scope constants.

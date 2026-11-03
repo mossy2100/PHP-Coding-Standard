@@ -31,6 +31,7 @@ The complete PSR-12 coding standard is included, with the following exceptions:
   at the indent of the statement.
 - **Generic.Arrays.DisallowLongArraySyntax**: Requires short array syntax `[]` instead of `array()`.
 - **Generic.Formatting.SpaceAfterCast**: Enforces a space after type casts (e.g. `(int) $value`).
+- **Generic.Formatting.SpaceAfterNot**: Disallows whitespace after `!`, including a line break (`spacing` set to 0).
 - **Generic.CodeAnalysis.AssignmentInCondition**: Warns about assignments in conditions. See [Yoda-style Comparisons](../README.md#yoda-style-comparisons).
 - **PSR12.ControlStructures.BooleanOperatorPlacement**: Requires a wrapped `&&` or `||` in a condition at the start of
   the line, not the end (`allowOnly` set to `first`; PSR-12 only requires consistency).
