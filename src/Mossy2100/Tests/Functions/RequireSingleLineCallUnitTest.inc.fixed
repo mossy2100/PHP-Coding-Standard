@@ -1,0 +1,25 @@
+<?php
+
+// === VALID ===
+
+consume(new class {
+    public int $y = 2;
+
+    public string $name = 'x';
+});
+
+$wrapper = new Wrapper(new class {
+    public int $y = 2;
+});
+
+consume(static function (): int {
+    return 1;
+});
+
+single(1, 2);
+
+// === INVALID: the parent's checks still run ===
+
+short(1, 2);
+
+$object = new Short(1);

@@ -672,6 +672,26 @@ case, and leaves everything else to the parent. For an empty body after a single
 
 ---
 
+## Mossy2100.Functions.RequireSingleLineCall
+
+Requires a function, method or constructor call that fits within the line length to be written on one line. This
+replaces `SlevomatCodingStandard.Functions.RequireSingleLineCall`, and skips a call with an anonymous class argument.
+
+**Why:** the parent's `ignoreWithComplexParameter` option skips a call with a closure, arrow function or array argument,
+but not one with an anonymous class. So it reports `consume(new class {` ... `});`, and its fix puts the whole class
+body on one line, which then crashes `SlevomatCodingStandard.Classes.PropertySpacing`.
+
+**Auto-fixable:** yes, as the parent.
+
+**Configuration:**
+
+| Property                     | Type | Default | Description                                                                       |
+| ---------------------------- | ---- | ------- | --------------------------------------------------------------------------------- |
+| `maxLineLength`              | int  | 120     | The longest line a call may be joined onto.                                       |
+| `ignoreWithComplexParameter` | bool | true    | Skip a call with a closure, arrow function, array, anonymous class or inner call. |
+
+---
+
 ## Mossy2100.Namespaces.UnusedUses
 
 Disallows unused `use` statements, including in annotations. This replaces

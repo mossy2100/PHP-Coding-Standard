@@ -21,7 +21,7 @@ you can't override it from `phpcs.xml`. Set all ten properties instead:
 | `SlevomatCodingStandard.ControlStructures.RequireSingleLineCondition`      | `maxLineLength`   | length     |
 | `SlevomatCodingStandard.ControlStructures.RequireMultiLineCondition`       | `minLineLength`   | length + 1 |
 | `SlevomatCodingStandard.ControlStructures.RequireMultiLineTernaryOperator` | `lineLengthLimit` | length     |
-| `SlevomatCodingStandard.Functions.RequireSingleLineCall`                   | `maxLineLength`   | length     |
+| `Mossy2100.Functions.RequireSingleLineCall`                                | `maxLineLength`   | length     |
 | `SlevomatCodingStandard.Functions.RequireMultiLineCall`                    | `minLineLength`   | length + 1 |
 | `Mossy2100.Arrays.ArrayDeclaration`                                        | `maxLineLength`   | length     |
 | `Mossy2100.ControlStructures.RequireSingleLineHeader`                      | `maxLineLength`   | length     |
@@ -75,7 +75,7 @@ set separately:
             <property name="lineLengthLimit" value="&lineLength;"/>
         </properties>
     </rule>
-    <rule ref="SlevomatCodingStandard.Functions.RequireSingleLineCall">
+    <rule ref="Mossy2100.Functions.RequireSingleLineCall">
         <properties>
             <property name="maxLineLength" value="&lineLength;"/>
         </properties>

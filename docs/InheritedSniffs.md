@@ -156,7 +156,6 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **NamedArgumentSpacing**: Enforces spacing around named arguments.
 - **RequireArrowFunction**: Requires arrow functions for simple closures.
 - **RequireMultiLineCall**: Requires multi-line format for long function calls.
-- **RequireSingleLineCall**: Requires single-line format for short function calls.
 - **RequireTrailingCommaInCall**: Requires a trailing comma in a multi-line function call.
 - **RequireTrailingCommaInClosureUse**: Requires a trailing comma in a multi-line closure `use` list.
 - **RequireTrailingCommaInDeclaration**: Requires a trailing comma in a multi-line function declaration.

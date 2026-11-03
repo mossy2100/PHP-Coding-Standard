@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`Mossy2100.Functions.RequireSingleLineCall`.** Replaces `SlevomatCodingStandard.Functions.RequireSingleLineCall`,
+  which reported a call with a multi-line anonymous class argument, e.g. `consume(new class {` ... `});`, and fixed it
+  by putting the class body on one line. Such a call is now skipped, as one with a closure argument already was.
 - **`Mossy2100.Arrays.OpeningBracketPlacement` (breaking).** The opening bracket of a multi-line array must not be on a
   line of its own, as PER Coding Style 3.1 requires, e.g. `foo([` ... `]);`, not `foo(` then `[` on the next line. An
   array that's an element of a multi-line array is allowed. Auto-fixable, except next to another argument.
