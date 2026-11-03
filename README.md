@@ -103,6 +103,7 @@ for PHP 8.4 features such as property hooks, or set house-style choices. Each on
 | -------------------------------------------------------------- | ----------------------------------------------------------------- | ------- |
 | `Mossy2100.Arrays.ArrayDeclaration`                            | A multi-line array is on one line if it fits                      | Yes     |
 | `Mossy2100.Attributes.AttributePlacement`                      | An attribute is on its own line, except on a parameter            | Yes     |
+| `Mossy2100.Attributes.DisallowMultiLineAttributesJoining`      | One attribute per block when a block spans lines                  | Yes     |
 | `Mossy2100.Classes.ClassDeclaration`                           | Class declarations, allowing an empty body as `{}`                | Yes     |
 | `Mossy2100.Classes.DisallowPromotedPropertyHooks`              | No property hooks on promoted constructor parameters              | No      |
 | `Mossy2100.Classes.EmptyLinesAroundClassBraces`                | No blank lines inside class braces, allowing `{}`                 | Yes     |

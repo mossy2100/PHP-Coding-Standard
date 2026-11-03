@@ -405,6 +405,9 @@
     <!-- One statement per line, allowing { get; set; } on an abstract or interface property (PER Coding Style 4.10) -->
     <rule ref="Mossy2100.Formatting.DisallowMultipleStatements"/>
 
+    <!-- Several attributes may share a block on one line, but not one split over lines (PER Coding Style 12.3) -->
+    <rule ref="Mossy2100.Attributes.DisallowMultiLineAttributesJoining"/>
+
     <!-- An attribute on the line before its target, except on a parameter in a single-line list -->
     <rule ref="Mossy2100.Attributes.AttributePlacement"/>
 

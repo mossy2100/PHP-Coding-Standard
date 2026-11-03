@@ -107,6 +107,42 @@ final class Session
 
 ---
 
+## Mossy2100.Attributes.DisallowMultiLineAttributesJoining
+
+Disallows several attributes in one attribute block when the block spans more than one line. A block on one line, such
+as `#[Attribute, Deprecated]`, is allowed. This replaces `SlevomatCodingStandard.Attributes.DisallowAttributesJoining`.
+
+**Why:** [PER Coding Style 3.0, Section 12.3](https://www.php-fig.org/per/coding-style/#123-compound-attributes) allows several attributes in one block, but says that if the list is split
+into multiple lines, the attributes MUST be in separate blocks. The Slevomat sniff disallows joining altogether, and its
+fix leaves a block written over several lines in a poor layout. No other sniff in PHPCS, Slevomat, PHPCSExtra or the
+other standards checked covers it.
+
+**Auto-fixable:** yes, unless there's a comment in the block. The fix puts each attribute in its own block, on its own
+line.
+
+**Good:**
+
+```php
+#[Attribute, Deprecated]
+final class Marker {}
+
+#[Attribute]
+#[Deprecated('Use Marker instead.')]
+final class OldMarker {}
+```
+
+**Bad:**
+
+```php
+#[
+    Attribute,
+    Deprecated('Use Marker instead.'),
+]
+final class OldMarker {}
+```
+
+---
+
 ## Mossy2100.Classes.ClassDeclaration
 
 Checks the declaration of a class, interface, trait or enum, and the placement of its braces. This replaces
