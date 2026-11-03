@@ -22,6 +22,8 @@
         <exclude name="PSR2.Classes.ClassDeclaration"/>
         <exclude name="Squiz.Functions.MultiLineFunctionDeclaration"/>
         <exclude name="Squiz.WhiteSpace.ScopeClosingBrace"/>
+        <!-- Exclude PSR2 SwitchDeclaration - replaced by Mossy2100 version, with the PER Coding Style 3.1 rules -->
+        <exclude name="PSR2.ControlStructures.SwitchDeclaration"/>
     </rule>
 
     <!-- ====== GENERIC ====== -->
@@ -398,6 +400,10 @@
 
     <!-- A warning for an empty class or function body that isn't written as {} (PER Coding Style 4, 4.4) -->
     <rule ref="Mossy2100.Formatting.EmptyBody"/>
+
+    <!-- switch rules, adding a terminating statement in the last case, and parentheses around a multi-line case
+         condition (PER Coding Style 3.1, 5.2) -->
+    <rule ref="Mossy2100.ControlStructures.SwitchDeclaration"/>
 
     <!-- A ternary that spans lines takes three, with ? and : leading, indented once (PER Coding Style 6.4) -->
     <rule ref="Mossy2100.ControlStructures.MultiLineTernaryOperator"/>

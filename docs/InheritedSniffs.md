@@ -22,6 +22,8 @@ The complete PSR-12 coding standard is included, with the following exceptions:
 - **PSR2.Classes.ClassDeclaration**, **Squiz.Functions.MultiLineFunctionDeclaration** and
   **Squiz.WhiteSpace.ScopeClosingBrace** are excluded, replaced by Mossy2100 versions that allow an empty body as `{}`
   (see [Custom Sniffs](CustomSniffs.md)).
+- **PSR2.ControlStructures.SwitchDeclaration** is excluded, replaced by [`Mossy2100.ControlStructures.SwitchDeclaration`](CustomSniffs.md#mossy2100controlstructuresswitchdeclaration),
+  which adds the `switch` rules in PER Coding Style 3.1.
 
 ---
 

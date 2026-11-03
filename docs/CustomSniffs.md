@@ -467,6 +467,50 @@ To use a different limit, set every line-length property, as described in [Line 
 
 ---
 
+## Mossy2100.ControlStructures.SwitchDeclaration
+
+Checks `switch` statements. This replaces `PSR2.ControlStructures.SwitchDeclaration`, and adds two rules:
+
+- The last non-empty case MUST end with a terminating statement, such as `break`, `return` or `throw`.
+- A multi-line case condition MUST be wrapped in parentheses, with `):` on a line of their own.
+
+**Why:** [PER Coding Style 3.1, Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) adds both rules. The parent only checks a case that's followed by another,
+and doesn't check multi-line conditions.
+
+**Auto-fixable:** yes. The fix adds `break;` before the `}`, or adds the parentheses, or moves the `)` to its own line.
+It's left to a person when there's a comment in the way, or the `}` follows code on its line.
+
+**Good:**
+
+```php
+switch (true) {
+    case (
+        $total > 100
+        && $isMember
+    ):
+        applyDiscount();
+        break;
+    default:
+        chargeFullPrice();
+        break;
+}
+```
+
+**Bad:**
+
+```php
+switch (true) {
+    case $total > 100
+        && $isMember:
+        applyDiscount();
+        break;
+    default:
+        chargeFullPrice();
+}
+```
+
+---
+
 ## Mossy2100.Formatting.DisallowMultipleStatements
 
 Requires each statement to be on a line by itself. This replaces `Generic.Formatting.DisallowMultipleStatements`.

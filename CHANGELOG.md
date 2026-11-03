@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`Mossy2100.ControlStructures.SwitchDeclaration` (breaking).** Replaces `PSR2.ControlStructures.SwitchDeclaration`,
+  adding two rules from PER Coding Style 3.1: the last non-empty case must end with `break`, `return` or similar, and a
+  multi-line case condition must be wrapped in parentheses, with `):` on a line of their own. Auto-fixable.
 - **`Mossy2100.PHP.RequireCloneParentheses`.** A warning for `clone $a`, which should be `clone($a)`, as PER Coding
   Style 3.1 says `clone()` SHOULD be called with parentheses. Auto-fixable.
 - **`Generic.Strings.UnnecessaryHeredoc`.** A warning for a heredoc with no interpolation or escape sequences, which
