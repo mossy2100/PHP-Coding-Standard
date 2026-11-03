@@ -36,6 +36,13 @@
     <!-- CodeAnalysis -->
     <rule ref="Generic.CodeAnalysis.AssignmentInCondition"/>
 
+    <!-- Wrapped && and || at the start of the line in a condition, not the end (PER Coding Style 5.1, 6.4) -->
+    <rule ref="PSR12.ControlStructures.BooleanOperatorPlacement">
+        <properties>
+            <property name="allowOnly" value="first"/>
+        </properties>
+    </rule>
+
     <!-- Line length: a warning over the limit, with no hard limit (PER Coding Style 2.3) -->
     <rule ref="Generic.Files.LineLength">
         <properties>
@@ -98,6 +105,9 @@
 
     <!-- The <?php tag in lower case (PER Coding Style 3) -->
     <rule ref="Universal.PHP.LowercasePHPTag"/>
+
+    <!-- A wrapped . at the start of the line, not the end (PER Coding Style 6.4) -->
+    <rule ref="Universal.Operators.ConcatPosition"/>
 
     <!-- exit() and die() with parentheses; a warning, as PER Coding Style 4.7 says SHOULD -->
     <rule ref="Universal.PHP.RequireExitDieParentheses">
@@ -375,6 +385,9 @@
 
     <!-- A ternary that spans lines takes three, with ? and : leading, indented once (PER Coding Style 6.4) -->
     <rule ref="Mossy2100.ControlStructures.MultiLineTernaryOperator"/>
+
+    <!-- Any other wrapped binary operator, and an arrow function's =>, at the start of the line (PER 6.4, 7.1) -->
+    <rule ref="Mossy2100.Operators.OperatorPlacement"/>
 
     <!-- One statement per line, allowing { get; set; } on an abstract or interface property (PER Coding Style 4.10) -->
     <rule ref="Mossy2100.Formatting.DisallowMultipleStatements"/>

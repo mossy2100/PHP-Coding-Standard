@@ -10,6 +10,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **A wrapped operator must start the next line (breaking).** As PER Coding Style 3.0 requires, a statement that wraps
+  at an operator has the operator at the start of the new line, not the end of the previous one, e.g. `$total = $a` then
+  `+ $b` on the next line. Three sniffs check this:
+  - `Mossy2100.Operators.OperatorPlacement`, a new sniff, for assignment, arithmetic, comparison, bitwise and logical
+    operators, `??`, `instanceof`, `?:` and an arrow function's `=>`.
+  - `Universal.Operators.ConcatPosition`, for `.`.
+  - `PSR12.ControlStructures.BooleanOperatorPlacement`, now with `allowOnly` set to `first`, for `&&` and `||` in a
+    condition.
+
+  Auto-fixable.
 - **`Mossy2100.Namespaces.UnusedUses`.** Replaces `SlevomatCodingStandard.Namespaces.UnusedUses`, which reads
   `use Function Vendor\helper;` as a class import, and deletes it as unused. This sniff skips a file while its `use`
   keyword is miscased, until `Universal.UseStatements.LowercaseFunctionConst` has fixed it.

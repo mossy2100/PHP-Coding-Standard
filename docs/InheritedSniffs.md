@@ -32,6 +32,8 @@ The complete PSR-12 coding standard is included, with the following exceptions:
 - **Generic.Arrays.DisallowLongArraySyntax**: Requires short array syntax `[]` instead of `array()`.
 - **Generic.Formatting.SpaceAfterCast**: Enforces a space after type casts (e.g. `(int) $value`).
 - **Generic.CodeAnalysis.AssignmentInCondition**: Warns about assignments in conditions. See [Yoda-style Comparisons](../README.md#yoda-style-comparisons).
+- **PSR12.ControlStructures.BooleanOperatorPlacement**: Requires a wrapped `&&` or `||` in a condition at the start of
+  the line, not the end (`allowOnly` set to `first`; PSR-12 only requires consistency).
 - **Generic.Files.LineLength**: Warns about a line over 120 characters, with no hard limit, as PER Coding Style 3.0
   requires. See [Line Length](LineLength.md).
 
@@ -64,6 +66,7 @@ Reference: [PHPCSExtra repository and documentation](https://github.com/PHPCSSta
 - **Universal.Classes.DisallowAnonClassParentheses**: Disallows `()` on an anonymous class with no arguments, e.g.
   `new class () {}`.
 - **Universal.Constants.LowercaseClassResolutionKeyword**: Requires `::class` in lower case.
+- **Universal.Operators.ConcatPosition**: Requires a wrapped `.` at the start of the line, not the end.
 - **Universal.PHP.LowercasePHPTag**: Requires the `<?php` tag in lower case.
 - **Universal.PHP.RequireExitDieParentheses**: Warns about `exit` or `die` without parentheses.
 - **Universal.UseStatements.LowercaseFunctionConst**: Requires `function` and `const` in lower case in a `use`

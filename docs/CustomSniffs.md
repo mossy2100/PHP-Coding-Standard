@@ -546,6 +546,44 @@ class Order
 
 ---
 
+## Mossy2100.Operators.OperatorPlacement
+
+Disallows a binary operator at the end of a line, when a statement wraps at it. The operator goes at the start of the
+next line instead. Operators within a line aren't affected.
+
+**Why:** [PER Coding Style 3.0, Section 6.4](https://www.php-fig.org/per/coding-style/#64-operators-placement) says a wrapped operator MUST be at the start of the new line, and section 7.1
+says the same of an arrow function's `=>`. Only two inherited sniffs check this, each for one case:
+`Universal.Operators.ConcatPosition` for `.`, and `PSR12.ControlStructures.BooleanOperatorPlacement` for `&&` and `||`
+in a condition. This sniff covers every other binary operator: assignment, arithmetic, comparison, bitwise and logical
+operators, `??`, `instanceof`, the short ternary `?:` and the arrow function's `=>`. A full ternary is checked by
+`Mossy2100.ControlStructures.MultiLineTernaryOperator`, and `=>` in an array or `match` arm isn't an operator.
+
+**Auto-fixable:** yes, unless a comment follows the operator.
+
+**Good:**
+
+```php
+$total = $price * $quantity
+    + $shipping
+    - $discount;
+
+$label
+    = $isActive ? 'Active' : 'Inactive';
+```
+
+**Bad:**
+
+```php
+$total = $price * $quantity +
+    $shipping -
+    $discount;
+
+$label =
+    $isActive ? 'Active' : 'Inactive';
+```
+
+---
+
 ## Mossy2100.PHP.DisallowMultiConstantDefinition
 
 Disallows defining several constants in one statement (e.g. `const A = 1, B = 2;`), for class and file-scope constants.
