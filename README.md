@@ -116,6 +116,7 @@ for PHP 8.4 features such as property hooks, or set house-style choices. Each on
 | `Mossy2100.Functions.MultiLineFunctionDeclaration`             | Function declarations, allowing an empty body as `{}`             | Yes     |
 | `Mossy2100.Namespaces.UnusedUses`                              | No unused `use` statements, safe with a miscased `use Function`   | Yes     |
 | `Mossy2100.NamingConventions.ValidConstantName`                | No leading underscore on a constant                               | No      |
+| `Mossy2100.NamingConventions.ValidEnumCaseName`                | Enum cases in PascalCase                                          | No      |
 | `Mossy2100.NamingConventions.ValidVariableName`                | No leading underscore on a variable or parameter in a class       | No      |
 | `Mossy2100.Operators.OperatorPlacement`                        | A wrapped binary operator starts the next line, not ends this one | Yes     |
 | `Mossy2100.Operators.UnaryOperatorSpacing`                     | No whitespace after a prefix `+`, `~` or `@`                      | Yes     |

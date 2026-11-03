@@ -405,6 +405,9 @@
     <!-- An attribute on the line before its target, except on a parameter in a single-line list -->
     <rule ref="Mossy2100.Attributes.AttributePlacement"/>
 
+    <!-- Enum cases in PascalCase (PER Coding Style 9) -->
+    <rule ref="Mossy2100.NamingConventions.ValidEnumCaseName"/>
+
     <!-- No leading underscore on a constant (PER Coding Style 4.3) -->
     <rule ref="Mossy2100.NamingConventions.ValidConstantName"/>
 

@@ -494,6 +494,40 @@ final class Config
 
 ---
 
+## Mossy2100.NamingConventions.ValidEnumCaseName
+
+Requires enum case names to be in PascalCase: a capital first letter, only letters and digits, and not all capitals,
+apart from a single letter.
+
+**Why:** [PER Coding Style 3.0, Section 9](https://www.php-fig.org/per/coding-style/#9-enumerations) says enum case declarations MUST use PascalCase. No inherited sniff checks it.
+A run of capitals inside a name, such as `HTTPStatus`, is allowed, as PER section 2.7 only recommends treating acronyms
+as words. Based on `PhpCollective.Classes.EnumCaseCasing`, from php-collective/code-sniffer, which skips a name with no
+capitals, such as `hearts`.
+
+**Auto-fixable:** no. Renaming a case would break references to it in other files.
+
+**Good:**
+
+```php
+enum Suit
+{
+    case Hearts;
+    case BigJoker;
+}
+```
+
+**Bad:**
+
+```php
+enum Suit
+{
+    case hearts;
+    case BIG_JOKER;
+}
+```
+
+---
+
 ## Mossy2100.NamingConventions.ValidVariableName
 
 Warns about a variable or parameter whose name starts with an underscore, inside a class, enum, trait or interface.
