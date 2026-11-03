@@ -114,8 +114,7 @@ after `new`, indented once, with `class` on the line after them at the same inde
 then indents the class body from `class`.
 
 **Auto-fixable:** yes, unless a comment is between the attribute and its target. For an anonymous class, the fix puts
-each attribute block on its own line. It isn't applied when the class is in parentheses, such as a function call's
-argument, as it would conflict with the multi-line call sniffs.
+each attribute block on its own line.
 
 **Good:**
 

@@ -102,7 +102,9 @@ function anonymousClasses(): array
 
     $commented = new /* why */ #[Attribute] class {};
 
-    consume(new #[Attribute] class {});
+    consume(new
+        #[Attribute]
+        class {});
 
     return [new class {}];
 }

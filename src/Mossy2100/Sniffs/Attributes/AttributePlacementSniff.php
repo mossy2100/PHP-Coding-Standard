@@ -21,8 +21,7 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * PER Coding Style 3.1, section 8, sets the layout for attributes on an anonymous class: they start on the line after
  * `new`, indented once, with `class` on the line after them, at the same indent. The fix puts each attribute block on
- * its own line. It isn't applied in parentheses, e.g. to a function call's argument, as it would conflict with the
- * multi-line call sniffs.
+ * its own line.
  */
 class AttributePlacementSniff implements Sniff
 {
@@ -159,11 +158,8 @@ class AttributePlacementSniff implements Sniff
         $error = 'Attributes on an anonymous class must start on the line after "new", indented once, with "class" on '
             . 'the line after them';
 
-        // A comment would be lost. In parentheses, e.g. as an argument, the fix fights the multi-line call sniffs.
-        if (
-            $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($newPtr + 1), $anonClassPtr) !== false
-            || isset($tokens[$newPtr]['nested_parenthesis'])
-        ) {
+        // A comment between them would be lost.
+        if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($newPtr + 1), $anonClassPtr) !== false) {
             $phpcsFile->addError($error, $newPtr, self::CODE_ANON_CLASS);
             return;
         }

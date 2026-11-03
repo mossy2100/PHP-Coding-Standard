@@ -44,7 +44,7 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             89 => 1,
             // Anonymous class: a comment (not fixable).
             91 => 1,
-            // Anonymous class: a function call's argument (not fixable).
+            // Anonymous class: a function call's argument.
             93 => 1,
         ];
     }
