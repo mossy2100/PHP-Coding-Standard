@@ -158,7 +158,8 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 ### Type Hints
 
 - **ClassConstantTypeHint**: Requires class constant type hints.
-- **DeclareStrictTypes**: Requires `declare(strict_types=1)`.
+- **DeclareStrictTypes**: Requires `declare(strict_types=1)`. Used through [`Mossy2100.TypeHints.DeclareStrictTypes`](CustomSniffs.md#mossy2100typehintsdeclarestricttypes),
+  which allows `<?php declare(strict_types=1) ?>` on the first line of a file with markup.
 - **LongTypeHints**: Requires long type hints (`int` instead of `integer`).
 - **NullableTypeForNullDefaultValue**: Requires nullable type for parameters with null default.
 - **ParameterTypeHint**: Requires parameter type hints. Used through [`Mossy2100.TypeHints.ParameterTypeHint`](CustomSniffs.md#mossy2100typehintsparametertypehint), which

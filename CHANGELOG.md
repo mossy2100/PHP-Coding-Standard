@@ -10,6 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`<?php declare(strict_types=1) ?>` above markup is allowed.** As PER Coding Style 3.1 says, a file with markup
+  outside PHP tags declares strict types on its first line, between its own tags, with or without the `;`.
+  `PERCS31.Files.FileHeader` and `Mossy2100.TypeHints.DeclareStrictTypes` replace `PSR12.Files.FileHeader` and
+  `SlevomatCodingStandard.TypeHints.DeclareStrictTypes`, which required blank lines around it. Update any `phpcs:ignore`
+  comments or `<exclude>` rules that name the old codes.
 - **`PERCS31.TypeHints.CompoundTypeOperatorSpacing`.** A union, intersection or DNF type can now be split across lines,
   with the `|` or `&` starting each line, as PER Coding Style 3.1 allows. It replaces
   `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.DisallowedWhitespaceAroundOperator`, which counted the line break

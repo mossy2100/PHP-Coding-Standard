@@ -52,6 +52,8 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   80 characters.
 - **Generic.NamingConventions.UpperCaseConstantName**, from PSR-1, by [`PERCS31.NamingConventions.UpperCaseConstantName`](#percs31namingconventionsuppercaseconstantname),
   which allows PascalCase for an enum constant.
+- **PSR12.Files.FileHeader**, by [`PERCS31.Files.FileHeader`](#percs31filesfileheader), which allows `<?php declare(strict_types=1) ?>` on the
+  first line of a file with markup.
 - **PSR2.ControlStructures.SwitchDeclaration**, by [`PERCS31.ControlStructures.SwitchDeclaration`](#percs31controlstructuresswitchdeclaration), which adds PER's
   `switch` rules.
 - **PSR12.Operators.OperatorSpacing**, by [`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing), which also covers the pipe operator `|>`.
@@ -141,6 +143,7 @@ section gives the reason.
 | `PERCS31.ControlStructures.MatchArrowSpacing`           | One space around `=>` in `match` arms                             | Yes     |
 | `PERCS31.ControlStructures.MultiLineTernaryOperator`    | A multi-line ternary takes three lines, `?` and `:` leading       | Yes     |
 | `PERCS31.ControlStructures.SwitchDeclaration`           | `switch` rules, with a `break` in the last case                   | Yes     |
+| `PERCS31.Files.FileHeader`                              | The file header, allowing `<?php declare(...) ?>` above markup    | Yes     |
 | `PERCS31.Files.LineLength`                              | A warning over 120 characters, and a hidden one over 80           | No      |
 | `PERCS31.Formatting.DisallowMultipleStatements`         | One statement per line, allowing `{ get; set; }`                  | Yes     |
 | `PERCS31.Formatting.EmptyBody`                          | An empty class, function, closure or anonymous class body is `{}` | Yes     |
@@ -612,6 +615,32 @@ switch (true) {
     default:
         chargeFullPrice();
 }
+```
+
+---
+
+### PERCS31.Files.FileHeader
+
+Checks the blocks of the file header, and the blank lines between them. This replaces `PSR12.Files.FileHeader`, and
+allows a `declare` statement between its own PHP tags on the first line of a file with markup.
+
+**Why:** [PER Coding Style 3.1, Section 3](https://www.php-fig.org/per/coding-style/#3-declare-statements-namespace-and-import-statements) says that to declare strict types in a file containing markup outside PHP tags,
+the declaration MUST be on the first line, with its own opening and closing tags. The parent reads that line as a
+header, and requires a blank line after the tag and after the declaration, so it rejects PER's own example. This sniff
+skips such a file, as the parent skips other files that mix PHP and markup. The `;` before the `?>` may be included or
+left out.
+
+**Auto-fixable:** yes, as the parent.
+
+**Good:**
+
+```php
+<?php declare(strict_types=1) ?>
+<html>
+<body>
+    <?php echo $title ?>
+</body>
+</html>
 ```
 
 ---

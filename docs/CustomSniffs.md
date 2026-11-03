@@ -250,6 +250,21 @@ $contents = @ file_get_contents($path);
 
 ---
 
+## Mossy2100.TypeHints.DeclareStrictTypes
+
+Requires `declare(strict_types=1)` at the top of each file. This replaces
+`SlevomatCodingStandard.TypeHints.DeclareStrictTypes`, and allows the declaration between its own PHP tags on the first
+line of a file with markup.
+
+**Why:** [PER Coding Style 3.1, Section 3](https://www.php-fig.org/per/coding-style/#3-declare-statements-namespace-and-import-statements) says that in a file containing markup outside PHP tags, the declaration MUST be
+on the first line, e.g. `<?php declare(strict_types=1) ?>`. The parent requires a blank line before and after it. This
+sniff accepts that form, with or without the `;`, if it sets `strict_types` to 1, and leaves everything else to the
+parent. See [`PERCS31.Files.FileHeader`](PERCS31.md#percs31filesfileheader).
+
+**Auto-fixable:** yes, as the parent.
+
+---
+
 ## Mossy2100.TypeHints.ParameterTypeHint
 
 Requires a type hint on each parameter, skipping a function with a hook on a promoted constructor parameter. This

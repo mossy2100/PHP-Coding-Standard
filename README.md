@@ -101,19 +101,20 @@ Generic, Squiz, Slevomat and PHPCSExtra (`Universal`), and its own custom sniffs
 On top of that, Mossy2100 adds more Generic, Squiz and Slevomat sniffs, each documented in [Inherited Sniffs](docs/InheritedSniffs.md), and these
 custom sniffs, each with its reason in [Custom Sniffs](docs/CustomSniffs.md):
 
-| Sniff                                                          | Checks                                                            | Fixable |
-| -------------------------------------------------------------- | ----------------------------------------------------------------- | ------- |
-| `Mossy2100.Arrays.ArrayDeclaration`                            | A multi-line array is on one line if it fits                      | Yes     |
-| `Mossy2100.Classes.EmptyLinesAroundClassBraces`                | No blank lines inside class braces, allowing `{}`                 | Yes     |
-| `Mossy2100.Classes.RequireSingleLineMethodSignature`           | A short signature on one line, skipping a promoted hook           | Yes     |
-| `Mossy2100.ControlStructures.LanguageConstructWithParentheses` | No `echo('x')`, allowing `exit()` and `die()`                     | Yes     |
-| `Mossy2100.ControlStructures.RequireSingleLineHeader`          | A multi-line loop, `switch` or `match` header fits on a line      | Yes     |
-| `Mossy2100.Functions.RequireSingleLineCall`                    | A call that fits is on one line, skipping an anonymous class      | Yes     |
-| `Mossy2100.Namespaces.UnusedUses`                              | No unused `use` statements, safe with a miscased `use Function`   | Yes     |
-| `Mossy2100.NamingConventions.ValidVariableName`                | No leading underscore on a variable or parameter in a class       | No      |
-| `Mossy2100.Operators.UnaryOperatorSpacing`                     | No whitespace after a prefix `+`, `~` or `@`                      | Yes     |
-| `Mossy2100.TypeHints.ParameterTypeHint`                        | Parameter type hints, skipping a promoted hook                    | Yes     |
-| `Mossy2100.TypeHints.ParameterTypeHintSpacing`                 | Parameter type hint spacing, skipping a promoted hook             | Yes     |
+| Sniff                                                          | Checks                                                          | Fixable |
+| -------------------------------------------------------------- | --------------------------------------------------------------- | ------- |
+| `Mossy2100.Arrays.ArrayDeclaration`                            | A multi-line array is on one line if it fits                    | Yes     |
+| `Mossy2100.Classes.EmptyLinesAroundClassBraces`                | No blank lines inside class braces, allowing `{}`               | Yes     |
+| `Mossy2100.Classes.RequireSingleLineMethodSignature`           | A short signature on one line, skipping a promoted hook         | Yes     |
+| `Mossy2100.ControlStructures.LanguageConstructWithParentheses` | No `echo('x')`, allowing `exit()` and `die()`                   | Yes     |
+| `Mossy2100.ControlStructures.RequireSingleLineHeader`          | A multi-line loop, `switch` or `match` header fits on a line    | Yes     |
+| `Mossy2100.Functions.RequireSingleLineCall`                    | A call that fits is on one line, skipping an anonymous class    | Yes     |
+| `Mossy2100.Namespaces.UnusedUses`                              | No unused `use` statements, safe with a miscased `use Function` | Yes     |
+| `Mossy2100.NamingConventions.ValidVariableName`                | No leading underscore on a variable or parameter in a class     | No      |
+| `Mossy2100.Operators.UnaryOperatorSpacing`                     | No whitespace after a prefix `+`, `~` or `@`                    | Yes     |
+| `Mossy2100.TypeHints.DeclareStrictTypes`                       | `strict_types=1` required, allowing `<?php declare(...) ?>`     | Yes     |
+| `Mossy2100.TypeHints.ParameterTypeHint`                        | Parameter type hints, skipping a promoted hook                  | Yes     |
+| `Mossy2100.TypeHints.ParameterTypeHintSpacing`                 | Parameter type hint spacing, skipping a promoted hook           | Yes     |
 
 ---
 
