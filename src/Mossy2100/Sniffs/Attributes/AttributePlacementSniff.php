@@ -18,10 +18,17 @@ use PHP_CodeSniffer\Util\Tokens;
  * SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing can only allow an attribute on the same line as its
  * target everywhere (allowOnSameLine) or nowhere. The standard allows it everywhere, so that a parameter attribute can
  * be inline, and this sniff reports every same-line attribute that isn't on a parameter in a single-line list.
+ *
+ * PER Coding Style 3.1, section 8, sets the layout for attributes on an anonymous class: they start on the line after
+ * `new`, indented once, with `class` on the line after them, at the same indent. The fix puts each attribute block on
+ * its own line. It isn't applied in parentheses, e.g. to a function call's argument, as it would conflict with the
+ * multi-line call sniffs.
  */
 class AttributePlacementSniff implements Sniff
 {
     public const string CODE_SAME_LINE = 'SameLine';
+
+    public const string CODE_ANON_CLASS = 'AnonClass';
 
     /**
      * The tokens that own a parameter list.
@@ -58,8 +65,23 @@ class AttributePlacementSniff implements Sniff
         $closerPtr = $tokens[$stackPtr]['attribute_closer'];
         $targetPtr = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($closerPtr + 1), null, true);
 
+        if ($targetPtr === false) {
+            return;
+        }
+
+        // An anonymous class's attributes are checked together, from the first one.
+        $anonClassPtr = $this->findAnonClass($phpcsFile, $stackPtr);
+        if ($anonClassPtr !== null) {
+            $newPtr = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
+            if ($newPtr !== false && $tokens[$newPtr]['code'] === T_NEW) {
+                $this->processAnonClass($phpcsFile, $newPtr, $anonClassPtr);
+            }
+
+            return;
+        }
+
         // Another attribute follows, so the last one in the group is checked against the target.
-        if ($targetPtr === false || $tokens[$targetPtr]['code'] === T_ATTRIBUTE) {
+        if ($tokens[$targetPtr]['code'] === T_ATTRIBUTE) {
             return;
         }
 
@@ -97,6 +119,109 @@ class AttributePlacementSniff implements Sniff
         assert(is_int($firstOnLine));
         $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1));
         $phpcsFile->fixer->replaceToken($nextPtr, $phpcsFile->eolChar . $indent);
+    }
+
+    /**
+     * Check the layout of an anonymous class's attributes, and fix it.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $newPtr The position of `new`.
+     * @param int $anonClassPtr The position of `class`.
+     */
+    private function processAnonClass(File $phpcsFile, int $newPtr, int $anonClassPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $newPtr, true);
+        assert(is_int($firstOnLine));
+        $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1 + 4));
+
+        // The attribute blocks, and whether each starts a line at the right indent, as `class` must.
+        $blocks = [];
+        $isValid = true;
+        $previous = $newPtr;
+        for ($i = ($newPtr + 1); $i < $anonClassPtr; $i++) {
+            if ($tokens[$i]['code'] !== T_ATTRIBUTE) {
+                continue;
+            }
+
+            $closer = $tokens[$i]['attribute_closer'];
+            $blocks[] = $phpcsFile->getTokensAsString($i, ($closer - $i + 1));
+            $isValid = $isValid && $this->startsLineAt($phpcsFile, $i, $previous, strlen($indent));
+            $previous = $closer;
+            $i = $closer;
+        }
+
+        $isValid = $isValid && $this->startsLineAt($phpcsFile, $anonClassPtr, $previous, strlen($indent));
+        if ($isValid) {
+            return;
+        }
+
+        $error = 'Attributes on an anonymous class must start on the line after "new", indented once, with "class" on '
+            . 'the line after them';
+
+        // A comment would be lost. In parentheses, e.g. as an argument, the fix fights the multi-line call sniffs.
+        if (
+            $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($newPtr + 1), $anonClassPtr) !== false
+            || isset($tokens[$newPtr]['nested_parenthesis'])
+        ) {
+            $phpcsFile->addError($error, $newPtr, self::CODE_ANON_CLASS);
+            return;
+        }
+
+        $fix = $phpcsFile->addFixableError($error, $newPtr, self::CODE_ANON_CLASS);
+        if (!$fix) {
+            return;
+        }
+
+        $phpcsFile->fixer->beginChangeset();
+        for ($i = ($newPtr + 1); $i < $anonClassPtr; $i++) {
+            $phpcsFile->fixer->replaceToken($i, '');
+        }
+
+        $layout = '';
+        foreach ($blocks as $block) {
+            $layout .= $phpcsFile->eolChar . $indent . $block;
+        }
+
+        $phpcsFile->fixer->addContent($newPtr, $layout . $phpcsFile->eolChar . $indent);
+        $phpcsFile->fixer->endChangeset();
+    }
+
+    /**
+     * Check that a token starts a line after the previous token, at the given indent.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $ptr The position of the token.
+     * @param int $previousPtr The position of the token that must be on an earlier line.
+     * @param int $indent The number of spaces expected before the token.
+     * @return bool True if the token is laid out that way.
+     */
+    private function startsLineAt(File $phpcsFile, int $ptr, int $previousPtr, int $indent): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+
+        return $tokens[$ptr]['line'] > $tokens[$previousPtr]['line'] && $tokens[$ptr]['column'] === ($indent + 1);
+    }
+
+    /**
+     * Find the anonymous class an attribute is on, if any.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $attributePtr The position of the attribute opener.
+     * @return int|null The position of `class`, or null if the attribute isn't on an anonymous class.
+     */
+    private function findAnonClass(File $phpcsFile, int $attributePtr): ?int
+    {
+        $tokens = $phpcsFile->getTokens();
+        $next = $attributePtr;
+        while ($tokens[$next]['code'] === T_ATTRIBUTE && isset($tokens[$next]['attribute_closer'])) {
+            $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($tokens[$next]['attribute_closer'] + 1), null, true);
+            if ($next === false) {
+                return null;
+            }
+        }
+
+        return $tokens[$next]['code'] === T_ANON_CLASS ? $next : null;
     }
 
     /**

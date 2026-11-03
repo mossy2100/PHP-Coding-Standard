@@ -74,7 +74,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`Mossy2100.Attributes.AttributePlacement` (breaking).** Requires an attribute to be on the line before its target,
   except on a parameter in a single-line parameter list, where it must be inline, as PER Coding Style 3.0 requires.
   `SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing` now allows an attribute on the same line as its target,
-  and this sniff reports every other case. Auto-fixable.
+  and this sniff reports every other case. Attributes on an anonymous class follow PER Coding Style 3.1 instead:
+  starting on the line after `new`, indented once, with `class` on the line after them.
+  `Mossy2100.WhiteSpace.ScopeIndent` indents the class body to match. Auto-fixable.
 - **`Mossy2100.NamingConventions.ValidVariableName` (breaking).** Warns about a variable or parameter that starts with
   an underscore, inside a class, enum, trait or interface. `Squiz.NamingConventions.ValidVariableName` reports these
   outside a class, but allows them inside one. Superglobals such as `$_GET` are exempt. Not auto-fixable.

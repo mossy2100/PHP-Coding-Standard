@@ -69,3 +69,40 @@ final class Invalid
 function invalidFunction(): void
 {
 }
+
+function anonymousClasses(): array
+{
+    $valid = new
+        #[Attribute]
+        class {
+            public int $x = 1;
+        };
+
+    $validTwo = new
+        #[Attribute]
+        #[Deprecated]
+        class {};
+
+    $sameLine = new
+        #[Attribute]
+        class {};
+
+    $notIndented = new
+        #[Attribute]
+        class {};
+
+    $classOnSameLine = new
+        #[Attribute]
+        class {};
+
+    $twoOnOneLine = new
+        #[Attribute]
+        #[Deprecated]
+        class ($a) {};
+
+    $commented = new /* why */ #[Attribute] class {};
+
+    consume(new #[Attribute] class {});
+
+    return [new class {}];
+}

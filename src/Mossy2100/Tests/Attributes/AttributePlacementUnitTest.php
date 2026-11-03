@@ -34,6 +34,18 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             58 => 1,
             // Function.
             63 => 1,
+            // Anonymous class: an attribute on the line with new.
+            80 => 1,
+            // Anonymous class: the attribute and class not indented.
+            82 => 1,
+            // Anonymous class: class on the attribute's line.
+            86 => 1,
+            // Anonymous class: two attributes and class on the line with new.
+            89 => 1,
+            // Anonymous class: a comment (not fixable).
+            91 => 1,
+            // Anonymous class: a function call's argument (not fixable).
+            93 => 1,
         ];
     }
 

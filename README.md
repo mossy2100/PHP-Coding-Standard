@@ -128,7 +128,7 @@ for PHP 8.4 features such as property hooks, or set house-style choices. Each on
 | `Mossy2100.PHP.RequireCloneParentheses`                        | A warning for `clone $a`, not `clone($a)`                         | Yes     |
 | `Mossy2100.WhiteSpace.OperatorSpacing`                         | One space around operators, including `\|>`                       | Yes     |
 | `Mossy2100.WhiteSpace.ScopeClosingBrace`                       | A closing brace on its own line, allowing `{}`                    | Yes     |
-| `Mossy2100.WhiteSpace.ScopeIndent`                             | Indentation, including property hooks                             | Yes     |
+| `Mossy2100.WhiteSpace.ScopeIndent`                             | Indentation, including property hooks and anonymous classes       | Yes     |
 
 ---
 

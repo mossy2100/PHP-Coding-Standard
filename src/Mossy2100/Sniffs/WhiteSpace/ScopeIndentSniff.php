@@ -879,6 +879,31 @@ class ScopeIndentSniff implements Sniff
                 $checkIndent = $currentIndent;
             }
 
+            // Mossy2100: an anonymous class with attributes, after `new` on an earlier line, is indented once from that
+            // line, as PER Coding Style 3.1, section 8, requires. Its body and closing brace follow from it.
+            if ($checkToken !== null && $tokens[$checkToken]['code'] === T_ANON_CLASS) {
+                $newPtr = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($checkToken - 1), null, true);
+                $hasAttributes = false;
+                while ($newPtr !== false && $tokens[$newPtr]['code'] === T_ATTRIBUTE_END) {
+                    $hasAttributes = true;
+                    $newPtr = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($tokens[$newPtr]['attribute_opener'] - 1), null, true);
+                }
+
+                if ($hasAttributes === true
+                    && $newPtr !== false
+                    && $tokens[$newPtr]['code'] === T_NEW
+                    && $tokens[$newPtr]['line'] < $tokens[$checkToken]['line']
+                ) {
+                    $first       = $phpcsFile->findFirstOnLine(T_WHITESPACE, $newPtr, true);
+                    $checkIndent = ($tokens[$first]['column'] - 1 + $this->indent);
+                    if (isset($adjustments[$first]) === true) {
+                        $checkIndent += $adjustments[$first];
+                    }
+
+                    $exact = true;
+                }
+            }
+
             // Mossy2100: check for a property hook closer. At this point $checkToken is set.
             if ($checkToken !== null && isset($openPropertyHooks[$checkToken]) === true) {
                 $opener = $openPropertyHooks[$checkToken];

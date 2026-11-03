@@ -62,7 +62,13 @@ an attribute on the same line as its target either everywhere or nowhere. The Mo
 parameter's attribute can be inline. This sniff then reports every other same-line attribute, including an inline one in
 a multi-line parameter list.
 
-**Auto-fixable:** yes, unless a comment is between the attribute and its target.
+An attribute on an anonymous class follows [PER Coding Style 3.1, Section 8](https://www.php-fig.org/per/coding-style/#8-anonymous-classes) instead. The attributes start on the line
+after `new`, indented once, with `class` on the line after them at the same indent. `Mossy2100.WhiteSpace.ScopeIndent`
+then indents the class body from `class`.
+
+**Auto-fixable:** yes, unless a comment is between the attribute and its target. For an anonymous class, the fix puts
+each attribute block on its own line. It isn't applied when the class is in parentheses, such as a function call's
+argument, as it would conflict with the multi-line call sniffs.
 
 **Good:**
 
@@ -84,6 +90,12 @@ final class Session
         // ...
     }
 }
+
+$handler = new
+    #[Attribute]
+    class {
+        public int $retries = 3;
+    };
 ```
 
 **Bad:**
@@ -103,6 +115,10 @@ final class Session
         // ...
     }
 }
+
+$handler = new #[Attribute] class {
+    public int $retries = 3;
+};
 ```
 
 ---
@@ -908,11 +924,15 @@ that case, and leaves everything else to the parent. See [Mossy2100.Formatting.E
 
 ## Mossy2100.WhiteSpace.ScopeIndent
 
-Checks that code is indented correctly, including property hooks (PHP 8.4+). This is a fork of
-`Generic.WhiteSpace.ScopeIndent`.
+Checks that code is indented correctly, including property hooks (PHP 8.4+), and an anonymous class with attributes.
+This is a fork of `Generic.WhiteSpace.ScopeIndent`.
 
-**Why:** PHP_CodeSniffer's tokenizer doesn't treat property hook braces as scopes, so `Generic.WhiteSpace.ScopeIndent`
-doesn't check the indentation inside a hook.
+**Why:**
+
+- PHP_CodeSniffer's tokenizer doesn't treat property hook braces as scopes, so `Generic.WhiteSpace.ScopeIndent` doesn't
+  check the indentation inside a hook.
+- [PER Coding Style 3.1, Section 8](https://www.php-fig.org/per/coding-style/#8-anonymous-classes) indents an anonymous class with attributes once from the line with `new`, and its body
+  from `class`. The parent expects `class` at the statement's indent. See [Mossy2100.Attributes.AttributePlacement](#mossy2100attributesattributeplacement).
 
 **Auto-fixable:** yes.
 

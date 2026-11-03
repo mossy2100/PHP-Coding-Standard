@@ -115,3 +115,17 @@ class ClosureInMethodWithTypedParameters
     ) {
     }
 }
+
+// Correct: an anonymous class with attributes, indented once from new (PER Coding Style 3.1, section 8).
+$valid = new
+    #[Attribute]
+    class {
+        public int $x = 1;
+    };
+
+// Incorrect: the class not indented from new, so its body and closing brace aren't either.
+$invalid = new
+    #[Attribute]
+    class {
+        public int $x = 1;
+    };

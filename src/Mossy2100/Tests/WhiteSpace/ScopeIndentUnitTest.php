@@ -27,6 +27,10 @@ class ScopeIndentUnitTest extends AbstractSniffTestCase
             89 => 1,
             // Code after hooks over-indented.
             94 => 1,
+            // An anonymous class with attributes, not indented from new: the class, its body and its closing brace.
+            129 => 1,
+            130 => 1,
+            131 => 1,
         ];
     }
 
