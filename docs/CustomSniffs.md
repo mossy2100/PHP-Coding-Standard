@@ -120,19 +120,6 @@ parent. For an empty body, the checks on `extends` and `implements` still run. S
 
 ---
 
-## Mossy2100.Classes.EmptyLinesAroundClassBraces
-
-Disallows blank lines after a class's opening brace and before its closing brace. This replaces
-`SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces`.
-
-**Why:** `SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces` rejects an empty body written as `{}` on one line,
-which [PER Coding Style 3.0, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the
-parent. See [Mossy2100.Formatting.EmptyBody](#mossy2100formattingemptybody).
-
-**Auto-fixable:** yes, as the parent.
-
----
-
 ## Mossy2100.Classes.DisallowPromotedPropertyHooks
 
 Disallows property hooks on promoted constructor parameters (PHP 8.4+). Declare the property in the class body instead.
@@ -173,6 +160,59 @@ class User
 class User
 {
     public function __construct(public string $name { set => trim($value); }, public readonly int $age) {}
+}
+```
+
+---
+
+## Mossy2100.Classes.EmptyLinesAroundClassBraces
+
+Disallows blank lines after a class's opening brace and before its closing brace. This replaces
+`SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces`.
+
+**Why:** `SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces` rejects an empty body written as `{}` on one line,
+which [PER Coding Style 3.0, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the
+parent. See [Mossy2100.Formatting.EmptyBody](#mossy2100formattingemptybody).
+
+**Auto-fixable:** yes, as the parent.
+
+---
+
+## Mossy2100.Classes.EnumMethodVisibility
+
+Requires a non-public method in an enum to be `private`, not `protected`.
+
+**Why:** [PER Coding Style 3.0, Section 9](https://www.php-fig.org/per/coding-style/#9-enumerations) says non-public methods in an enum MUST use `private`, as enums don't support
+inheritance. No inherited sniff checks it.
+
+**Auto-fixable:** yes. The fix doesn't change behaviour, since nothing can extend an enum. It also removes `final` if
+present, as PHP warns that a private method can't be final.
+
+**Good:**
+
+```php
+enum Suit
+{
+    case Hearts;
+
+    private function symbol(): string
+    {
+        return '♥';
+    }
+}
+```
+
+**Bad:**
+
+```php
+enum Suit
+{
+    case Hearts;
+
+    protected function symbol(): string
+    {
+        return '♥';
+    }
 }
 ```
 

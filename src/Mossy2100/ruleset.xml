@@ -382,6 +382,9 @@
     <!-- Property declaration with PHP 8.4 property hook support -->
     <rule ref="Mossy2100.Classes.PropertyDeclaration"/>
 
+    <!-- private, not protected, for a non-public method in an enum (PER Coding Style 9) -->
+    <rule ref="Mossy2100.Classes.EnumMethodVisibility"/>
+
     <!-- PSR-12 brace sniffs, extended to allow an empty class or function body as {} (PER Coding Style 4, 4.4) -->
     <rule ref="Mossy2100.Classes.ClassDeclaration"/>
     <rule ref="Mossy2100.Functions.MultiLineFunctionDeclaration"/>

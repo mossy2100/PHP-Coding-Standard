@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`Mossy2100.Classes.EnumMethodVisibility` (breaking).** Requires a non-public method in an enum to be `private`, not
+  `protected`, as PER Coding Style 3.0 requires. Auto-fixable.
 - **`Mossy2100.NamingConventions.ValidEnumCaseName` (breaking).** Requires enum case names to be in PascalCase, as PER
   Coding Style 3.0 requires, e.g. `case BigJoker;`, not `case BIG_JOKER;` or `case bigJoker;`. Not auto-fixable.
 - **No whitespace after a prefix unary operator (breaking).** A space or line break between a prefix operator and its
