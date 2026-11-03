@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **The pipe operator `|>` (PHP 8.5) (breaking).** As PER Coding Style 3.1 requires, `|>` needs a space either side, and
+  starts the line when a statement wraps at it. `Mossy2100.WhiteSpace.OperatorSpacing` replaces
+  `Squiz.WhiteSpace.OperatorSpacing` to check the spacing, and `Mossy2100.Operators.OperatorPlacement` now covers `|>`.
+  Only checked when PHPCS runs on PHP 8.5. Auto-fixable.
 - **`Mossy2100.ControlStructures.SwitchDeclaration` (breaking).** Replaces `PSR2.ControlStructures.SwitchDeclaration`,
   adding two rules from PER Coding Style 3.1: the last non-empty case must end with `break`, `return` or similar, and a
   multi-line case condition must be wrapped in parentheses, with `):` on a line of their own. Auto-fixable.

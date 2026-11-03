@@ -738,8 +738,9 @@ next line instead. Operators within a line aren't affected.
 says the same of an arrow function's `=>`. Only two inherited sniffs check this, each for one case:
 `Universal.Operators.ConcatPosition` for `.`, and `PSR12.ControlStructures.BooleanOperatorPlacement` for `&&` and `||`
 in a condition. This sniff covers every other binary operator: assignment, arithmetic, comparison, bitwise and logical
-operators, `??`, `instanceof`, the short ternary `?:` and the arrow function's `=>`. A full ternary is checked by
-`Mossy2100.ControlStructures.MultiLineTernaryOperator`, and `=>` in an array or `match` arm isn't an operator.
+operators, `??`, `instanceof`, the short ternary `?:`, the arrow function's `=>`, and the pipe operator `|>` (PHP 8.5,
+PER Coding Style 3.1). A full ternary is checked by `Mossy2100.ControlStructures.MultiLineTernaryOperator`, and `=>` in
+an array or `match` arm isn't an operator.
 
 **Auto-fixable:** yes, unless a comment follows the operator.
 
@@ -856,6 +857,32 @@ $copy = clone($original);
 ```php
 $copy = clone $original;
 $copy = clone ($original);
+```
+
+---
+
+## Mossy2100.WhiteSpace.OperatorSpacing
+
+Requires a single space around operators, including the pipe operator `|>`. This replaces
+`Squiz.WhiteSpace.OperatorSpacing`, with the same settings: a single space before `=` and `=>`, and a line break allowed
+either side.
+
+**Why:** [PER Coding Style 3.1, Section 6.2](https://www.php-fig.org/per/coding-style/#62-binary-operators) says `|>` (PHP 8.5) is a binary operator, so it needs a space either side.
+The parent doesn't know it. PHP_CodeSniffer 4.0 doesn't define `T_PIPE` itself, but passes PHP's own token through on
+PHP 8.5, so this sniff registers it when it's defined. The pipe isn't checked when PHPCS runs on PHP 8.4.
+
+**Auto-fixable:** yes, as the parent.
+
+**Good:**
+
+```php
+$slug = $title |> trim(...) |> strtolower(...);
+```
+
+**Bad:**
+
+```php
+$slug = $title|>trim(...)|>strtolower(...);
 ```
 
 ---

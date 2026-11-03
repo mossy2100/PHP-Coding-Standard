@@ -12,6 +12,22 @@ use PHP_CodeSniffer\Tests\Standards\AbstractSniffTestCase;
 class OperatorPlacementUnitTest extends AbstractSniffTestCase
 {
     /**
+     * Get the test files, leaving out the pipe operator's before PHP 8.5, which has no `T_PIPE` token.
+     *
+     * @param string $testFileBase The base path that the unit tests files will have.
+     * @return list<string>
+     */
+    protected function getTestFiles(string $testFileBase): array
+    {
+        $testFiles = parent::getTestFiles($testFileBase);
+        if (defined('T_PIPE')) {
+            return array_values($testFiles);
+        }
+
+        return array_values(array_filter($testFiles, static fn(string $file): bool => !str_contains($file, '.2.inc')));
+    }
+
+    /**
      * Returns the lines where errors should occur.
      *
      * @param string $testFile The name of the test input file.
@@ -19,6 +35,11 @@ class OperatorPlacementUnitTest extends AbstractSniffTestCase
      */
     protected function getErrorList(string $testFile = ''): array
     {
+        if ($testFile === 'OperatorPlacementUnitTest.2.inc') {
+            // The pipe operator.
+            return [13 => 1];
+        }
+
         return [
             // Arithmetic, after another operator on the same line.
             40 => 1,

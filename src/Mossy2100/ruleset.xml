@@ -95,8 +95,9 @@
         </properties>
     </rule>
 
-    <!-- Single space around operators, including before assignments and double arrows (no alignment) -->
-    <rule ref="Squiz.WhiteSpace.OperatorSpacing">
+    <!-- Single space around operators, including before assignments and double arrows (no alignment); the Mossy2100
+         version of Squiz.WhiteSpace.OperatorSpacing, which also covers the pipe operator |> (PER Coding Style 3.1, 6.2) -->
+    <rule ref="Mossy2100.WhiteSpace.OperatorSpacing">
         <properties>
             <property name="ignoreNewlines" value="true"/>
             <property name="ignoreSpacingBeforeAssignments" value="false"/>

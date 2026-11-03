@@ -1,0 +1,14 @@
+<?php
+
+// The pipe operator, PHP 8.5 only.
+
+// === VALID ===
+
+$result = $input
+    |> trim(...)
+    |> strtoupper(...);
+
+// === INVALID ===
+
+$result = $input |>
+    trim(...);

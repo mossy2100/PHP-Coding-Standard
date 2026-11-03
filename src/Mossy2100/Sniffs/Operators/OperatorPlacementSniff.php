@@ -18,9 +18,9 @@ use PHP_CodeSniffer\Util\Tokens;
  * Operators within a line aren't affected.
  *
  * It covers assignment, arithmetic, comparison, bitwise and logical operators, `??`, `instanceof`, the short ternary
- * `?:` and the arrow function's `=>`. Two cases are left to inherited sniffs: `.`, checked by
- * Universal.Operators.ConcatPosition, and `&&` or `||` in a control structure's condition, checked by
- * PSR12.ControlStructures.BooleanOperatorPlacement. A full ternary is checked by
+ * `?:`, the arrow function's `=>`, and the pipe operator `|>` (PHP 8.5, PER Coding Style 3.1). Two cases are left to
+ * inherited sniffs: `.`, checked by Universal.Operators.ConcatPosition, and `&&` or `||` in a control structure's
+ * condition, checked by PSR12.ControlStructures.BooleanOperatorPlacement. A full ternary is checked by
  * Mossy2100.ControlStructures.MultiLineTernaryOperator, and `=>` in an array or `match` arm isn't an operator.
  */
 class OperatorPlacementSniff implements Sniff
@@ -45,7 +45,12 @@ class OperatorPlacementSniff implements Sniff
             + Tokens::BOOLEAN_OPERATORS;
         unset($tokens[T_DOUBLE_ARROW]);
 
-        return [...array_values($tokens), T_INSTANCEOF, T_FN_ARROW, T_INLINE_THEN];
+        $targets = [...array_values($tokens), T_INSTANCEOF, T_FN_ARROW, T_INLINE_THEN];
+        if (defined('T_PIPE')) {
+            $targets[] = T_PIPE;
+        }
+
+        return $targets;
     }
 
     /**

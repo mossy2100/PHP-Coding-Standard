@@ -55,8 +55,8 @@ The complete PSR-12 coding standard is included, with the following exceptions:
   [Variable and Property Names](VariableAndPropertyNames.md).
 - **Squiz.Strings.DoubleQuoteUsage.NotRequired**: Ensures strings use single quotes unless double quotes are necessary.
 - **Squiz.WhiteSpace.OperatorSpacing**: Requires a single space around operators, including before `=` and `=>`, so
-  assignments and array arrows are not aligned. `match` arms are covered by
-  [`Mossy2100.ControlStructures.MatchArrowSpacing`](CustomSniffs.md#mossy2100controlstructuresmatcharrowspacing).
+  assignments and array arrows are not aligned. Used through [`Mossy2100.WhiteSpace.OperatorSpacing`](CustomSniffs.md#mossy2100whitespaceoperatorspacing), which adds the pipe
+  operator `|>`. `match` arms are covered by [`Mossy2100.ControlStructures.MatchArrowSpacing`](CustomSniffs.md#mossy2100controlstructuresmatcharrowspacing).
 - **Squiz.WhiteSpace.ObjectOperatorSpacing**: Disallows spaces around `->`, `?->` and `::`, e.g. `$a -> b()`. A line
   break before one, in a wrapped method chain, is allowed.
 
