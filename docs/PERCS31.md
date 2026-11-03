@@ -117,8 +117,9 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
   a single-line list (2.6).
 - **Functions.RequireTrailingCommaInCall**, **...InClosureUse** and **...InDeclaration**: Require a trailing comma in a
   multi-line list (2.6).
-- **TypeHints.DNFTypeHintFormat**: Requires no spaces around `|` and `&` or inside the parentheses, and `null` last
-  (2.5). It warns about `T|null`, which SHOULD be `?T`.
+- **TypeHints.DNFTypeHintFormat**: Requires no spaces inside the parentheses, and `null` last (2.5). It warns about
+  `T|null`, which SHOULD be `?T`. Its check for spaces around `|` and `&` is replaced by
+  [`PERCS31.TypeHints.CompoundTypeOperatorSpacing`](#percs31typehintscompoundtypeoperatorspacing), which allows a split type.
 
 ---
 
@@ -151,6 +152,7 @@ section gives the reason.
 | `PERCS31.Operators.OperatorSpacing`                     | At least one space around binary operators, including `\|>`       | Yes     |
 | `PERCS31.PHP.DisallowMultiConstantDefinition`           | One constant per statement                                        | Yes     |
 | `PERCS31.PHP.RequireCloneParentheses`                   | A warning for `clone $a`, not `clone($a)`                         | Yes     |
+| `PERCS31.TypeHints.CompoundTypeOperatorSpacing`         | No space around `\|` or `&` in a type, but a split before one     | Yes     |
 | `PERCS31.WhiteSpace.ScopeClosingBrace`                  | A closing brace on its own line, allowing `{}`                    | Yes     |
 | `PERCS31.WhiteSpace.ScopeIndent`                        | Indentation, including property hooks and anonymous classes       | Yes     |
 
@@ -982,6 +984,44 @@ $copy = clone ($original);
 
 ---
 
+### PERCS31.TypeHints.CompoundTypeOperatorSpacing
+
+Disallows spaces around the `|` and `&` of a union, intersection or DNF type, but allows a type split across lines
+before one. This replaces the `DisallowedWhitespaceAroundOperator` check of
+`SlevomatCodingStandard.TypeHints.DNFTypeHintFormat`.
+
+**Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the union and intersection symbols MUST NOT have a leading or trailing
+space, and that a compound type MAY be split across lines, with the symbol at the start of each line. The Slevomat check
+counts the line break as a space, so it rejects every split type, including PER's own examples. Which types go on which
+line isn't checked.
+
+**Auto-fixable:** yes. A symbol at the end of a line is moved to the start of the next.
+
+**Good:**
+
+```php
+function reflect(
+    \ReflectionObject
+    |\ReflectionClass
+    |\ReflectionProperty $reflect,
+): int|string {
+    // ...
+}
+```
+
+**Bad:**
+
+```php
+function reflect(
+    \ReflectionObject |
+    \ReflectionClass $reflect,
+): int | string {
+    // ...
+}
+```
+
+---
+
 ### PERCS31.WhiteSpace.ScopeClosingBrace
 
 Checks that a scope's closing brace is on a line by itself, and indented to match, except in an empty body written as
@@ -1056,6 +1096,8 @@ class User
 
 ## Not Checked
 
+- **The layout of a split compound type (2.5).** A split is allowed before any `|` or `&`, but which types go on which
+  line isn't checked: one type per line for a union or intersection only, one union segment per line for a DNF type.
 - **An empty closure SHOULD be an arrow function (7).** Rewriting `function () {}` as `fn() => null` changes the return
   value, and `function (): void {}` has no arrow function equivalent.
 - **The pipe operator `|>` on PHP 8.4.** It's only checked when PHP_CodeSniffer runs on PHP 8.5, as 8.4 has no `T_PIPE`

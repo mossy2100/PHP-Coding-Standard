@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`PERCS31.TypeHints.CompoundTypeOperatorSpacing`.** A union, intersection or DNF type can now be split across lines,
+  with the `|` or `&` starting each line, as PER Coding Style 3.1 allows. It replaces
+  `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.DisallowedWhitespaceAroundOperator`, which counted the line break
+  as a space. Spaces around the symbol on one line, or the symbol at the end of a line, are still errors. Auto-fixable.
 - **One blank line before a parameter's attributes is allowed.** As PER Coding Style 3.1 allows, a multi-line parameter
   list can have a blank line between a parameter and the attributes of the next.
   `PERCS31.Functions.MultiLineFunctionDeclaration` now reports other blank lines in the list itself, as `BlankLine`, in

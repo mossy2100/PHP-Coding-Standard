@@ -1,0 +1,34 @@
+<?php
+
+// === VALID ===
+
+function joined(int|string $a, (\Countable&\Traversable)|null $b): int|string
+{
+}
+
+// Split before each symbol, as PER Coding Style 3.1, section 2.5, allows.
+function split(
+    \ReflectionObject
+    |\ReflectionClass
+    |\ReflectionProperty $reflect,
+    array
+    |(\ArrayAccess&\Traversable) $input,
+): object {
+}
+
+// === INVALID ===
+
+function spaced(int|string $a, int|string $b, int&\Countable $c): void
+{
+}
+
+class Holder
+{
+    public int|string $value = 1;
+}
+
+function lineEnd(
+    \ReflectionObject
+    |\ReflectionClass $r,
+): object {
+}
