@@ -278,7 +278,8 @@
     <rule ref="SlevomatCodingStandard.Namespaces.NamespaceSpacing"/>
     <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly"/>
     <rule ref="SlevomatCodingStandard.Namespaces.RequireOneNamespaceInFile"/>
-    <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses">
+    <!-- Replaced by Mossy2100.Namespaces.UnusedUses, which waits while a use keyword is miscased (Slevomat bug) -->
+    <rule ref="Mossy2100.Namespaces.UnusedUses">
         <properties>
             <property name="searchAnnotations" value="true"/>
         </properties>

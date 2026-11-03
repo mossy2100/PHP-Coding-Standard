@@ -99,26 +99,27 @@ This coding standard is built on five base standards, each documented in [Inheri
 It adds the following custom sniffs, which fill gaps in the base standards, for compliance with PER Coding Style 3.0 and support
 for PHP 8.4 features such as property hooks, or set house-style choices. Each one's reason is in [Custom Sniffs](docs/CustomSniffs.md):
 
-| Sniff                                                          | Checks                                                         | Fixable |
-| -------------------------------------------------------------- | -------------------------------------------------------------- | ------- |
-| `Mossy2100.Arrays.ArrayDeclaration`                            | A multi-line array is on one line if it fits                   | Yes     |
-| `Mossy2100.Attributes.AttributePlacement`                      | An attribute is on its own line, except on a parameter         | Yes     |
-| `Mossy2100.Classes.ClassDeclaration`                           | Class declarations, allowing an empty body as `{}`             | Yes     |
-| `Mossy2100.Classes.EmptyLinesAroundClassBraces`                | No blank lines inside class braces, allowing `{}`              | Yes     |
-| `Mossy2100.Classes.DisallowPromotedPropertyHooks`              | No property hooks on promoted constructor parameters           | No      |
-| `Mossy2100.Classes.PropertyDeclaration`                        | No leading `_`, no `var`, a visibility, and `get` before `set` | Partly  |
-| `Mossy2100.ControlStructures.LanguageConstructWithParentheses` | No `echo('x')`, allowing `exit()` and `die()`                  | Yes     |
-| `Mossy2100.ControlStructures.MatchArrowSpacing`                | One space around `=>` in `match` arms                          | Yes     |
-| `Mossy2100.ControlStructures.MultiLineTernaryOperator`         | A multi-line ternary takes three lines, `?` and `:` leading    | Yes     |
-| `Mossy2100.ControlStructures.RequireSingleLineHeader`          | A multi-line loop, `switch` or `match` header fits on a line   | Yes     |
-| `Mossy2100.Formatting.DisallowMultipleStatements`              | One statement per line, allowing `{ get; set; }`               | Yes     |
-| `Mossy2100.Formatting.EmptyBody`                               | An empty class or function body is `{}` (a warning)            | Yes     |
-| `Mossy2100.Functions.MultiLineFunctionDeclaration`             | Function declarations, allowing an empty body as `{}`          | Yes     |
-| `Mossy2100.NamingConventions.ValidConstantName`                | No leading underscore on a constant                            | No      |
-| `Mossy2100.NamingConventions.ValidVariableName`                | No leading underscore on a variable or parameter in a class    | No      |
-| `Mossy2100.PHP.DisallowMultiConstantDefinition`                | One constant per statement                                     | Yes     |
-| `Mossy2100.WhiteSpace.ScopeClosingBrace`                       | A closing brace on its own line, allowing `{}`                 | Yes     |
-| `Mossy2100.WhiteSpace.ScopeIndent`                             | Indentation, including property hooks                          | Yes     |
+| Sniff                                                          | Checks                                                          | Fixable |
+| -------------------------------------------------------------- | --------------------------------------------------------------- | ------- |
+| `Mossy2100.Arrays.ArrayDeclaration`                            | A multi-line array is on one line if it fits                    | Yes     |
+| `Mossy2100.Attributes.AttributePlacement`                      | An attribute is on its own line, except on a parameter          | Yes     |
+| `Mossy2100.Classes.ClassDeclaration`                           | Class declarations, allowing an empty body as `{}`              | Yes     |
+| `Mossy2100.Classes.EmptyLinesAroundClassBraces`                | No blank lines inside class braces, allowing `{}`               | Yes     |
+| `Mossy2100.Classes.DisallowPromotedPropertyHooks`              | No property hooks on promoted constructor parameters            | No      |
+| `Mossy2100.Classes.PropertyDeclaration`                        | No leading `_`, no `var`, a visibility, and `get` before `set`  | Partly  |
+| `Mossy2100.ControlStructures.LanguageConstructWithParentheses` | No `echo('x')`, allowing `exit()` and `die()`                   | Yes     |
+| `Mossy2100.ControlStructures.MatchArrowSpacing`                | One space around `=>` in `match` arms                           | Yes     |
+| `Mossy2100.ControlStructures.MultiLineTernaryOperator`         | A multi-line ternary takes three lines, `?` and `:` leading     | Yes     |
+| `Mossy2100.ControlStructures.RequireSingleLineHeader`          | A multi-line loop, `switch` or `match` header fits on a line    | Yes     |
+| `Mossy2100.Formatting.DisallowMultipleStatements`              | One statement per line, allowing `{ get; set; }`                | Yes     |
+| `Mossy2100.Formatting.EmptyBody`                               | An empty class or function body is `{}` (a warning)             | Yes     |
+| `Mossy2100.Functions.MultiLineFunctionDeclaration`             | Function declarations, allowing an empty body as `{}`           | Yes     |
+| `Mossy2100.Namespaces.UnusedUses`                              | No unused `use` statements, safe with a miscased `use Function` | Yes     |
+| `Mossy2100.NamingConventions.ValidConstantName`                | No leading underscore on a constant                             | No      |
+| `Mossy2100.NamingConventions.ValidVariableName`                | No leading underscore on a variable or parameter in a class     | No      |
+| `Mossy2100.PHP.DisallowMultiConstantDefinition`                | One constant per statement                                      | Yes     |
+| `Mossy2100.WhiteSpace.ScopeClosingBrace`                       | A closing brace on its own line, allowing `{}`                  | Yes     |
+| `Mossy2100.WhiteSpace.ScopeIndent`                             | Indentation, including property hooks                           | Yes     |
 
 ---
 

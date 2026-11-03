@@ -165,7 +165,6 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **NamespaceSpacing**: Enforces spacing around namespace declarations.
 - **ReferenceUsedNamesOnly**: Requires use statements for all referenced names.
 - **RequireOneNamespaceInFile**: Requires exactly one namespace per file.
-- **UnusedUses**: Disallows unused use statements including in annotations.
 - **UseDoesNotStartWithBackslash**: Disallows leading backslash in use statements.
 - **UseFromSameNamespace**: Disallows use statements from the same namespace.
 - **UselessAlias**: Disallows useless use statement aliases.

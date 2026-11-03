@@ -450,6 +450,21 @@ can't be run on its own. See [Mossy2100.Formatting.EmptyBody](#mossy2100formatti
 
 ---
 
+## Mossy2100.Namespaces.UnusedUses
+
+Disallows unused `use` statements, including in annotations. This replaces
+`SlevomatCodingStandard.Namespaces.UnusedUses`.
+
+**Why:** the Slevomat sniff reads the type of a `use` statement with a case-sensitive check, so `use Function
+Vendor\helper;` is treated as a class import. It then reports the import as unused, and `phpcbf` deletes it, which can
+break the code. This sniff skips the whole file while a `function` or `const` keyword after `use` isn't in lower case.
+`Universal.UseStatements.LowercaseFunctionConst` reports that as an error and fixes it, and on `phpcbf`'s next pass the
+import is read correctly. Everything else is left to the parent. It can be removed once Slevomat fixes the check.
+
+**Auto-fixable:** yes, as the parent.
+
+---
+
 ## Mossy2100.NamingConventions.ValidConstantName
 
 Disallows a constant name that starts with an underscore, for class constants and `const` statements at file scope.
