@@ -106,6 +106,24 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that an UPPER_CASE enum constant's warning is hidden by default, and shown at severity 4.
+     */
+    public function testEnumConstantCaseWarningNeedsWarningSeverity4(): void
+    {
+        $fixture = dirname(__DIR__, 2) . '/PERCS31/Tests/NamingConventions/UpperCaseConstantNameUnitTest.inc';
+        $args = ['-s', '--standard=PERCS31', '--sniffs=PERCS31.NamingConventions.UpperCaseConstantName', $fixture];
+        $default = $this->runTool('phpcs', ['--report=emacs', ...$args]);
+        $severity4 = $this->runTool('phpcs', ['--report=emacs', '--warning-severity=4', ...$args]);
+
+        $this->assertStringNotContainsString('EnumConstantNotPascalCase', $default['output']);
+        $this->assertMatchesRegularExpression(
+            '/:21:\\d+: warning - .*EnumConstantNotPascalCase/',
+            $severity4['output'],
+        );
+        $this->assertSame(1, substr_count($severity4['output'], 'EnumConstantNotPascalCase'), 'PascalCase passes.');
+    }
+
+    /**
      * Test that PERCS31.Files.LineLength's warning over 80 characters is hidden by default, and shown at severity 4.
      */
     public function testLineLengthRecommendedLimitNeedsWarningSeverity4(): void

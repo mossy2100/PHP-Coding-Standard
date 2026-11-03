@@ -50,6 +50,8 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   [`PERCS31.Formatting.EmptyBody`](#percs31formattingemptybody).
 - **Generic.Files.LineLength**, by [`PERCS31.Files.LineLength`](#percs31fileslinelength), which also warns, at a lower severity, about a line over
   80 characters.
+- **Generic.NamingConventions.UpperCaseConstantName**, from PSR-1, by [`PERCS31.NamingConventions.UpperCaseConstantName`](#percs31namingconventionsuppercaseconstantname),
+  which allows PascalCase for an enum constant.
 - **PSR2.ControlStructures.SwitchDeclaration**, by [`PERCS31.ControlStructures.SwitchDeclaration`](#percs31controlstructuresswitchdeclaration), which adds PER's
   `switch` rules.
 - **PSR12.Operators.OperatorSpacing**, by [`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing), which also covers the pipe operator `|>`.
@@ -142,6 +144,7 @@ section gives the reason.
 | `PERCS31.Formatting.DisallowMultipleStatements`         | One statement per line, allowing `{ get; set; }`                  | Yes     |
 | `PERCS31.Formatting.EmptyBody`                          | An empty class, function, closure or anonymous class body is `{}` | Yes     |
 | `PERCS31.Functions.MultiLineFunctionDeclaration`        | Function and closure declarations, allowing an empty body as `{}` | Yes     |
+| `PERCS31.NamingConventions.UpperCaseConstantName`       | Constants in UPPER_CASE, or PascalCase in an enum                 | No      |
 | `PERCS31.NamingConventions.ValidConstantName`           | No leading underscore on a constant                               | No      |
 | `PERCS31.NamingConventions.ValidEnumCaseName`           | Enum cases in PascalCase                                          | No      |
 | `PERCS31.Operators.OperatorPlacement`                   | A wrapped binary operator starts the next line, not ends this one | Yes     |
@@ -725,6 +728,53 @@ case, and leaves everything else to the parent. For an empty body after a single
 `CloseBracketNewLine` check is skipped too, as it can't be run on its own. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
 
 **Auto-fixable:** yes, as the parent.
+
+---
+
+### PERCS31.NamingConventions.UpperCaseConstantName
+
+Requires constant names in UPPER_CASE, except in an enum, where PascalCase is also allowed, and recommended. This
+replaces `Generic.NamingConventions.UpperCaseConstantName`.
+
+**Why:** PSR-1, which PER Coding Style builds on, requires class constants in UPPER_CASE, and the Generic sniff applies
+that to every constant. [PER Coding Style 3.1, Section 9](https://www.php-fig.org/per/coding-style/#9-enumerations) says constants in an enum MAY use either PascalCase or
+UPPER_CASE, and PascalCase is RECOMMENDED. So for an enum constant:
+
+- PascalCase passes.
+- UPPER_CASE gets an `EnumConstantNotPascalCase` warning with a severity of 4. That's below `phpcs`'s default of 5, so
+  it's only shown with `--warning-severity=4`.
+- Anything else, such as camelCase, gets an `EnumConstantInvalidCase` error.
+
+Every other constant is left to the parent, except that a global `const` is reported as one made with `define()` is:
+"Constants must be uppercase", with the `ConstantNotUpperCase` code. The parent reports it as a class constant.
+
+**Auto-fixable:** no.
+
+**Good:**
+
+```php
+const MAX_RETRIES = 3;
+
+enum Suit: string
+{
+    case Hearts = 'h';
+
+    public const string DefaultColour = 'red';
+}
+```
+
+**Bad:**
+
+```php
+const maxRetries = 3;
+
+enum Suit: string
+{
+    case Hearts = 'h';
+
+    public const string defaultColour = 'red';
+}
+```
 
 ---
 

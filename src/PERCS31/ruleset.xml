@@ -21,6 +21,8 @@
         <exclude name="PSR12.Operators.OperatorSpacing"/>
         <!-- Replaced by a PERCS31 version that also warns, at a lower severity, over 80 characters (2.3) -->
         <exclude name="Generic.Files.LineLength"/>
+        <!-- Replaced by a PERCS31 version that allows PascalCase for an enum constant, and recommends it (9) -->
+        <exclude name="Generic.NamingConventions.UpperCaseConstantName"/>
     </rule>
 
     <!-- Wrapped && and || at the start of the line in a condition, not the end (5.1, 6.4) -->
@@ -190,6 +192,9 @@
 
     <!-- One constant per statement (4.3) -->
     <rule ref="PERCS31.PHP.DisallowMultiConstantDefinition"/>
+
+    <!-- Constants in UPPER_CASE, except in an enum, where a severity 4 warning recommends PascalCase (9) -->
+    <rule ref="PERCS31.NamingConventions.UpperCaseConstantName"/>
 
     <!-- No leading underscore on a constant (4.3) -->
     <rule ref="PERCS31.NamingConventions.ValidConstantName"/>

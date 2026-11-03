@@ -10,6 +10,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`PERCS31.NamingConventions.UpperCaseConstantName`.** Replaces `Generic.NamingConventions.UpperCaseConstantName`,
+  which required an enum constant in UPPER_CASE. As PER Coding Style 3.1 allows, an enum constant can now be in
+  PascalCase, and an UPPER_CASE one gets a warning with a severity of 4, as PascalCase is recommended. It's hidden by
+  default; run `phpcs --warning-severity=4` to see it. Any other constant still must be in UPPER_CASE. A global `const`
+  is now reported as `Constants must be uppercase`, with the `ConstantNotUpperCase` code of a `define()` constant, not
+  as a class constant.
 - **`PERCS31.Files.LineLength`.** Replaces `Generic.Files.LineLength`. A line over 120 characters still gets a `TooLong`
   warning, and a line over 80 now gets an `OverRecommended` warning with a severity of 4, as PER Coding Style 3.1 says
   lines SHOULD NOT be longer than 80. It's hidden by default; run `phpcs --warning-severity=4` to see it. Update any

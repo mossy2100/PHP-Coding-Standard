@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\NamingConventions;
 
+use PERCS31\Helpers\NamingHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -48,7 +49,7 @@ class ValidEnumCaseNameSniff implements Sniff
 
         $name = $tokens[$namePtr]['content'];
         assert(is_string($name));
-        if ($this->isPascalCase($name)) {
+        if (NamingHelper::isPascalCase($name)) {
             return;
         }
 
@@ -58,20 +59,5 @@ class ValidEnumCaseNameSniff implements Sniff
             self::CODE_NOT_PASCAL_CASE,
             [$name],
         );
-    }
-
-    /**
-     * Check whether a name is in PascalCase.
-     *
-     * @param string $name The enum case name.
-     * @return bool True if it starts with a capital, has only letters and digits, and isn't all capitals.
-     */
-    private function isPascalCase(string $name): bool
-    {
-        if (preg_match('/^[A-Z][A-Za-z0-9]*$/', $name) !== 1) {
-            return false;
-        }
-
-        return strlen($name) === 1 || preg_match('/[a-z]/', $name) === 1;
     }
 }
