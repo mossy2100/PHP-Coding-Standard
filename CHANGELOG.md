@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`Mossy2100.Arrays.OpeningBracketPlacement` (breaking).** The opening bracket of a multi-line array must not be on a
+  line of its own, as PER Coding Style 3.1 requires, e.g. `foo([` ... `]);`, not `foo(` then `[` on the next line. An
+  array that's an element of a multi-line array is allowed. Auto-fixable, except next to another argument.
 - **The pipe operator `|>` (PHP 8.5) (breaking).** As PER Coding Style 3.1 requires, `|>` needs a space either side, and
   starts the line when a statement wraps at it. `Mossy2100.WhiteSpace.OperatorSpacing` replaces
   `Squiz.WhiteSpace.OperatorSpacing` to check the spacing, and `Mossy2100.Operators.OperatorPlacement` now covers `|>`.

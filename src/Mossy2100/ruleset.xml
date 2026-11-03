@@ -371,6 +371,10 @@
         </properties>
     </rule>
 
+    <!-- A multi-line array's [ not on a line of its own, except as an element of a multi-line array
+         (PER Coding Style 3.1, 11) -->
+    <rule ref="Mossy2100.Arrays.OpeningBracketPlacement"/>
+
     <!-- Single space around => in match arms, which Squiz.WhiteSpace.OperatorSpacing doesn't check -->
     <rule ref="Mossy2100.ControlStructures.MatchArrowSpacing"/>
 

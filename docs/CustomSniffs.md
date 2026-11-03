@@ -52,6 +52,53 @@ To use a different limit, set every line-length property, as described in [Line 
 
 ---
 
+## Mossy2100.Arrays.OpeningBracketPlacement
+
+Disallows the opening bracket of a multi-line array on a line of its own, e.g. as a function call's argument. An array
+that's an element of a multi-line array is allowed, as is a destructuring assignment such as `[$a, $b] = pair();` split
+over lines.
+
+**Why:** [PER Coding Style 3.1, Section 11](https://www.php-fig.org/per/coding-style/#11-arrays) says the opening bracket of a multi-line array MUST NOT be on its own line.
+PER's own example puts a nested array's `[` on its own line, hence that exception. No inherited sniff checks it.
+
+**Auto-fixable:** yes. The fix moves the `[` to the end of the previous line, and `Generic.Arrays.ArrayIndent` then
+re-indents the elements. For a call's only argument, it also moves the `)` up after the `]`, giving `foo([` ... `]);`.
+It's left to a person when the array is next to another argument, or after a comment.
+
+**Good:**
+
+```php
+$response = $client->post([
+    'name' => $customer->fullName(),
+    'email' => $customer->primaryEmailAddress(),
+    'message' => 'Thanks for signing up. Your account is now active.',
+]);
+
+$rows = [
+    [
+        'id' => 1,
+        'name' => 'Alice Example',
+        'email' => 'alice@example.com',
+        'team' => 'Platform Engineering',
+        'role' => 'Administrator',
+    ],
+];
+```
+
+**Bad:**
+
+```php
+$response = $client->post(
+    [
+        'name' => $customer->fullName(),
+        'email' => $customer->primaryEmailAddress(),
+        'message' => 'Thanks for signing up. Your account is now active.',
+    ],
+);
+```
+
+---
+
 ## Mossy2100.Attributes.AttributePlacement
 
 Requires an attribute to be on the line before its target, as [PER Coding Style 3.0, Section 12.2](https://www.php-fig.org/per/coding-style/#122-placement) requires. The exception
