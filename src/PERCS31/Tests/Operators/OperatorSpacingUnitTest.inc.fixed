@@ -15,3 +15,14 @@ $a = $b or $c;
 $a = $b && $c;
 $a = $b . $c;
 $a = $b or $c;
+
+// A multi-catch's | is a union type: no spaces (PER Coding Style 3.1, section 2.5).
+try {
+    foo();
+} catch (FirstException|SecondException $e) {
+    bar();
+} catch (ThirdException|FourthException $e) {
+    bar();
+}
+
+$flags = $a | $b;

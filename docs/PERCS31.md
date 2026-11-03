@@ -894,6 +894,9 @@ It extends `Squiz.WhiteSpace.OperatorSpacing`, which requires exactly one space,
 ruleset excludes the codes for more than one space, `SpacingBefore` and `SpacingAfter` and their `Amp` versions, so only
 a missing space is reported. A standard that wants exactly one space turns them back on, as the [Mossy2100 standard](../README.md) does.
 
+The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operator, so it gets the opposite rule:
+[Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the union symbol MUST NOT have a space either side. The parent would require one.
+
 **Auto-fixable:** yes, as the parent.
 
 **Good:**

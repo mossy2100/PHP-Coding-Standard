@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Operators;
 
+use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\OperatorSpacingSniff as SquizSniff;
 use PHP_CodeSniffer\Util\Tokens;
 
@@ -19,9 +20,14 @@ use PHP_CodeSniffer\Util\Tokens;
  * The PERCS31 ruleset excludes the parent's `SpacingBefore` and `SpacingAfter` codes, and their `Amp` versions, which
  * report more than one space, so only a missing space is reported. A standard that wants exactly one space, as
  * Mossy2100 does, turns them back on.
+ *
+ * The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operator. Section 2.5 says the union symbol
+ * MUST NOT have a space either side, so this sniff reports one there instead.
  */
 class OperatorSpacingSniff extends SquizSniff
 {
+    public const string CODE_CATCH_UNION_SPACING = 'CatchUnionSpacing';
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -35,5 +41,80 @@ class OperatorSpacingSniff extends SquizSniff
         }
 
         return array_values(array_unique($targets));
+    }
+
+    /**
+     * Processes this test, when one of its tokens is encountered.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the current token in the stack.
+     * @return int|null The position to skip to, as the parent returns, or null.
+     */
+    public function process(File $phpcsFile, int $stackPtr): ?int
+    {
+        if ($this->isCatchUnion($phpcsFile, $stackPtr)) {
+            $this->checkCatchUnion($phpcsFile, $stackPtr);
+            return null;
+        }
+
+        $result = parent::process($phpcsFile, $stackPtr);
+
+        return is_int($result) ? $result : null;
+    }
+
+    /**
+     * Check whether a token is the `|` between the types in a multi-catch.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the token.
+     * @return bool True if it's a `|` directly inside a catch's parentheses.
+     */
+    private function isCatchUnion(File $phpcsFile, int $stackPtr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        if ($tokens[$stackPtr]['code'] !== T_BITWISE_OR || !isset($tokens[$stackPtr]['nested_parenthesis'])) {
+            return false;
+        }
+
+        $opener = array_key_last($tokens[$stackPtr]['nested_parenthesis']);
+        $owner = $tokens[$opener]['parenthesis_owner'] ?? null;
+
+        return is_int($owner) && $tokens[$owner]['code'] === T_CATCH;
+    }
+
+    /**
+     * Report whitespace either side of a multi-catch's `|`, and fix it by removing it.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the `|`.
+     */
+    private function checkCatchUnion(File $phpcsFile, int $stackPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $before = $tokens[($stackPtr - 1)]['code'] === T_WHITESPACE;
+        $after = $tokens[($stackPtr + 1)]['code'] === T_WHITESPACE;
+        if (!$before && !$after) {
+            return;
+        }
+
+        $fix = $phpcsFile->addFixableError(
+            'There must be no space around the "|" between the types in a multi-catch',
+            $stackPtr,
+            self::CODE_CATCH_UNION_SPACING,
+        );
+        if (!$fix) {
+            return;
+        }
+
+        $phpcsFile->fixer->beginChangeset();
+        if ($before) {
+            $phpcsFile->fixer->replaceToken(($stackPtr - 1), '');
+        }
+
+        if ($after) {
+            $phpcsFile->fixer->replaceToken(($stackPtr + 1), '');
+        }
+
+        $phpcsFile->fixer->endChangeset();
     }
 }

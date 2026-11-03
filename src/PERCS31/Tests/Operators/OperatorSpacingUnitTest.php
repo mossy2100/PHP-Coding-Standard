@@ -51,6 +51,8 @@ class OperatorSpacingUnitTest extends AbstractSniffTestCase
             16 => 2,
             // Two spaces either side of or.
             17 => 2,
+            // Spaces around a multi-catch's |.
+            24 => 1,
         ];
     }
 
