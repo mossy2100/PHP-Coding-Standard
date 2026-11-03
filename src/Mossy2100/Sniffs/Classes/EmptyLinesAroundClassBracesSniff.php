@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Mossy2100\Sniffs\Classes;
 
-use Mossy2100\Helpers\EmptyBodyHelper;
+use PERCS31\Helpers\EmptyBodyHelper;
 use PHP_CodeSniffer\Files\File;
 use SlevomatCodingStandard\Sniffs\Classes\EmptyLinesAroundClassBracesSniff as SlevomatSniff;
 

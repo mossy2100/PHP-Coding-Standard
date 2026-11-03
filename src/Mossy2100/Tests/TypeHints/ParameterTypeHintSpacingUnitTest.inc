@@ -1,0 +1,17 @@
+<?php
+
+// === VALID ===
+
+class Valid
+{
+    // A hook on a promoted parameter: the spacing before its $value isn't checked as a type hint's.
+    public function __construct(public string $name { set => ucfirst($value); })
+    {
+    }
+}
+
+// === INVALID: the parent's checks still run ===
+
+function badSpacing(int  $value): void
+{
+}

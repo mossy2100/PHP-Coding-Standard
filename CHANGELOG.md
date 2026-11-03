@@ -10,29 +10,43 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`PERCS31.Files.LineLength`.** Replaces `Generic.Files.LineLength`. A line over 120 characters still gets a `TooLong`
+  warning, and a line over 80 now gets an `OverRecommended` warning with a severity of 4, as PER Coding Style 3.1 says
+  lines SHOULD NOT be longer than 80. It's hidden by default; run `phpcs --warning-severity=4` to see it. Update any
+  `phpcs:ignore` comments or `<exclude>` rules that name `Generic.Files.LineLength`.
+- **The PERCS31 standard (breaking).** A second standard in the package, for [PER Coding Style 3.1](https://www.php-fig.org/per/coding-style/) and nothing more,
+  built on PSR-12. Use `<rule ref="PERCS31"/>` to follow PER Coding Style without the house rules. The Mossy2100
+  standard is now PERCS31 plus house rules, and reports the same violations as before. The sniffs for PER rules move to
+  PERCS31, so their codes change prefix, e.g. `Mossy2100.Formatting.EmptyBody` is now `PERCS31.Formatting.EmptyBody`.
+  Update any `phpcs:ignore` comments or `<exclude>` rules that name them. See [PERCS31](docs/PERCS31.md).
+- **`PERCS31.Operators.OperatorSpacing`.** Replaces `PSR12.Operators.OperatorSpacing`, requiring at least one space
+  around a binary operator, and adds the pipe operator `|>`. The Mossy2100 standard still requires exactly one.
+- **`orderHooksWithBodies` on `PERCS31.Classes.PropertyDeclaration`.** `HookOrder` only checks a hook list with no
+  bodies by default, as PER Coding Style 3.1 only sets the order of an abstract or interface property's hooks. The
+  Mossy2100 standard turns it on, to check every hook list as before.
 - **`Mossy2100.Functions.RequireSingleLineCall`.** Replaces `SlevomatCodingStandard.Functions.RequireSingleLineCall`,
   which reported a call with a multi-line anonymous class argument, e.g. `consume(new class {` ... `});`, and fixed it
   by putting the class body on one line. Such a call is now skipped, as one with a closure argument already was.
-- **`Mossy2100.Arrays.OpeningBracketPlacement` (breaking).** The opening bracket of a multi-line array must not be on a
+- **`PERCS31.Arrays.OpeningBracketPlacement` (breaking).** The opening bracket of a multi-line array must not be on a
   line of its own, as PER Coding Style 3.1 requires, e.g. `foo([` ... `]);`, not `foo(` then `[` on the next line. An
   array that's an element of a multi-line array is allowed. Auto-fixable, except next to another argument.
 - **The pipe operator `|>` (PHP 8.5) (breaking).** As PER Coding Style 3.1 requires, `|>` needs a space either side, and
   starts the line when a statement wraps at it. `Mossy2100.WhiteSpace.OperatorSpacing` replaces
-  `Squiz.WhiteSpace.OperatorSpacing` to check the spacing, and `Mossy2100.Operators.OperatorPlacement` now covers `|>`.
+  `Squiz.WhiteSpace.OperatorSpacing` to check the spacing, and `PERCS31.Operators.OperatorPlacement` now covers `|>`.
   Only checked when PHPCS runs on PHP 8.5. Auto-fixable.
-- **`Mossy2100.ControlStructures.SwitchDeclaration` (breaking).** Replaces `PSR2.ControlStructures.SwitchDeclaration`,
+- **`PERCS31.ControlStructures.SwitchDeclaration` (breaking).** Replaces `PSR2.ControlStructures.SwitchDeclaration`,
   adding two rules from PER Coding Style 3.1: the last non-empty case must end with `break`, `return` or similar, and a
   multi-line case condition must be wrapped in parentheses, with `):` on a line of their own. Auto-fixable.
-- **`Mossy2100.PHP.RequireCloneParentheses`.** A warning for `clone $a`, which should be `clone($a)`, as PER Coding
-  Style 3.1 says `clone()` SHOULD be called with parentheses. Auto-fixable.
+- **`PERCS31.PHP.RequireCloneParentheses`.** A warning for `clone $a`, which should be `clone($a)`, as PER Coding Style
+  3.1 says `clone()` SHOULD be called with parentheses. Auto-fixable.
 - **`Generic.Strings.UnnecessaryHeredoc`.** A warning for a heredoc with no interpolation or escape sequences, which
   could be a nowdoc, as PER Coding Style 3.0 says a nowdoc SHOULD be used wherever possible. Auto-fixable.
-- **`Mossy2100.Attributes.DisallowMultiLineAttributesJoining` (breaking).** An attribute block split over several lines
+- **`PERCS31.Attributes.DisallowMultiLineAttributesJoining` (breaking).** An attribute block split over several lines
   must have one attribute per block, as PER Coding Style 3.0 requires. A joined block on one line, such as
   `#[Attribute, Deprecated]`, is still allowed. Auto-fixable.
-- **`Mossy2100.Classes.EnumMemberVisibility` (breaking).** Requires a non-public method or constant in an enum to be
+- **`PERCS31.Classes.EnumMemberVisibility` (breaking).** Requires a non-public method or constant in an enum to be
   `private`, not `protected`, as PER Coding Style 3.1 requires. Auto-fixable.
-- **`Mossy2100.NamingConventions.ValidEnumCaseName` (breaking).** Requires enum case names to be in PascalCase, as PER
+- **`PERCS31.NamingConventions.ValidEnumCaseName` (breaking).** Requires enum case names to be in PascalCase, as PER
   Coding Style 3.0 requires, e.g. `case BigJoker;`, not `case BIG_JOKER;` or `case bigJoker;`. Not auto-fixable.
 - **No whitespace after a prefix unary operator (breaking).** A space or line break between a prefix operator and its
   operand is now an error for `!` (`Generic.Formatting.SpaceAfterNot`, with `spacing` set to 0), and for `+`, `~` and
@@ -41,7 +55,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **A wrapped operator must start the next line (breaking).** As PER Coding Style 3.0 requires, a statement that wraps
   at an operator has the operator at the start of the new line, not the end of the previous one, e.g. `$total = $a` then
   `+ $b` on the next line. Three sniffs check this:
-  - `Mossy2100.Operators.OperatorPlacement`, a new sniff, for assignment, arithmetic, comparison, bitwise and logical
+  - `PERCS31.Operators.OperatorPlacement`, a new sniff, for assignment, arithmetic, comparison, bitwise and logical
     operators, `??`, `instanceof`, `?:` and an arrow function's `=>`.
   - `Universal.Operators.ConcatPosition`, for `.`.
   - `PSR12.ControlStructures.BooleanOperatorPlacement`, now with `allowOnly` set to `first`, for `&&` and `||` in a
@@ -62,38 +76,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`Mossy2100.ControlStructures.LanguageConstructWithParentheses`.** Replaces
   `SlevomatCodingStandard.ControlStructures.LanguageConstructWithParentheses`, which removed the parentheses from
   `die()`, against PER Coding Style 3.0. It still reports `echo('x')` and the like.
-- **`Mossy2100.ControlStructures.MultiLineTernaryOperator` (breaking).** Requires a ternary that spans lines to take
+- **`PERCS31.ControlStructures.MultiLineTernaryOperator` (breaking).** Requires a ternary that spans lines to take
   three, with `?` and `:` each starting a line, indented once, as PER Coding Style 3.0 requires. Replaces
   `SlevomatCodingStandard.ControlStructures.DisallowTrailingMultiLineTernaryOperator`, which only reported a trailing
   `?`. Auto-fixable.
-- **`Mossy2100.NamingConventions.ValidConstantName` (breaking).** Disallows a constant name that starts with an
+- **`PERCS31.NamingConventions.ValidConstantName` (breaking).** Disallows a constant name that starts with an
   underscore, e.g. `public const int _LIMIT = 10;`, as PER Coding Style 3.0 requires. Not auto-fixable.
 - **`SlevomatCodingStandard.Classes.ClassKeywordOrder` (breaking).** Requires `abstract` or `final` before `readonly` on
   a class, e.g. `final readonly class`, not `readonly final class`, as PER Coding Style 3.0 requires. Auto-fixable.
-- **`Mossy2100.Formatting.EmptyBody` (breaking).** Warns about an empty class or function body that isn't written as
-  `{}` on the same line as the declaration, as PER Coding Style 3.1 recommends, e.g. `public function reset(): void {}`.
-  An empty closure or anonymous class body that isn't `{}` is an error, as PER 3.1 requires it, e.g.
+- **`PERCS31.Formatting.EmptyBody` (breaking).** Warns about an empty class or function body that isn't written as `{}`
+  on the same line as the declaration, as PER Coding Style 3.1 recommends, e.g. `public function reset(): void {}`. An
+  empty closure or anonymous class body that isn't `{}` is an error, as PER 3.1 requires it, e.g.
   `static function (): void {}` or `new class {}`. Auto-fixable.
-- **`Mossy2100.Formatting.DisallowMultipleStatements`.** Replaces `Generic.Formatting.DisallowMultipleStatements`, which
+- **`PERCS31.Formatting.DisallowMultipleStatements`.** Replaces `Generic.Formatting.DisallowMultipleStatements`, which
   reported `{ get; set; }` on an abstract or interface property as two statements on one line. PER Coding Style 3.0
   requires them on one line. Update any `phpcs:ignore` comments or `<exclude>` rules that name the Generic code.
-- **`Mossy2100.Attributes.AttributePlacement` (breaking).** Requires an attribute to be on the line before its target,
+- **`PERCS31.Attributes.AttributePlacement` (breaking).** Requires an attribute to be on the line before its target,
   except on a parameter in a single-line parameter list, where it must be inline, as PER Coding Style 3.0 requires.
   `SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing` now allows an attribute on the same line as its target,
   and this sniff reports every other case. Attributes on an anonymous class follow PER Coding Style 3.1 instead:
-  starting on the line after `new`, indented once, with `class` on the line after them.
-  `Mossy2100.WhiteSpace.ScopeIndent` indents the class body to match. Auto-fixable.
+  starting on the line after `new`, indented once, with `class` on the line after them. `PERCS31.WhiteSpace.ScopeIndent`
+  indents the class body to match. Auto-fixable.
 - **`Mossy2100.NamingConventions.ValidVariableName` (breaking).** Warns about a variable or parameter that starts with
   an underscore, inside a class, enum, trait or interface. `Squiz.NamingConventions.ValidVariableName` reports these
   outside a class, but allows them inside one. Superglobals such as `$_GET` are exempt. Not auto-fixable.
 - **`Mossy2100.ControlStructures.RequireSingleLineHeader` (breaking).** Requires a multi-line `foreach`, `for`, `switch`
   or `match` header to be written on one line if it fits, as Slevomat's `RequireSingleLineCondition` does for `if` and
   `while`. Auto-fixable.
-- **`Mossy2100.ControlStructures.MatchArrowSpacing` (breaking).** Requires one space before and after `=>` in a `match`
+- **`PERCS31.ControlStructures.MatchArrowSpacing` (breaking).** Requires one space before and after `=>` in a `match`
   arm, so arms aren't aligned. No stock sniff checks these. Auto-fixable.
-- **`Mossy2100.Classes.DisallowPromotedPropertyHooks` (breaking).** Disallows property hooks on promoted constructor
-  parameters, e.g. `public function __construct(public string $name { set => trim($value); })`. Declare the property in
-  the class body instead. Not auto-fixable.
+- **`PERCS31.Classes.PromotedPropertyHooks` (breaking).** A hook on a promoted constructor parameter must be a single
+  hook with a short `=>` body, on one line, as PER Coding Style 3.1 requires, e.g.
+  `public function __construct(public string $name { set => trim($value); })`. Otherwise, declare the property in the
+  class body. Not auto-fixable.
+- **`Mossy2100.Classes.RequireSingleLineMethodSignature`, `Mossy2100.TypeHints.ParameterTypeHint` and
+  `Mossy2100.TypeHints.ParameterTypeHintSpacing`.** Replace the Slevomat sniffs of the same names, which misread a hook
+  on a promoted constructor parameter. They skip a function with one, and check everything else as before.
 - **`Squiz.WhiteSpace.ObjectOperatorSpacing` (breaking).** Disallows spaces around `->`, `?->` and `::`, e.g.
   `$a -> b()` or `Foo :: bar()`. A line break before one, in a wrapped method chain, is allowed. Auto-fixable.
 
@@ -101,9 +119,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - **Renamed the package from `oceanmoon/coding-standard` to `mossy2100/coding-standard`, and the standard from
   `OceanMoon` to `Mossy2100` (breaking),** matching the author's GitHub and Packagist name. Use
-  `<rule ref="Mossy2100"/>` in `phpcs.xml`. Sniff codes change to match, e.g. `Mossy2100.Classes.PropertyDeclaration`,
-  as do the sniff class namespaces (`Mossy2100\Sniffs\...`).
-- **`Mossy2100.Classes.ClassInstantiationNoBrackets` is now a warning, and safer.** Renamed from
+  `<rule ref="Mossy2100"/>` in `phpcs.xml`. Sniff codes change to match, e.g. `Mossy2100.Arrays.ArrayDeclaration`, as do
+  the sniff class namespaces (`Mossy2100\Sniffs\...`).
+- **`PERCS31.Classes.ClassInstantiationNoBrackets` is now a warning, and safer.** Renamed from
   `OceanMoon.Classes.ClassInstantiationNoBrackets`. As PER Coding Style 3.0 says SHOULD, `(new Foo())->bar()` is now a
   warning, not an error, fixed to `new Foo()->bar()`. It now covers `::` as well as `->` and `?->`, and only reports
   parentheses holding exactly one `new` expression, so `(new Foo() ?: $default)->bar()` and `new self(new Foo())->bar()`
@@ -119,17 +137,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   or `<exclude>` rules that name `SlevomatCodingStandard.Files.LineLength.LineTooLong`.
 - **An empty class or function body can be `{}` (breaking).** `PSR2.Classes.ClassDeclaration`,
   `Squiz.Functions.MultiLineFunctionDeclaration`, `Squiz.WhiteSpace.ScopeClosingBrace` and
-  `SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces` rejected it. Each is replaced by a Mossy2100 version that
-  allows it, e.g. `Mossy2100.Classes.ClassDeclaration`, so their error codes change prefix. Update any `phpcs:ignore`
-  comments or `<exclude>` rules that name them.
+  `SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces` rejected it. Each is replaced by a version that allows
+  it, e.g. `PERCS31.Classes.ClassDeclaration`, or `Mossy2100.Classes.EmptyLinesAroundClassBraces` for the Slevomat one,
+  so their error codes change prefix. Update any `phpcs:ignore` comments or `<exclude>` rules that name them.
 - **No space after `fn` (breaking).** Arrow functions are now written `fn($x) => $x`, not `fn ($x) => $x`, as PER Coding
   Style 3.0 requires. Run `phpcbf` to reformat.
 - **`null` must be last in a union type (breaking).** `int|null` and `null|int|string` are now errors, as PER Coding
   Style 3.0 requires `null` last. Set by `nullPosition` on `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat`.
   Auto-fixable.
-- **`Mossy2100.Classes.PropertyDeclaration` checks `get` before `set` (breaking).** When a property has both hooks,
-  `set` before `get` is now an error (`HookOrder`), with or without hook bodies. PER Coding Style 3.0 requires
-  `{ get; set; }` on an abstract or interface property, and the Mossy2100 standard applies the same order everywhere.
+- **`PERCS31.Classes.PropertyDeclaration` checks `get` before `set` (breaking).** When a property has both hooks, `set`
+  before `get` is now an error (`HookOrder`). PER Coding Style 3.1 requires `{ get; set; }` on an abstract or interface
+  property, so PERCS31 only checks a hook list with no bodies, and the Mossy2100 standard checks every hook list.
   Auto-fixable, unless there's a comment between the hooks.
 - **An arrow function may span lines.** Its expression can go on the next line, as PER Coding Style 3.0 allows.
   `SlevomatCodingStandard.Functions.ArrowFunctionDeclaration` previously required it on one line.
@@ -146,7 +164,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `indent` property was removed; `maxLineLength` remains. Run `phpcbf` to reformat existing code. Its error codes are
   replaced by one, `Mossy2100.Arrays.ArrayDeclaration.ShouldBeSingleLine`. Update any `phpcs:ignore` comments or
   `<exclude>` rules that name an old code, such as `ListShouldBeSingleLine`.
-- **`Mossy2100.Classes.PropertyDeclaration.Underscore` is an error, not a warning, and covers promoted constructor
+- **`PERCS31.Classes.PropertyDeclaration.Underscore` is an error, not a warning, and covers promoted constructor
   parameters (breaking).** A property named like `$_name` was a warning, and a promoted one wasn't reported at all. PER
   Coding Style 3.0 says property names must not start with an underscore.
 - **Requires `slevomat/coding-standard` 8.27 or later** (was 8.25). Earlier versions report
@@ -156,6 +174,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+- **Four Slevomat checks that PERCS31 already covers.** `SlevomatCodingStandard.Classes.TraitUseDeclaration`,
+  `SlevomatCodingStandard.Namespaces.NamespaceSpacing`,
+  `SlevomatCodingStandard.Namespaces.UseDoesNotStartWithBackslash`, and the before-first and after-last checks of
+  `SlevomatCodingStandard.Classes.TraitUseSpacing`. The same cases are reported by PSR-12's
+  `PSR12.Traits.UseDeclaration`, `PSR12.Files.FileHeader` and `PSR12.Files.ImportStatement`. Update any `phpcs:ignore`
+  comments or `<exclude>` rules that name the old codes.
 - **`SlevomatCodingStandard.Namespaces.UseSpacing`.** `PSR12.Files.FileHeader` already reports, and fixes, the same
   blank lines before, between and after `use` statements. Update any `phpcs:ignore` comments or `<exclude>` rules that
   name a `UseSpacing` code.
@@ -163,15 +187,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `#[Attribute, Deprecated]`, are now allowed, as PER Coding Style 3.0 allows them.
 - **`SlevomatCodingStandard.Functions.DisallowEmptyFunction`.** It required a comment in an empty function body, so PER
   Coding Style 3.0's recommended `public function reset(): void {}` was an error.
-- **Seven `Mossy2100.Classes.PropertyDeclaration` error codes, which duplicated Slevomat sniffs already in the
-  standard.** Each case is still reported, and fixed, by the Slevomat sniff. Remove any references to the old codes:
+- **Seven `PERCS31.Classes.PropertyDeclaration` error codes, which duplicated Slevomat sniffs already in the standard.**
+  Each case is still reported, and fixed, by the Slevomat sniff. Remove any references to the old codes:
   - `Multiple`, now reported by `SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition`.
   - `SpacingAfterType`, `AvizKeywordOrder`, `StaticBeforeVisibility`, `ReadonlyBeforeVisibility`, `FinalAfterVisibility`
     and `AbstractAfterVisibility`, now reported by `SlevomatCodingStandard.Classes.PropertyDeclaration`.
 
 ### Fixed
 
-- **`Mossy2100.PHP.DisallowMultiConstantDefinition` fixer keeps the type and modifiers.** Splitting
+- **`PERCS31.PHP.DisallowMultiConstantDefinition` fixer keeps the type and modifiers.** Splitting
   `final public const int A = 1, B = 2;` gave `public const B = 2;`, dropping the type, and indented the new line with a
   tab. Each constant now keeps the full declaration, e.g. `final public const int B = 2;`, with the original
   indentation.

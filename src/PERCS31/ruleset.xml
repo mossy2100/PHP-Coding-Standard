@@ -1,0 +1,235 @@
+<?xml version="1.0"?>
+<ruleset name="PERCS31">
+    <description>PER Coding Style 3.1, built on PSR-12</description>
+
+    <!-- ====== PSR-12 ====== -->
+
+    <!-- PER Coding Style extends PSR-12 -->
+    <rule ref="PSR12">
+        <!-- Replaced by PERCS31 versions that support property hooks (PHP 8.4) -->
+        <exclude name="PSR2.Classes.PropertyDeclaration"/>
+        <exclude name="Generic.WhiteSpace.ScopeIndent"/>
+        <!-- Replaced by a PERCS31 version that allows { get; set; } on an abstract or interface property (4.10) -->
+        <exclude name="Generic.Formatting.DisallowMultipleStatements"/>
+        <!-- Replaced by PERCS31 versions that allow an empty body as {} (4, 4.4, 7, 8) -->
+        <exclude name="PSR2.Classes.ClassDeclaration"/>
+        <exclude name="Squiz.Functions.MultiLineFunctionDeclaration"/>
+        <exclude name="Squiz.WhiteSpace.ScopeClosingBrace"/>
+        <!-- Replaced by a PERCS31 version with the switch rules (5.2) -->
+        <exclude name="PSR2.ControlStructures.SwitchDeclaration"/>
+        <!-- Replaced by a PERCS31 version that also covers the pipe operator |> (6.2) -->
+        <exclude name="PSR12.Operators.OperatorSpacing"/>
+        <!-- Replaced by a PERCS31 version that also warns, at a lower severity, over 80 characters (2.3) -->
+        <exclude name="Generic.Files.LineLength"/>
+    </rule>
+
+    <!-- Wrapped && and || at the start of the line in a condition, not the end (5.1, 6.4) -->
+    <rule ref="PSR12.ControlStructures.BooleanOperatorPlacement">
+        <properties>
+            <property name="allowOnly" value="first"/>
+        </properties>
+    </rule>
+
+    <!-- ====== GENERIC ====== -->
+
+    <!-- Short array syntax, and the elements of a multi-line array indented once (11) -->
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+    <rule ref="Generic.Arrays.ArrayIndent"/>
+
+    <!-- Exactly one space after a cast (6.1) -->
+    <rule ref="Generic.Formatting.SpaceAfterCast"/>
+
+    <!-- A warning for a heredoc that could be a nowdoc (10) -->
+    <rule ref="Generic.Strings.UnnecessaryHeredoc"/>
+
+    <!-- ====== SQUIZ ====== -->
+
+    <!-- A multi-line array: the first value on the next line, one value per line, and the closing bracket on the next
+         line after the last value (11); a trailing comma only when multi-line (2.6). The other checks aren't PER
+         rules. -->
+    <rule ref="Squiz.Arrays.ArrayDeclaration">
+        <exclude name="Squiz.Arrays.ArrayDeclaration.KeyNotAligned"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.ValueNotAligned"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.CloseBraceNotAligned"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.DoubleArrowNotAligned"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.SingleLineNotAllowed"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.MultiLineNotAllowed"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.NoSpaceBeforeDoubleArrow"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.SpaceBeforeDoubleArrow"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.NoSpaceAfterDoubleArrow"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.SpaceAfterDoubleArrow"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.NoSpaceAfterComma"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.SpaceAfterComma"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.SpaceBeforeComma"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.SpaceInEmptyArray"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.KeySpecified"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.NoKeySpecified"/>
+    </rule>
+
+    <!-- ====== PHPCSEXTRA ====== -->
+
+    <!-- No () on an attribute without arguments (12.1) -->
+    <rule ref="Universal.Attributes.DisallowAttributeParentheses"/>
+
+    <!-- No () on an anonymous class without arguments (8) -->
+    <rule ref="Universal.Classes.DisallowAnonClassParentheses"/>
+
+    <!-- Keywords in lower case (2.5): ::class, and function and const in a use statement -->
+    <rule ref="Universal.Constants.LowercaseClassResolutionKeyword"/>
+    <rule ref="Universal.UseStatements.LowercaseFunctionConst"/>
+
+    <!-- The <?php tag in lower case (3) -->
+    <rule ref="Universal.PHP.LowercasePHPTag"/>
+
+    <!-- A wrapped . at the start of the line, not the end (6.4) -->
+    <rule ref="Universal.Operators.ConcatPosition"/>
+
+    <!-- exit() and die() with parentheses; a warning, as 4.7 says SHOULD -->
+    <rule ref="Universal.PHP.RequireExitDieParentheses">
+        <type>warning</type>
+    </rule>
+
+    <!-- ====== SLEVOMAT ====== -->
+
+    <!-- The closing bracket of a multi-line array on its own line (11) -->
+    <rule ref="SlevomatCodingStandard.Arrays.MultiLineArrayEndBracketPlacement"/>
+
+    <!-- Allow an attribute on the same line as its target, so a parameter's can be inline (12.2).
+         PERCS31.Attributes.AttributePlacement reports every other same-line attribute. -->
+    <rule ref="SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing">
+        <properties>
+            <property name="allowOnSameLine" value="true"/>
+        </properties>
+    </rule>
+    <!-- Separate attribute blocks on separate lines (12.3) -->
+    <rule ref="SlevomatCodingStandard.Attributes.DisallowMultipleAttributesPerLine"/>
+    <!-- A doc comment before the attributes, not after (12.2) -->
+    <rule ref="SlevomatCodingStandard.Attributes.RequireAttributeAfterDocComment"/>
+
+    <!-- No space before a backed enum's colon, one after (9) -->
+    <rule ref="SlevomatCodingStandard.Classes.BackedEnumTypeSpacing"/>
+    <!-- abstract or final before readonly on a class (4.6) -->
+    <rule ref="SlevomatCodingStandard.Classes.ClassKeywordOrder"/>
+    <!-- One property per statement (4.3) -->
+    <rule ref="SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition"/>
+    <!-- Property modifier order, and the spacing around them and the type (4.3, 4.6) -->
+    <rule ref="SlevomatCodingStandard.Classes.PropertyDeclaration">
+        <properties>
+            <property name="checkPromoted" value="true"/>
+        </properties>
+    </rule>
+
+    <!-- No space after fn, and the expression may be on the next line (7.1) -->
+    <rule ref="SlevomatCodingStandard.Functions.ArrowFunctionDeclaration">
+        <properties>
+            <property name="spacesCountAfterKeyword" value="0"/>
+            <property name="allowMultiLine" value="true"/>
+        </properties>
+    </rule>
+    <!-- No space before a named argument's colon, one after (4.7) -->
+    <rule ref="SlevomatCodingStandard.Functions.NamedArgumentSpacing"/>
+    <!-- Trailing commas: disallowed on single-line lists, required on multi-line ones (2.6) -->
+    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInCall">
+        <properties>
+            <property name="onlySingleLine" value="true"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInClosureUse">
+        <properties>
+            <property name="onlySingleLine" value="true"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInDeclaration">
+        <properties>
+            <property name="onlySingleLine" value="true"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInCall"/>
+    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInClosureUse"/>
+    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInDeclaration"/>
+
+    <!-- Union and intersection types: no spaces around | and &, or inside the parentheses, and null last (2.5). ?T is
+         a SHOULD, so a warning. -->
+    <rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat">
+        <properties>
+            <property name="withSpacesAroundOperators" value="no"/>
+            <property name="withSpacesInsideParentheses" value="no"/>
+            <property name="shortNullable" value="yes"/>
+            <property name="nullPosition" value="last"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.RequiredShortNullable">
+        <type>warning</type>
+    </rule>
+
+    <!-- ====== PERCS31 ====== -->
+
+    <!-- Line length (2.3): a warning over 120 characters, no hard limit, and a severity 4 warning over 80, which phpcs
+         only shows with warning-severity set to 4 -->
+    <rule ref="PERCS31.Files.LineLength"/>
+
+    <!-- Brace sniffs, extended to allow an empty body as {} (4, 4.4, 7, 8) -->
+    <rule ref="PERCS31.Classes.ClassDeclaration"/>
+    <rule ref="PERCS31.Functions.MultiLineFunctionDeclaration"/>
+    <rule ref="PERCS31.WhiteSpace.ScopeClosingBrace"/>
+
+    <!-- An empty body as {}: a warning for a class or function (4, 4.4), an error for a closure or anonymous class (7, 8) -->
+    <rule ref="PERCS31.Formatting.EmptyBody"/>
+
+    <!-- Indentation, including property hooks (2.4, 4.9) and an anonymous class with attributes (8) -->
+    <rule ref="PERCS31.WhiteSpace.ScopeIndent"/>
+
+    <!-- One statement per line, allowing { get; set; } on an abstract or interface property (2.3, 4.10) -->
+    <rule ref="PERCS31.Formatting.DisallowMultipleStatements"/>
+
+    <!-- Properties: no leading underscore, no var, a visibility, and get before set with no bodies (4.3, 4.10) -->
+    <rule ref="PERCS31.Classes.PropertyDeclaration"/>
+
+    <!-- A hook on a promoted constructor parameter only as a single short hook on one line (4.9) -->
+    <rule ref="PERCS31.Classes.PromotedPropertyHooks"/>
+
+    <!-- One constant per statement (4.3) -->
+    <rule ref="PERCS31.PHP.DisallowMultiConstantDefinition"/>
+
+    <!-- No leading underscore on a constant (4.3) -->
+    <rule ref="PERCS31.NamingConventions.ValidConstantName"/>
+
+    <!-- A warning for new Foo() wrapped in parentheses before ->, ?-> or :: (4) -->
+    <rule ref="PERCS31.Classes.ClassInstantiationNoBrackets"/>
+
+    <!-- A warning for clone without parentheses, e.g. clone $a (4.7) -->
+    <rule ref="PERCS31.PHP.RequireCloneParentheses"/>
+
+    <!-- switch rules, including a terminating statement in the last case, and parentheses around a multi-line case
+         condition (5.2) -->
+    <rule ref="PERCS31.ControlStructures.SwitchDeclaration"/>
+
+    <!-- One space around => in match arms, as in the example in 5.2 -->
+    <rule ref="PERCS31.ControlStructures.MatchArrowSpacing"/>
+
+    <!-- At least one space around binary operators, including |> (6.2) -->
+    <rule ref="PERCS31.Operators.OperatorSpacing"/>
+
+    <!-- A ternary that spans lines takes three, with ? and : leading, indented once (6.4) -->
+    <rule ref="PERCS31.ControlStructures.MultiLineTernaryOperator"/>
+
+    <!-- Any other wrapped binary operator, and an arrow function's =>, at the start of the line (6.4, 7.1) -->
+    <rule ref="PERCS31.Operators.OperatorPlacement"/>
+
+    <!-- private, not protected, for a non-public method or constant in an enum (9) -->
+    <rule ref="PERCS31.Classes.EnumMemberVisibility"/>
+
+    <!-- Enum cases in PascalCase (9) -->
+    <rule ref="PERCS31.NamingConventions.ValidEnumCaseName"/>
+
+    <!-- A multi-line array's [ not on a line of its own, except as an element of a multi-line array (11) -->
+    <rule ref="PERCS31.Arrays.OpeningBracketPlacement"/>
+
+    <!-- An attribute on the line before its target, except on a parameter in a single-line list, and the layout of an
+         anonymous class's attributes (8, 12.2) -->
+    <rule ref="PERCS31.Attributes.AttributePlacement"/>
+
+    <!-- Several attributes may share a block on one line, but not one split over lines (12.3) -->
+    <rule ref="PERCS31.Attributes.DisallowMultiLineAttributesJoining"/>
+
+</ruleset>

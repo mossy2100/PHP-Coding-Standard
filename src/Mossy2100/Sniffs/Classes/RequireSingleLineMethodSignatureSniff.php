@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Mossy2100\Sniffs\Classes;
+
+use PERCS31\Helpers\PropertyHookHelper;
+use PHP_CodeSniffer\Files\File;
+use SlevomatCodingStandard\Sniffs\Classes\RequireSingleLineMethodSignatureSniff as SlevomatSniff;
+
+/**
+ * Requires a method signature that fits on one line to be written on one line, skipping one with a hook on a promoted
+ * constructor parameter.
+ *
+ * SlevomatCodingStandard.Classes.RequireSingleLineMethodSignature takes the `;` in a hook on a promoted constructor
+ * parameter, e.g. `public string $name { set => ucfirst($value); }`, as the end of the signature, so its fix joins only
+ * part of it, and phpcbf can't finish. PER Coding Style 3.1, section 4.9, allows a single short hook there. This sniff
+ * skips a method with such a hook, and leaves everything else to the parent.
+ */
+class RequireSingleLineMethodSignatureSniff extends SlevomatSniff
+{
+    /**
+     * Processes this test, when one of its tokens is encountered.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $methodPointer The position of the function keyword.
+     */
+    public function process(File $phpcsFile, int $methodPointer): void
+    {
+        if (PropertyHookHelper::hasPromotedPropertyHook($phpcsFile, $methodPointer)) {
+            return;
+        }
+
+        parent::process($phpcsFile, $methodPointer);
+    }
+}

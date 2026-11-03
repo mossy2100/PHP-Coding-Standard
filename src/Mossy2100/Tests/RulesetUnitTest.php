@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 /**
- * Tests of the full Mossy2100 ruleset, and of sniff properties that can only be set in a ruleset.
+ * Tests of the full Mossy2100 and PERCS31 rulesets, and of sniff properties that can only be set in a ruleset.
  *
  * The per-sniff tests run each sniff alone. These run phpcs and phpcbf as a user would, so they catch conflicts
  * between sniffs, such as two fixers undoing each other's changes.
@@ -61,6 +61,51 @@ class RulesetUnitTest extends TestCase
 
     #endregion
 
+    #region PERCS31 ruleset tests.
+
+    /**
+     * Test that code following the Mossy2100 standard also follows PERCS31, which Mossy2100 builds on.
+     */
+    public function testGoodFixturePassesPercs31(): void
+    {
+        $result = $this->runTool('phpcs', ['--standard=PERCS31', '--report=json', self::FIXTURES . '/Good.inc']);
+
+        $this->assertSame(0, $result['exitCode'], $result['output']);
+    }
+
+    /**
+     * Test that code following PER Coding Style, but not the house rules, passes PERCS31 and fails Mossy2100.
+     */
+    public function testHouseStyleFixturePassesPercs31Only(): void
+    {
+        $fixture = dirname(__DIR__, 2) . '/PERCS31/Tests/Ruleset/HouseStyle.inc';
+        $percs31 = $this->runTool('phpcs', ['--standard=PERCS31', '--report=json', $fixture]);
+        $mossy2100 = $this->runTool('phpcs', ['--standard=Mossy2100', '--report=json', $fixture]);
+
+        $this->assertSame(0, $percs31['exitCode'], $percs31['output']);
+        $this->assertNotSame(0, $mossy2100['exitCode']);
+    }
+
+    /**
+     * Test that PERCS31.Files.LineLength's warning over 80 characters is hidden by default, and shown at severity 4.
+     */
+    public function testLineLengthRecommendedLimitNeedsWarningSeverity4(): void
+    {
+        $fixture = dirname(__DIR__, 2) . '/PERCS31/Tests/Files/LineLengthUnitTest.inc';
+        $args = ['-s', '--standard=PERCS31', '--sniffs=PERCS31.Files.LineLength', '--report=emacs', $fixture];
+        $default = $this->runTool('phpcs', $args);
+        $severity4 = $this->runTool('phpcs', ['--warning-severity=4', ...$args]);
+
+        $this->assertStringNotContainsString('OverRecommended', $default['output']);
+        foreach ([9, 10, 11] as $line) {
+            $this->assertMatchesRegularExpression("/:$line:\\d+: warning - .*OverRecommended/", $severity4['output']);
+        }
+
+        $this->assertStringNotContainsString(':12:', $severity4['output'], 'An unbreakable comment is exempt.');
+    }
+
+    #endregion
+
     #region Configurable property tests.
 
     /**
@@ -75,7 +120,7 @@ class RulesetUnitTest extends TestCase
         $ruleset = $this->copyToTempFile(null, <<<'XML'
             <?xml version="1.0"?>
             <ruleset name="ScopeIndentTwoSpaces">
-                <rule ref="Mossy2100.WhiteSpace.ScopeIndent">
+                <rule ref="PERCS31.WhiteSpace.ScopeIndent">
                     <properties>
                         <property name="indent" value="2"/>
                     </properties>
@@ -87,7 +132,7 @@ class RulesetUnitTest extends TestCase
             $twoSpaces = $this->runTool('phpcs', ["--standard=$ruleset", $fixture]);
             $default = $this->runTool(
                 'phpcs',
-                ['--standard=Mossy2100', '--sniffs=Mossy2100.WhiteSpace.ScopeIndent', $fixture],
+                ['--standard=Mossy2100', '--sniffs=PERCS31.WhiteSpace.ScopeIndent', $fixture],
             );
         } finally {
             unlink($ruleset);

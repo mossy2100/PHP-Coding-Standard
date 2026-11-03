@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Mossy2100\Sniffs\Operators;
 
-use Mossy2100\Helpers\OperatorHelper;
+use PERCS31\Helpers\OperatorHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 

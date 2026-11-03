@@ -14,7 +14,7 @@ function plainFunction(int $_param): int
 
 class Example
 {
-    // Not reported: a property, checked by Mossy2100.Classes.PropertyDeclaration.
+    // Not reported: a property, checked by PERCS31.Classes.PropertyDeclaration.
     private int $_property = 1;
 
     private static int $_static = 1;

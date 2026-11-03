@@ -8,6 +8,9 @@
     failOnWarning="true"
 >
     <testsuites>
+        <testsuite name="PERCS31 Sniff Tests">
+            <directory suffix="UnitTest.php">src/PERCS31/Tests</directory>
+        </testsuite>
         <testsuite name="Mossy2100 Sniff Tests">
             <directory suffix="UnitTest.php">src/Mossy2100/Tests</directory>
         </testsuite>

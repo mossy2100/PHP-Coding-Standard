@@ -1,0 +1,22 @@
+<?php
+
+// === VALID ===
+
+class Valid
+{
+    // A hook on a promoted parameter: the signature is left as it is, as the parent's fix would break it.
+    public function __construct(
+        public string $name { set => ucfirst($value); },
+    ) {
+    }
+}
+
+// === INVALID: the parent's checks still run ===
+
+class Invalid
+{
+    public function short(
+        int $a,
+    ): void {
+    }
+}

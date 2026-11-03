@@ -8,32 +8,19 @@
 <ruleset name="Mossy2100">
     <description>Mossy2100 PHP Coding Standard</description>
 
-    <!-- ====== PSR ====== -->
+    <!-- ====== PERCS31 ====== -->
 
-    <!-- Inherit from PSR-12 -->
-    <rule ref="PSR12">
-        <!-- Exclude PSR2 PropertyDeclaration - replaced by Mossy2100 version for PHP 8.4 property hook support -->
-        <exclude name="PSR2.Classes.PropertyDeclaration"/>
-        <!-- Exclude Generic ScopeIndent - replaced by Mossy2100 version for PHP 8.4 property hook support -->
-        <exclude name="Generic.WhiteSpace.ScopeIndent"/>
-        <!-- Exclude Generic DisallowMultipleStatements - replaced by Mossy2100 version, which allows { get; set; } -->
-        <exclude name="Generic.Formatting.DisallowMultipleStatements"/>
-        <!-- Exclude three brace sniffs - replaced by Mossy2100 versions, which allow an empty body as {} -->
-        <exclude name="PSR2.Classes.ClassDeclaration"/>
-        <exclude name="Squiz.Functions.MultiLineFunctionDeclaration"/>
-        <exclude name="Squiz.WhiteSpace.ScopeClosingBrace"/>
-        <!-- Exclude PSR2 SwitchDeclaration - replaced by Mossy2100 version, with the PER Coding Style 3.1 rules -->
-        <exclude name="PSR2.ControlStructures.SwitchDeclaration"/>
+    <!-- PER Coding Style 3.1, on PSR-12. Everything below is house style. -->
+    <rule ref="PERCS31"/>
+
+    <!-- get before set in every hook list, including ones with bodies, not just abstract and interface properties -->
+    <rule ref="PERCS31.Classes.PropertyDeclaration">
+        <properties>
+            <property name="orderHooksWithBodies" value="true"/>
+        </properties>
     </rule>
 
     <!-- ====== GENERIC ====== -->
-
-    <!-- Arrays -->
-    <rule ref="Generic.Arrays.ArrayIndent"/>
-    <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
-
-    <!-- Casting -->
-    <rule ref="Generic.Formatting.SpaceAfterCast"/>
 
     <!-- No whitespace after ! -->
     <rule ref="Generic.Formatting.SpaceAfterNot">
@@ -45,38 +32,46 @@
     <!-- CodeAnalysis -->
     <rule ref="Generic.CodeAnalysis.AssignmentInCondition"/>
 
-    <!-- Wrapped && and || at the start of the line in a condition, not the end (PER Coding Style 5.1, 6.4) -->
-    <rule ref="PSR12.ControlStructures.BooleanOperatorPlacement">
-        <properties>
-            <property name="allowOnly" value="first"/>
-        </properties>
-    </rule>
-
-    <!-- A warning for a heredoc that could be a nowdoc (PER Coding Style 10) -->
-    <rule ref="Generic.Strings.UnnecessaryHeredoc"/>
-
-    <!-- Line length: a warning over the limit, with no hard limit (PER Coding Style 2.3) -->
-    <rule ref="Generic.Files.LineLength">
+    <!-- Line length: a warning over the limit, with no hard limit, and PERCS31's severity 4 warning over 80 -->
+    <rule ref="PERCS31.Files.LineLength">
         <properties>
             <property name="lineLimit" value="&lineLength;"/>
-            <property name="absoluteLineLimit" value="0"/>
         </properties>
     </rule>
 
     <!-- ====== SQUIZ ====== -->
 
-    <!-- Arrays: one item per line when multi-line, trailing comma only when multi-line, no alignment -->
-    <rule ref="Squiz.Arrays.ArrayDeclaration">
-        <!-- Squiz aligns to the opening bracket; Generic.Arrays.ArrayIndent handles indentation instead -->
-        <exclude name="Squiz.Arrays.ArrayDeclaration.KeyNotAligned"/>
-        <exclude name="Squiz.Arrays.ArrayDeclaration.ValueNotAligned"/>
-        <exclude name="Squiz.Arrays.ArrayDeclaration.CloseBraceNotAligned"/>
-        <!-- No arrow alignment; Squiz.WhiteSpace.OperatorSpacing requires a single space instead -->
-        <exclude name="Squiz.Arrays.ArrayDeclaration.DoubleArrowNotAligned"/>
-        <!-- Allow single-line arrays with more than one value, whether lists or associative -->
-        <exclude name="Squiz.Arrays.ArrayDeclaration.SingleLineNotAllowed"/>
-        <!-- Allow a single long value to be split over several lines -->
-        <exclude name="Squiz.Arrays.ArrayDeclaration.MultiLineNotAllowed"/>
+    <!-- Arrays: the checks PERCS31 leaves out. One space around =>, one after a comma, none inside [], and no mix of
+         keyed and unkeyed values. -->
+    <rule ref="Squiz.Arrays.ArrayDeclaration.NoSpaceBeforeDoubleArrow">
+        <severity>5</severity>
+    </rule>
+    <rule ref="Squiz.Arrays.ArrayDeclaration.SpaceBeforeDoubleArrow">
+        <severity>5</severity>
+    </rule>
+    <rule ref="Squiz.Arrays.ArrayDeclaration.NoSpaceAfterDoubleArrow">
+        <severity>5</severity>
+    </rule>
+    <rule ref="Squiz.Arrays.ArrayDeclaration.SpaceAfterDoubleArrow">
+        <severity>5</severity>
+    </rule>
+    <rule ref="Squiz.Arrays.ArrayDeclaration.NoSpaceAfterComma">
+        <severity>5</severity>
+    </rule>
+    <rule ref="Squiz.Arrays.ArrayDeclaration.SpaceAfterComma">
+        <severity>5</severity>
+    </rule>
+    <rule ref="Squiz.Arrays.ArrayDeclaration.SpaceBeforeComma">
+        <severity>5</severity>
+    </rule>
+    <rule ref="Squiz.Arrays.ArrayDeclaration.SpaceInEmptyArray">
+        <severity>5</severity>
+    </rule>
+    <rule ref="Squiz.Arrays.ArrayDeclaration.KeySpecified">
+        <severity>5</severity>
+    </rule>
+    <rule ref="Squiz.Arrays.ArrayDeclaration.NoKeySpecified">
+        <severity>5</severity>
     </rule>
 
     <!-- Variables and properties in lowerCamelCaps -->
@@ -95,8 +90,8 @@
         </properties>
     </rule>
 
-    <!-- Single space around operators, including before assignments and double arrows (no alignment); the Mossy2100
-         version of Squiz.WhiteSpace.OperatorSpacing, which also covers the pipe operator |> (PER Coding Style 3.1, 6.2) -->
+    <!-- Exactly one space around operators, including before assignments and double arrows (no alignment); the
+         Mossy2100 version of Squiz.WhiteSpace.OperatorSpacing, which also covers the pipe operator |> -->
     <rule ref="Mossy2100.WhiteSpace.OperatorSpacing">
         <properties>
             <property name="ignoreNewlines" value="true"/>
@@ -104,57 +99,22 @@
         </properties>
     </rule>
 
-    <!-- ====== PHPCSEXTRA ====== -->
+    <!-- ====== SLEVOMAT ====== -->
 
-    <!-- No () on an attribute without arguments (PER Coding Style 12.1) -->
-    <rule ref="Universal.Attributes.DisallowAttributeParentheses"/>
-
-    <!-- No () on an anonymous class without arguments (PER Coding Style 8) -->
-    <rule ref="Universal.Classes.DisallowAnonClassParentheses"/>
-
-    <!-- Keywords in lower case (PER Coding Style 2.5): ::class, and function and const in a use statement -->
-    <rule ref="Universal.Constants.LowercaseClassResolutionKeyword"/>
-    <rule ref="Universal.UseStatements.LowercaseFunctionConst"/>
-
-    <!-- The <?php tag in lower case (PER Coding Style 3) -->
-    <rule ref="Universal.PHP.LowercasePHPTag"/>
-
-    <!-- A wrapped . at the start of the line, not the end (PER Coding Style 6.4) -->
-    <rule ref="Universal.Operators.ConcatPosition"/>
-
-    <!-- exit() and die() with parentheses; a warning, as PER Coding Style 4.7 says SHOULD -->
-    <rule ref="Universal.PHP.RequireExitDieParentheses">
-        <type>warning</type>
-    </rule>
-
-    <!-- ====== SLEVOMAT ======  -->
     <!-- Arrays -->
     <rule ref="SlevomatCodingStandard.Arrays.ArrayAccess"/>
     <rule ref="SlevomatCodingStandard.Arrays.DisallowImplicitArrayCreation"/>
     <rule ref="SlevomatCodingStandard.Arrays.DisallowPartiallyKeyed"/>
-    <rule ref="SlevomatCodingStandard.Arrays.MultiLineArrayEndBracketPlacement"/>
     <rule ref="SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace"/>
 
     <!-- Attributes -->
-    <!-- Allow an attribute on the same line as its target, so a parameter's can be inline (PER Coding Style 12.2).
-         Mossy2100.Attributes.AttributePlacement reports every other same-line attribute. -->
-    <rule ref="SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing">
-        <properties>
-            <property name="allowOnSameLine" value="true"/>
-        </properties>
-    </rule>
     <rule ref="SlevomatCodingStandard.Attributes.AttributesOrder">
         <properties>
             <property name="orderAlphabetically" value="true"/>
         </properties>
     </rule>
-    <rule ref="SlevomatCodingStandard.Attributes.DisallowMultipleAttributesPerLine"/>
-    <rule ref="SlevomatCodingStandard.Attributes.RequireAttributeAfterDocComment"/>
 
     <!-- Classes -->
-    <rule ref="SlevomatCodingStandard.Classes.BackedEnumTypeSpacing"/>
-    <!-- abstract or final before readonly on a class (PER Coding Style 4.6) -->
-    <rule ref="SlevomatCodingStandard.Classes.ClassKeywordOrder"/>
     <rule ref="SlevomatCodingStandard.Classes.ClassMemberSpacing"/>
     <rule ref="SlevomatCodingStandard.Classes.ConstantSpacing">
         <properties>
@@ -162,7 +122,6 @@
         </properties>
         <exclude name="SlevomatCodingStandard.Classes.ConstantSpacing.IncorrectCountOfBlankLinesAfterConstant"/>
     </rule>
-    <rule ref="SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition"/>
     <rule ref="SlevomatCodingStandard.Classes.DisallowStringExpressionPropertyFetch"/>
     <!-- Replaced by Mossy2100.Classes.EmptyLinesAroundClassBraces, which allows an empty body as {} -->
     <rule ref="Mossy2100.Classes.EmptyLinesAroundClassBraces">
@@ -178,11 +137,6 @@
     </rule>
     <rule ref="SlevomatCodingStandard.Classes.MethodSpacing"/>
     <rule ref="SlevomatCodingStandard.Classes.ModernClassNameReference"/>
-    <rule ref="SlevomatCodingStandard.Classes.PropertyDeclaration">
-        <properties>
-            <property name="checkPromoted" value="true"/>
-        </properties>
-    </rule>
     <rule ref="SlevomatCodingStandard.Classes.PropertySpacing">
         <properties>
             <property name="minLinesCountBeforeWithoutComment" value="1"/>
@@ -194,17 +148,17 @@
         </properties>
     </rule>
     <rule ref="SlevomatCodingStandard.Classes.RequireSelfReference"/>
-    <rule ref="SlevomatCodingStandard.Classes.RequireSingleLineMethodSignature">
+    <!-- The Mossy2100 version of RequireSingleLineMethodSignature, which skips a method with a hook on a promoted
+         constructor parameter, as the parent's fix breaks it -->
+    <rule ref="Mossy2100.Classes.RequireSingleLineMethodSignature">
         <properties>
             <property name="maxLineLength" value="&lineLength;"/>
         </properties>
     </rule>
-    <rule ref="SlevomatCodingStandard.Classes.TraitUseDeclaration"/>
+    <!-- No blank line between trait use statements; PSR12.Traits.UseDeclaration, in PERCS31, checks the rest -->
     <rule ref="SlevomatCodingStandard.Classes.TraitUseSpacing">
-        <properties>
-            <property name="linesCountBeforeFirstUseWhenFirstInClass" value="0"/>
-            <property name="linesCountAfterLastUseWhenLastInClass" value="0"/>
-        </properties>
+        <exclude name="SlevomatCodingStandard.Classes.TraitUseSpacing.IncorrectLinesCountBeforeFirstUse"/>
+        <exclude name="SlevomatCodingStandard.Classes.TraitUseSpacing.IncorrectLinesCountAfterLastUse"/>
     </rule>
 
     <!-- Commenting -->
@@ -245,13 +199,6 @@
     <rule ref="SlevomatCodingStandard.Exceptions.RequireNonCapturingCatch"/>
 
     <!-- Functions -->
-    <!-- No space after fn, and the expression may be on the next line (PER Coding Style 7.1) -->
-    <rule ref="SlevomatCodingStandard.Functions.ArrowFunctionDeclaration">
-        <properties>
-            <property name="spacesCountAfterKeyword" value="0"/>
-            <property name="allowMultiLine" value="true"/>
-        </properties>
-    </rule>
     <rule ref="SlevomatCodingStandard.Functions.FunctionLength">
         <properties>
             <property name="maxLinesLength" value="100"/>
@@ -270,26 +217,6 @@
             <property name="maxLineLength" value="&lineLength;"/>
         </properties>
     </rule>
-    <rule ref="SlevomatCodingStandard.Functions.NamedArgumentSpacing"/>
-    <!-- Trailing commas: disallowed on single-line lists, required on multi-line ones (PER Coding Style 2.6) -->
-    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInCall">
-        <properties>
-            <property name="onlySingleLine" value="true"/>
-        </properties>
-    </rule>
-    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInClosureUse">
-        <properties>
-            <property name="onlySingleLine" value="true"/>
-        </properties>
-    </rule>
-    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInDeclaration">
-        <properties>
-            <property name="onlySingleLine" value="true"/>
-        </properties>
-    </rule>
-    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInCall"/>
-    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInClosureUse"/>
-    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInDeclaration"/>
     <rule ref="SlevomatCodingStandard.Functions.StaticClosure"/>
     <rule ref="SlevomatCodingStandard.Functions.StrictCall"/>
     <rule ref="SlevomatCodingStandard.Functions.UselessParameterDefaultValue"/>
@@ -300,7 +227,6 @@
     <rule ref="SlevomatCodingStandard.Namespaces.DisallowGroupUse"/>
     <rule ref="SlevomatCodingStandard.Namespaces.MultipleUsesPerLine"/>
     <rule ref="SlevomatCodingStandard.Namespaces.NamespaceDeclaration"/>
-    <rule ref="SlevomatCodingStandard.Namespaces.NamespaceSpacing"/>
     <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly"/>
     <rule ref="SlevomatCodingStandard.Namespaces.RequireOneNamespaceInFile"/>
     <!-- Replaced by Mossy2100.Namespaces.UnusedUses, which waits while a use keyword is miscased (Slevomat bug) -->
@@ -309,7 +235,6 @@
             <property name="searchAnnotations" value="true"/>
         </properties>
     </rule>
-    <rule ref="SlevomatCodingStandard.Namespaces.UseDoesNotStartWithBackslash"/>
     <rule ref="SlevomatCodingStandard.Namespaces.UseFromSameNamespace"/>
     <rule ref="SlevomatCodingStandard.Namespaces.UselessAlias"/>
 
@@ -333,21 +258,18 @@
     <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
         <exclude name="SlevomatCodingStandard.TypeHints.DeclareStrictTypes.IncorrectStrictTypesFormat"/>
     </rule>
-    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHintSpacing"/>
+    <!-- The Mossy2100 versions of ParameterTypeHintSpacing and ParameterTypeHint, which skip a function with a hook on a
+         promoted constructor parameter, as the parents read the variables in the hook as parameters -->
+    <rule ref="Mossy2100.TypeHints.ParameterTypeHintSpacing"/>
     <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHintSpacing"/>
     <rule ref="SlevomatCodingStandard.TypeHints.LongTypeHints"/>
-    <rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat">
-        <properties>
-            <property name="withSpacesAroundOperators" value="no"/>
-            <property name="withSpacesInsideParentheses" value="no"/>
-            <property name="shortNullable" value="yes"/>
-            <!-- null last in a union type (PER Coding Style 2.5) -->
-            <property name="nullPosition" value="last"/>
-        </properties>
+    <!-- ?T for a nullable type is an error here, not PERCS31's warning -->
+    <rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.RequiredShortNullable">
+        <type>error</type>
     </rule>
     <rule ref="SlevomatCodingStandard.TypeHints.NullableTypeForNullDefaultValue"/>
-    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint">
-        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.UselessAnnotation"/>
+    <rule ref="Mossy2100.TypeHints.ParameterTypeHint">
+        <exclude name="Mossy2100.TypeHints.ParameterTypeHint.UselessAnnotation"/>
     </rule>
     <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint">
         <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.UselessAnnotation"/>
@@ -373,13 +295,6 @@
         </properties>
     </rule>
 
-    <!-- A multi-line array's [ not on a line of its own, except as an element of a multi-line array
-         (PER Coding Style 3.1, 11) -->
-    <rule ref="Mossy2100.Arrays.OpeningBracketPlacement"/>
-
-    <!-- Single space around => in match arms, which Squiz.WhiteSpace.OperatorSpacing doesn't check -->
-    <rule ref="Mossy2100.ControlStructures.MatchArrowSpacing"/>
-
     <!-- Multi-line foreach, for, switch and match headers that fit must be written on one line; Slevomat's
          RequireSingleLineCondition covers if, elseif, while and do-while -->
     <rule ref="Mossy2100.ControlStructures.RequireSingleLineHeader">
@@ -388,66 +303,11 @@
         </properties>
     </rule>
 
-    <!-- Scope indent with PHP 8.4 property hook support -->
-    <rule ref="Mossy2100.WhiteSpace.ScopeIndent"/>
-
-    <!-- Property declaration with PHP 8.4 property hook support -->
-    <rule ref="Mossy2100.Classes.PropertyDeclaration"/>
-
-    <!-- A warning for new Foo() wrapped in parentheses before ->, ?-> or :: (PER Coding Style 4) -->
-    <rule ref="Mossy2100.Classes.ClassInstantiationNoBrackets"/>
-
-    <!-- private, not protected, for a non-public method or constant in an enum (PER Coding Style 9) -->
-    <rule ref="Mossy2100.Classes.EnumMemberVisibility"/>
-
-    <!-- PSR-12 brace sniffs, extended to allow an empty class or function body as {} (PER Coding Style 4, 4.4) -->
-    <rule ref="Mossy2100.Classes.ClassDeclaration"/>
-    <rule ref="Mossy2100.Functions.MultiLineFunctionDeclaration"/>
-    <rule ref="Mossy2100.WhiteSpace.ScopeClosingBrace"/>
-
-    <!-- A warning for an empty class or function body that isn't written as {} (PER Coding Style 4, 4.4) -->
-    <rule ref="Mossy2100.Formatting.EmptyBody"/>
-
-    <!-- switch rules, adding a terminating statement in the last case, and parentheses around a multi-line case
-         condition (PER Coding Style 3.1, 5.2) -->
-    <rule ref="Mossy2100.ControlStructures.SwitchDeclaration"/>
-
-    <!-- A ternary that spans lines takes three, with ? and : leading, indented once (PER Coding Style 6.4) -->
-    <rule ref="Mossy2100.ControlStructures.MultiLineTernaryOperator"/>
-
-    <!-- Any other wrapped binary operator, and an arrow function's =>, at the start of the line (PER 6.4, 7.1) -->
-    <rule ref="Mossy2100.Operators.OperatorPlacement"/>
-
     <!-- No whitespace after a prefix unary +, ~ or @ -->
     <rule ref="Mossy2100.Operators.UnaryOperatorSpacing"/>
-
-    <!-- One statement per line, allowing { get; set; } on an abstract or interface property (PER Coding Style 4.10) -->
-    <rule ref="Mossy2100.Formatting.DisallowMultipleStatements"/>
-
-    <!-- Several attributes may share a block on one line, but not one split over lines (PER Coding Style 12.3) -->
-    <rule ref="Mossy2100.Attributes.DisallowMultiLineAttributesJoining"/>
-
-    <!-- An attribute on the line before its target, except on a parameter in a single-line list -->
-    <rule ref="Mossy2100.Attributes.AttributePlacement"/>
-
-    <!-- Enum cases in PascalCase (PER Coding Style 9) -->
-    <rule ref="Mossy2100.NamingConventions.ValidEnumCaseName"/>
-
-    <!-- No leading underscore on a constant (PER Coding Style 4.3) -->
-    <rule ref="Mossy2100.NamingConventions.ValidConstantName"/>
 
     <!-- Leading underscore on a variable or parameter inside a class, which Squiz.NamingConventions.ValidVariableName
          allows there -->
     <rule ref="Mossy2100.NamingConventions.ValidVariableName"/>
-
-    <!-- Disallow property hooks on promoted constructor parameters, which several inherited sniffs misread -->
-    <rule ref="Mossy2100.Classes.DisallowPromotedPropertyHooks"/>
-
-    <!-- Disallow multi constant definitions; fork of SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition
-         fixing a false positive on constants with a parenthesized multi-argument value (e.g. new Foo(1, 2)) -->
-    <rule ref="Mossy2100.PHP.DisallowMultiConstantDefinition"/>
-
-    <!-- A warning for clone without parentheses, e.g. clone $a (PER Coding Style 3.1, 4.7) -->
-    <rule ref="Mossy2100.PHP.RequireCloneParentheses"/>
 
 </ruleset>

@@ -1,6 +1,6 @@
 {
     "name": "mossy2100/coding-standard",
-    "description": "PHP_CodeSniffer coding standard extending PSR-12 with lowerCamelCase naming and modern PHP 8.4+ rules.",
+    "description": "PHP_CodeSniffer coding standards: PERCS31 for PER Coding Style 3.1, and Mossy2100, which adds lowerCamelCase naming and modern PHP 8.4+ rules.",
     "type": "phpcodesniffer-standard",
     "license": "MIT",
     "keywords": [
@@ -9,6 +9,7 @@
         "codesniffer",
         "coding-standard",
         "psr-12",
+        "per-coding-style",
         "linting",
         "code-style"
     ],

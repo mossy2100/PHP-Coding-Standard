@@ -10,12 +10,15 @@ A PHP_CodeSniffer coding standard for PHP 8.4, developed by Shaun Moss.
 
 ## Description
 
-This package provides a custom PHP_CodeSniffer coding standard for PHP, which extends PSR-12 with additional rules for
-consistent naming conventions and modern PHP 8.4+ syntax.
+This package provides two PHP_CodeSniffer coding standards:
 
-**Key Features:**
+- **PERCS31**: [PER Coding Style 3.1](https://www.php-fig.org/per/coding-style/), and nothing more, built on PSR-12. No complete PHP_CodeSniffer standard for PER
+  Coding Style existed. See [PERCS31](docs/PERCS31.md).
+- **Mossy2100**: PERCS31 plus house rules, for consistent naming and modern PHP 8.4+ code.
 
-- Extends PSR-12 coding standard.
+**Key features of Mossy2100:**
+
+- Follows PER Coding Style 3.1, through PERCS31.
 - Enforces `$camelCase` naming for variables, parameters and properties.
 - Enforces consistent array formatting: single-line if it fits, otherwise one element per line with a trailing comma. No
   alignment of arrows or assignments, to keep diffs small.
@@ -84,53 +87,34 @@ vendor/bin/phpcs        # Check for issues
 vendor/bin/phpcbf       # Auto-fix issues
 ```
 
+To follow PER Coding Style 3.1 without the house rules, use `<rule ref="PERCS31"/>` instead.
+
 The line length limit is 120. To change it, see [Line Length](docs/LineLength.md).
 
 ---
 
 ## Included Sniffs
 
-This coding standard is built on five base standards, each documented in [Inherited Sniffs](docs/InheritedSniffs.md):
+The Mossy2100 standard is built on [PERCS31](docs/PERCS31.md), which lists every sniff it uses for PER Coding Style: PSR-12, sniffs from
+Generic, Squiz, Slevomat and PHPCSExtra (`Universal`), and its own custom sniffs.
 
-- **PSR-12**, **Generic** and **Squiz**, which come with PHP_CodeSniffer.
-- **Slevomat**, a separate package of sniffs for modern PHP.
-- **PHPCSExtra** (`Universal`), a package of general-purpose sniffs from the PHP_CodeSniffer maintainers.
-
-It adds the following custom sniffs, which fill gaps in the base standards, for compliance with PER Coding Style 3.0 and support
-for PHP 8.4 features such as property hooks, or set house-style choices. Each one's reason is in [Custom Sniffs](docs/CustomSniffs.md):
+On top of that, Mossy2100 adds more Generic, Squiz and Slevomat sniffs, each documented in [Inherited Sniffs](docs/InheritedSniffs.md), and these
+custom sniffs, each with its reason in [Custom Sniffs](docs/CustomSniffs.md):
 
 | Sniff                                                          | Checks                                                            | Fixable |
 | -------------------------------------------------------------- | ----------------------------------------------------------------- | ------- |
 | `Mossy2100.Arrays.ArrayDeclaration`                            | A multi-line array is on one line if it fits                      | Yes     |
-| `Mossy2100.Arrays.OpeningBracketPlacement`                     | A multi-line array's `[` isn't on a line of its own               | Yes     |
-| `Mossy2100.Attributes.AttributePlacement`                      | An attribute is on its own line, except on a parameter            | Yes     |
-| `Mossy2100.Attributes.DisallowMultiLineAttributesJoining`      | One attribute per block when a block spans lines                  | Yes     |
-| `Mossy2100.Classes.ClassDeclaration`                           | Class declarations, allowing an empty body as `{}`                | Yes     |
-| `Mossy2100.Classes.ClassInstantiationNoBrackets`               | A warning for `(new Foo())->bar()`                                | Yes     |
-| `Mossy2100.Classes.DisallowPromotedPropertyHooks`              | No property hooks on promoted constructor parameters              | No      |
 | `Mossy2100.Classes.EmptyLinesAroundClassBraces`                | No blank lines inside class braces, allowing `{}`                 | Yes     |
-| `Mossy2100.Classes.EnumMemberVisibility`                       | `private`, not `protected`, for a method or constant in an enum   | Yes     |
-| `Mossy2100.Classes.PropertyDeclaration`                        | No leading `_`, no `var`, a visibility, and `get` before `set`    | Partly  |
+| `Mossy2100.Classes.RequireSingleLineMethodSignature`           | A short signature on one line, skipping a promoted hook           | Yes     |
 | `Mossy2100.ControlStructures.LanguageConstructWithParentheses` | No `echo('x')`, allowing `exit()` and `die()`                     | Yes     |
-| `Mossy2100.ControlStructures.MatchArrowSpacing`                | One space around `=>` in `match` arms                             | Yes     |
-| `Mossy2100.ControlStructures.MultiLineTernaryOperator`         | A multi-line ternary takes three lines, `?` and `:` leading       | Yes     |
 | `Mossy2100.ControlStructures.RequireSingleLineHeader`          | A multi-line loop, `switch` or `match` header fits on a line      | Yes     |
-| `Mossy2100.ControlStructures.SwitchDeclaration`                | `switch` rules, with a `break` in the last case                   | Yes     |
-| `Mossy2100.Formatting.DisallowMultipleStatements`              | One statement per line, allowing `{ get; set; }`                  | Yes     |
-| `Mossy2100.Formatting.EmptyBody`                               | An empty class, function, closure or anonymous class body is `{}` | Yes     |
-| `Mossy2100.Functions.MultiLineFunctionDeclaration`             | Function and closure declarations, allowing an empty body as `{}` | Yes     |
 | `Mossy2100.Functions.RequireSingleLineCall`                    | A call that fits is on one line, skipping an anonymous class      | Yes     |
 | `Mossy2100.Namespaces.UnusedUses`                              | No unused `use` statements, safe with a miscased `use Function`   | Yes     |
-| `Mossy2100.NamingConventions.ValidConstantName`                | No leading underscore on a constant                               | No      |
-| `Mossy2100.NamingConventions.ValidEnumCaseName`                | Enum cases in PascalCase                                          | No      |
 | `Mossy2100.NamingConventions.ValidVariableName`                | No leading underscore on a variable or parameter in a class       | No      |
-| `Mossy2100.Operators.OperatorPlacement`                        | A wrapped binary operator starts the next line, not ends this one | Yes     |
 | `Mossy2100.Operators.UnaryOperatorSpacing`                     | No whitespace after a prefix `+`, `~` or `@`                      | Yes     |
-| `Mossy2100.PHP.DisallowMultiConstantDefinition`                | One constant per statement                                        | Yes     |
-| `Mossy2100.PHP.RequireCloneParentheses`                        | A warning for `clone $a`, not `clone($a)`                         | Yes     |
+| `Mossy2100.TypeHints.ParameterTypeHint`                        | Parameter type hints, skipping a promoted hook                    | Yes     |
+| `Mossy2100.TypeHints.ParameterTypeHintSpacing`                 | Parameter type hint spacing, skipping a promoted hook             | Yes     |
 | `Mossy2100.WhiteSpace.OperatorSpacing`                         | One space around operators, including `\|>`                       | Yes     |
-| `Mossy2100.WhiteSpace.ScopeClosingBrace`                       | A closing brace on its own line, allowing `{}`                    | Yes     |
-| `Mossy2100.WhiteSpace.ScopeIndent`                             | Indentation, including property hooks and anonymous classes       | Yes     |
 
 ---
 
