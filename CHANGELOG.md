@@ -20,8 +20,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `PERCS31.*`: `ClassInstantiationNoBrackets`, `PropertyDeclaration`, `DisallowMultiConstantDefinition` and
   `ScopeIndent`, e.g. `OceanMoon.WhiteSpace.ScopeIndent` is now `PERCS31.WhiteSpace.ScopeIndent`. Update any
   `phpcs:ignore` comments or `<exclude>` rules that name them. See [PERCS31](docs/PERCS31.md).
-- **`PERCS31.Operators.OperatorSpacing`.** Replaces `PSR12.Operators.OperatorSpacing`, requiring at least one space
-  around a binary operator, and adds the pipe operator `|>`. The Mossy2100 standard still requires exactly one.
+- **`PERCS31.Operators.OperatorSpacing` (breaking).** Replaces `PSR12.Operators.OperatorSpacing` and
+  `Squiz.WhiteSpace.OperatorSpacing`. It requires at least one space around a binary operator, and adds the pipe
+  operator `|>`. The Mossy2100 standard requires exactly one, as before, and now also around `&&`, `||`, `and`, `or`,
+  `xor` and `.`, e.g. `$a  &&  $b` is now an error. Auto-fixable.
 - **`orderHooksWithBodies` on `PERCS31.Classes.PropertyDeclaration`.** `HookOrder` only checks a hook list with no
   bodies by default, as PER Coding Style 3.1 only sets the order of an abstract or interface property's hooks. The
   Mossy2100 standard turns it on, to check every hook list as before.
@@ -32,9 +34,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   line of its own, as PER Coding Style 3.1 requires, e.g. `foo([` ... `]);`, not `foo(` then `[` on the next line. An
   array that's an element of a multi-line array is allowed. Auto-fixable, except next to another argument.
 - **The pipe operator `|>` (PHP 8.5) (breaking).** As PER Coding Style 3.1 requires, `|>` needs a space either side, and
-  starts the line when a statement wraps at it. `Mossy2100.WhiteSpace.OperatorSpacing` replaces
-  `Squiz.WhiteSpace.OperatorSpacing` to check the spacing, and `PERCS31.Operators.OperatorPlacement` now covers `|>`.
-  Only checked when PHPCS runs on PHP 8.5. Auto-fixable.
+  starts the line when a statement wraps at it. `PERCS31.Operators.OperatorSpacing` checks the spacing, and
+  `PERCS31.Operators.OperatorPlacement` now covers `|>`. Only checked when PHPCS runs on PHP 8.5. Auto-fixable.
 - **`PERCS31.ControlStructures.SwitchDeclaration` (breaking).** Replaces `PSR2.ControlStructures.SwitchDeclaration`,
   adding two rules from PER Coding Style 3.1: the last non-empty case must end with `break`, `return` or similar, and a
   multi-line case condition must be wrapped in parentheses, with `):` on a line of their own. Auto-fixable.

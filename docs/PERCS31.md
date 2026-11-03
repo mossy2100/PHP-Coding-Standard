@@ -832,13 +832,17 @@ $label =
 
 ### PERCS31.Operators.OperatorSpacing
 
-Requires at least one space around binary operators, including the pipe operator `|>`. This replaces
-`PSR12.Operators.OperatorSpacing`.
+Requires at least one space around binary operators, including `&&`, `||`, `and`, `or`, `xor`, `.` and the pipe operator
+`|>`. This replaces `PSR12.Operators.OperatorSpacing`.
 
 **Why:** [PER Coding Style 3.1, Section 6.2](https://www.php-fig.org/per/coding-style/#62-binary-operators) says all binary operators MUST be preceded and followed by at least one
-space, and section 6 allows more for readability. The parent doesn't know `|>` (PHP 8.5). PHP_CodeSniffer 4.0 doesn't
-define `T_PIPE` itself, but passes PHP's own token through on PHP 8.5, so this sniff registers it when it's defined. The
-pipe isn't checked when PHPCS runs on PHP 8.4.
+space, and section 6 allows more for readability. PSR-12's sniff checks that, but doesn't know `|>` (PHP 8.5).
+PHP_CodeSniffer 4.0 doesn't define `T_PIPE` itself, but passes PHP's own token through on PHP 8.5, so this sniff
+registers it when it's defined. The pipe isn't checked when PHPCS runs on PHP 8.4.
+
+It extends `Squiz.WhiteSpace.OperatorSpacing`, which requires exactly one space, and covers PSR-12's operators too. The
+ruleset excludes the codes for more than one space, `SpacingBefore` and `SpacingAfter` and their `Amp` versions, so only
+a missing space is reported. A standard that wants exactly one space turns them back on, as the [Mossy2100 standard](../README.md) does.
 
 **Auto-fixable:** yes, as the parent.
 

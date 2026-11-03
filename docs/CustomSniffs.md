@@ -275,30 +275,3 @@ function aren't checked either. [PER Coding Style 3.1, Section 4.9](https://www.
 a function with one, and leaves everything else to the parent. See [`PERCS31.Classes.PromotedPropertyHooks`](PERCS31.md#percs31classespromotedpropertyhooks).
 
 **Auto-fixable:** yes, as the parent.
-
----
-
-## Mossy2100.WhiteSpace.OperatorSpacing
-
-Requires exactly one space around operators, including the pipe operator `|>`. This replaces
-`Squiz.WhiteSpace.OperatorSpacing`, with the same settings: a single space before `=` and `=>`, and a line break allowed
-either side.
-
-**Why:** PER Coding Style allows more than one space around an operator, which [`PERCS31.Operators.OperatorSpacing`](PERCS31.md#percs31operatorsoperatorspacing)
-checks. This standard allows only one, so assignments and arrows aren't aligned and diffs stay small. The parent doesn't
-know `|>` (PHP 8.5), so this sniff registers `T_PIPE` when it's defined. The pipe isn't checked when PHPCS runs on PHP
-8.4.
-
-**Auto-fixable:** yes, as the parent.
-
-**Good:**
-
-```php
-$slug = $title |> trim(...) |> strtolower(...);
-```
-
-**Bad:**
-
-```php
-$slug = $title|>trim(...)|>strtolower(...);
-```

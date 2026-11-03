@@ -114,7 +114,6 @@ custom sniffs, each with its reason in [Custom Sniffs](docs/CustomSniffs.md):
 | `Mossy2100.Operators.UnaryOperatorSpacing`                     | No whitespace after a prefix `+`, `~` or `@`                      | Yes     |
 | `Mossy2100.TypeHints.ParameterTypeHint`                        | Parameter type hints, skipping a promoted hook                    | Yes     |
 | `Mossy2100.TypeHints.ParameterTypeHintSpacing`                 | Parameter type hint spacing, skipping a promoted hook             | Yes     |
-| `Mossy2100.WhiteSpace.OperatorSpacing`                         | One space around operators, including `\|>`                       | Yes     |
 
 ---
 

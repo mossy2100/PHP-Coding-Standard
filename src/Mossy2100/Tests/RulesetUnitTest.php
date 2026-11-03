@@ -87,6 +87,25 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that PERCS31 allows more than one space around an operator, as PER does, and Mossy2100 doesn't.
+     */
+    public function testOperatorSpacingAllowsSeveralSpacesInPercs31Only(): void
+    {
+        $file = $this->copyToTempFile(null, "<?php\n\n\$total = \$price  +  \$tax;\n\$valid = \$a  &&  \$b;\n");
+        $args = ['-s', '--sniffs=PERCS31.Operators.OperatorSpacing', '--report=emacs', $file];
+
+        try {
+            $percs31 = $this->runTool('phpcs', ['--standard=PERCS31', ...$args]);
+            $mossy2100 = $this->runTool('phpcs', ['--standard=Mossy2100', ...$args]);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame(0, $percs31['exitCode'], $percs31['output']);
+        $this->assertSame(4, substr_count($mossy2100['output'], 'PERCS31.Operators.OperatorSpacing.Spacing'));
+    }
+
+    /**
      * Test that PERCS31.Files.LineLength's warning over 80 characters is hidden by default, and shown at severity 4.
      */
     public function testLineLengthRecommendedLimitNeedsWarningSeverity4(): void

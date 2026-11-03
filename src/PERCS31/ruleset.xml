@@ -207,8 +207,14 @@
     <!-- One space around => in match arms, as in the example in 5.2 -->
     <rule ref="PERCS31.ControlStructures.MatchArrowSpacing"/>
 
-    <!-- At least one space around binary operators, including |> (6.2) -->
-    <rule ref="PERCS31.Operators.OperatorSpacing"/>
+    <!-- At least one space around binary operators, including |> (6.2). The codes for more than one space are
+         excluded, as PER allows more. -->
+    <rule ref="PERCS31.Operators.OperatorSpacing">
+        <exclude name="PERCS31.Operators.OperatorSpacing.SpacingBefore"/>
+        <exclude name="PERCS31.Operators.OperatorSpacing.SpacingAfter"/>
+        <exclude name="PERCS31.Operators.OperatorSpacing.SpacingBeforeAmp"/>
+        <exclude name="PERCS31.Operators.OperatorSpacing.SpacingAfterAmp"/>
+    </rule>
 
     <!-- A ternary that spans lines takes three, with ? and : leading, indented once (6.4) -->
     <rule ref="PERCS31.ControlStructures.MultiLineTernaryOperator"/>

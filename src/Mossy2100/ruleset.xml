@@ -93,13 +93,25 @@
         </properties>
     </rule>
 
-    <!-- Exactly one space around operators, including before assignments and double arrows (no alignment); the
-         Mossy2100 version of Squiz.WhiteSpace.OperatorSpacing, which also covers the pipe operator |> -->
-    <rule ref="Mossy2100.WhiteSpace.OperatorSpacing">
+    <!-- Exactly one space around operators, including before assignments and double arrows (no alignment): the codes
+         PERCS31.Operators.OperatorSpacing reports more than one space with, which PERCS31 excludes -->
+    <rule ref="PERCS31.Operators.OperatorSpacing">
         <properties>
             <property name="ignoreNewlines" value="true"/>
             <property name="ignoreSpacingBeforeAssignments" value="false"/>
         </properties>
+    </rule>
+    <rule ref="PERCS31.Operators.OperatorSpacing.SpacingBefore">
+        <severity>5</severity>
+    </rule>
+    <rule ref="PERCS31.Operators.OperatorSpacing.SpacingAfter">
+        <severity>5</severity>
+    </rule>
+    <rule ref="PERCS31.Operators.OperatorSpacing.SpacingBeforeAmp">
+        <severity>5</severity>
+    </rule>
+    <rule ref="PERCS31.Operators.OperatorSpacing.SpacingAfterAmp">
+        <severity>5</severity>
     </rule>
 
     <!-- ====== SLEVOMAT ====== -->

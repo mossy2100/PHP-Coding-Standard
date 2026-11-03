@@ -1,14 +1,17 @@
 <?php
-
-// The pipe operator, PHP 8.5 only. The other operators are left to the parent.
+// phpcs:set PERCS31.Operators.OperatorSpacing ignoreNewlines true
+// The sniff runs alone here, with every code. The PERCS31 ruleset excludes the codes for more than one space.
 
 // === VALID ===
 
-$a = $b |> trim(...);
-$a = $b  |>  trim(...);
+$a = $b && $c;
+$a = $b . $c;
 $a = $b
-    |> trim(...);
+    . $c;
+$a = $b or $c;
 
 // === INVALID ===
 
-$a = $b|>trim(...);
+$a = $b&&$c;
+$a = $b  .  $c;
+$a = $b  or  $c;

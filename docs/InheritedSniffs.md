@@ -11,13 +11,15 @@ and [wiki](https://github.com/PHPCSStandards/PHP_CodeSniffer/wiki).
 ## PERCS31
 
 The Mossy2100 standard is built on [PERCS31](PERCS31.md), the package's standard for PER Coding Style 3.1, which is built on PSR-12.
-Everything PERCS31 includes is included here, with four changes:
+Everything PERCS31 includes is included here, with five changes:
 
 - `PERCS31.Classes.PropertyDeclaration` checks the hook order in every hook list, including ones with bodies
   (`orderHooksWithBodies` set to `true`).
 - `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat` reports `T|null`, which should be `?T`, as an error, not a
   warning.
 - `Squiz.Arrays.ArrayDeclaration` also runs the checks PERCS31 leaves out. See [Squiz](#squiz).
+- `PERCS31.Operators.OperatorSpacing` also reports more than one space around an operator, with `ignoreNewlines` on and
+  `ignoreSpacingBeforeAssignments` off. See [Squiz](#squiz).
 - `PSR12.Keywords.ShortFormTypeKeywords` is excluded, as `SlevomatCodingStandard.PHP.TypeCast` reports the same casts.
   See [Slevomat](#slevomat).
 
@@ -44,10 +46,10 @@ The sniffs below are house style, not PER rules.
   checks for an underscore on properties are excluded, as one requires it on private properties. See
   [Variable and Property Names](VariableAndPropertyNames.md).
 - **Squiz.Strings.DoubleQuoteUsage.NotRequired**: Ensures strings use single quotes unless double quotes are necessary.
-- **Squiz.WhiteSpace.OperatorSpacing**: Requires a single space around operators, including before `=` and `=>`, so
-  assignments and array arrows are not aligned. PERCS31 only requires at least one space. Used through
-  [`Mossy2100.WhiteSpace.OperatorSpacing`](CustomSniffs.md#mossy2100whitespaceoperatorspacing), which adds the pipe operator `|>`. `match` arms are covered by
-  [`PERCS31.ControlStructures.MatchArrowSpacing`](PERCS31.md#percs31controlstructuresmatcharrowspacing).
+- **Squiz.WhiteSpace.OperatorSpacing**: Requires exactly one space around operators, including before `=` and `=>`, so
+  assignments and array arrows are not aligned. Used through [`PERCS31.Operators.OperatorSpacing`](PERCS31.md#percs31operatorsoperatorspacing), which extends it to
+  `&&`, `||`, `and`, `or`, `xor`, `.` and `|>`. PERCS31 excludes its codes for more than one space, and Mossy2100 turns
+  them back on. `match` arms are covered by [`PERCS31.ControlStructures.MatchArrowSpacing`](PERCS31.md#percs31controlstructuresmatcharrowspacing).
 - **Squiz.WhiteSpace.ObjectOperatorSpacing**: Disallows spaces around `->`, `?->` and `::`, e.g. `$a -> b()`. A line
   break before one, in a wrapped method chain, is allowed.
 
