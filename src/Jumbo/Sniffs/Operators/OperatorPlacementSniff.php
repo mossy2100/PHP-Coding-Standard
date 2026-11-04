@@ -18,8 +18,13 @@ use PHP_CodeSniffer\Util\Tokens;
  * function's `=>`. This sniff reports:
  * - An operator that's the last thing on its line. The fix moves it to the start of the next line.
  * - An operator at the start of a line that isn't indented once past the line its expression starts on. The
- *   expression starts after the nearest `;`, `,`, opening bracket, or full ternary `?` or `:`, so a split inside
- *   parentheses is indented once past the line the parenthesised expression starts on. The fix corrects the indent.
+ *   expression starts after the nearest `;`, `,`, opening bracket, or full ternary `?` or `:`. The fix corrects the
+ *   indent.
+ *
+ * PER says nothing about an operator wrapped inside a list item, such as a call argument, array element or `match`
+ * arm, as that isn't a statement. So there the line may also be lined up with the item, unless requireListItemIndent
+ * is set. An arrow function's `=>` is always indented once, as section 7.1 says. Grouping parentheses, as in
+ * `$x = ($a && $b);` split over lines, aren't a list, so like a condition, their indent isn't checked.
  *
  * It covers assignment, arithmetic, comparison, bitwise and logical operators, `??`, `instanceof`, the short ternary
  * `?:`, the arrow function's `=>`, the pipe operator `|>` (PHP 8.5, PER Coding Style 3.1), and `.` for the indent only.
@@ -35,6 +40,12 @@ class OperatorPlacementSniff implements Sniff
     public const string CODE_AT_END_OF_LINE = 'AtEndOfLine';
 
     public const string CODE_INDENT = 'Indent';
+
+    /**
+     * Whether a wrapped line in a list item, such as a call argument, must be indented once past the item. PER says
+     * nothing about it, so by default the line may also be lined up with the item.
+     */
+    public bool $requireListItemIndent = false;
 
     /**
      * The number of spaces in one indent.
@@ -54,6 +65,20 @@ class OperatorPlacementSniff implements Sniff
      * @var list<int|string>
      */
     private const array INDENT_EXEMPT_OWNERS = [T_IF, T_ELSEIF, T_WHILE, T_SWITCH, T_MATCH, T_FOR, T_FOREACH];
+
+    /**
+     * Tokens other than a function name that can come before a call's `(`, as in `$f()`, `$a->b()()` or `clone($a)`.
+     *
+     * @var list<int|string>
+     */
+    private const array CALLABLE_ENDS = [
+        T_VARIABLE,
+        T_CLOSE_PARENTHESIS,
+        T_CLOSE_SQUARE_BRACKET,
+        T_CLOSE_CURLY_BRACKET,
+        T_LIST,
+        T_CLONE,
+    ];
 
     /**
      * Constructs whose body can be part of an expression.
@@ -195,20 +220,45 @@ class OperatorPlacementSniff implements Sniff
             return;
         }
 
+        // An arrow function's => is indented once, as section 7.1 says, wherever the arrow function is.
+        $isListItem = false;
+        if ($tokens[$stackPtr]['code'] !== T_FN_ARROW) {
+            $opener = $this->findEnclosingOpener($phpcsFile, $boundary);
+            if ($opener !== null && $this->isGroupingOpener($phpcsFile, $opener)) {
+                return;
+            }
+
+            $isListItem = $opener !== null;
+        }
+
         $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $start, true);
-        $expected = ($firstOnLine === false ? 1 : $tokens[$firstOnLine]['column']) - 1 + self::INDENT;
+        $itemIndent = ($firstOnLine === false ? 1 : $tokens[$firstOnLine]['column']) - 1;
+        $expected = $itemIndent + self::INDENT;
         $found = $tokens[$stackPtr]['column'] - 1;
-        if ($found === $expected) {
+
+        // A list item that starts its own line may have its wrapped lines lined up with it, unless the standard
+        // requires them indented.
+        $allowLinedUp = $isListItem && !$this->requireListItemIndent && $firstOnLine === $start;
+        if ($found === $expected || ($allowLinedUp && $found === $itemIndent)) {
             return;
         }
 
-        $fix = $phpcsFile->addFixableError(
-            'A line starting with operator "%s" must be indented once past the line its expression starts on; '
-                . 'expected %s spaces, found %s',
-            $stackPtr,
-            self::CODE_INDENT,
-            [$phpcsFile->getTokensAsString($stackPtr, ($lastPtr - $stackPtr + 1)), $expected, $found],
-        );
+        $operator = $phpcsFile->getTokensAsString($stackPtr, ($lastPtr - $stackPtr + 1));
+        $fix = $allowLinedUp
+            ? $phpcsFile->addFixableError(
+                'A line starting with operator "%s" must be lined up with its list item, or indented once past it; '
+                    . 'expected %s or %s spaces, found %s',
+                $stackPtr,
+                self::CODE_INDENT,
+                [$operator, $itemIndent, $expected, $found],
+            )
+            : $phpcsFile->addFixableError(
+                'A line starting with operator "%s" must be indented once past the line its expression starts on; '
+                    . 'expected %s spaces, found %s',
+                $stackPtr,
+                self::CODE_INDENT,
+                [$operator, $expected, $found],
+            );
         if (!$fix) {
             return;
         }
@@ -268,6 +318,69 @@ class OperatorPlacementSniff implements Sniff
         }
 
         return max($i, -1);
+    }
+
+    /**
+     * Find the bracket that opens the list or group an expression is in, from the expression's boundary.
+     *
+     * A comma boundary means the expression is a later item in a list, so the walk continues back to the list's
+     * opener.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $boundary The position of the token before the expression, from findExpressionBoundary().
+     * @return int|null The position of a `(`, `[` or `match` body's `{`, or null if the expression is a statement.
+     */
+    private function findEnclosingOpener(File $phpcsFile, int $boundary): ?int
+    {
+        $tokens = $phpcsFile->getTokens();
+        while ($boundary >= 0 && $tokens[$boundary]['code'] === T_COMMA) {
+            $boundary = $this->findExpressionBoundary($phpcsFile, $boundary);
+        }
+
+        if ($boundary < 0) {
+            return null;
+        }
+
+        $code = $tokens[$boundary]['code'];
+        if (in_array($code, [T_OPEN_PARENTHESIS, T_OPEN_SHORT_ARRAY, T_OPEN_SQUARE_BRACKET], true)) {
+            return $boundary;
+        }
+
+        $condition = $tokens[$boundary]['scope_condition'] ?? null;
+        $isMatchBody = $code === T_OPEN_CURLY_BRACKET && $condition !== null && $tokens[$condition]['code'] === T_MATCH;
+
+        return $isMatchBody ? $boundary : null;
+    }
+
+    /**
+     * Check whether a bracket only groups an expression, so isn't a list that can end in a comma.
+     *
+     * That's a `(` that doesn't belong to a call, declaration or construct, as in `$x = ($a && $b);`, or an array
+     * index's `[`.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the bracket.
+     * @return bool True if it's a grouping bracket.
+     */
+    private function isGroupingOpener(File $phpcsFile, int $opener): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        if ($tokens[$opener]['code'] === T_OPEN_SQUARE_BRACKET) {
+            return true;
+        }
+
+        if ($tokens[$opener]['code'] !== T_OPEN_PARENTHESIS || isset($tokens[$opener]['parenthesis_owner'])) {
+            return false;
+        }
+
+        $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($opener - 1), null, true);
+        if ($previous === false) {
+            return true;
+        }
+
+        $code = $tokens[$previous]['code'];
+
+        return !isset(Tokens::FUNCTION_NAME_TOKENS[$code]) && !in_array($code, self::CALLABLE_ENDS, true);
     }
 
     /**

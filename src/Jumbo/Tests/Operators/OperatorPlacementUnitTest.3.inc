@@ -73,17 +73,8 @@ $over = $a
         + $b;
 $under = $a
 + $b;
-foo(
-    'first'
-    . 'second',
-);
 $arrowOver = fn(int $x): int
         => $x;
-$match = match (true) {
-    $a
-    && $b => 1,
-    default => 2,
-};
 
 // A by-reference hook's & isn't an operator.
 class ReferenceHooks
@@ -94,3 +85,25 @@ class ReferenceHooks
 
     public array $list = [] { &get => $this->list; }
 }
+
+// Valid by default: a wrapped line lined up with its list item, which PER doesn't rule out. With
+// requireListItemIndent set, as in OperatorPlacementUnitTest.4.inc, they're errors.
+foo(
+    'first'
+    . 'second',
+);
+$match = match (true) {
+    $a
+    && $b => 1,
+    default => 2,
+};
+
+// Valid: grouping parentheses, which aren't a list, are left alone, like a condition.
+$grouped = (
+    $a
+    && $b
+);
+$groupedIndented = (
+    $a
+        && $b
+);

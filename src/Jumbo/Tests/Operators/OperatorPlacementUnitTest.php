@@ -46,12 +46,20 @@ class OperatorPlacementUnitTest extends AbstractSniffTestCase
                 73 => 1,
                 // Not indented.
                 75 => 1,
-                // Lined up with an argument, not indented once past it.
-                78 => 1,
                 // An arrow function's => indented twice.
-                81 => 1,
-                // Lined up with a match arm's condition.
-                84 => 1,
+                77 => 1,
+            ];
+        }
+
+        if ($testFile === 'OperatorPlacementUnitTest.4.inc') {
+            // With requireListItemIndent, lined up with a list item instead of indented once past it.
+            return [
+                // A call argument.
+                20 => 1,
+                // An array element.
+                24 => 1,
+                // A match arm's condition.
+                28 => 1,
             ];
         }
 

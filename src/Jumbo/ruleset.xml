@@ -23,6 +23,14 @@
         </properties>
     </rule>
 
+    <!-- A wrapped line in a list item, such as a call argument, indented once past the item, so each item stays
+         distinct; PERCS31 also allows it lined up with the item -->
+    <rule ref="Jumbo.Operators.OperatorPlacement">
+        <properties>
+            <property name="requireListItemIndent" value="true"/>
+        </properties>
+    </rule>
+
     <!-- ====== GENERIC ====== -->
 
     <!-- No whitespace after ! -->

@@ -14,9 +14,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   lines has one type per line, or for a DNF type, one union segment per line with its intersections kept together.
   Auto-fixable.
 - **Continuation line indent (breaking).** As PER Coding Style 3.1 requires, a line starting with a wrapped operator,
-  including `.` and an arrow function's `=>`, must be indented once past the line its expression starts on. In a call's
-  argument or an array element that starts its own line, that's once past the argument, not lined up with it. A control
-  structure's condition isn't checked. New code `Jumbo.Operators.OperatorPlacement.Indent`. Auto-fixable.
+  including `.` and an arrow function's `=>`, must be indented once past the line its expression starts on. In a list
+  item, such as a call's argument or an array element, PERCS31 also allows it lined up with the item, and Jumbo requires
+  it once past (new property `requireListItemIndent`). Grouping parentheses, a control structure's condition and a
+  `case` condition aren't checked. New code `Jumbo.Operators.OperatorPlacement.Indent`. Auto-fixable.
 - **`Jumbo.Functions.ArrowFunctionSemicolonSpacing` (breaking).** No space before the semicolon that ends an arrow
   function, as PER Coding Style 3.1 requires. Auto-fixable.
 - **Method chain layout (breaking).** As PER Coding Style 3.1 requires, in a method chain split across lines, each `->`

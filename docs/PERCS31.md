@@ -1074,14 +1074,22 @@ enum Suit
 Requires a binary operator to start the next line when a statement wraps at it, not end this one, and that line to be
 indented once past the line its expression starts on. Operators within a line aren't affected.
 
-The expression starts after the nearest `;`, `,`, opening bracket, or full ternary `?` or `:`. So a split inside a
-call's argument, an array element or parentheses is indented once past the line that argument, element or parenthesised
-expression starts on. The indent in a control structure's condition, or a multi-line `case` condition, isn't checked.
+The expression starts after the nearest `;`, `,`, opening bracket, or full ternary `?` or `:`. Where it is decides
+the indent:
 
-**Why:** [PER Coding Style 3.1, Section 6.4](https://www.php-fig.org/per/coding-style/#64-operators-placement) says a wrapped operator MUST be at the start of the new line, and each
-subsequent line is indented once. Section 7.1 says the same of an arrow function's `=>`. Section 5 says a split
-condition is indented at least once, and section 5.2's `case` example lines the operators up with the first condition,
-so both are left alone.
+- **A statement:** exactly once past the line it starts on.
+- **A list item**, such as a call argument, an array element or a `match` arm: once past the line the item starts on,
+  or lined up with the item if it starts its own line. Set `requireListItemIndent` to allow only the first, as the
+  Jumbo standard does.
+- **An arrow function's `=>`:** exactly once past the line `fn` starts on, even in a list item.
+- **Grouping parentheses**, as in `$x = (`, a control structure's condition, or a multi-line `case` condition: not
+  checked.
+
+**Why:** [PER Coding Style 3.1, Section 6.4](https://www.php-fig.org/per/coding-style/#64-operators-placement) says that when a statement is split at an operator, the operator MUST be at
+the start of the new line, and each subsequent line is indented once. Section 7.1 says the same of an arrow function's
+`=>`. Section 5 says a split condition is indented at least once, and section 5.2's `case` example lines the operators
+up with the first condition. PER says nothing about an operator wrapped inside a list item or grouping parentheses,
+which aren't statements, so either layout passes.
 
 Only two inherited sniffs check the placement, each for one case: `Universal.Operators.ConcatPosition` for `.`, and
 `PSR12.ControlStructures.BooleanOperatorPlacement` for `&&` and `||` in a condition. This sniff covers every other
@@ -1102,9 +1110,14 @@ $total = $price * $quantity
 $label
     = $isActive ? 'Active' : 'Inactive';
 
+// Either layout, unless requireListItemIndent is set, when only the first passes.
 $this->expectOutputString(
     'first'
         . 'second',
+);
+$this->expectOutputString(
+    'first'
+    . 'second',
 );
 ```
 
@@ -1123,9 +1136,15 @@ $sum = $a
 
 $this->expectOutputString(
     'first'
-    . 'second',
+            . 'second',
 );
 ```
+
+**Configuration:**
+
+| Property                | Type | Default | Description                                                              |
+| ----------------------- | ---- | ------- | ------------------------------------------------------------------------ |
+| `requireListItemIndent` | bool | false   | Require a wrapped line in a list item to be indented once past the item. |
 
 ---
 
