@@ -1,10 +1,10 @@
-# Mossy2100 Coding Standard - Line Length
+# Jumbo Coding Standard - Line Length
 
-The line length limit in the [Mossy2100 Coding Standard](../README.md) is 120. To use a different limit, override it in your project's
+The line length limit in the [Jumbo Coding Standard](../README.md) is 120. To use a different limit, override it in your project's
 `phpcs.xml` (see [Usage](../README.md#usage)).
 
-A line over the limit gets a warning, `PERCS31.Files.LineLength.TooLong`, not an error, as PER Coding Style 3.1 requires
-a soft limit. `phpcs` still exits with a non-zero code on warnings, unless your project sets `ignore_warnings_on_exit`.
+A line over the limit gets a warning, `Jumbo.Files.LineLength.TooLong`, not an error, as PER Coding Style 3.1 requires a
+soft limit. `phpcs` still exits with a non-zero code on warnings, unless your project sets `ignore_warnings_on_exit`.
 
 ## The 80-Character Recommendation
 
@@ -17,29 +17,29 @@ vendor/bin/phpcs --warning-severity=4
 ```
 
 Neither limit is auto-fixable, as only a person can choose where to split a line. To change the recommended limit, set
-`recommendedLineLimit` on `PERCS31.Files.LineLength`, or set it to 0 to turn the check off.
+`recommendedLineLimit` on `Jumbo.Files.LineLength`, or set it to 0 to turn the check off.
 
 ## Changing the Limit
 
-In the [PERCS31](PERCS31.md) standard, only `PERCS31.Files.LineLength` uses the limit, so set its `lineLimit` to change it. The rest
-of this section is about the Mossy2100 standard.
+In the [PERCS31](PERCS31.md) standard, only `Jumbo.Files.LineLength` uses the limit, so set its `lineLimit` to change it. The rest of
+this section is about the Jumbo standard.
 
-Ten sniffs check or wrap long lines, and each has its own line-length property. The Mossy2100 ruleset sets all ten from
-an XML entity, `lineLength`, at the top of its `ruleset.xml`. An entity only applies within the file that defines it, so
+Ten sniffs check or wrap long lines, and each has its own line-length property. The Jumbo ruleset sets all ten from an
+XML entity, `lineLength`, at the top of its `ruleset.xml`. An entity only applies within the file that defines it, so
 you can't override it from `phpcs.xml`. Set all ten properties instead:
 
 | Sniff                                                                      | Property          | Value      |
 | -------------------------------------------------------------------------- | ----------------- | ---------- |
-| `PERCS31.Files.LineLength`                                                 | `lineLimit`       | length     |
-| `Mossy2100.Classes.RequireSingleLineMethodSignature`                       | `maxLineLength`   | length     |
+| `Jumbo.Files.LineLength`                                                   | `lineLimit`       | length     |
+| `Jumbo.Classes.RequireSingleLineMethodSignature`                           | `maxLineLength`   | length     |
 | `SlevomatCodingStandard.Classes.RequireMultiLineMethodSignature`           | `minLineLength`   | length + 1 |
 | `SlevomatCodingStandard.ControlStructures.RequireSingleLineCondition`      | `maxLineLength`   | length     |
 | `SlevomatCodingStandard.ControlStructures.RequireMultiLineCondition`       | `minLineLength`   | length + 1 |
 | `SlevomatCodingStandard.ControlStructures.RequireMultiLineTernaryOperator` | `lineLengthLimit` | length     |
-| `Mossy2100.Functions.RequireSingleLineCall`                                | `maxLineLength`   | length     |
+| `Jumbo.Functions.RequireSingleLineCall`                                    | `maxLineLength`   | length     |
 | `SlevomatCodingStandard.Functions.RequireMultiLineCall`                    | `minLineLength`   | length + 1 |
-| `Mossy2100.Arrays.ArrayDeclaration`                                        | `maxLineLength`   | length     |
-| `Mossy2100.ControlStructures.RequireSingleLineHeader`                      | `maxLineLength`   | length     |
+| `Jumbo.Arrays.ArrayDeclaration`                                            | `maxLineLength`   | length     |
+| `Jumbo.ControlStructures.RequireSingleLineHeader`                          | `maxLineLength`   | length     |
 
 If you set only some of them, the fixers can create lines over your limit, or leave lines short that could be joined.
 
@@ -58,14 +58,14 @@ set separately:
     <file>src</file>
     <file>tests</file>
 
-    <rule ref="Mossy2100"/>
+    <rule ref="Jumbo"/>
 
-    <rule ref="PERCS31.Files.LineLength">
+    <rule ref="Jumbo.Files.LineLength">
         <properties>
             <property name="lineLimit" value="&lineLength;"/>
         </properties>
     </rule>
-    <rule ref="Mossy2100.Classes.RequireSingleLineMethodSignature">
+    <rule ref="Jumbo.Classes.RequireSingleLineMethodSignature">
         <properties>
             <property name="maxLineLength" value="&lineLength;"/>
         </properties>
@@ -90,7 +90,7 @@ set separately:
             <property name="lineLengthLimit" value="&lineLength;"/>
         </properties>
     </rule>
-    <rule ref="Mossy2100.Functions.RequireSingleLineCall">
+    <rule ref="Jumbo.Functions.RequireSingleLineCall">
         <properties>
             <property name="maxLineLength" value="&lineLength;"/>
         </properties>
@@ -100,12 +100,12 @@ set separately:
             <property name="minLineLength" value="&lineLengthPlusOne;"/>
         </properties>
     </rule>
-    <rule ref="Mossy2100.Arrays.ArrayDeclaration">
+    <rule ref="Jumbo.Arrays.ArrayDeclaration">
         <properties>
             <property name="maxLineLength" value="&lineLength;"/>
         </properties>
     </rule>
-    <rule ref="Mossy2100.ControlStructures.RequireSingleLineHeader">
+    <rule ref="Jumbo.ControlStructures.RequireSingleLineHeader">
         <properties>
             <property name="maxLineLength" value="&lineLength;"/>
         </properties>

@@ -1,4 +1,4 @@
-# Mossy2100 PHP Coding Standard
+# Jumbo Coding Standard
 
 A PHP_CodeSniffer coding standard for PHP 8.4, developed by Shaun Moss.
 
@@ -10,13 +10,13 @@ A PHP_CodeSniffer coding standard for PHP 8.4, developed by Shaun Moss.
 
 ## Description
 
-This package provides two PHP_CodeSniffer coding standards:
+The Jumbo Coding Standard has two rulesets, each usable as a PHP_CodeSniffer standard:
 
 - **PERCS31**: [PER Coding Style 3.1](https://www.php-fig.org/per/coding-style/), and nothing more, built on PSR-12. No complete PHP_CodeSniffer standard for PER
   Coding Style existed. See [PERCS31](docs/PERCS31.md).
-- **Mossy2100**: PERCS31 plus house rules, for consistent naming and modern PHP 8.4+ code.
+- **Jumbo**: PERCS31 plus house rules, for consistent naming and modern PHP 8.4+ code.
 
-**Key features of Mossy2100:**
+**Key features of Jumbo:**
 
 - Follows PER Coding Style 3.1, through PERCS31.
 - Enforces `$camelCase` naming for variables, parameters and properties.
@@ -37,7 +37,7 @@ This package was developed with [Claude Code](https://claude.com/product/claude-
 
 The code is checked with:
 
-- [PHP_CodeSniffer](https://github.com/PHPCSStandards/PHP_CodeSniffer/), for [PSR-12](https://www.php-fig.org/psr/psr-12/) compliance plus the Mossy2100 coding standard
+- [PHP_CodeSniffer](https://github.com/PHPCSStandards/PHP_CodeSniffer/), for [PSR-12](https://www.php-fig.org/psr/psr-12/) compliance plus the Jumbo coding standard
 - [PHPStan](https://phpstan.org/), at level 9
 - [PHPUnit](https://phpunit.de/index.html), with a unit test for each custom sniff
 
@@ -76,7 +76,7 @@ Create a `phpcs.xml` file in your project root:
     <file>src</file>
     <file>tests</file>
 
-    <rule ref="Mossy2100"/>
+    <rule ref="Jumbo"/>
 </ruleset>
 ```
 
@@ -95,26 +95,26 @@ The line length limit is 120. To change it, see [Line Length](docs/LineLength.md
 
 ## Included Sniffs
 
-The Mossy2100 standard is built on [PERCS31](docs/PERCS31.md), which lists every sniff it uses for PER Coding Style: PSR-12, sniffs from
+The Jumbo standard is built on [PERCS31](docs/PERCS31.md), which lists every sniff it uses for PER Coding Style: PSR-12, sniffs from
 Generic, Squiz, Slevomat and PHPCSExtra (`Universal`), and its own custom sniffs.
 
-On top of that, Mossy2100 adds more Generic, Squiz and Slevomat sniffs, each documented in [Inherited Sniffs](docs/InheritedSniffs.md), and these
+On top of that, Jumbo adds more Generic, Squiz and Slevomat sniffs, each documented in [Inherited Sniffs](docs/InheritedSniffs.md), and these
 custom sniffs, each with its reason in [Custom Sniffs](docs/CustomSniffs.md):
 
-| Sniff                                                          | Checks                                                          | Fixable |
-| -------------------------------------------------------------- | --------------------------------------------------------------- | ------- |
-| `Mossy2100.Arrays.ArrayDeclaration`                            | A multi-line array is on one line if it fits                    | Yes     |
-| `Mossy2100.Classes.EmptyLinesAroundClassBraces`                | No blank lines inside class braces, allowing `{}`               | Yes     |
-| `Mossy2100.Classes.RequireSingleLineMethodSignature`           | A short signature on one line, skipping a promoted hook         | Yes     |
-| `Mossy2100.ControlStructures.LanguageConstructWithParentheses` | No `echo('x')`, allowing `exit()` and `die()`                   | Yes     |
-| `Mossy2100.ControlStructures.RequireSingleLineHeader`          | A multi-line loop, `switch` or `match` header fits on a line    | Yes     |
-| `Mossy2100.Functions.RequireSingleLineCall`                    | A call that fits is on one line, skipping an anonymous class    | Yes     |
-| `Mossy2100.Namespaces.UnusedUses`                              | No unused `use` statements, safe with a miscased `use Function` | Yes     |
-| `Mossy2100.NamingConventions.ValidVariableName`                | No leading underscore on a variable or parameter in a class     | No      |
-| `Mossy2100.Operators.UnaryOperatorSpacing`                     | No whitespace after a prefix `+`, `~` or `@`                    | Yes     |
-| `Mossy2100.TypeHints.DeclareStrictTypes`                       | `strict_types=1` required, allowing `<?php declare(...) ?>`     | Yes     |
-| `Mossy2100.TypeHints.ParameterTypeHint`                        | Parameter type hints, skipping a promoted hook                  | Yes     |
-| `Mossy2100.TypeHints.ParameterTypeHintSpacing`                 | Parameter type hint spacing, skipping a promoted hook           | Yes     |
+| Sniff                                                      | Checks                                                          | Fixable |
+| ---------------------------------------------------------- | --------------------------------------------------------------- | ------- |
+| `Jumbo.Arrays.ArrayDeclaration`                            | A multi-line array is on one line if it fits                    | Yes     |
+| `Jumbo.Classes.EmptyLinesAroundClassBraces`                | No blank lines inside class braces, allowing `{}`               | Yes     |
+| `Jumbo.Classes.RequireSingleLineMethodSignature`           | A short signature on one line, skipping a promoted hook         | Yes     |
+| `Jumbo.ControlStructures.LanguageConstructWithParentheses` | No `echo('x')`, allowing `exit()` and `die()`                   | Yes     |
+| `Jumbo.ControlStructures.RequireSingleLineHeader`          | A multi-line loop, `switch` or `match` header fits on a line    | Yes     |
+| `Jumbo.Functions.RequireSingleLineCall`                    | A call that fits is on one line, skipping an anonymous class    | Yes     |
+| `Jumbo.Namespaces.UnusedUses`                              | No unused `use` statements, safe with a miscased `use Function` | Yes     |
+| `Jumbo.NamingConventions.ValidVariableName`                | No leading underscore on a variable or parameter in a class     | No      |
+| `Jumbo.Operators.UnaryOperatorSpacing`                     | No whitespace after a prefix `+`, `~` or `@`                    | Yes     |
+| `Jumbo.TypeHints.DeclareStrictTypes`                       | `strict_types=1` required, allowing `<?php declare(...) ?>`     | Yes     |
+| `Jumbo.TypeHints.ParameterTypeHint`                        | Parameter type hints, skipping a promoted hook                  | Yes     |
+| `Jumbo.TypeHints.ParameterTypeHintSpacing`                 | Parameter type hint spacing, skipping a promoted hook           | Yes     |
 
 ---
 

@@ -6,24 +6,24 @@
 
     <!-- PER Coding Style extends PSR-12 -->
     <rule ref="PSR12">
-        <!-- Replaced by PERCS31 versions that support property hooks (PHP 8.4) -->
+        <!-- Replaced by Jumbo versions that support property hooks (PHP 8.4) -->
         <exclude name="PSR2.Classes.PropertyDeclaration"/>
         <exclude name="Generic.WhiteSpace.ScopeIndent"/>
-        <!-- Replaced by a PERCS31 version that allows { get; set; } on an abstract or interface property (4.10) -->
+        <!-- Replaced by a Jumbo version that allows { get; set; } on an abstract or interface property (4.10) -->
         <exclude name="Generic.Formatting.DisallowMultipleStatements"/>
-        <!-- Replaced by PERCS31 versions that allow an empty body as {} (4, 4.4, 7, 8) -->
+        <!-- Replaced by Jumbo versions that allow an empty body as {} (4, 4.4, 7, 8) -->
         <exclude name="PSR2.Classes.ClassDeclaration"/>
         <exclude name="Squiz.Functions.MultiLineFunctionDeclaration"/>
         <exclude name="Squiz.WhiteSpace.ScopeClosingBrace"/>
-        <!-- Replaced by a PERCS31 version with the switch rules (5.2) -->
+        <!-- Replaced by a Jumbo version with the switch rules (5.2) -->
         <exclude name="PSR2.ControlStructures.SwitchDeclaration"/>
-        <!-- Replaced by a PERCS31 version that also covers the pipe operator |> (6.2) -->
+        <!-- Replaced by a Jumbo version that also covers the pipe operator |> (6.2) -->
         <exclude name="PSR12.Operators.OperatorSpacing"/>
-        <!-- Replaced by a PERCS31 version that also warns, at a lower severity, over 80 characters (2.3) -->
+        <!-- Replaced by a Jumbo version that also warns, at a lower severity, over 80 characters (2.3) -->
         <exclude name="Generic.Files.LineLength"/>
-        <!-- Replaced by a PERCS31 version that allows PascalCase for an enum constant, and recommends it (9) -->
+        <!-- Replaced by a Jumbo version that allows PascalCase for an enum constant, and recommends it (9) -->
         <exclude name="Generic.NamingConventions.UpperCaseConstantName"/>
-        <!-- Replaced by a PERCS31 version that allows <?php declare(strict_types=1) ?> on the first line of a file with
+        <!-- Replaced by a Jumbo version that allows <?php declare(strict_types=1) ?> on the first line of a file with
              markup (3) -->
         <exclude name="PSR12.Files.FileHeader"/>
     </rule>
@@ -49,13 +49,13 @@
     <!-- A method chain split across lines: each object operator starts a line indented once, and the first method is
          on the next line (4.7) -->
     <rule ref="PEAR.WhiteSpace.ObjectOperatorIndent"/>
-    <rule ref="PERCS31.Formatting.MethodChaining"/>
+    <rule ref="Jumbo.Formatting.MethodChaining"/>
 
     <!-- Exactly one space after a cast (6.1) -->
     <rule ref="Generic.Formatting.SpaceAfterCast"/>
 
     <!-- A heredoc's or nowdoc's body and closing marker indented once past the line it starts on (10) -->
-    <rule ref="PERCS31.Strings.HeredocIndentation"/>
+    <rule ref="Jumbo.Strings.HeredocIndentation"/>
 
     <!-- A warning for a heredoc that could be a nowdoc (10) -->
     <rule ref="Generic.Strings.UnnecessaryHeredoc"/>
@@ -122,7 +122,7 @@
     <rule ref="SlevomatCodingStandard.Arrays.MultiLineArrayEndBracketPlacement"/>
 
     <!-- Allow an attribute on the same line as its target, so a parameter's can be inline (12.2).
-         PERCS31.Attributes.AttributePlacement reports every other same-line attribute. -->
+         Jumbo.Attributes.AttributePlacement reports every other same-line attribute. -->
     <rule ref="SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing">
         <properties>
             <property name="allowOnSameLine" value="true"/>
@@ -154,7 +154,7 @@
         </properties>
     </rule>
     <!-- No space before the semicolon that ends an arrow function (7.1) -->
-    <rule ref="PERCS31.Functions.ArrowFunctionSemicolonSpacing"/>
+    <rule ref="Jumbo.Functions.ArrowFunctionSemicolonSpacing"/>
     <!-- No space before a named argument's colon, one after (4.7) -->
     <rule ref="SlevomatCodingStandard.Functions.NamedArgumentSpacing"/>
     <!-- Trailing commas: disallowed on single-line lists, required on multi-line ones (2.6) -->
@@ -180,7 +180,7 @@
     <!-- Union and intersection types: no spaces around | and &, or inside the parentheses, and null last (2.5). ?T is
          a SHOULD, so a warning. Known Slevomat bug, not worked around: a variable after a case body wrapped in braces
          crashes this sniff ("Undefined array key bracket_closer"), aborting the rest of the file. PER 5.2 disallows
-         braces around a case body, and PERCS31.ControlStructures.SwitchDeclaration still reports them, so removing
+         braces around a case body, and Jumbo.ControlStructures.SwitchDeclaration still reports them, so removing
          the braces fixes both. -->
     <rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat">
         <properties>
@@ -193,107 +193,107 @@
     <rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.RequiredShortNullable">
         <type>warning</type>
     </rule>
-    <!-- Replaced by PERCS31.TypeHints.CompoundTypeOperatorSpacing, which allows a compound type split before | or &
+    <!-- Replaced by Jumbo.TypeHints.CompoundTypeOperatorSpacing, which allows a compound type split before | or &
          (2.5) -->
     <rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.DisallowedWhitespaceAroundOperator">
         <severity>0</severity>
     </rule>
 
     <!-- No space around | or & in a compound type, but a split before one allowed (2.5) -->
-    <rule ref="PERCS31.TypeHints.CompoundTypeOperatorSpacing"/>
+    <rule ref="Jumbo.TypeHints.CompoundTypeOperatorSpacing"/>
     <!-- A compound type split across lines has one type, or one union segment, per line (2.5) -->
-    <rule ref="PERCS31.TypeHints.CompoundTypeLayout"/>
+    <rule ref="Jumbo.TypeHints.CompoundTypeLayout"/>
 
     <!-- ====== PERCS31 ====== -->
 
     <!-- The file header (3), allowing a declare statement between PHP tags on the first line of a file with markup -->
-    <rule ref="PERCS31.Files.FileHeader"/>
+    <rule ref="Jumbo.Files.FileHeader"/>
 
     <!-- Line length (2.3): a warning over 120 characters, no hard limit, and a severity 4 warning over 80, which phpcs
          only shows with warning-severity set to 4 -->
-    <rule ref="PERCS31.Files.LineLength"/>
+    <rule ref="Jumbo.Files.LineLength"/>
 
     <!-- Brace sniffs, extended to allow an empty body as {} (4, 4.4, 7, 8) -->
-    <rule ref="PERCS31.Classes.ClassDeclaration"/>
-    <rule ref="PERCS31.Functions.MultiLineFunctionDeclaration">
+    <rule ref="Jumbo.Classes.ClassDeclaration"/>
+    <rule ref="Jumbo.Functions.MultiLineFunctionDeclaration">
         <!-- Replaced by the sniff's own BlankLine check, which allows a blank line before a parameter's attributes
              (12.2) -->
-        <exclude name="PERCS31.Functions.MultiLineFunctionDeclaration.EmptyLine"/>
+        <exclude name="Jumbo.Functions.MultiLineFunctionDeclaration.EmptyLine"/>
     </rule>
-    <rule ref="PERCS31.WhiteSpace.ScopeClosingBrace"/>
+    <rule ref="Jumbo.WhiteSpace.ScopeClosingBrace"/>
 
     <!-- An empty body as {}: a warning for a class or function (4, 4.4), an error for a closure or anonymous class (7, 8) -->
-    <rule ref="PERCS31.Formatting.EmptyBody"/>
+    <rule ref="Jumbo.Formatting.EmptyBody"/>
 
     <!-- Indentation, including property hooks (2.4, 4.9) and an anonymous class with attributes (8) -->
-    <rule ref="PERCS31.WhiteSpace.ScopeIndent"/>
+    <rule ref="Jumbo.WhiteSpace.ScopeIndent"/>
 
     <!-- One statement per line, allowing { get; set; } on an abstract or interface property (2.3, 4.10) -->
-    <rule ref="PERCS31.Formatting.DisallowMultipleStatements"/>
+    <rule ref="Jumbo.Formatting.DisallowMultipleStatements"/>
 
     <!-- Properties: no leading underscore, no var, a visibility, and get before set with no bodies (4.3, 4.10) -->
-    <rule ref="PERCS31.Classes.PropertyDeclaration"/>
+    <rule ref="Jumbo.Classes.PropertyDeclaration"/>
 
     <!-- The layout of a property's hook list: its braces, and a short hook's => (4.9) -->
-    <rule ref="PERCS31.Classes.PropertyHookLayout"/>
+    <rule ref="Jumbo.Classes.PropertyHookLayout"/>
 
     <!-- A hook on a promoted constructor parameter only as a single short hook on one line (4.9) -->
-    <rule ref="PERCS31.Classes.PromotedPropertyHooks"/>
+    <rule ref="Jumbo.Classes.PromotedPropertyHooks"/>
 
     <!-- One constant per statement (4.3) -->
-    <rule ref="PERCS31.PHP.DisallowMultiConstantDefinition"/>
+    <rule ref="Jumbo.PHP.DisallowMultiConstantDefinition"/>
 
     <!-- Constants in UPPER_CASE, except in an enum, where a severity 4 warning recommends PascalCase (9) -->
-    <rule ref="PERCS31.NamingConventions.UpperCaseConstantName"/>
+    <rule ref="Jumbo.NamingConventions.UpperCaseConstantName"/>
 
     <!-- No leading underscore on a constant (4.3) -->
-    <rule ref="PERCS31.NamingConventions.ValidConstantName"/>
+    <rule ref="Jumbo.NamingConventions.ValidConstantName"/>
 
     <!-- A warning for new Foo() wrapped in parentheses before ->, ?-> or :: (4) -->
-    <rule ref="PERCS31.Classes.ClassInstantiationNoBrackets"/>
+    <rule ref="Jumbo.Classes.ClassInstantiationNoBrackets"/>
 
     <!-- A warning for clone without parentheses, e.g. clone $a (4.7) -->
-    <rule ref="PERCS31.PHP.RequireCloneParentheses"/>
+    <rule ref="Jumbo.PHP.RequireCloneParentheses"/>
 
     <!-- switch rules, including a terminating statement in the last case, and parentheses around a multi-line case
          condition (5.2) -->
-    <rule ref="PERCS31.ControlStructures.SwitchDeclaration"/>
+    <rule ref="Jumbo.ControlStructures.SwitchDeclaration"/>
 
     <!-- A trailing comma in a multi-line match or group use, and none on a single line (2.6) -->
-    <rule ref="PERCS31.Formatting.TrailingComma"/>
+    <rule ref="Jumbo.Formatting.TrailingComma"/>
 
     <!-- One space around => in match arms, as in the example in 5.2 -->
-    <rule ref="PERCS31.ControlStructures.MatchArrowSpacing"/>
+    <rule ref="Jumbo.ControlStructures.MatchArrowSpacing"/>
 
     <!-- At least one space around binary operators, including |> (6.2). The codes for more than one space are
          excluded, as PER allows more. -->
-    <rule ref="PERCS31.Operators.OperatorSpacing">
-        <exclude name="PERCS31.Operators.OperatorSpacing.SpacingBefore"/>
-        <exclude name="PERCS31.Operators.OperatorSpacing.SpacingAfter"/>
-        <exclude name="PERCS31.Operators.OperatorSpacing.SpacingBeforeAmp"/>
-        <exclude name="PERCS31.Operators.OperatorSpacing.SpacingAfterAmp"/>
+    <rule ref="Jumbo.Operators.OperatorSpacing">
+        <exclude name="Jumbo.Operators.OperatorSpacing.SpacingBefore"/>
+        <exclude name="Jumbo.Operators.OperatorSpacing.SpacingAfter"/>
+        <exclude name="Jumbo.Operators.OperatorSpacing.SpacingBeforeAmp"/>
+        <exclude name="Jumbo.Operators.OperatorSpacing.SpacingAfterAmp"/>
     </rule>
 
     <!-- A ternary that spans lines takes three, with ? and : leading, indented once (6.4) -->
-    <rule ref="PERCS31.ControlStructures.MultiLineTernaryOperator"/>
+    <rule ref="Jumbo.ControlStructures.MultiLineTernaryOperator"/>
 
     <!-- Any other wrapped binary operator, and an arrow function's =>, at the start of the line (6.4, 7.1) -->
-    <rule ref="PERCS31.Operators.OperatorPlacement"/>
+    <rule ref="Jumbo.Operators.OperatorPlacement"/>
 
     <!-- private, not protected, for a non-public method or constant in an enum (9) -->
-    <rule ref="PERCS31.Classes.EnumMemberVisibility"/>
+    <rule ref="Jumbo.Classes.EnumMemberVisibility"/>
 
     <!-- Enum cases in PascalCase (9) -->
-    <rule ref="PERCS31.NamingConventions.ValidEnumCaseName"/>
+    <rule ref="Jumbo.NamingConventions.ValidEnumCaseName"/>
 
     <!-- A multi-line array's [ not on a line of its own, except as an element of a multi-line array (11) -->
-    <rule ref="PERCS31.Arrays.OpeningBracketPlacement"/>
+    <rule ref="Jumbo.Arrays.OpeningBracketPlacement"/>
 
     <!-- An attribute on the line before its target, except on a parameter in a single-line list, and the layout of an
          anonymous class's attributes (8, 12.2) -->
-    <rule ref="PERCS31.Attributes.AttributePlacement"/>
+    <rule ref="Jumbo.Attributes.AttributePlacement"/>
 
     <!-- Several attributes may share a block on one line, but not one split over lines (12.3) -->
-    <rule ref="PERCS31.Attributes.DisallowMultiLineAttributesJoining"/>
+    <rule ref="Jumbo.Attributes.DisallowMultiLineAttributesJoining"/>
 
 </ruleset>

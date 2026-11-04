@@ -8,7 +8,7 @@ rejecting an empty body written as `{}`, and don't know PHP 8.4 and 8.5 features
 operator. This standard fixes both, using sniffs from PHP_CodeSniffer, Slevomat and PHPCSExtra where they fit, and
 custom sniffs where nothing did.
 
-The [Mossy2100 standard](../README.md) is PERCS31 plus house rules. Use PERCS31 on its own to follow PER Coding Style without them.
+The [Jumbo standard](../README.md) is PERCS31 plus house rules. Use PERCS31 on its own to follow PER Coding Style without them.
 
 **Contents:**
 
@@ -41,22 +41,22 @@ PERCS31 is installed with the `mossy2100/coding-standard` package, and registere
 
 The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included. These PSR-12 sniffs are replaced by PERCS31 versions:
 
-- **PSR2.Classes.PropertyDeclaration** and **Generic.WhiteSpace.ScopeIndent**, by [`PERCS31.Classes.PropertyDeclaration`](#percs31classespropertydeclaration)
-  and [`PERCS31.WhiteSpace.ScopeIndent`](#percs31whitespacescopeindent), which support property hooks (PHP 8.4).
-- **Generic.Formatting.DisallowMultipleStatements**, by [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements), which allows
+- **PSR2.Classes.PropertyDeclaration** and **Generic.WhiteSpace.ScopeIndent**, by [`Jumbo.Classes.PropertyDeclaration`](#jumboclassespropertydeclaration)
+  and [`Jumbo.WhiteSpace.ScopeIndent`](#jumbowhitespacescopeindent), which support property hooks (PHP 8.4).
+- **Generic.Formatting.DisallowMultipleStatements**, by [`Jumbo.Formatting.DisallowMultipleStatements`](#jumboformattingdisallowmultiplestatements), which allows
   `{ get; set; }` on an abstract or interface property.
 - **PSR2.Classes.ClassDeclaration**, **Squiz.Functions.MultiLineFunctionDeclaration** and
   **Squiz.WhiteSpace.ScopeClosingBrace**, by versions that allow an empty body as `{}`. See
-  [`PERCS31.Formatting.EmptyBody`](#percs31formattingemptybody).
-- **Generic.Files.LineLength**, by [`PERCS31.Files.LineLength`](#percs31fileslinelength), which also warns, at a lower severity, about a line over
-  80 characters.
-- **Generic.NamingConventions.UpperCaseConstantName**, from PSR-1, by [`PERCS31.NamingConventions.UpperCaseConstantName`](#percs31namingconventionsuppercaseconstantname),
+  [`Jumbo.Formatting.EmptyBody`](#jumboformattingemptybody).
+- **Generic.Files.LineLength**, by [`Jumbo.Files.LineLength`](#jumbofileslinelength), which also warns, at a lower severity, about a line over 80
+  characters.
+- **Generic.NamingConventions.UpperCaseConstantName**, from PSR-1, by [`Jumbo.NamingConventions.UpperCaseConstantName`](#jumbonamingconventionsuppercaseconstantname),
   which allows PascalCase for an enum constant.
-- **PSR12.Files.FileHeader**, by [`PERCS31.Files.FileHeader`](#percs31filesfileheader), which allows `<?php declare(strict_types=1) ?>` on the
-  first line of a file with markup.
-- **PSR2.ControlStructures.SwitchDeclaration**, by [`PERCS31.ControlStructures.SwitchDeclaration`](#percs31controlstructuresswitchdeclaration), which adds PER's
+- **PSR12.Files.FileHeader**, by [`Jumbo.Files.FileHeader`](#jumbofilesfileheader), which allows `<?php declare(strict_types=1) ?>` on the first
+  line of a file with markup.
+- **PSR2.ControlStructures.SwitchDeclaration**, by [`Jumbo.ControlStructures.SwitchDeclaration`](#jumbocontrolstructuresswitchdeclaration), which adds PER's
   `switch` rules.
-- **PSR12.Operators.OperatorSpacing**, by [`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing), which also covers the pipe operator `|>`.
+- **PSR12.Operators.OperatorSpacing**, by [`Jumbo.Operators.OperatorSpacing`](#jumbooperatorsoperatorspacing), which also covers the pipe operator `|>`.
 - **PSR12.Properties.ConstantVisibility** is kept, but a constant with no visibility is an error, not a warning, as
   [Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says MUST.
 - **PSR12.ControlStructures.BooleanOperatorPlacement** is kept, with `allowOnly` set to `first`, so a wrapped `&&` or
@@ -113,7 +113,7 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 
 - **Arrays.MultiLineArrayEndBracketPlacement**: Requires the closing bracket of a multi-line array on its own line (11).
 - **Attributes.AttributeAndTargetSpacing**: Disallows blank lines between an attribute and its target (12.2). An
-  attribute on the same line as its target is allowed here, and checked by [`PERCS31.Attributes.AttributePlacement`](#percs31attributesattributeplacement).
+  attribute on the same line as its target is allowed here, and checked by [`Jumbo.Attributes.AttributePlacement`](#jumboattributesattributeplacement).
 - **Attributes.DisallowMultipleAttributesPerLine**: Requires separate attribute blocks on separate lines (12.3).
 - **Attributes.RequireAttributeAfterDocComment**: Requires a doc comment before the attributes, not after (12.2).
 - **Classes.BackedEnumTypeSpacing**: Requires no space before a backed enum's colon, and one after (9).
@@ -131,7 +131,7 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
   multi-line list (2.6).
 - **TypeHints.DNFTypeHintFormat**: Requires no spaces inside the parentheses, and `null` last (2.5). It warns about
   `T|null`, which SHOULD be `?T`. Its check for spaces around `|` and `&` is replaced by
-  [`PERCS31.TypeHints.CompoundTypeOperatorSpacing`](#percs31typehintscompoundtypeoperatorspacing), which allows a split type.
+  [`Jumbo.TypeHints.CompoundTypeOperatorSpacing`](#jumbotypehintscompoundtypeoperatorspacing), which allows a split type.
 
 ---
 
@@ -140,42 +140,42 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 Each one fills a gap in the inherited sniffs, or replaces an inherited sniff that conflicts with PER Coding Style. Each
 section gives the reason.
 
-| Sniff                                                   | Checks                                                            | Fixable |
-| ------------------------------------------------------- | ----------------------------------------------------------------- | ------- |
-| `PERCS31.Arrays.OpeningBracketPlacement`                | A multi-line array's `[` isn't on a line of its own               | Yes     |
-| `PERCS31.Attributes.AttributePlacement`                 | An attribute is on its own line, except on a parameter            | Yes     |
-| `PERCS31.Attributes.DisallowMultiLineAttributesJoining` | One attribute per block when a block spans lines                  | Yes     |
-| `PERCS31.Classes.ClassDeclaration`                      | Class declarations, allowing an empty body as `{}`                | Yes     |
-| `PERCS31.Classes.ClassInstantiationNoBrackets`          | A warning for `(new Foo())->bar()`                                | Yes     |
-| `PERCS31.Classes.EnumMemberVisibility`                  | `private`, not `protected`, for a method or constant in an enum   | Yes     |
-| `PERCS31.Classes.PropertyHookLayout`                    | A hook list's braces, and the spacing of a short hook's `=>`      | Partly  |
-| `PERCS31.Classes.PromotedPropertyHooks`                 | A hook on a promoted parameter is a single short hook on one line | No      |
-| `PERCS31.Classes.PropertyDeclaration`                   | No leading `_`, no `var`, a visibility, and `get` before `set`    | Partly  |
-| `PERCS31.ControlStructures.MatchArrowSpacing`           | One space around `=>` in `match` arms                             | Yes     |
-| `PERCS31.ControlStructures.MultiLineTernaryOperator`    | A multi-line ternary takes three lines, `?` and `:` leading       | Yes     |
-| `PERCS31.ControlStructures.SwitchDeclaration`           | `switch` rules, with a `break` in the last case                   | Yes     |
-| `PERCS31.Files.FileHeader`                              | The file header, allowing `<?php declare(...) ?>` above markup    | Yes     |
-| `PERCS31.Files.LineLength`                              | A warning over 120 characters, and a hidden one over 80           | No      |
-| `PERCS31.Formatting.DisallowMultipleStatements`         | One statement per line, allowing `{ get; set; }`                  | Yes     |
-| `PERCS31.Formatting.EmptyBody`                          | An empty class, function, closure or anonymous class body is `{}` | Yes     |
-| `PERCS31.Formatting.MethodChaining`                     | The first method of a split chain on the next line                | Yes     |
-| `PERCS31.Formatting.TrailingComma`                      | A trailing comma in a multi-line `match` or group `use` only      | Yes     |
-| `PERCS31.Functions.ArrowFunctionSemicolonSpacing`       | No space before the `;` that ends an arrow function               | Yes     |
-| `PERCS31.Functions.MultiLineFunctionDeclaration`        | Function and closure declarations, allowing an empty body as `{}` | Yes     |
-| `PERCS31.NamingConventions.UpperCaseConstantName`       | Constants in UPPER_CASE, or PascalCase in an enum                 | No      |
-| `PERCS31.NamingConventions.ValidConstantName`           | No leading underscore on a constant                               | No      |
-| `PERCS31.NamingConventions.ValidEnumCaseName`           | Enum cases in PascalCase                                          | No      |
-| `PERCS31.Operators.OperatorPlacement`                   | A wrapped binary operator starts the next line, indented once     | Yes     |
-| `PERCS31.Operators.OperatorSpacing`                     | At least one space around binary operators, including `\|>`       | Yes     |
-| `PERCS31.PHP.DisallowMultiConstantDefinition`           | One constant per statement                                        | Yes     |
-| `PERCS31.PHP.RequireCloneParentheses`                   | A warning for `clone $a`, not `clone($a)`                         | Yes     |
-| `PERCS31.Strings.HeredocIndentation`                    | A heredoc or nowdoc indented once past the line it starts on      | Yes     |
-| `PERCS31.TypeHints.CompoundTypeLayout`                  | One type, or one DNF union segment, per line of a split type      | Yes     |
-| `PERCS31.TypeHints.CompoundTypeOperatorSpacing`         | No space around `\|` or `&` in a type, but a split before one     | Yes     |
-| `PERCS31.WhiteSpace.ScopeClosingBrace`                  | A closing brace on its own line, allowing `{}`                    | Yes     |
-| `PERCS31.WhiteSpace.ScopeIndent`                        | Indentation, including property hooks and anonymous classes       | Yes     |
+| Sniff                                                 | Checks                                                            | Fixable |
+| ----------------------------------------------------- | ----------------------------------------------------------------- | ------- |
+| `Jumbo.Arrays.OpeningBracketPlacement`                | A multi-line array's `[` isn't on a line of its own               | Yes     |
+| `Jumbo.Attributes.AttributePlacement`                 | An attribute is on its own line, except on a parameter            | Yes     |
+| `Jumbo.Attributes.DisallowMultiLineAttributesJoining` | One attribute per block when a block spans lines                  | Yes     |
+| `Jumbo.Classes.ClassDeclaration`                      | Class declarations, allowing an empty body as `{}`                | Yes     |
+| `Jumbo.Classes.ClassInstantiationNoBrackets`          | A warning for `(new Foo())->bar()`                                | Yes     |
+| `Jumbo.Classes.EnumMemberVisibility`                  | `private`, not `protected`, for a method or constant in an enum   | Yes     |
+| `Jumbo.Classes.PropertyHookLayout`                    | A hook list's braces, and the spacing of a short hook's `=>`      | Partly  |
+| `Jumbo.Classes.PromotedPropertyHooks`                 | A hook on a promoted parameter is a single short hook on one line | No      |
+| `Jumbo.Classes.PropertyDeclaration`                   | No leading `_`, no `var`, a visibility, and `get` before `set`    | Partly  |
+| `Jumbo.ControlStructures.MatchArrowSpacing`           | One space around `=>` in `match` arms                             | Yes     |
+| `Jumbo.ControlStructures.MultiLineTernaryOperator`    | A multi-line ternary takes three lines, `?` and `:` leading       | Yes     |
+| `Jumbo.ControlStructures.SwitchDeclaration`           | `switch` rules, with a `break` in the last case                   | Yes     |
+| `Jumbo.Files.FileHeader`                              | The file header, allowing `<?php declare(...) ?>` above markup    | Yes     |
+| `Jumbo.Files.LineLength`                              | A warning over 120 characters, and a hidden one over 80           | No      |
+| `Jumbo.Formatting.DisallowMultipleStatements`         | One statement per line, allowing `{ get; set; }`                  | Yes     |
+| `Jumbo.Formatting.EmptyBody`                          | An empty class, function, closure or anonymous class body is `{}` | Yes     |
+| `Jumbo.Formatting.MethodChaining`                     | The first method of a split chain on the next line                | Yes     |
+| `Jumbo.Formatting.TrailingComma`                      | A trailing comma in a multi-line `match` or group `use` only      | Yes     |
+| `Jumbo.Functions.ArrowFunctionSemicolonSpacing`       | No space before the `;` that ends an arrow function               | Yes     |
+| `Jumbo.Functions.MultiLineFunctionDeclaration`        | Function and closure declarations, allowing an empty body as `{}` | Yes     |
+| `Jumbo.NamingConventions.UpperCaseConstantName`       | Constants in UPPER_CASE, or PascalCase in an enum                 | No      |
+| `Jumbo.NamingConventions.ValidConstantName`           | No leading underscore on a constant                               | No      |
+| `Jumbo.NamingConventions.ValidEnumCaseName`           | Enum cases in PascalCase                                          | No      |
+| `Jumbo.Operators.OperatorPlacement`                   | A wrapped binary operator starts the next line, indented once     | Yes     |
+| `Jumbo.Operators.OperatorSpacing`                     | At least one space around binary operators, including `\|>`       | Yes     |
+| `Jumbo.PHP.DisallowMultiConstantDefinition`           | One constant per statement                                        | Yes     |
+| `Jumbo.PHP.RequireCloneParentheses`                   | A warning for `clone $a`, not `clone($a)`                         | Yes     |
+| `Jumbo.Strings.HeredocIndentation`                    | A heredoc or nowdoc indented once past the line it starts on      | Yes     |
+| `Jumbo.TypeHints.CompoundTypeLayout`                  | One type, or one DNF union segment, per line of a split type      | Yes     |
+| `Jumbo.TypeHints.CompoundTypeOperatorSpacing`         | No space around `\|` or `&` in a type, but a split before one     | Yes     |
+| `Jumbo.WhiteSpace.ScopeClosingBrace`                  | A closing brace on its own line, allowing `{}`                    | Yes     |
+| `Jumbo.WhiteSpace.ScopeIndent`                        | Indentation, including property hooks and anonymous classes       | Yes     |
 
-### PERCS31.Arrays.OpeningBracketPlacement
+### Jumbo.Arrays.OpeningBracketPlacement
 
 Disallows the opening bracket of a multi-line array on a line of its own, e.g. as a function call's argument. An array
 that's an element of a multi-line array is allowed, as is a destructuring assignment such as `[$a, $b] = pair();` split
@@ -222,7 +222,7 @@ $response = $client->post(
 
 ---
 
-### PERCS31.Attributes.AttributePlacement
+### Jumbo.Attributes.AttributePlacement
 
 Requires an attribute to be on the line before its target, as [PER Coding Style 3.0, Section 12.2](https://www.php-fig.org/per/coding-style/#122-placement) requires. The exception
 is a parameter in a single-line parameter list, whose attribute must be inline.
@@ -233,8 +233,8 @@ parameter's attribute can be inline. This sniff then reports every other same-li
 a multi-line parameter list.
 
 An attribute on an anonymous class follows [PER Coding Style 3.1, Section 8](https://www.php-fig.org/per/coding-style/#8-anonymous-classes) instead. The attributes start on the line
-after `new`, indented once, with `class` on the line after them at the same indent. `PERCS31.WhiteSpace.ScopeIndent`
-then indents the class body from `class`.
+after `new`, indented once, with `class` on the line after them at the same indent. `Jumbo.WhiteSpace.ScopeIndent` then
+indents the class body from `class`.
 
 It also reports a blank line between a docblock and the attributes after it, or between two attribute blocks, and
 anything but a single space between an attribute and its parameter on the same line, as section 12.2 requires. A blank
@@ -296,7 +296,7 @@ $handler = new #[Attribute] class {
 
 ---
 
-### PERCS31.Attributes.DisallowMultiLineAttributesJoining
+### Jumbo.Attributes.DisallowMultiLineAttributesJoining
 
 Disallows several attributes in one attribute block when the block spans more than one line. A block on one line, such
 as `#[Attribute, Deprecated]`, is allowed. This replaces `SlevomatCodingStandard.Attributes.DisallowAttributesJoining`.
@@ -332,20 +332,20 @@ final class OldMarker {}
 
 ---
 
-### PERCS31.Classes.ClassDeclaration
+### Jumbo.Classes.ClassDeclaration
 
 Checks the declaration of a class, interface, trait or enum, and the placement of its braces, except in an empty body
 written as `{}` on one line, e.g. `class Foo {}`. This replaces `PSR2.Classes.ClassDeclaration`.
 
 **Why:** `PSR2.Classes.ClassDeclaration` rejects an empty body written as `{}` on one line, which
 [PER Coding Style 3.0, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the
-parent. For an empty body, the checks on `extends` and `implements` still run. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
+parent. For an empty body, the checks on `extends` and `implements` still run. See [Jumbo.Formatting.EmptyBody](#jumboformattingemptybody).
 
 **Auto-fixable:** yes, as the parent.
 
 ---
 
-### PERCS31.Classes.ClassInstantiationNoBrackets
+### Jumbo.Classes.ClassInstantiationNoBrackets
 
 Warns about parentheses around a class instantiation that's immediately dereferenced with `->`, `?->` or `::`, such as
 `(new Foo())->bar()`.
@@ -374,7 +374,7 @@ $total = (new Calculator())->add(1, 2);
 
 ---
 
-### PERCS31.Classes.EnumMemberVisibility
+### Jumbo.Classes.EnumMemberVisibility
 
 Requires a non-public method or constant in an enum to be `private`, not `protected`.
 
@@ -418,7 +418,7 @@ enum Suit
 
 ---
 
-### PERCS31.Classes.PropertyHookLayout
+### Jumbo.Classes.PropertyHookLayout
 
 Checks the layout of a property's hook list: its braces, and the `=>` of a short hook.
 
@@ -433,8 +433,8 @@ This sniff checks:
   space inside each brace, no space before each `;`, and a single space between operations ([Section 4.10](https://www.php-fig.org/per/coding-style/#410-interface-and-abstract-properties)).
 - A bodiless hook in a list with bodies has no space before its `;`.
 
-Indentation is checked by `PERCS31.WhiteSpace.ScopeIndent`, and one hook per line by
-`PERCS31.Formatting.DisallowMultipleStatements`.
+Indentation is checked by `Jumbo.WhiteSpace.ScopeIndent`, and one hook per line by
+`Jumbo.Formatting.DisallowMultipleStatements`.
 
 **Auto-fixable:** yes, except a comment after the closing brace, or a comment in the way.
 
@@ -482,7 +482,7 @@ interface Named
 
 ---
 
-### PERCS31.Classes.PromotedPropertyHooks
+### Jumbo.Classes.PromotedPropertyHooks
 
 Allows a property hook on a promoted constructor parameter only if it's a single hook with a short `=>` body, on one
 line. Otherwise, declare the property in the class body.
@@ -520,7 +520,7 @@ class User
 
 ---
 
-### PERCS31.Classes.PropertyDeclaration
+### Jumbo.Classes.PropertyDeclaration
 
 Verifies that properties are declared correctly. This replaces `PSR2.Classes.PropertyDeclaration`.
 
@@ -540,8 +540,8 @@ It reports:
 - A property with no visibility (`ScopeMissing`).
 - `set` before `get` in a property's hooks (`HookOrder`). [PER Coding Style 3.1, Section 4.10](https://www.php-fig.org/per/coding-style/#410-interface-and-abstract-properties) requires this for an
   abstract or interface property with no hook bodies, e.g. `{ get; set; }`, so only a list with no bodies is checked.
-  Set `orderHooksWithBodies` to check every hook list, including ones with bodies, `&` or attributes. The Mossy2100
-  standard does.
+  Set `orderHooksWithBodies` to check every hook list, including ones with bodies, `&` or attributes. The Jumbo standard
+  does.
 
 `SlevomatCodingStandard.Classes.PropertyDeclaration` checks modifier order and the spacing after the type, and
 `SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition` checks for several properties in one statement.
@@ -591,7 +591,7 @@ interface Named
 
 ---
 
-### PERCS31.ControlStructures.MatchArrowSpacing
+### Jumbo.ControlStructures.MatchArrowSpacing
 
 Requires exactly one space before and after the `=>` in a `match` arm.
 
@@ -624,7 +624,7 @@ $label = match ($size) {
 
 ---
 
-### PERCS31.ControlStructures.MultiLineTernaryOperator
+### Jumbo.ControlStructures.MultiLineTernaryOperator
 
 Requires a ternary that spans lines to take three, with `?` and `:` each starting a line, indented once. This replaces
 `SlevomatCodingStandard.ControlStructures.DisallowTrailingMultiLineTernaryOperator`.
@@ -637,7 +637,7 @@ PER, so it isn't checked here.
 **Auto-fixable:** yes, unless a comment is next to `?` or `:`.
 
 The indentation is always 4 spaces, as [PER Coding Style 3.0, Section 2.4](https://www.php-fig.org/per/coding-style/#24-indenting) requires. This sniff doesn't use the `indent`
-property of `PERCS31.WhiteSpace.ScopeIndent`.
+property of `Jumbo.WhiteSpace.ScopeIndent`.
 
 **Good:**
 
@@ -659,7 +659,7 @@ $label = $isActive ? 'Active' :
 
 ---
 
-### PERCS31.ControlStructures.SwitchDeclaration
+### Jumbo.ControlStructures.SwitchDeclaration
 
 Checks `switch` statements. This replaces `PSR2.ControlStructures.SwitchDeclaration`, and adds two rules:
 
@@ -703,7 +703,7 @@ switch (true) {
 
 ---
 
-### PERCS31.Files.FileHeader
+### Jumbo.Files.FileHeader
 
 Checks the blocks of the file header, and the blank lines between them. This replaces `PSR12.Files.FileHeader`, and
 allows a `declare` statement between its own PHP tags on the first line of a file with markup.
@@ -729,7 +729,7 @@ left out.
 
 ---
 
-### PERCS31.Files.LineLength
+### Jumbo.Files.LineLength
 
 Warns about a line over 120 characters, and, at a severity of 4, about one over 80. This replaces
 `Generic.Files.LineLength`.
@@ -751,7 +751,7 @@ measured as by the parent, and gets at most one warning. See [Line Length](LineL
 
 ---
 
-### PERCS31.Formatting.DisallowMultipleStatements
+### Jumbo.Formatting.DisallowMultipleStatements
 
 Requires each statement to be on a line by itself. This replaces `Generic.Formatting.DisallowMultipleStatements`.
 
@@ -781,7 +781,7 @@ $a = 1; $b = 2;
 
 ---
 
-### PERCS31.Formatting.EmptyBody
+### Jumbo.Formatting.EmptyBody
 
 Reports an empty class, interface, trait, enum, function, method, closure or anonymous class body that isn't written as
 `{}` on the same line as the declaration, after a single space. It's a warning, except for a closure or anonymous class,
@@ -831,7 +831,7 @@ $noop = static function (): void {
 
 ---
 
-### PERCS31.Formatting.MethodChaining
+### Jumbo.Formatting.MethodChaining
 
 Requires the first method of a method chain split across lines to be on the next line, not on the line with the object.
 Property accesses before the first method, as in `$this->query`, can stay on that line.
@@ -867,7 +867,7 @@ $someInstance->create()
 
 ---
 
-### PERCS31.Formatting.TrailingComma
+### Jumbo.Formatting.TrailingComma
 
 Requires a trailing comma after the last arm of a multi-line `match`, or the last name in a multi-line group `use`, and
 disallows one when the list is on a single line.
@@ -911,7 +911,7 @@ $label = match ($code) {
 
 ---
 
-### PERCS31.Functions.ArrowFunctionSemicolonSpacing
+### Jumbo.Functions.ArrowFunctionSemicolonSpacing
 
 Disallows a space or line break before the semicolon that ends an arrow function.
 
@@ -935,7 +935,7 @@ $double = fn(int $x): int => $x * 2 ;
 
 ---
 
-### PERCS31.Functions.MultiLineFunctionDeclaration
+### Jumbo.Functions.MultiLineFunctionDeclaration
 
 Checks the layout of function and closure declarations, including the placement of the opening brace, except in an empty
 body written as `{}` on one line, e.g. `function reset(): void {}`. This replaces
@@ -944,7 +944,7 @@ body written as `{}` on one line, e.g. `function reset(): void {}`. This replace
 **Why:** `Squiz.Functions.MultiLineFunctionDeclaration` rejects an empty body written as `{}` on one line, which
 [PER Coding Style 3.1, Sections 4.4 and 7](https://www.php-fig.org/per/coding-style/#7-closures) requires for a closure and recommends for a function. This sniff skips that
 case, and leaves everything else to the parent. For an empty body after a single-line signature, the parent's
-`CloseBracketNewLine` check is skipped too, as it can't be run on its own. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
+`CloseBracketNewLine` check is skipped too, as it can't be run on its own. See [Jumbo.Formatting.EmptyBody](#jumboformattingemptybody).
 
 The parent also reports every blank line in a multi-line parameter or `use` list. [Section 12.2](https://www.php-fig.org/per/coding-style/#122-placement) allows one between a
 parameter and the attributes of the next, so the ruleset excludes the parent's `EmptyLine` code, and this sniff reports
@@ -954,7 +954,7 @@ blank lines itself, as `BlankLine`, except that one.
 
 ---
 
-### PERCS31.NamingConventions.UpperCaseConstantName
+### Jumbo.NamingConventions.UpperCaseConstantName
 
 Requires constant names in UPPER_CASE, except in an enum, where PascalCase is also allowed, and recommended. This
 replaces `Generic.NamingConventions.UpperCaseConstantName`.
@@ -1001,7 +1001,7 @@ enum Suit: string
 
 ---
 
-### PERCS31.NamingConventions.ValidConstantName
+### Jumbo.NamingConventions.ValidConstantName
 
 Disallows a constant name that starts with an underscore, for class constants and `const` statements at file scope.
 
@@ -1030,7 +1030,7 @@ final class Config
 
 ---
 
-### PERCS31.NamingConventions.ValidEnumCaseName
+### Jumbo.NamingConventions.ValidEnumCaseName
 
 Requires enum case names to be in PascalCase: a capital first letter, only letters and digits, and not all capitals,
 apart from a single letter.
@@ -1064,7 +1064,7 @@ enum Suit
 
 ---
 
-### PERCS31.Operators.OperatorPlacement
+### Jumbo.Operators.OperatorPlacement
 
 Requires a binary operator to start the next line when a statement wraps at it, not end this one, and that line to be
 indented once past the line its expression starts on. Operators within a line aren't affected.
@@ -1081,8 +1081,8 @@ Only two inherited sniffs check the placement, each for one case: `Universal.Ope
 `PSR12.ControlStructures.BooleanOperatorPlacement` for `&&` and `||` in a condition. This sniff covers every other
 binary operator: assignment, arithmetic, comparison, bitwise and logical operators, `??`, `instanceof`, the short
 ternary `?:`, the arrow function's `=>`, and the pipe operator `|>` (PHP 8.5). It checks the indent of all of them,
-including `.`. A full ternary is checked by `PERCS31.ControlStructures.MultiLineTernaryOperator`, and `=>` in an array
-or `match` arm isn't an operator.
+including `.`. A full ternary is checked by `Jumbo.ControlStructures.MultiLineTernaryOperator`, and `=>` in an array or
+`match` arm isn't an operator.
 
 **Auto-fixable:** yes, unless a comment follows an operator at the end of a line.
 
@@ -1123,7 +1123,7 @@ $this->expectOutputString(
 
 ---
 
-### PERCS31.Operators.OperatorSpacing
+### Jumbo.Operators.OperatorSpacing
 
 Requires at least one space around binary operators, including `&&`, `||`, `and`, `or`, `xor`, `.` and the pipe operator
 `|>`. This replaces `PSR12.Operators.OperatorSpacing`.
@@ -1135,7 +1135,7 @@ registers it when it's defined. The pipe isn't checked when PHPCS runs on PHP 8.
 
 It extends `Squiz.WhiteSpace.OperatorSpacing`, which requires exactly one space, and covers PSR-12's operators too. The
 ruleset excludes the codes for more than one space, `SpacingBefore` and `SpacingAfter` and their `Amp` versions, so only
-a missing space is reported. A standard that wants exactly one space turns them back on, as the [Mossy2100 standard](../README.md) does.
+a missing space is reported. A standard that wants exactly one space turns them back on, as the [Jumbo standard](../README.md) does.
 
 The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operator, so it gets the opposite rule:
 [Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the union symbol MUST NOT have a space either side. The parent would require one.
@@ -1156,7 +1156,7 @@ $slug = $title|>trim(...)|>strtolower(...);
 
 ---
 
-### PERCS31.PHP.DisallowMultiConstantDefinition
+### Jumbo.PHP.DisallowMultiConstantDefinition
 
 Disallows defining several constants in one statement (e.g. `const A = 1, B = 2;`), for class and file-scope constants.
 This is a fork of `SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition`.
@@ -1195,7 +1195,7 @@ const C = 3, D = 4; // Flagged: the same applies outside a class.
 
 ---
 
-### PERCS31.PHP.RequireCloneParentheses
+### Jumbo.PHP.RequireCloneParentheses
 
 Warns about `clone` without parentheses, such as `clone $a`, or with a space before them, such as `clone ($a)`.
 
@@ -1221,7 +1221,7 @@ $copy = clone ($original);
 
 ---
 
-### PERCS31.Strings.HeredocIndentation
+### Jumbo.Strings.HeredocIndentation
 
 Requires a heredoc's or nowdoc's body and closing marker to be indented once past the line the `<<<` is on.
 
@@ -1257,7 +1257,7 @@ EOT;
 
 ---
 
-### PERCS31.TypeHints.CompoundTypeLayout
+### Jumbo.TypeHints.CompoundTypeLayout
 
 Requires a compound type split across lines to have one type per line, or for a DNF type, one union segment per line.
 A type is split if any `|` or `&` outside parentheses starts a line. Then every one of them must, and a `&` inside a DNF
@@ -1302,7 +1302,7 @@ function iterate(
 
 ---
 
-### PERCS31.TypeHints.CompoundTypeOperatorSpacing
+### Jumbo.TypeHints.CompoundTypeOperatorSpacing
 
 Disallows spaces around the `|` and `&` of a union, intersection or DNF type, but allows a type split across lines
 before one. This replaces the `DisallowedWhitespaceAroundOperator` check of
@@ -1311,7 +1311,7 @@ before one. This replaces the `DisallowedWhitespaceAroundOperator` check of
 **Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the union and intersection symbols MUST NOT have a leading or trailing
 space, and that a compound type MAY be split across lines, with the symbol at the start of each line. The Slevomat check
 counts the line break as a space, so it rejects every split type, including PER's own examples. Which types go on which
-line is checked by `PERCS31.TypeHints.CompoundTypeLayout`.
+line is checked by `Jumbo.TypeHints.CompoundTypeLayout`.
 
 **Auto-fixable:** yes. A symbol at the end of a line is moved to the start of the next.
 
@@ -1340,20 +1340,20 @@ function reflect(
 
 ---
 
-### PERCS31.WhiteSpace.ScopeClosingBrace
+### Jumbo.WhiteSpace.ScopeClosingBrace
 
 Checks that a scope's closing brace is on a line by itself, and indented to match, except in an empty body written as
 `{}` on one line, e.g. `class Foo {}` or `function () {}`. This replaces `Squiz.WhiteSpace.ScopeClosingBrace`.
 
 **Why:** `Squiz.WhiteSpace.ScopeClosingBrace` rejects an empty body written as `{}` on one line, which
 [PER Coding Style 3.1, Sections 4.4 and 7](https://www.php-fig.org/per/coding-style/#7-closures) requires for a closure and recommends for a class or function. This sniff skips
-that case, and leaves everything else to the parent. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
+that case, and leaves everything else to the parent. See [Jumbo.Formatting.EmptyBody](#jumboformattingemptybody).
 
 **Auto-fixable:** yes, as the parent.
 
 ---
 
-### PERCS31.WhiteSpace.ScopeIndent
+### Jumbo.WhiteSpace.ScopeIndent
 
 Checks that code is indented correctly, including property hooks (PHP 8.4+), and an anonymous class with attributes.
 This is a fork of `Generic.WhiteSpace.ScopeIndent`.
@@ -1363,7 +1363,7 @@ This is a fork of `Generic.WhiteSpace.ScopeIndent`.
 - PHP_CodeSniffer's tokenizer doesn't treat property hook braces as scopes, so `Generic.WhiteSpace.ScopeIndent` doesn't
   check the indentation inside a hook.
 - [PER Coding Style 3.1, Section 8](https://www.php-fig.org/per/coding-style/#8-anonymous-classes) indents an anonymous class with attributes once from the line with `new`, and its body
-  from `class`. The parent expects `class` at the statement's indent. See [PERCS31.Attributes.AttributePlacement](#percs31attributesattributeplacement).
+  from `class`. The parent expects `class` at the statement's indent. See [Jumbo.Attributes.AttributePlacement](#jumboattributesattributeplacement).
 
 **Auto-fixable:** yes.
 
@@ -1403,7 +1403,7 @@ class User
 | `indent` | int  | 4       | Number of spaces per indentation level. |
 
 ```xml
-<rule ref="PERCS31.WhiteSpace.ScopeIndent">
+<rule ref="Jumbo.WhiteSpace.ScopeIndent">
     <properties>
         <property name="indent" value="2"/>
     </properties>

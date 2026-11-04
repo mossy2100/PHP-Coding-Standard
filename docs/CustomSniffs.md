@@ -1,11 +1,11 @@
-# Mossy2100 Coding Standard - Custom Sniffs
+# Jumbo Coding Standard - Custom Sniffs
 
-This document describes the custom PHP_CodeSniffer sniffs the [Mossy2100 Coding Standard](../README.md) adds as house style, on top of
+This document describes the custom PHP_CodeSniffer sniffs the [Jumbo Coding Standard](../README.md) adds as house style, on top of
 PERCS31. The custom sniffs for PER Coding Style itself are in [PERCS31](PERCS31.md#custom-sniffs).
 
 ---
 
-## Mossy2100.Arrays.ArrayDeclaration
+## Jumbo.Arrays.ArrayDeclaration
 
 Requires a multi-line array to be written on one line if it fits.
 
@@ -53,20 +53,20 @@ To use a different limit, set every line-length property, as described in [Line 
 
 ---
 
-## Mossy2100.Classes.EmptyLinesAroundClassBraces
+## Jumbo.Classes.EmptyLinesAroundClassBraces
 
 Disallows blank lines after a class's opening brace and before its closing brace. This replaces
 `SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces`.
 
 **Why:** `SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces` rejects an empty body written as `{}` on one line,
 which [PER Coding Style 3.0, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the
-parent. See [PERCS31.Formatting.EmptyBody](PERCS31.md#percs31formattingemptybody).
+parent. See [Jumbo.Formatting.EmptyBody](PERCS31.md#jumboformattingemptybody).
 
 **Auto-fixable:** yes, as the parent.
 
 ---
 
-## Mossy2100.Classes.RequireSingleLineMethodSignature
+## Jumbo.Classes.RequireSingleLineMethodSignature
 
 Requires a method signature that fits within the line length to be written on one line, skipping one with a hook on a
 promoted constructor parameter. This replaces `SlevomatCodingStandard.Classes.RequireSingleLineMethodSignature`.
@@ -74,13 +74,13 @@ promoted constructor parameter. This replaces `SlevomatCodingStandard.Classes.Re
 **Why:** the parent takes the `;` in a hook on a promoted constructor parameter, e.g.
 `public string $name { set => trim($value); }`, as the end of the signature, so its fix joins only part of it, and
 `phpcbf` can't finish. [PER Coding Style 3.1, Section 4.9](https://www.php-fig.org/per/coding-style/#49-property-hooks) allows a single short hook there, so this sniff skips a
-function with one, and leaves everything else to the parent. See [`PERCS31.Classes.PromotedPropertyHooks`](PERCS31.md#percs31classespromotedpropertyhooks).
+function with one, and leaves everything else to the parent. See [`Jumbo.Classes.PromotedPropertyHooks`](PERCS31.md#jumboclassespromotedpropertyhooks).
 
 **Auto-fixable:** yes, as the parent.
 
 ---
 
-## Mossy2100.ControlStructures.LanguageConstructWithParentheses
+## Jumbo.ControlStructures.LanguageConstructWithParentheses
 
 Disallows parentheses around the argument of a language construct, such as `echo('x')`, except `exit` and `die`. This
 replaces `SlevomatCodingStandard.ControlStructures.LanguageConstructWithParentheses`.
@@ -93,17 +93,17 @@ each other's fixes. This sniff skips `exit` and `die`, and leaves everything els
 
 ---
 
-## Mossy2100.ControlStructures.RequireSingleLineHeader
+## Jumbo.ControlStructures.RequireSingleLineHeader
 
 Requires a multi-line `foreach`, `for`, `switch` or `match` header to be written on one line if it fits.
 
 **Why:** `SlevomatCodingStandard.ControlStructures.RequireSingleLineCondition` does this for `if`, `elseif`, `while` and
 `do-while`, but not for `foreach`, `for`, `switch` or `match`. A multi-line header is often left over after
-`Mossy2100.Arrays.ArrayDeclaration` collapses the array inside it.
+`Jumbo.Arrays.ArrayDeclaration` collapses the array inside it.
 
 **Auto-fixable:** yes.
 
-**Fits** and **skipped** mean the same as for [Mossy2100.Arrays.ArrayDeclaration](#mossy2100arraysarraydeclaration): the whole resulting line, up to and
+**Fits** and **skipped** mean the same as for [Jumbo.Arrays.ArrayDeclaration](#jumboarraysarraydeclaration): the whole resulting line, up to and
 including ` {`, must be within `maxLineLength`, and a header containing a comment, heredoc, multi-line string or brace
 body is left alone.
 
@@ -135,7 +135,7 @@ To use a different limit, set every line-length property, as described in [Line 
 
 ---
 
-## Mossy2100.Functions.RequireSingleLineCall
+## Jumbo.Functions.RequireSingleLineCall
 
 Requires a function, method or constructor call that fits within the line length to be written on one line. This
 replaces `SlevomatCodingStandard.Functions.RequireSingleLineCall`, and skips a call with an anonymous class argument.
@@ -155,7 +155,7 @@ body on one line, which then crashes `SlevomatCodingStandard.Classes.PropertySpa
 
 ---
 
-## Mossy2100.Namespaces.UnusedUses
+## Jumbo.Namespaces.UnusedUses
 
 Disallows unused `use` statements, including in annotations. This replaces
 `SlevomatCodingStandard.Namespaces.UnusedUses`.
@@ -170,7 +170,7 @@ import is read correctly. Everything else is left to the parent. It can be remov
 
 ---
 
-## Mossy2100.NamingConventions.ValidVariableName
+## Jumbo.NamingConventions.ValidVariableName
 
 Warns about a variable or parameter whose name starts with an underscore, inside a class, enum, trait or interface.
 
@@ -184,7 +184,7 @@ This sniff fills only that gap. It doesn't report:
 - Superglobals, such as `$_GET` and `$_SERVER`.
 - A name that Squiz already reports, because the rest of it isn't camelCase either, such as `$_user_name`.
 - Properties, including promoted constructor parameters, and static property access (`self::$_count`).
-  `PERCS31.Classes.PropertyDeclaration` checks those where they're declared.
+  `Jumbo.Classes.PropertyDeclaration` checks those where they're declared.
 
 **Good:**
 
@@ -222,7 +222,7 @@ class Order
 
 ---
 
-## Mossy2100.Operators.UnaryOperatorSpacing
+## Jumbo.Operators.UnaryOperatorSpacing
 
 Disallows whitespace, including a line break, between a prefix unary `+`, `~` or `@` and its operand.
 
@@ -250,7 +250,7 @@ $contents = @ file_get_contents($path);
 
 ---
 
-## Mossy2100.TypeHints.DeclareStrictTypes
+## Jumbo.TypeHints.DeclareStrictTypes
 
 Requires `declare(strict_types=1)` at the top of each file. This replaces
 `SlevomatCodingStandard.TypeHints.DeclareStrictTypes`, and allows the declaration between its own PHP tags on the first
@@ -259,13 +259,13 @@ line of a file with markup.
 **Why:** [PER Coding Style 3.1, Section 3](https://www.php-fig.org/per/coding-style/#3-declare-statements-namespace-and-import-statements) says that in a file containing markup outside PHP tags, the declaration MUST be
 on the first line, e.g. `<?php declare(strict_types=1) ?>`. The parent requires a blank line before and after it. This
 sniff accepts that form, with or without the `;`, if it sets `strict_types` to 1, and leaves everything else to the
-parent. See [`PERCS31.Files.FileHeader`](PERCS31.md#percs31filesfileheader).
+parent. See [`Jumbo.Files.FileHeader`](PERCS31.md#jumbofilesfileheader).
 
 **Auto-fixable:** yes, as the parent.
 
 ---
 
-## Mossy2100.TypeHints.ParameterTypeHint
+## Jumbo.TypeHints.ParameterTypeHint
 
 Requires a type hint on each parameter, skipping a function with a hook on a promoted constructor parameter. This
 replaces `SlevomatCodingStandard.TypeHints.ParameterTypeHint`.
@@ -273,13 +273,13 @@ replaces `SlevomatCodingStandard.TypeHints.ParameterTypeHint`.
 **Why:** the parent treats every variable between a function's parentheses as a parameter, so `$value` or `$this` in a
 hook on a promoted constructor parameter is reported as a parameter with no type hint. The other parameters of that
 function aren't checked either. [PER Coding Style 3.1, Section 4.9](https://www.php-fig.org/per/coding-style/#49-property-hooks) allows a single short hook there, so this sniff skips
-a function with one, and leaves everything else to the parent. See [`PERCS31.Classes.PromotedPropertyHooks`](PERCS31.md#percs31classespromotedpropertyhooks).
+a function with one, and leaves everything else to the parent. See [`Jumbo.Classes.PromotedPropertyHooks`](PERCS31.md#jumboclassespromotedpropertyhooks).
 
 **Auto-fixable:** yes, as the parent.
 
 ---
 
-## Mossy2100.TypeHints.ParameterTypeHintSpacing
+## Jumbo.TypeHints.ParameterTypeHintSpacing
 
 Checks the spacing around parameter type hints, skipping a function with a hook on a promoted constructor parameter.
 This replaces `SlevomatCodingStandard.TypeHints.ParameterTypeHintSpacing`.
@@ -287,6 +287,6 @@ This replaces `SlevomatCodingStandard.TypeHints.ParameterTypeHintSpacing`.
 **Why:** the parent treats every variable between a function's parentheses as a parameter, so `$value` or `$this` in a
 hook on a promoted constructor parameter is reported as a parameter with bad spacing. The other parameters of that
 function aren't checked either. [PER Coding Style 3.1, Section 4.9](https://www.php-fig.org/per/coding-style/#49-property-hooks) allows a single short hook there, so this sniff skips
-a function with one, and leaves everything else to the parent. See [`PERCS31.Classes.PromotedPropertyHooks`](PERCS31.md#percs31classespromotedpropertyhooks).
+a function with one, and leaves everything else to the parent. See [`Jumbo.Classes.PromotedPropertyHooks`](PERCS31.md#jumboclassespromotedpropertyhooks).
 
 **Auto-fixable:** yes, as the parent.

@@ -1,7 +1,7 @@
-# Mossy2100 Coding Standard - Variable and Property Names
+# Jumbo Coding Standard - Variable and Property Names
 
-The [Mossy2100 Coding Standard](../README.md) requires variables, parameters and properties to use `$camelCase`, with no leading
-underscore. Three sniffs check this between them. This page shows which one checks each kind of name.
+The [Jumbo Coding Standard](../README.md) requires variables, parameters and properties to use `$camelCase`, with no leading underscore.
+Three sniffs check this between them. This page shows which one checks each kind of name.
 
 ---
 
@@ -16,22 +16,22 @@ underscore. Three sniffs check this between them. This page shows which one chec
 
 ## Leading Underscore
 
-| Name                                                           | Sniff                                           | Severity |
-| -------------------------------------------------------------- | ----------------------------------------------- | -------- |
-| Property: any visibility, static or promoted                   | `PERCS31.Classes.PropertyDeclaration`           | Error    |
-| Variable or parameter inside a class, enum, trait or interface | `Mossy2100.NamingConventions.ValidVariableName` | Warning  |
-| Variable or parameter anywhere else                            | `Squiz.NamingConventions.ValidVariableName`     | Error    |
-| Superglobal, e.g. `$_GET`                                      | None                                            | Allowed  |
+| Name                                                           | Sniff                                       | Severity |
+| -------------------------------------------------------------- | ------------------------------------------- | -------- |
+| Property: any visibility, static or promoted                   | `Jumbo.Classes.PropertyDeclaration`         | Error    |
+| Variable or parameter inside a class, enum, trait or interface | `Jumbo.NamingConventions.ValidVariableName` | Warning  |
+| Variable or parameter anywhere else                            | `Squiz.NamingConventions.ValidVariableName` | Error    |
+| Superglobal, e.g. `$_GET`                                      | None                                        | Allowed  |
 
 "Variable or parameter" covers function and method parameters, local variables, closure and arrow function parameters,
 `foreach` variables, and global variables.
 
 Squiz allows a leading underscore inside a class, because the Squiz convention prefixes private members with one. The
-two Mossy2100 sniffs fill that gap.
+two Jumbo sniffs fill that gap.
 
-For properties, `PERCS31.Classes.PropertyDeclaration` replaces PSR-12's `PSR2.Classes.PropertyDeclaration`, which only
-issues a warning for a leading underscore, and doesn't check promoted constructor properties. The Mossy2100 sniff
-reports both as errors, since [PER Coding Style 3.0, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says property names MUST NOT start with an underscore.
+For properties, `Jumbo.Classes.PropertyDeclaration` replaces PSR-12's `PSR2.Classes.PropertyDeclaration`, which only
+issues a warning for a leading underscore, and doesn't check promoted constructor properties. The Jumbo sniff reports
+both as errors, since [PER Coding Style 3.0, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says property names MUST NOT start with an underscore.
 
 ---
 

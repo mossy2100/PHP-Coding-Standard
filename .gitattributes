@@ -9,4 +9,4 @@
 /phpstan.neon        export-ignore
 /phpunit.xml.dist    export-ignore
 /scripts             export-ignore
-/src/Mossy2100/Tests export-ignore
+/src/Jumbo/Tests export-ignore

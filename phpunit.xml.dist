@@ -2,17 +2,14 @@
 <phpunit
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-    bootstrap="src/Mossy2100/Tests/bootstrap.php"
+    bootstrap="src/Jumbo/Tests/bootstrap.php"
     colors="true"
     beStrictAboutTestsThatDoNotTestAnything="false"
     failOnWarning="true"
 >
     <testsuites>
-        <testsuite name="PERCS31 Sniff Tests">
-            <directory suffix="UnitTest.php">src/PERCS31/Tests</directory>
-        </testsuite>
-        <testsuite name="Mossy2100 Sniff Tests">
-            <directory suffix="UnitTest.php">src/Mossy2100/Tests</directory>
+        <testsuite name="Jumbo Sniff Tests">
+            <directory suffix="UnitTest.php">src/Jumbo/Tests</directory>
         </testsuite>
     </testsuites>
 </phpunit>

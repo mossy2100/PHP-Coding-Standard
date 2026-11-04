@@ -1,0 +1,14 @@
+<?php
+// phpcs:set Jumbo.Operators.OperatorSpacing ignoreNewlines true
+// The pipe operator, PHP 8.5 only.
+
+// === VALID ===
+
+$a = $b |> trim(...);
+$a = $b
+    |> trim(...);
+
+// === INVALID ===
+
+$a = $b|>trim(...);
+$a = $b  |>  trim(...);

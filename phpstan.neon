@@ -4,7 +4,7 @@ parameters:
     paths:
         - src
     excludePaths:
-        - src/PERCS31/Sniffs/WhiteSpace/ScopeIndentSniff.php
+        - src/Jumbo/Sniffs/WhiteSpace/ScopeIndentSniff.php
     treatPhpDocTypesAsCertain: false
     scanDirectories:
         - vendor/squizlabs/php_codesniffer
