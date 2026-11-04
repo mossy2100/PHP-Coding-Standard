@@ -178,7 +178,10 @@
     <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInDeclaration"/>
 
     <!-- Union and intersection types: no spaces around | and &, or inside the parentheses, and null last (2.5). ?T is
-         a SHOULD, so a warning. -->
+         a SHOULD, so a warning. Known Slevomat bug, not worked around: a variable after a case body wrapped in braces
+         crashes this sniff ("Undefined array key bracket_closer"), aborting the rest of the file. PER 5.2 disallows
+         braces around a case body, and PERCS31.ControlStructures.SwitchDeclaration still reports them, so removing
+         the braces fixes both. -->
     <rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat">
         <properties>
             <property name="withSpacesAroundOperators" value="no"/>
