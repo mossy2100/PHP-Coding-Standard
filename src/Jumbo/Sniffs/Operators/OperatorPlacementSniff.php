@@ -318,6 +318,10 @@ class OperatorPlacementSniff implements Sniff
      */
     private function isUnaryOrReference(File $phpcsFile, int $stackPtr): bool
     {
+        if (OperatorHelper::isHookReference($phpcsFile, $stackPtr)) {
+            return true;
+        }
+
         $code = $phpcsFile->getTokens()[$stackPtr]['code'];
         if ($code === T_BITWISE_AND && $phpcsFile->isReference($stackPtr)) {
             return true;

@@ -26,3 +26,13 @@ try {
 }
 
 $flags = $a | $b;
+
+// A by-reference hook's & isn't an operator.
+class ReferenceHooks
+{
+    public array $items = [] {
+        &get => $this->items;
+    }
+
+    public array $list = [] { &get => $this->list; }
+}

@@ -1141,6 +1141,9 @@ a missing space is reported. A standard that wants exactly one space turns them 
 The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operator, so it gets the opposite rule:
 [Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the union symbol MUST NOT have a space either side. The parent would require one.
 
+The `&` of a by-reference hook, e.g. `&get => $this->items;`, isn't an operator either, so it's skipped, here and by
+`Jumbo.Operators.OperatorPlacement`.
+
 **Auto-fixable:** yes, as the parent.
 
 **Good:**

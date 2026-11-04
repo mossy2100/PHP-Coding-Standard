@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jumbo\Sniffs\Operators;
 
+use Jumbo\Helpers\OperatorHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\OperatorSpacingSniff as SquizSniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -23,6 +24,8 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operator. Section 2.5 says the union symbol
  * MUST NOT have a space either side, so this sniff reports one there instead.
+ *
+ * The `&` of a by-reference hook, e.g. `&get => $this->items;`, isn't an operator either, so it's skipped.
  */
 class OperatorSpacingSniff extends SquizSniff
 {
@@ -52,6 +55,11 @@ class OperatorSpacingSniff extends SquizSniff
      */
     public function process(File $phpcsFile, int $stackPtr): ?int
     {
+        // The `&` of a by-reference hook, `&get`, isn't an operator.
+        if (OperatorHelper::isHookReference($phpcsFile, $stackPtr)) {
+            return null;
+        }
+
         if ($this->isCatchUnion($phpcsFile, $stackPtr)) {
             $this->checkCatchUnion($phpcsFile, $stackPtr);
             return null;
