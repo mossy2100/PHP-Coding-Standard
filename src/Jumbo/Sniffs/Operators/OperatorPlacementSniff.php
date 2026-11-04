@@ -203,6 +203,10 @@ class OperatorPlacementSniff implements Sniff
         }
 
         foreach (array_keys($tokens[$stackPtr]['nested_parenthesis'] ?? []) as $opener) {
+            if (!is_int($opener)) {
+                continue;
+            }
+
             $owner = $tokens[$opener]['parenthesis_owner'] ?? null;
             if ($owner !== null && in_array($tokens[$owner]['code'], self::INDENT_EXEMPT_OWNERS, true)) {
                 return;
