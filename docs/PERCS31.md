@@ -53,6 +53,8 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   which allows PascalCase for an enum constant.
 - **PSR12.Files.FileHeader**, by [`Jumbo.Files.FileHeader`](#jumbofilesfileheader), which allows `<?php declare(strict_types=1) ?>` on the first
   line of a file with markup.
+- **PSR12.Files.DeclareStatement**, by [`Jumbo.Files.DeclareStatement`](#jumbofilesdeclarestatement), which accepts a declare statement with several
+  directives, such as `declare(ticks=1,strict_types=1);`.
 - **PSR2.ControlStructures.SwitchDeclaration**, by [`Jumbo.ControlStructures.SwitchDeclaration`](#jumbocontrolstructuresswitchdeclaration), which adds PER's
   `switch` rules.
 - **PSR12.Operators.OperatorSpacing**, by [`Jumbo.Operators.OperatorSpacing`](#jumbooperatorsoperatorspacing), which also covers the pipe operator `|>`.
@@ -154,6 +156,7 @@ section gives the reason.
 | `Jumbo.Classes.PropertyDeclaration`                   | No leading `_`, no `var`, a visibility, and `get` before `set`    | Partly  |
 | `Jumbo.ControlStructures.MultiLineTernaryOperator`    | A multi-line ternary takes three lines, `?` and `:` leading       | Yes     |
 | `Jumbo.ControlStructures.SwitchDeclaration`           | `switch` rules, with a `break` in the last case                   | Yes     |
+| `Jumbo.Files.DeclareStatement`                        | No spaces in `declare(...)`, with one directive or several        | Yes     |
 | `Jumbo.Files.FileHeader`                              | The file header, allowing `<?php declare(...) ?>` above markup    | Yes     |
 | `Jumbo.Files.LineLength`                              | A warning over 120 characters, and a hidden one over 80           | No      |
 | `Jumbo.Formatting.DisallowMultipleStatements`         | One statement per line, allowing `{ get; set; }`                  | Yes     |
@@ -697,6 +700,33 @@ switch (true) {
     default:
         chargeFullPrice();
 }
+```
+
+---
+
+### Jumbo.Files.DeclareStatement
+
+Checks the format of a declare statement, including one with several directives. This replaces
+`PSR12.Files.DeclareStatement`.
+
+**Why:** [PER Coding Style 3.1, Section 3](https://www.php-fig.org/per/coding-style/#3-declare-statements-namespace-and-import-statements) says declare statements MUST NOT contain any spaces inside the parentheses. The
+parent assumes a single `directive=value`, so it rejects a statement with several, however it's spaced, and can't fix
+it. This sniff leaves a single directive to the parent. For several, it reports a space between `declare` and `(`, and
+any whitespace inside the parentheses, including after a comma. The parent's other layout checks, such as for a block
+declare's braces, aren't run for a statement with several directives.
+
+**Auto-fixable:** yes.
+
+**Good:**
+
+```php
+declare(ticks=1,strict_types=1);
+```
+
+**Bad:**
+
+```php
+declare(ticks=1, strict_types=1);
 ```
 
 ---

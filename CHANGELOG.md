@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`Jumbo.Files.DeclareStatement` (breaking).** Replaces `PSR12.Files.DeclareStatement`, which rejected a declare
+  statement with several directives, such as `declare(ticks=1,strict_types=1);`, however it was spaced. As PER Coding
+  Style 3.1 requires, there must be no spaces inside the parentheses, including after a comma. Its codes change prefix
+  from `PSR12.Files.DeclareStatement` to `Jumbo.Files.DeclareStatement`. Auto-fixable.
 - **`Jumbo.Arrays.ElementComma` (breaking).** In a multi-line array or destructuring list, the comma after an element
   must be on the element's last line, keyed or not, in the Jumbo standard. It replaces Squiz `ArrayDeclaration`'s
   `NoComma`, which only checked a keyed element, and reported a heredoc element written `EOT,`, as PHP 7.3 and later

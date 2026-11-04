@@ -26,6 +26,8 @@
         <!-- Replaced by a Jumbo version that allows <?php declare(strict_types=1) ?> on the first line of a file with
              markup (3) -->
         <exclude name="PSR12.Files.FileHeader"/>
+        <!-- Replaced by a Jumbo version that accepts a declare statement with several directives (3) -->
+        <exclude name="PSR12.Files.DeclareStatement"/>
     </rule>
 
     <!-- Visibility on every constant is a MUST (4.3), but PSR12.Properties.ConstantVisibility only gives a warning -->
@@ -208,6 +210,9 @@
 
     <!-- The file header (3), allowing a declare statement between PHP tags on the first line of a file with markup -->
     <rule ref="Jumbo.Files.FileHeader"/>
+
+    <!-- No spaces inside a declare statement's parentheses, including one with several directives (3) -->
+    <rule ref="Jumbo.Files.DeclareStatement"/>
 
     <!-- Line length (2.3): a warning over 120 characters, no hard limit, and a severity 4 warning over 80, which phpcs
          only shows with warning-severity set to 4 -->

@@ -1,0 +1,13 @@
+<?php
+
+// === VALID ===
+
+declare(ticks=1,encoding='UTF-8');
+declare(ticks=1);
+
+// === INVALID ===
+
+declare(ticks=1, encoding='UTF-8');
+declare (ticks=1,encoding='UTF-8');
+declare( ticks=1 , encoding = 'UTF-8' );
+declare(ticks = 1);
