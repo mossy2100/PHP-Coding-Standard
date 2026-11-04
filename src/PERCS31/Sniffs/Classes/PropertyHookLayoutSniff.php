@@ -18,9 +18,12 @@ use PHP_CodeSniffer\Util\Tokens;
  * - A short hook's `=>` MUST have a single space on either side, and its body MUST begin on the same line.
  * - A short hook listed inline MUST have a single space after the opening brace and before the closing one.
  *
- * Indentation is checked by PERCS31.WhiteSpace.ScopeIndent, and one hook per line by
- * PERCS31.Formatting.DisallowMultipleStatements. The spacing of a bodiless list, such as `{ get; set; }`, isn't
- * checked here.
+ * Section 4.10 says a list with no hook bodies, as on an interface or abstract property, MUST be on one line, as
+ * `{ get; set; }`: a single space inside each brace, no space before each `;`, and a single space between operations.
+ * A bodiless hook in a list with bodies also has no space before its `;`.
+ *
+ * Indentation is checked by PERCS31.WhiteSpace.ScopeIndent, one hook per line by
+ * PERCS31.Formatting.DisallowMultipleStatements, and `get` before `set` by PERCS31.Classes.PropertyDeclaration.
  */
 class PropertyHookLayoutSniff implements Sniff
 {
@@ -37,6 +40,10 @@ class PropertyHookLayoutSniff implements Sniff
     public const string CODE_BODY_NOT_ON_SAME_LINE = 'BodyNotOnSameLine';
 
     public const string CODE_INLINE_SPACING = 'InlineSpacing';
+
+    public const string CODE_BODILESS_LAYOUT = 'BodilessLayout';
+
+    public const string CODE_SPACE_BEFORE_SEMICOLON = 'SpaceBeforeSemicolon';
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -68,10 +75,17 @@ class PropertyHookLayoutSniff implements Sniff
 
         $this->checkOpener($phpcsFile, $opener);
         $arrows = $this->findArrows($phpcsFile, $opener, $closer);
+        $hasBlockBody = $phpcsFile->findNext(T_OPEN_CURLY_BRACKET, ($opener + 1), $closer) !== false;
+        if ($arrows === [] && !$hasBlockBody) {
+            $this->checkBodiless($phpcsFile, $opener, $closer);
+            return;
+        }
+
         foreach ($arrows as $arrow) {
             $this->checkArrow($phpcsFile, $arrow);
         }
 
+        $this->checkBodilessSemicolons($phpcsFile, $opener, $closer);
         $tokens = $phpcsFile->getTokens();
         if ($tokens[$opener]['line'] !== $tokens[$closer]['line']) {
             $this->checkLongFormCloser($phpcsFile, $opener, $closer);
@@ -237,6 +251,87 @@ class PropertyHookLayoutSniff implements Sniff
             $this->setSpacing($phpcsFile, $opener, $first, ' ');
             $this->setSpacing($phpcsFile, $last, $closer, ' ');
             $phpcsFile->fixer->endChangeset();
+        }
+    }
+
+    /**
+     * Check that a list with no hook bodies is written as `{ get; set; }`, on one line.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the hook list's opening brace.
+     * @param int $closer The position of the hook list's closing brace.
+     */
+    private function checkBodiless(File $phpcsFile, int $opener, int $closer): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $operations = [];
+        $start = $opener + 1;
+        for ($i = ($opener + 1); $i < $closer; $i++) {
+            if ($tokens[$i]['code'] === T_SEMICOLON) {
+                $operations[] = trim($phpcsFile->getTokensAsString($start, ($i - $start))) . ';';
+                $start = $i + 1;
+            }
+        }
+
+        $expected = ' ' . implode(' ', $operations) . ' ';
+        $actual = $phpcsFile->getTokensAsString(($opener + 1), ($closer - $opener - 1));
+        if ($operations === [] || $actual === $expected) {
+            return;
+        }
+
+        $error = 'A property hook list with no bodies must be written on one line, with single spaces, e.g. '
+            . '"{ get; set; }"';
+        if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($opener + 1), $closer) !== false) {
+            $phpcsFile->addError($error, $opener, self::CODE_BODILESS_LAYOUT);
+            return;
+        }
+
+        if ($phpcsFile->addFixableError($error, $opener, self::CODE_BODILESS_LAYOUT)) {
+            $phpcsFile->fixer->beginChangeset();
+            for ($i = ($opener + 1); $i < $closer; $i++) {
+                $phpcsFile->fixer->replaceToken($i, '');
+            }
+
+            $phpcsFile->fixer->addContent($opener, $expected);
+            $phpcsFile->fixer->endChangeset();
+        }
+    }
+
+    /**
+     * Check that a bodiless hook, in a list that also has bodies, has no space before its `;`.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the hook list's opening brace.
+     * @param int $closer The position of the hook list's closing brace.
+     */
+    private function checkBodilessSemicolons(File $phpcsFile, int $opener, int $closer): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        for ($i = ($opener + 1); $i < $closer; $i++) {
+            $jumpTo = $tokens[$i]['parenthesis_closer'] ?? $tokens[$i]['bracket_closer'] ?? null;
+            if (is_int($jumpTo) && $jumpTo > $i && $jumpTo < $closer) {
+                $i = $jumpTo;
+                continue;
+            }
+
+            if ($tokens[$i]['code'] !== T_SEMICOLON || $tokens[($i - 1)]['code'] !== T_WHITESPACE) {
+                continue;
+            }
+
+            // Only a bodiless hook's `;` follows its name directly.
+            $name = $phpcsFile->findPrevious(T_WHITESPACE, ($i - 1), $opener, true);
+            if ($name === false || !in_array(strtolower($tokens[$name]['content']), ['get', 'set'], true)) {
+                continue;
+            }
+
+            $fix = $phpcsFile->addFixableError(
+                'There must be no space before the ";" of a property hook with no body',
+                $i,
+                self::CODE_SPACE_BEFORE_SEMICOLON,
+            );
+            if ($fix) {
+                $this->setSpacing($phpcsFile, $name, $i, '');
+            }
         }
     }
 

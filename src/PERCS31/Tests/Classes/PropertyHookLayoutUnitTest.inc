@@ -56,3 +56,34 @@ class Invalid
 
     public string $g {get => $this->g;}
 }
+
+// === Bodiless lists (PER Coding Style 3.1, section 4.10) ===
+
+interface Bodiless
+{
+    public string $valid { get; set; }
+
+    public string $noSpaces {get;}
+
+    public string $spaceBeforeSemicolon { get ; }
+
+    public string $doubleSpaces {  get;  set;  }
+
+    public string $multiLine {
+        get;
+        set;
+    }
+}
+
+abstract class MixedBodies
+{
+    abstract public string $valid {
+        get => ucfirst($this->valid);
+        set;
+    }
+
+    abstract public string $spaceBeforeSemicolon {
+        get => ucfirst($this->spaceBeforeSemicolon);
+        set ;
+    }
+}

@@ -34,6 +34,13 @@ class PropertyHookLayoutUnitTest extends AbstractSniffTestCase
             53 => 1,
             // An inline hook with no spaces inside its braces.
             57 => 1,
+            // Bodiless lists: no spaces, a space before ;, double spaces, and over several lines.
+            66 => 1,
+            68 => 1,
+            70 => 1,
+            72 => 1,
+            // A space before a bodiless hook's ; in a list with bodies.
+            87 => 1,
         ];
     }
 

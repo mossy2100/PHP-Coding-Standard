@@ -412,6 +412,9 @@ This sniff checks:
 - In the long form, the closing brace is on its own line, with no comment after it.
 - A short hook's `=>` has a single space either side, and its body starts on the same line.
 - A short hook listed inline has a single space after the opening brace and before the closing one.
+- A list with no bodies, as on an interface or abstract property, is on one line, written as `{ get; set; }`: a single
+  space inside each brace, no space before each `;`, and a single space between operations ([Section 4.10](https://www.php-fig.org/per/coding-style/#410-interface-and-abstract-properties)).
+- A bodiless hook in a list with bodies has no space before its `;`.
 
 Indentation is checked by `PERCS31.WhiteSpace.ScopeIndent`, and one hook per line by
 `PERCS31.Formatting.DisallowMultipleStatements`.
@@ -430,6 +433,11 @@ class User
 
     public string $email { get => strtolower($this->email); }
 }
+
+interface Named
+{
+    public string $name { get; set; }
+}
 ```
 
 **Bad:**
@@ -444,6 +452,14 @@ class User
             trim($value); }
 
     public string $email {get => strtolower($this->email);}
+}
+
+interface Named
+{
+    public string $name {
+        get ;
+        set;
+    }
 }
 ```
 

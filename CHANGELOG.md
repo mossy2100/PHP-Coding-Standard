@@ -13,7 +13,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`PERCS31.Classes.PropertyHookLayout` (breaking).** Checks the layout of a property's hooks, as PER Coding Style 3.1
   requires: the opening brace on the property's line after a single space, the closing brace of a multi-line list on its
   own line with no comment after it, a single space either side of a short hook's `=>` with its body on the same line,
-  and a single space inside the braces of an inline hook. Auto-fixable, except a comment after the closing brace.
+  and a single space inside the braces of an inline hook. A list with no bodies, as on an interface or abstract
+  property, must be on one line as `{ get; set; }`, and a bodiless hook has no space before its `;`, as section 4.10
+  requires. Auto-fixable, except a comment after the closing brace.
 - **`<?php declare(strict_types=1) ?>` above markup is allowed.** As PER Coding Style 3.1 says, a file with markup
   outside PHP tags declares strict types on its first line, between its own tags, with or without the `;`.
   `PERCS31.Files.FileHeader` and `Mossy2100.TypeHints.DeclareStrictTypes` replace `PSR12.Files.FileHeader` and
