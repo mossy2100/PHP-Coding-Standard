@@ -25,7 +25,8 @@ use PHP_CodeSniffer\Util\Tokens;
  * `?:`, the arrow function's `=>`, the pipe operator `|>` (PHP 8.5, PER Coding Style 3.1), and `.` for the indent only.
  * Two cases are left to inherited sniffs: the placement of `.`, checked by Universal.Operators.ConcatPosition, and of
  * `&&` or `||` in a control structure's condition, checked by PSR12.ControlStructures.BooleanOperatorPlacement. The
- * indent anywhere in a control structure's condition isn't checked, as section 5 says it's indented at least once. A
+ * indent anywhere in a control structure's condition, or a multi-line case condition, isn't checked, as section 5
+ * says it's indented at least once, and section 5.2's case example lines the operators up with the first condition. A
  * full ternary is checked by Jumbo.ControlStructures.MultiLineTernaryOperator, and `=>` in an array or `match` arm
  * isn't an operator.
  */
@@ -178,6 +179,12 @@ class OperatorPlacementSniff implements Sniff
         foreach (array_keys($tokens[$stackPtr]['nested_parenthesis'] ?? []) as $opener) {
             $owner = $tokens[$opener]['parenthesis_owner'] ?? null;
             if ($owner !== null && in_array($tokens[$owner]['code'], self::INDENT_EXEMPT_OWNERS, true)) {
+                return;
+            }
+
+            // A multi-line case condition's parentheses have no owner, but the condition is exempt too.
+            $beforeOpener = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($opener - 1), null, true);
+            if ($beforeOpener !== false && $tokens[$beforeOpener]['code'] === T_CASE) {
                 return;
             }
         }

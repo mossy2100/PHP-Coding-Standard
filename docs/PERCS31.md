@@ -1071,11 +1071,12 @@ indented once past the line its expression starts on. Operators within a line ar
 
 The expression starts after the nearest `;`, `,`, opening bracket, or full ternary `?` or `:`. So a split inside a
 call's argument, an array element or parentheses is indented once past the line that argument, element or parenthesised
-expression starts on. The indent in a control structure's condition isn't checked.
+expression starts on. The indent in a control structure's condition, or a multi-line `case` condition, isn't checked.
 
 **Why:** [PER Coding Style 3.1, Section 6.4](https://www.php-fig.org/per/coding-style/#64-operators-placement) says a wrapped operator MUST be at the start of the new line, and each
 subsequent line is indented once. Section 7.1 says the same of an arrow function's `=>`. Section 5 says a split
-condition is indented at least once, so it's left alone.
+condition is indented at least once, and section 5.2's `case` example lines the operators up with the first condition,
+so both are left alone.
 
 Only two inherited sniffs check the placement, each for one case: `Universal.Operators.ConcatPosition` for `.`, and
 `PSR12.ControlStructures.BooleanOperatorPlacement` for `&&` and `||` in a condition. This sniff covers every other

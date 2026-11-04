@@ -54,6 +54,18 @@ $closure = array_map(function ($v) {
 foo(
     -1,
 );
+switch (true) {
+    case (
+        $a === 10
+        && $b === 20
+    ):
+        break;
+    case (
+            $c
+            && $d
+    ):
+        break;
+}
 
 // === INVALID ===
 

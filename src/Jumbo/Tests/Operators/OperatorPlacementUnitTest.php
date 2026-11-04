@@ -43,15 +43,15 @@ class OperatorPlacementUnitTest extends AbstractSniffTestCase
         if ($testFile === 'OperatorPlacementUnitTest.3.inc') {
             return [
                 // Indented twice.
-                61 => 1,
+                73 => 1,
                 // Not indented.
-                63 => 1,
+                75 => 1,
                 // Lined up with an argument, not indented once past it.
-                66 => 1,
+                78 => 1,
                 // An arrow function's => indented twice.
-                69 => 1,
+                81 => 1,
                 // Lined up with a match arm's condition.
-                72 => 1,
+                84 => 1,
             ];
         }
 
