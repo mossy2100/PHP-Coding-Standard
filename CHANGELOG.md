@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **Method chain layout (breaking).** As PER Coding Style 3.1 requires, in a method chain split across lines, each `->`
+  or `?->` must start its line, indented once, and the first method must be on the next line, not the object's line.
+  Adds `PEAR.WhiteSpace.ObjectOperatorIndent` and the new `PERCS31.Formatting.MethodChaining`. Auto-fixable.
 - **`PERCS31.Formatting.TrailingComma` (breaking).** As PER Coding Style 3.1 requires, the last arm of a multi-line
   `match` and the last name in a multi-line group `use` must have a trailing comma, and one on a single line is an error.
   Auto-fixable.

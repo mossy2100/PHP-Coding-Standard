@@ -77,6 +77,11 @@ Sniffs from PHP_CodeSniffer's other standards and the two base packages, each fo
 - **Generic.Strings.UnnecessaryHeredoc**: Warns about a heredoc with no interpolation or escape sequences, which could
   be a nowdoc (10).
 
+### PEAR
+
+- **PEAR.WhiteSpace.ObjectOperatorIndent**: In a method chain split across lines, requires each `->` or `?->` to start
+  its line, indented once past the line the statement starts on (4.7).
+
 ### Squiz
 
 - **Squiz.Arrays.ArrayDeclaration**: Requires the first value of a multi-line array on the next line, one value per
@@ -153,6 +158,7 @@ section gives the reason.
 | `PERCS31.Files.LineLength`                              | A warning over 120 characters, and a hidden one over 80           | No      |
 | `PERCS31.Formatting.DisallowMultipleStatements`         | One statement per line, allowing `{ get; set; }`                  | Yes     |
 | `PERCS31.Formatting.EmptyBody`                          | An empty class, function, closure or anonymous class body is `{}` | Yes     |
+| `PERCS31.Formatting.MethodChaining`                     | The first method of a split chain on the next line                | Yes     |
 | `PERCS31.Formatting.TrailingComma`                      | A trailing comma in a multi-line `match` or group `use` only      | Yes     |
 | `PERCS31.Functions.MultiLineFunctionDeclaration`        | Function and closure declarations, allowing an empty body as `{}` | Yes     |
 | `PERCS31.NamingConventions.UpperCaseConstantName`       | Constants in UPPER_CASE, or PascalCase in an enum                 | No      |
@@ -819,6 +825,42 @@ final class Point
 
 $noop = static function (): void {
 };
+```
+
+---
+
+### PERCS31.Formatting.MethodChaining
+
+Requires the first method of a method chain split across lines to be on the next line, not on the line with the object.
+Property accesses before the first method, as in `$this->query`, can stay on that line.
+
+**Why:** [PER Coding Style 3.1, Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) says that when method chaining is put on separate lines, the first method
+MUST be on the next line. `PEAR.WhiteSpace.ObjectOperatorIndent` checks that each line is indented once, but lets the
+first method stay on the object's line.
+
+**Auto-fixable:** yes. The fix moves the first method to the next line, indented once.
+
+**Good:**
+
+```php
+$someInstance
+    ->create()
+    ->prepare()
+    ->run();
+
+$query = $this->em
+    ->createQueryBuilder()
+    ->select('u');
+
+$name = $user->getName();
+```
+
+**Bad:**
+
+```php
+$someInstance->create()
+    ->prepare()
+    ->run();
 ```
 
 ---
