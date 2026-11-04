@@ -19,9 +19,10 @@ use PHP_CodeSniffer\Standards\Squiz\Sniffs\Functions\MultiLineFunctionDeclaratio
  * `) {}`.
  *
  * The parent also reports any blank line in a multi-line parameter or `use` list (EmptyLine). PER Coding Style 3.1,
- * section 12.2, allows one between a parameter and the attributes of the next. The parent's check can't be run on its
- * own, so the PERCS31 ruleset excludes EmptyLine, and this sniff reports blank lines itself (BlankLine), except that
- * one.
+ * section 2.3, allows blank lines anywhere they aren't forbidden, and section 12.4's example has one between two
+ * parameters, both before an attribute and before a parameter with none. The parent's check can't be run on its own,
+ * so the PERCS31 ruleset excludes EmptyLine, and this sniff reports blank lines itself (BlankLine), except a single
+ * one between parameters. A `use` list keeps the parent's rule.
  */
 class MultiLineFunctionDeclarationSniff extends SquizSniff
 {
@@ -59,7 +60,7 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
     }
 
     /**
-     * Report each blank line in the parameter and `use` lists, except one before a parameter's attributes.
+     * Report each blank line in the parameter and `use` lists, except a single one between parameters.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the function keyword.
@@ -81,17 +82,17 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
             $closer = is_int($useCloser) ? $useCloser : $closer;
         }
 
+        $parameterCloser = $tokens[$opener]['parenthesis_closer'];
         for ($i = ($opener + 1); $i < $closer; $i++) {
             $isBlankLine = $tokens[$i]['code'] === T_WHITESPACE
                 && $tokens[$i]['column'] === 1
                 && $tokens[$i]['line'] !== $tokens[($i + 1)]['line'];
-            if (!$isBlankLine || $this->isAllowedBeforeAttribute($phpcsFile, $i)) {
+            if (!$isBlankLine || $this->isAllowedBetweenParameters($phpcsFile, $i, $parameterCloser)) {
                 continue;
             }
 
             $fix = $phpcsFile->addFixableError(
-                'Blank lines are not allowed in a multi-line function declaration, except before a parameter\'s '
-                    . 'attributes',
+                'Blank lines are not allowed in a multi-line function declaration, except one between parameters',
                 $i,
                 self::CODE_BLANK_LINE,
             );
@@ -102,14 +103,15 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
     }
 
     /**
-     * Check whether a blank line is the one PER allows: after a parameter's comma, and before the next parameter's
-     * attributes.
+     * Check whether a blank line is the one PER allows: a single one after a parameter's comma, before the next
+     * parameter or its attributes.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $blankPtr The blank line's whitespace token.
-     * @return bool True if it's a single blank line between a comma and an attribute.
+     * @param int $parameterCloser The position of the parameter list's closing parenthesis.
+     * @return bool True if it's a single blank line between two parameters.
      */
-    private function isAllowedBeforeAttribute(File $phpcsFile, int $blankPtr): bool
+    private function isAllowedBetweenParameters(File $phpcsFile, int $blankPtr, int $parameterCloser): bool
     {
         $tokens = $phpcsFile->getTokens();
         $next = $phpcsFile->findNext(T_WHITESPACE, ($blankPtr + 1), null, true);
@@ -118,8 +120,9 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
             return false;
         }
 
-        // Only one blank line: the code before it is on the line just above.
-        return $tokens[$next]['code'] === T_ATTRIBUTE
+        // Inside the parameter list, not before its closing parenthesis, and only one blank line: the comma before it
+        // is on the line just above.
+        return $next < $parameterCloser
             && $tokens[$previous]['code'] === T_COMMA
             && $tokens[$previous]['line'] === ($tokens[$blankPtr]['line'] - 1);
     }

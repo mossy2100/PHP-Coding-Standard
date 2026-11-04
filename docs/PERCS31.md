@@ -949,9 +949,11 @@ body written as `{}` on one line, e.g. `function reset(): void {}`. This replace
 case, and leaves everything else to the parent. For an empty body after a single-line signature, the parent's
 `CloseBracketNewLine` check is skipped too, as it can't be run on its own. See [Jumbo.Formatting.EmptyBody](#jumboformattingemptybody).
 
-The parent also reports every blank line in a multi-line parameter or `use` list. [Section 12.2](https://www.php-fig.org/per/coding-style/#122-placement) allows one between a
-parameter and the attributes of the next, so the ruleset excludes the parent's `EmptyLine` code, and this sniff reports
-blank lines itself, as `BlankLine`, except that one.
+The parent also reports every blank line in a multi-line parameter or `use` list. [Section 2.3](https://www.php-fig.org/per/coding-style/#23-lines) allows blank lines
+wherever they aren't forbidden, and [section 12.4](https://www.php-fig.org/per/coding-style/#124-example)'s example has one between two parameters, both before an attribute
+and before a parameter with none. So the ruleset excludes the parent's `EmptyLine` code, and this sniff reports blank
+lines itself, as `BlankLine`, except a single one between parameters. A blank line before the closing parenthesis, or
+in a closure's `use` list, is still reported.
 
 **Auto-fixable:** yes, as the parent.
 

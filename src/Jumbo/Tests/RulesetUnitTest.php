@@ -125,17 +125,17 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that PERCS31 allows one blank line before a parameter's attributes, and reports every other blank line in a
-     * multi-line declaration. The parent's EmptyLine, which reports them all, is excluded in the ruleset.
+     * Test that PERCS31 allows one blank line between parameters, and reports every other blank line in a multi-line
+     * declaration. The parent's EmptyLine, which reports them all, is excluded in the ruleset.
      */
-    public function testBlankLineAllowedOnlyBeforeParameterAttributes(): void
+    public function testBlankLineAllowedOnlyBetweenParameters(): void
     {
         $fixture = dirname(__DIR__, 2) . '/Jumbo/Tests/Ruleset/BlankLinesInDeclaration.inc';
         $sniff = '--sniffs=Jumbo.Functions.MultiLineFunctionDeclaration';
         $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', $sniff, '--report=emacs', $fixture]);
 
         preg_match_all('/:(\\d+):\\d+: error - .*\\.BlankLine\\)/', $result['output'], $matches);
-        $this->assertSame(['12', '15', '19', '31'], $matches[1], $result['output']);
+        $this->assertSame(['16', '20', '32', '41'], $matches[1], $result['output']);
         $this->assertStringNotContainsString('EmptyLine', $result['output']);
     }
 
