@@ -13,8 +13,14 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * PER Coding Style 3.0, section 12.2, puts an attribute on its own line before a class, function, method, constant or
  * property, and before a parameter in a multi-line parameter list. In a single-line parameter list, the attribute must
- * be inline with its parameter. A closure or arrow function isn't in that list, and PER gives no layout for one, so
- * its attribute may be inline, e.g. `array_map(#[Pure] static fn($x) => $x * 2, $items)`.
+ * be inline with its parameter.
+ *
+ * A closure or arrow function isn't a structure in that list, but as a call's argument, its attribute follows the
+ * parameter rule: inline after a single space when the argument list is on one line, and on its own line before the
+ * closure, indented the same, when the list is split. A closure split over lines doesn't split the list, as section
+ * 4.7 says, so `usort($items, #[Pure] static function ($a, $b) {` keeps its attribute inline. Elsewhere, such as in an
+ * assignment or an array, PER says nothing. Set checkClosureAttributesOutsideCalls to require the attribute inline
+ * with a single space there too, as the Jumbo standard does.
  *
  * SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing can only allow an attribute on the same line as its
  * target everywhere (allowOnSameLine) or nowhere. The standard allows it everywhere, so that a parameter attribute can
@@ -38,12 +44,46 @@ class AttributePlacementSniff implements Sniff
 
     public const string CODE_PARAMETER_SPACING = 'ParameterSpacing';
 
+    public const string CODE_CLOSURE_SPACING = 'ClosureSpacing';
+
+    public const string CODE_CLOSURE_INDENT = 'ClosureIndent';
+
+    /**
+     * Unmatched tokens that, walking back from a comma, show it isn't in a call's argument list.
+     *
+     * @var list<int|string>
+     */
+    private const array LIST_BOUNDARIES = [
+        T_SEMICOLON,
+        T_OPEN_SHORT_ARRAY,
+        T_OPEN_SQUARE_BRACKET,
+        T_OPEN_CURLY_BRACKET,
+    ];
+
+    /**
+     * Tokens other than a function name that can come before a call's `(`, as in `$f()` or `$a->b()()`.
+     *
+     * @var list<int|string>
+     */
+    private const array CALLABLE_ENDS = [
+        T_VARIABLE,
+        T_CLOSE_PARENTHESIS,
+        T_CLOSE_SQUARE_BRACKET,
+        T_CLOSE_CURLY_BRACKET,
+    ];
+
     /**
      * The tokens that own a parameter list.
      *
      * @var list<int|string>
      */
     private const array FUNCTION_TOKENS = [T_FUNCTION, T_CLOSURE, T_FN];
+
+    /**
+     * Whether to check a closure's attribute anywhere other than a call's argument list, such as in an assignment or
+     * an array, as inline with a single space. PER says nothing about it, so it's off by default.
+     */
+    public bool $checkClosureAttributesOutsideCalls = false;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -95,6 +135,7 @@ class AttributePlacementSniff implements Sniff
         }
 
         if ($this->isClosure($phpcsFile, $targetPtr)) {
+            $this->processClosure($phpcsFile, $stackPtr, $closerPtr, $targetPtr);
             return;
         }
 
@@ -281,6 +322,234 @@ class AttributePlacementSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
 
         return $tokens[$ptr]['line'] > $tokens[$previousPtr]['line'] && $tokens[$ptr]['column'] === ($indent + 1);
+    }
+
+    /**
+     * Check a closure's attribute, as for a parameter when the closure is a call's argument.
+     *
+     * In a call's argument list that isn't split, the attribute is inline with the closure, after a single space. A
+     * closure split over lines doesn't split the list, as section 4.7 says. In a split list, the attribute is on its
+     * own line before the closure, which is indented the same. Anywhere else, PER says nothing, so the attribute is
+     * only checked, as inline with a single space, if checkClosureAttributesOutsideCalls is set.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the last attribute block's opener.
+     * @param int $closerPtr The position of the last attribute block's closer.
+     * @param int $targetPtr The position of the closure's first token.
+     */
+    private function processClosure(File $phpcsFile, int $stackPtr, int $closerPtr, int $targetPtr): void
+    {
+        $firstPtr = $this->findFirstAttribute($phpcsFile, $stackPtr);
+        $listOpener = $this->findArgumentListOpener($phpcsFile, $firstPtr);
+        if ($listOpener === null) {
+            if ($this->checkClosureAttributesOutsideCalls) {
+                $this->checkInlineSpacing($phpcsFile, $closerPtr, $targetPtr, 'Expected 1 space between an attribute '
+                    . 'and its closure', self::CODE_CLOSURE_SPACING);
+            }
+
+            return;
+        }
+
+        if (!$this->isArgumentListSplit($phpcsFile, $listOpener)) {
+            $this->checkInlineSpacing($phpcsFile, $closerPtr, $targetPtr, 'In a single-line argument list, a '
+                . 'closure\'s attribute must be inline, after a single space', self::CODE_CLOSURE_SPACING);
+            return;
+        }
+
+        $tokens = $phpcsFile->getTokens();
+        $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $stackPtr, true);
+        $startsLine = $firstOnLine === $stackPtr;
+        $indent = $tokens[$stackPtr]['column'] - 1;
+        $hasComment = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($closerPtr + 1), $targetPtr) !== false;
+
+        if ($tokens[$targetPtr]['line'] === $tokens[$closerPtr]['line']) {
+            $error = 'In a multi-line argument list, a closure\'s attribute must be on the line before it.';
+            if (!$startsLine || $hasComment) {
+                $phpcsFile->addError($error, $stackPtr, self::CODE_SAME_LINE);
+                return;
+            }
+
+            if ($phpcsFile->addFixableError($error, $stackPtr, self::CODE_SAME_LINE)) {
+                $this->setSpacing($phpcsFile, $closerPtr, $targetPtr, $phpcsFile->eolChar . str_repeat(' ', $indent));
+            }
+
+            return;
+        }
+
+        // The attribute is indented the same as its closure, the argument, as section 12.2 says of a parameter.
+        $expected = $tokens[$targetPtr]['column'] - 1;
+        if (!$startsLine || $indent === $expected) {
+            return;
+        }
+
+        $fix = $phpcsFile->addFixableError(
+            'In a multi-line argument list, a closure\'s attribute must be indented the same as the closure; '
+                . 'expected %s spaces, found %s',
+            $stackPtr,
+            self::CODE_CLOSURE_INDENT,
+            [$expected, $indent],
+        );
+        if (!$fix) {
+            return;
+        }
+
+        if ($indent === 0) {
+            $phpcsFile->fixer->addContentBefore($stackPtr, str_repeat(' ', $expected));
+        } else {
+            $phpcsFile->fixer->replaceToken(($stackPtr - 1), str_repeat(' ', $expected));
+        }
+    }
+
+    /**
+     * Check that an attribute is on its target's line, after a single space, and fix it to that.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $closerPtr The position of the last attribute block's closer.
+     * @param int $targetPtr The position of the target's first token.
+     * @param string $error The error message.
+     * @param string $code The error code.
+     */
+    private function checkInlineSpacing(
+        File $phpcsFile,
+        int $closerPtr,
+        int $targetPtr,
+        string $error,
+        string $code,
+    ): void {
+        $spacing = $phpcsFile->getTokensAsString(($closerPtr + 1), ($targetPtr - $closerPtr - 1));
+        $hasComment = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($closerPtr + 1), $targetPtr) !== false;
+        if ($spacing === ' ' || $hasComment) {
+            return;
+        }
+
+        if ($phpcsFile->addFixableError($error, $closerPtr, $code)) {
+            $this->setSpacing($phpcsFile, $closerPtr, $targetPtr, ' ');
+        }
+    }
+
+    /**
+     * Replace everything between two tokens with the given spacing.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $from The position of the token before the spacing.
+     * @param int $to The position of the token after the spacing.
+     * @param string $spacing The new spacing.
+     */
+    private function setSpacing(File $phpcsFile, int $from, int $to, string $spacing): void
+    {
+        $phpcsFile->fixer->beginChangeset();
+        for ($i = ($from + 1); $i < $to; $i++) {
+            $phpcsFile->fixer->replaceToken($i, '');
+        }
+
+        $phpcsFile->fixer->addContent($from, $spacing);
+        $phpcsFile->fixer->endChangeset();
+    }
+
+    /**
+     * Find the first of a run of attribute blocks, from the last one.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $attributePtr The position of an attribute block's opener.
+     * @return int The position of the first attribute block's opener.
+     */
+    private function findFirstAttribute(File $phpcsFile, int $attributePtr): int
+    {
+        $tokens = $phpcsFile->getTokens();
+        $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($attributePtr - 1), null, true);
+        while ($previous !== false && $tokens[$previous]['code'] === T_ATTRIBUTE_END) {
+            $attributePtr = $tokens[$previous]['attribute_opener'];
+            $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($attributePtr - 1), null, true);
+        }
+
+        return $attributePtr;
+    }
+
+    /**
+     * Find the opening parenthesis of the call an attributed closure is a direct argument of, if any.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $attributePtr The position of the closure's first attribute block's opener.
+     * @return int|null The position of the call's `(`, or null if the closure isn't one of its arguments.
+     */
+    private function findArgumentListOpener(File $phpcsFile, int $attributePtr): ?int
+    {
+        $tokens = $phpcsFile->getTokens();
+        $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($attributePtr - 1), null, true);
+        if ($previous === false || !in_array($tokens[$previous]['code'], [T_OPEN_PARENTHESIS, T_COMMA], true)) {
+            return null;
+        }
+
+        // From a comma, walk back over earlier arguments to the list's opener.
+        for ($i = $previous; $i >= 0 && $tokens[$i]['code'] !== T_OPEN_PARENTHESIS; $i--) {
+            $code = $tokens[$i]['code'];
+            if ($code === T_CLOSE_PARENTHESIS && isset($tokens[$i]['parenthesis_opener'])) {
+                $i = $tokens[$i]['parenthesis_opener'];
+            } elseif ($code === T_ATTRIBUTE_END && isset($tokens[$i]['attribute_opener'])) {
+                $i = $tokens[$i]['attribute_opener'];
+            } elseif (isset($tokens[$i]['bracket_opener']) && $tokens[$i]['bracket_opener'] < $i) {
+                $i = $tokens[$i]['bracket_opener'];
+            } elseif (in_array($code, self::LIST_BOUNDARIES, true)) {
+                return null;
+            }
+        }
+
+        if ($i < 0 || isset($tokens[$i]['parenthesis_owner'])) {
+            return null;
+        }
+
+        $beforeOpener = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($i - 1), null, true);
+        if ($beforeOpener === false) {
+            return null;
+        }
+
+        $code = $tokens[$beforeOpener]['code'];
+        $isCall = isset(Tokens::FUNCTION_NAME_TOKENS[$code]) || in_array($code, self::CALLABLE_ENDS, true);
+
+        return $isCall ? $i : null;
+    }
+
+    /**
+     * Check whether a call's argument list is split across lines, as section 4.7 means it: the first argument, or one
+     * after a comma, starts a new line. An argument split over lines, such as a closure, doesn't split the list.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the call's `(`.
+     * @return bool True if the list is split.
+     */
+    private function isArgumentListSplit(File $phpcsFile, int $opener): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $closer = $tokens[$opener]['parenthesis_closer'];
+        for ($i = $opener; $i < $closer; $i++) {
+            if ($i !== $opener) {
+                if ($tokens[$i]['code'] === T_OPEN_PARENTHESIS && isset($tokens[$i]['parenthesis_closer'])) {
+                    $i = $tokens[$i]['parenthesis_closer'];
+                    continue;
+                }
+
+                if ($tokens[$i]['code'] === T_ATTRIBUTE && isset($tokens[$i]['attribute_closer'])) {
+                    $i = $tokens[$i]['attribute_closer'];
+                    continue;
+                }
+
+                if (isset($tokens[$i]['bracket_closer']) && $tokens[$i]['bracket_closer'] > $i) {
+                    $i = $tokens[$i]['bracket_closer'];
+                    continue;
+                }
+
+                if ($tokens[$i]['code'] !== T_COMMA) {
+                    continue;
+                }
+            }
+
+            $next = $phpcsFile->findNext(T_WHITESPACE, ($i + 1), ($closer + 1), true);
+            if ($next !== false && $tokens[$next]['line'] > $tokens[$i]['line']) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

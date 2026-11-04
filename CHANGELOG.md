@@ -29,6 +29,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Blank lines and spacing around attributes (breaking).** As PER Coding Style 3.1 requires,
   `Jumbo.Attributes.AttributePlacement` now reports a blank line between a docblock and the attributes after it, or
   between two attribute blocks, and anything but a single space between an attribute and its parameter on the same line.
+  A closure that's a call's argument follows the parameter rule: its attribute is inline after a single space when the
+  argument list is on one line, and on its own line before it when the list is split. Jumbo also requires a closure's
+  attribute inline after a single space anywhere else (new property `checkClosureAttributesOutsideCalls`).
   Auto-fixable.
 - **Spacing inside attribute blocks (breaking).** As PER Coding Style 3.1 requires, there's no space after `#[` or
   before `]`, and attributes in one block are separated by a comma with a space after it and none before, e.g.

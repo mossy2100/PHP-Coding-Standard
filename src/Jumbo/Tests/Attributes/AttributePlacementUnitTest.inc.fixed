@@ -148,12 +148,43 @@ class BlankLines
     }
 }
 
-// Valid: a closure or arrow function isn't in section 12.2's list, so its attribute may be inline.
+// A closure's attribute, as a call's argument: inline in a single-line list, on its own line in a split one.
 $doubled = array_map(#[Pure] static fn(int $x): int => $x * 2, $items);
-$pure = #[Pure] fn(int $x): int => $x;
 usort($items, #[Pure] static function (int $a, int $b): int {
     return $a <=> $b;
 });
-$plain = #[Pure] function (): int {
-    return 1;
-};
+$split = array_map(
+    #[Pure]
+    static fn(int $x): int => $x,
+    $items,
+);
+$spaced = array_map(#[Pure] static fn(int $x): int => $x, $items);
+$sameLine = array_map(
+    #[Pure]
+    static fn(int $x): int => $x,
+    $items,
+);
+$misIndented = array_map(
+    #[Pure]
+    static fn(int $x): int => $x,
+    $items,
+);
+
+// Elsewhere, PER says nothing, so nothing is checked by default.
+$pure = #[Pure]  fn(int $x): int => $x;
+$plain = #[Pure]
+    function (): int {
+        return 1;
+    };
+
+// phpcs:set Jumbo.Attributes.AttributePlacement checkClosureAttributesOutsideCalls true
+$inline = #[Pure] fn(int $x): int => $x;
+$handlers = [
+    'save' => #[Pure] static fn(int $x): int => $x,
+];
+$twoSpaces = #[Pure] fn(int $x): int => $x;
+$ownLine = #[Pure] fn(int $x): int => $x;
+$inArray = [
+    #[Pure] fn(int $x): int => $x,
+];
+// phpcs:set Jumbo.Attributes.AttributePlacement checkClosureAttributesOutsideCalls false

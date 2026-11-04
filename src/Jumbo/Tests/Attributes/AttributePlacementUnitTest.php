@@ -51,6 +51,14 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             129 => 1,
             // Two spaces, and no space, between an attribute and its parameter.
             134 => 2,
+            // A closure argument: two spaces in a single-line list, inline in a split list, and mis-indented.
+            149 => 1,
+            151 => 1,
+            155 => 1,
+            // With checkClosureAttributesOutsideCalls: two spaces, on its own line, and on its own line in an array.
+            172 => 1,
+            173 => 1,
+            176 => 1,
         ];
     }
 

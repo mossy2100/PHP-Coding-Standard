@@ -226,8 +226,17 @@ $response = $client->post(
 Requires an attribute to be on the line before its target, as [PER Coding Style 3.0, Section 12.2](https://www.php-fig.org/per/coding-style/#122-placement) requires. The exception
 is a parameter in a single-line parameter list, whose attribute must be inline.
 
-A closure or arrow function isn't in section 12.2's list, and PER gives no layout for one, so its attribute may be
-inline, e.g. `array_map(#[Pure] static fn($x) => $x * 2, $items)`.
+A closure or arrow function isn't a structure in section 12.2's list. As a call's argument, its attribute follows the
+rule for a parameter:
+
+- **Argument list on one line:** inline, after a single space, e.g. `array_map(#[Pure] static fn($x) => $x, $items)`.
+  A closure split over lines doesn't split the list, as [section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) says, so
+  `usort($items, #[Pure] static function ($a, $b) {` keeps its attribute inline.
+- **Argument list split:** on its own line before the closure, indented the same.
+
+Anywhere else, such as in an assignment or an array, PER says nothing, so it isn't checked. Set
+`checkClosureAttributesOutsideCalls` to require the attribute inline after a single space there too, as the Jumbo
+standard does.
 
 **Why:** `SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing` has one option, `allowOnSameLine`, which allows
 an attribute on the same line as its target either everywhere or nowhere. The PERCS31 ruleset turns it on, so that a
@@ -295,6 +304,12 @@ $handler = new #[Attribute] class {
     public int $retries = 3;
 };
 ```
+
+**Configuration:**
+
+| Property                             | Type | Default | Description                                                                 |
+| ------------------------------------ | ---- | ------- | --------------------------------------------------------------------------- |
+| `checkClosureAttributesOutsideCalls` | bool | false   | Require a closure's attribute inline, after a single space, outside a call. |
 
 ---
 

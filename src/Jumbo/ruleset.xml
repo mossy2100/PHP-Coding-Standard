@@ -23,6 +23,13 @@
         </properties>
     </rule>
 
+    <!-- A closure's attribute inline, after a single space, outside a call's arguments too, e.g. in an assignment -->
+    <rule ref="Jumbo.Attributes.AttributePlacement">
+        <properties>
+            <property name="checkClosureAttributesOutsideCalls" value="true"/>
+        </properties>
+    </rule>
+
     <!-- No space between a by-reference hook's & and its name: &get, not & get -->
     <rule ref="Jumbo.Classes.PropertyHookLayout">
         <properties>
