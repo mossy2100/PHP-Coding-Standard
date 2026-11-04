@@ -147,3 +147,13 @@ class BlankLines
     {
     }
 }
+
+// Valid: a closure or arrow function isn't in section 12.2's list, so its attribute may be inline.
+$doubled = array_map(#[Pure] static fn(int $x): int => $x * 2, $items);
+$pure = #[Pure] fn(int $x): int => $x;
+usort($items, #[Pure] static function (int $a, int $b): int {
+    return $a <=> $b;
+});
+$plain = #[Pure] function (): int {
+    return 1;
+};

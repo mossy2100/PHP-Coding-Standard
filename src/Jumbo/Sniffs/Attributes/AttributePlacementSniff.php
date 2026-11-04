@@ -13,7 +13,8 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * PER Coding Style 3.0, section 12.2, puts an attribute on its own line before a class, function, method, constant or
  * property, and before a parameter in a multi-line parameter list. In a single-line parameter list, the attribute must
- * be inline with its parameter.
+ * be inline with its parameter. A closure or arrow function isn't in that list, and PER gives no layout for one, so
+ * its attribute may be inline, e.g. `array_map(#[Pure] static fn($x) => $x * 2, $items)`.
  *
  * SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing can only allow an attribute on the same line as its
  * target everywhere (allowOnSameLine) or nowhere. The standard allows it everywhere, so that a parameter attribute can
@@ -90,6 +91,10 @@ class AttributePlacementSniff implements Sniff
 
         // Another attribute follows, so the last one in the group is checked against the target.
         if ($tokens[$targetPtr]['code'] === T_ATTRIBUTE) {
+            return;
+        }
+
+        if ($this->isClosure($phpcsFile, $targetPtr)) {
             return;
         }
 
@@ -276,6 +281,26 @@ class AttributePlacementSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
 
         return $tokens[$ptr]['line'] > $tokens[$previousPtr]['line'] && $tokens[$ptr]['column'] === ($indent + 1);
+    }
+
+    /**
+     * Check whether an attribute's target is a closure or arrow function, which section 12.2 doesn't list.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $targetPtr The position of the first token after the attributes.
+     * @return bool True for `function`, `fn`, or `static` before either.
+     */
+    private function isClosure(File $phpcsFile, int $targetPtr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        if ($tokens[$targetPtr]['code'] === T_STATIC) {
+            $targetPtr = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($targetPtr + 1), null, true);
+            if ($targetPtr === false) {
+                return false;
+            }
+        }
+
+        return $tokens[$targetPtr]['code'] === T_CLOSURE || $tokens[$targetPtr]['code'] === T_FN;
     }
 
     /**

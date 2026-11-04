@@ -227,6 +227,9 @@ $response = $client->post(
 Requires an attribute to be on the line before its target, as [PER Coding Style 3.0, Section 12.2](https://www.php-fig.org/per/coding-style/#122-placement) requires. The exception
 is a parameter in a single-line parameter list, whose attribute must be inline.
 
+A closure or arrow function isn't in section 12.2's list, and PER gives no layout for one, so its attribute may be
+inline, e.g. `array_map(#[Pure] static fn($x) => $x * 2, $items)`.
+
 **Why:** `SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing` has one option, `allowOnSameLine`, which allows
 an attribute on the same line as its target either everywhere or nowhere. The PERCS31 ruleset turns it on, so that a
 parameter's attribute can be inline. This sniff then reports every other same-line attribute, including an inline one in
