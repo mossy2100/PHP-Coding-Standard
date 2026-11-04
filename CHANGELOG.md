@@ -149,11 +149,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   reported `{ get; set; }` on an abstract or interface property as two statements on one line. PER Coding Style 3.0
   requires them on one line. Update any `phpcs:ignore` comments or `<exclude>` rules that name the Generic code.
 - **`Jumbo.Attributes.AttributePlacement` (breaking).** Requires an attribute to be on the line before its target,
-  except on a parameter in a single-line parameter list, where it must be inline, as PER Coding Style 3.0 requires.
-  `SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing` now allows an attribute on the same line as its target,
-  and this sniff reports every other case. Attributes on an anonymous class follow PER Coding Style 3.1 instead:
-  starting on the line after `new`, indented once, with `class` on the line after them. `Jumbo.WhiteSpace.ScopeIndent`
-  indents the class body to match. Auto-fixable.
+  except on a parameter in a single-line parameter list, where it must be inline, as PER Coding Style 3.0 requires. It
+  also reports a blank line, or a comment on a line of its own, between an attribute and its target, replacing
+  `SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing`, whose fix deleted such a comment. Attributes on an
+  anonymous class follow PER Coding Style 3.1 instead: starting on the line after `new`, indented once, with `class` on
+  the line after them. `Jumbo.WhiteSpace.ScopeIndent` indents the class body to match. Auto-fixable.
 - **`Jumbo.NamingConventions.ValidVariableName` (breaking).** Warns about a variable or parameter that starts with an
   underscore, inside a class, enum, trait or interface. `Squiz.NamingConventions.ValidVariableName` reports these
   outside a class, but allows them inside one. Superglobals such as `$_GET` are exempt. Not auto-fixable.

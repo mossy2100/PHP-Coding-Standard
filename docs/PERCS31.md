@@ -111,8 +111,6 @@ Reference: [PHPCSExtra repository and documentation](https://github.com/PHPCSSta
 Reference: [Slevomat coding standard repository and documentation](https://github.com/slevomat/coding-standard)
 
 - **Arrays.MultiLineArrayEndBracketPlacement**: Requires the closing bracket of a multi-line array on its own line (11).
-- **Attributes.AttributeAndTargetSpacing**: Disallows blank lines between an attribute and its target (12.2). An
-  attribute on the same line as its target is allowed here, and checked by [`Jumbo.Attributes.AttributePlacement`](#jumboattributesattributeplacement).
 - **Attributes.DisallowMultipleAttributesPerLine**: Requires separate attribute blocks on separate lines (12.3).
 - **Attributes.RequireAttributeAfterDocComment**: Requires a doc comment before the attributes, not after (12.2).
 - **Classes.BackedEnumTypeSpacing**: Requires no space before a backed enum's colon, and one after (9).
@@ -238,18 +236,21 @@ Anywhere else, such as in an assignment or an array, PER says nothing, so it isn
 `checkClosureAttributesOutsideCalls` to require the attribute inline after a single space there too, as the Jumbo
 standard does.
 
-**Why:** `SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing` has one option, `allowOnSameLine`, which allows
-an attribute on the same line as its target either everywhere or nowhere. The PERCS31 ruleset turns it on, so that a
-parameter's attribute can be inline. This sniff then reports every other same-line attribute, including an inline one in
-a multi-line parameter list.
+**Why:** `SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing` covers some of this, but its only option for an
+attribute on its target's line, `allowOnSameLine`, is all or nothing, and its fix for a blank line deletes a comment
+between the attribute and its target. So this sniff checks placement itself, and the PERCS31 ruleset doesn't use the
+Slevomat sniff.
 
 An attribute on an anonymous class follows [PER Coding Style 3.1, Section 8](https://www.php-fig.org/per/coding-style/#8-anonymous-classes) instead. The attributes start on the line
 after `new`, indented once, with `class` on the line after them at the same indent. `Jumbo.WhiteSpace.ScopeIndent` then
 indents the class body from `class`.
 
-It also reports a blank line between a docblock and the attributes after it, or between two attribute blocks, and
-anything but a single space between an attribute and its parameter on the same line, as section 12.2 requires. A blank
-line between a parameter and the next parameter's attributes is allowed, as 12.2 also says.
+It also reports a blank line between a docblock and the attributes after it, between two attribute blocks, or between
+the last attribute and its target, and anything but a single space between an attribute and its parameter on the same
+line, as section 12.2 requires. A comment on a line of its own between an attribute and its target is reported too, as
+the attributes go immediately prior to the structure. A comment at the end of the attribute's line, as in
+`#[Override] // Stringable`, is fine. A blank line between a parameter and the next parameter's attributes is allowed,
+as 12.2 also says.
 
 **Auto-fixable:** yes, unless a comment is between the attribute and its target. For an anonymous class, the fix puts
 each attribute block on its own line.

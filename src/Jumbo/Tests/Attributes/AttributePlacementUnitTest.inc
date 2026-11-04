@@ -177,3 +177,30 @@ $inArray = [
     fn(int $x): int => $x,
 ];
 // phpcs:set Jumbo.Attributes.AttributePlacement checkClosureAttributesOutsideCalls false
+
+// Nothing between the last attribute and its target: no blank line, and no comment (not fixable).
+#[Attribute]
+
+final class BlankAfter
+{
+    #[Deprecated]
+    // A comment.
+    public function commented(): void
+    {
+    }
+}
+
+// A comment at the end of the attribute's line is fine, and is kept when a blank line after it is removed.
+final class TrailingComment
+{
+    #[Deprecated] // Old.
+    public function kept(): void
+    {
+    }
+
+    #[Deprecated] // Old.
+
+    public function blank(): void
+    {
+    }
+}

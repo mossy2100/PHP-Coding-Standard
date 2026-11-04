@@ -25,9 +25,9 @@ use PHPCSUtils\Utils\PassedParameters;
  * assignment or an array, PER says nothing. Set checkClosureAttributesOutsideCalls to require the attribute inline
  * with a single space there too, as the Jumbo standard does.
  *
- * SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing can only allow an attribute on the same line as its
- * target everywhere (allowOnSameLine) or nowhere. The standard allows it everywhere, so that a parameter attribute can
- * be inline, and this sniff reports every same-line attribute that isn't on a parameter in a single-line list.
+ * It also reports a blank line or a comment between the last attribute and its target. That replaces
+ * SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing, whose fix deletes a comment there, and whose only option
+ * for an attribute on its target's line, allowOnSameLine, is all or nothing.
  *
  * PER Coding Style 3.1, section 8, sets the layout for attributes on an anonymous class: they start on the line after
  * `new`, indented once, with `class` on the line after them, at the same indent. The fix puts each attribute block on
@@ -44,6 +44,10 @@ class AttributePlacementSniff implements Sniff
     public const string CODE_ANON_CLASS = 'AnonClass';
 
     public const string CODE_BLANK_LINE_BEFORE = 'BlankLineBefore';
+
+    public const string CODE_BLANK_LINE_AFTER = 'BlankLineAfter';
+
+    public const string CODE_COMMENT_BEFORE_TARGET = 'CommentBeforeTarget';
 
     public const string CODE_PARAMETER_SPACING = 'ParameterSpacing';
 
@@ -96,6 +100,8 @@ class AttributePlacementSniff implements Sniff
         if ($targetPtr === false) {
             return;
         }
+
+        $this->checkBeforeTarget($phpcsFile, $stackPtr, $closerPtr, $targetPtr);
 
         // An anonymous class's attributes are checked together, from the first one.
         $anonClassPtr = $this->findAnonClass($phpcsFile, $stackPtr);
@@ -153,6 +159,70 @@ class AttributePlacementSniff implements Sniff
         assert(is_int($firstOnLine));
         $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1));
         $phpcsFile->fixer->replaceToken($nextPtr, $phpcsFile->eolChar . $indent);
+    }
+
+    /**
+     * Check that nothing comes between the last attribute block and its target on a later line: no blank line, as
+     * section 12.2 says, and no comment, as the attributes go immediately prior to the structure.
+     *
+     * A docblock there is reported by SlevomatCodingStandard.Attributes.RequireAttributeAfterDocComment, and a blank
+     * line before a parameter by Jumbo.Functions.MultiLineFunctionDeclaration, so both are left alone.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the attribute block's opener.
+     * @param int $closerPtr The position of the attribute block's closer.
+     * @param int $targetPtr The position of the first token after the attributes.
+     */
+    private function checkBeforeTarget(File $phpcsFile, int $stackPtr, int $closerPtr, int $targetPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        if (
+            $tokens[$targetPtr]['code'] === T_ATTRIBUTE
+            || $tokens[$targetPtr]['line'] === $tokens[$closerPtr]['line']
+            || $this->findParameterListOpener($phpcsFile, $stackPtr) !== null
+            || $phpcsFile->findNext(T_DOC_COMMENT_OPEN_TAG, ($closerPtr + 1), $targetPtr) !== false
+        ) {
+            return;
+        }
+
+        // A comment at the end of the attribute's line, e.g. `#[Override] // Stringable`, is fine.
+        for ($i = ($closerPtr + 1); $i < $targetPtr; $i++) {
+            $isComment = isset(Tokens::COMMENT_TOKENS[$tokens[$i]['code']]);
+            if ($isComment && $tokens[$i]['line'] > $tokens[$closerPtr]['line']) {
+                $phpcsFile->addError(
+                    'There must be no comment between an attribute and its target',
+                    $closerPtr,
+                    self::CODE_COMMENT_BEFORE_TARGET,
+                );
+                return;
+            }
+        }
+
+        if (($tokens[$targetPtr]['line'] - $tokens[$closerPtr]['line']) < 2) {
+            return;
+        }
+
+        $fix = $phpcsFile->addFixableError(
+            'There must be no blank line between an attribute and its target',
+            $closerPtr,
+            self::CODE_BLANK_LINE_AFTER,
+        );
+        if (!$fix) {
+            return;
+        }
+
+        // Remove only the blank lines, keeping any comment at the end of the attribute's line.
+        $phpcsFile->fixer->beginChangeset();
+        for ($i = ($closerPtr + 1); $i < $targetPtr; $i++) {
+            $line = $tokens[$i]['line'];
+            $isBlankLine = $tokens[$i]['code'] === T_WHITESPACE && $tokens[$i]['column'] === 1
+                && $line > $tokens[$closerPtr]['line'] && $line < $tokens[$targetPtr]['line'];
+            if ($isBlankLine) {
+                $phpcsFile->fixer->replaceToken($i, '');
+            }
+        }
+
+        $phpcsFile->fixer->endChangeset();
     }
 
     /**

@@ -59,6 +59,11 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             172 => 1,
             173 => 1,
             176 => 1,
+            // A blank line, and a comment, between the last attribute and its target.
+            182 => 1,
+            186 => 1,
+            // A blank line after an attribute with a comment at the end of its line.
+            201 => 1,
         ];
     }
 
