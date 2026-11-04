@@ -22,3 +22,15 @@ declare(ticks=1,encoding='UTF-8')  {
     $a = 1;
   }
 declare(encoding='UTF-8') ;
+
+// No space before the brace, with one directive and with several, and the brace on the next line.
+declare(ticks=1){
+    $a = 1;
+}
+declare(ticks=1,encoding='UTF-8'){
+    $a = 1;
+}
+declare(ticks=1)
+{
+    $a = 1;
+}

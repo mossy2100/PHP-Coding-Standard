@@ -34,6 +34,10 @@ class DeclareStatementUnitTest extends AbstractSniffTestCase
             23 => 1,
             // A space before the semicolon, with a string value.
             24 => 1,
+            // No space before the brace, with one directive and with several, and the brace on the next line.
+            27 => 1,
+            30 => 1,
+            34 => 1,
         ];
     }
 

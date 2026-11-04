@@ -138,15 +138,16 @@ class DeclareStatementSniff implements Sniff
             } elseif ($phpcsFile->getTokensAsString(($prevToken + 1), ($curlyBracket - $prevToken - 1)) !== ' ') {
                 $fix = $phpcsFile->addFixableError($error, $curlyBracket, 'ExtraSpaceFoundAfterBracket');
                 if ($fix === true) {
+                    // Jumbo: remove whatever is between them, then add one space. The original's loop started past
+                    // the brace when there was no space at all, as in `){`, so it never ended.
                     $phpcsFile->fixer->beginChangeset();
-                    $phpcsFile->fixer->replaceToken(($prevToken + 1), ' ');
-                    $nextToken = ($prevToken + 2);
-                    while ($nextToken !== $curlyBracket) {
-                        $phpcsFile->fixer->replaceToken($nextToken, '');
-                        $nextToken++;
+                    for ($i = ($prevToken + 1); $i < $curlyBracket; $i++) {
+                        $phpcsFile->fixer->replaceToken($i, '');
                     }
 
+                    $phpcsFile->fixer->addContentBefore($curlyBracket, ' ');
                     $phpcsFile->fixer->endChangeset();
+                    // Jumbo: end of change.
                 }
             }
 
