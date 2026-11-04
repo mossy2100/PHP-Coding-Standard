@@ -8,7 +8,7 @@ rejecting an empty body written as `{}`, and don't yet support PHP 8.4 and 8.5 f
 operator. This standard fixes both, using sniffs from PHP_CodeSniffer, Slevomat and PHPCSExtra where they fit, and
 custom sniffs where nothing did.
 
-The [Jumbo standard](../README.md) is PERCS31 plus my own preferences. Use PERCS31 on its own to follow PER Coding Style without them.
+The [Jumbo standard](Jumbo.md) is PERCS31 plus my own preferences. Use PERCS31 on its own to follow PER Coding Style without them.
 
 **Contents:**
 - [Usage](#usage)
@@ -1183,7 +1183,7 @@ registers it when it's defined. The pipe isn't checked when PHPCS runs on PHP 8.
 
 It extends `Squiz.WhiteSpace.OperatorSpacing`, which requires exactly one space, and covers PSR-12's operators too. The
 ruleset excludes the codes for more than one space, `SpacingBefore` and `SpacingAfter` and their `Amp` versions, so only
-a missing space is reported. A standard that wants exactly one space turns them back on, as the [Jumbo standard](../README.md) does.
+a missing space is reported. A standard that wants exactly one space turns them back on, as the [Jumbo standard](Jumbo.md) does.
 
 The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operator, so it gets the opposite rule:
 [Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the union symbol MUST NOT have a space either side. The parent would require one.

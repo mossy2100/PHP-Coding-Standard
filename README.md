@@ -14,7 +14,7 @@ The Jumbo Coding Standard has two rulesets, each usable as a PHP_CodeSniffer sta
 
 - **PERCS31**: [PER Coding Style 3.1](https://www.php-fig.org/per/coding-style/), and nothing more, built on PSR-12. No complete PHP_CodeSniffer standard for PER
   Coding Style existed. See [PERCS31](docs/PERCS31.md).
-- **Jumbo**: PERCS31 plus house rules, for consistent naming and modern PHP 8.4+ code.
+- **Jumbo**: PERCS31 plus extra rules for consistent naming and modern PHP 8.4+ code. See [Jumbo](docs/Jumbo.md).
 
 ### Key features of Jumbo
 
@@ -92,34 +92,20 @@ vendor/bin/phpcs        # Check for issues
 vendor/bin/phpcbf       # Auto-fix issues
 ```
 
-To follow PER Coding Style 3.1 without the house rules, use `<rule ref="PERCS31"/>` instead.
+To follow PER Coding Style 3.1 without the extra rules, use `<rule ref="PERCS31"/>` instead.
 
-The line length limit is 120. To change it, see [Line Length](docs/LineLength.md).
+The default maximum line length is 120. To change it, see [Line Length](docs/LineLength.md).
 
 ---
 
 ## Included Sniffs
 
-The Jumbo standard is built on [PERCS31](docs/PERCS31.md), which lists every sniff it uses for PER Coding Style: PSR-12, sniffs from
-Generic, Squiz, Slevomat and PHPCSExtra (`Universal`), and its own custom sniffs.
+Each standard has its own page, listing every sniff it uses, inherited and custom, with the reason for each:
 
-On top of that, Jumbo adds more Generic, Squiz and Slevomat sniffs, each documented in [Inherited Sniffs](docs/InheritedSniffs.md), and these
-custom sniffs, each with its reason in [Custom Sniffs](docs/CustomSniffs.md):
-
-| Sniff                                                      | Checks                                                          | Fixable |
-| ---------------------------------------------------------- | --------------------------------------------------------------- | ------- |
-| `Jumbo.Arrays.ArrayDeclaration`                            | A multi-line array is on one line if it fits                    | Yes     |
-| `Jumbo.Classes.EmptyLinesAroundClassBraces`                | No blank lines inside class braces, allowing `{}`               | Yes     |
-| `Jumbo.Classes.RequireSingleLineMethodSignature`           | A short signature on one line, skipping a promoted hook         | Yes     |
-| `Jumbo.ControlStructures.LanguageConstructWithParentheses` | No `echo('x')`, allowing `exit()` and `die()`                   | Yes     |
-| `Jumbo.ControlStructures.RequireSingleLineHeader`          | A multi-line loop, `switch` or `match` header fits on a line    | Yes     |
-| `Jumbo.Functions.RequireSingleLineCall`                    | A call that fits is on one line, skipping an anonymous class    | Yes     |
-| `Jumbo.Namespaces.UnusedUses`                              | No unused `use` statements, safe with a miscased `use Function` | Yes     |
-| `Jumbo.NamingConventions.ValidVariableName`                | No leading underscore on a variable or parameter in a class     | No      |
-| `Jumbo.Operators.UnaryOperatorSpacing`                     | No whitespace after a prefix `+`, `~` or `@`                    | Yes     |
-| `Jumbo.TypeHints.DeclareStrictTypes`                       | `strict_types=1` required, allowing `<?php declare(...) ?>`     | Yes     |
-| `Jumbo.TypeHints.ParameterTypeHint`                        | Parameter type hints, skipping a promoted hook                  | Yes     |
-| `Jumbo.TypeHints.ParameterTypeHintSpacing`                 | Parameter type hint spacing, skipping a promoted hook           | Yes     |
+- [PERCS31](docs/PERCS31.md): PSR-12, sniffs from Generic, Squiz, Slevomat and PHPCSExtra (`Universal`), and custom
+  sniffs, for PER Coding Style 3.1.
+- [Jumbo](docs/Jumbo.md): what Jumbo changes in PERCS31, and the Generic, Squiz and Slevomat sniffs and custom sniffs it
+  adds as extra rules.
 
 ---
 

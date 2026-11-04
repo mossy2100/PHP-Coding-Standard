@@ -74,11 +74,11 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that code following PER Coding Style, but not the house rules, passes PERCS31 and fails Jumbo.
+     * Test that code following PER Coding Style, but not the extra rules, passes PERCS31 and fails Jumbo.
      */
-    public function testHouseStyleFixturePassesPercs31Only(): void
+    public function testExtraRulesFixturePassesPercs31Only(): void
     {
-        $fixture = dirname(__DIR__, 2) . '/Jumbo/Tests/Ruleset/HouseStyle.inc';
+        $fixture = dirname(__DIR__, 2) . '/Jumbo/Tests/Ruleset/ExtraRules.inc';
         $percs31 = $this->runTool('phpcs', ['--standard=PERCS31', '--report=json', $fixture]);
         $jumbo = $this->runTool('phpcs', ['--standard=Jumbo', '--report=json', $fixture]);
 

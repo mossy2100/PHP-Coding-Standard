@@ -10,7 +10,7 @@
 
     <!-- ====== PERCS31 ====== -->
 
-    <!-- PER Coding Style 3.1, on PSR-12. Everything below is house style. -->
+    <!-- PER Coding Style 3.1, on PSR-12. Everything below is an extra rule. -->
     <rule ref="PERCS31">
         <!-- SlevomatCodingStandard.PHP.TypeCast, below, reports the same long-form casts, and more -->
         <exclude name="PSR12.Keywords.ShortFormTypeKeywords"/>

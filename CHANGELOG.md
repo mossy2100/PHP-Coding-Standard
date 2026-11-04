@@ -72,8 +72,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   lines SHOULD NOT be longer than 80. It's hidden by default; run `phpcs --warning-severity=4` to see it. Update any
   `phpcs:ignore` comments or `<exclude>` rules that name `Generic.Files.LineLength`.
 - **The PERCS31 ruleset.** A second ruleset in the package, for [PER Coding Style 3.1](https://www.php-fig.org/per/coding-style/) and nothing more, built on PSR-12.
-  Use `<rule ref="PERCS31"/>` to follow PER Coding Style without the house rules. The Jumbo ruleset is PERCS31 plus
-  house rules, and both use the same `Jumbo.*` sniffs. See [PERCS31](docs/PERCS31.md).
+  Use `<rule ref="PERCS31"/>` to follow PER Coding Style without the extra rules. The Jumbo ruleset is PERCS31 plus
+  extra rules, and both use the same `Jumbo.*` sniffs. See [PERCS31](docs/PERCS31.md).
 - **`Jumbo.Operators.OperatorSpacing` (breaking).** Replaces `PSR12.Operators.OperatorSpacing` and
   `Squiz.WhiteSpace.OperatorSpacing`. It requires at least one space around a binary operator, and adds the pipe
   operator `|>`. The Jumbo standard requires exactly one, as before, and now also around `&&`, `||`, `and`, `or`, `xor`
