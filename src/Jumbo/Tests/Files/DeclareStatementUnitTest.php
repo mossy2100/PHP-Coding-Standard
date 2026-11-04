@@ -21,13 +21,15 @@ class DeclareStatementUnitTest extends AbstractSniffTestCase
     {
         return [
             // Several directives: a space after the comma.
-            10 => 1,
-            // Several directives: a space after declare.
             11 => 1,
-            // Several directives: spaces throughout the parentheses, reported once.
+            // Several directives: a space after declare.
             12 => 1,
-            // One directive, left to the parent: spaces around the equals sign.
-            13 => 2,
+            // Several directives: spaces throughout the parentheses, reported once.
+            13 => 1,
+            // One integer directive, left to the parent: spaces around the equals sign.
+            14 => 2,
+            // A string value: spaces around the equals sign, reported once.
+            15 => 1,
         ];
     }
 
