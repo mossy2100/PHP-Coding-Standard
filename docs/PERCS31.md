@@ -160,11 +160,12 @@ section gives the reason.
 | `PERCS31.Formatting.EmptyBody`                          | An empty class, function, closure or anonymous class body is `{}` | Yes     |
 | `PERCS31.Formatting.MethodChaining`                     | The first method of a split chain on the next line                | Yes     |
 | `PERCS31.Formatting.TrailingComma`                      | A trailing comma in a multi-line `match` or group `use` only      | Yes     |
+| `PERCS31.Functions.ArrowFunctionSemicolonSpacing`       | No space before the `;` that ends an arrow function               | Yes     |
 | `PERCS31.Functions.MultiLineFunctionDeclaration`        | Function and closure declarations, allowing an empty body as `{}` | Yes     |
 | `PERCS31.NamingConventions.UpperCaseConstantName`       | Constants in UPPER_CASE, or PascalCase in an enum                 | No      |
 | `PERCS31.NamingConventions.ValidConstantName`           | No leading underscore on a constant                               | No      |
 | `PERCS31.NamingConventions.ValidEnumCaseName`           | Enum cases in PascalCase                                          | No      |
-| `PERCS31.Operators.OperatorPlacement`                   | A wrapped binary operator starts the next line, not ends this one | Yes     |
+| `PERCS31.Operators.OperatorPlacement`                   | A wrapped binary operator starts the next line, indented once     | Yes     |
 | `PERCS31.Operators.OperatorSpacing`                     | At least one space around binary operators, including `\|>`       | Yes     |
 | `PERCS31.PHP.DisallowMultiConstantDefinition`           | One constant per statement                                        | Yes     |
 | `PERCS31.PHP.RequireCloneParentheses`                   | A warning for `clone $a`, not `clone($a)`                         | Yes     |
@@ -909,6 +910,30 @@ $label = match ($code) {
 
 ---
 
+### PERCS31.Functions.ArrowFunctionSemicolonSpacing
+
+Disallows a space or line break before the semicolon that ends an arrow function.
+
+**Why:** [PER Coding Style 3.1, Section 7.1](https://www.php-fig.org/per/coding-style/#71-short-closures) says the semicolon at the end of the expression MUST NOT be preceded by a
+space. `SlevomatCodingStandard.Functions.ArrowFunctionDeclaration` checks the spacing around `fn` and `=>`, but not this.
+PER has no such rule for other statements, so `$a = 1 ;` isn't checked.
+
+**Auto-fixable:** yes.
+
+**Good:**
+
+```php
+$double = fn(int $x): int => $x * 2;
+```
+
+**Bad:**
+
+```php
+$double = fn(int $x): int => $x * 2 ;
+```
+
+---
+
 ### PERCS31.Functions.MultiLineFunctionDeclaration
 
 Checks the layout of function and closure declarations, including the placement of the opening brace, except in an empty
@@ -1040,18 +1065,25 @@ enum Suit
 
 ### PERCS31.Operators.OperatorPlacement
 
-Disallows a binary operator at the end of a line, when a statement wraps at it. The operator goes at the start of the
-next line instead. Operators within a line aren't affected.
+Requires a binary operator to start the next line when a statement wraps at it, not end this one, and that line to be
+indented once past the line its expression starts on. Operators within a line aren't affected.
 
-**Why:** [PER Coding Style 3.0, Section 6.4](https://www.php-fig.org/per/coding-style/#64-operators-placement) says a wrapped operator MUST be at the start of the new line, and section 7.1
-says the same of an arrow function's `=>`. Only two inherited sniffs check this, each for one case:
-`Universal.Operators.ConcatPosition` for `.`, and `PSR12.ControlStructures.BooleanOperatorPlacement` for `&&` and `||`
-in a condition. This sniff covers every other binary operator: assignment, arithmetic, comparison, bitwise and logical
-operators, `??`, `instanceof`, the short ternary `?:`, the arrow function's `=>`, and the pipe operator `|>` (PHP 8.5,
-PER Coding Style 3.1). A full ternary is checked by `PERCS31.ControlStructures.MultiLineTernaryOperator`, and `=>` in an
-array or `match` arm isn't an operator.
+The expression starts after the nearest `;`, `,`, opening bracket, or full ternary `?` or `:`. So a split inside a
+call's argument, an array element or parentheses is indented once past the line that argument, element or parenthesised
+expression starts on. The indent in a control structure's condition isn't checked.
 
-**Auto-fixable:** yes, unless a comment follows the operator.
+**Why:** [PER Coding Style 3.1, Section 6.4](https://www.php-fig.org/per/coding-style/#64-operators-placement) says a wrapped operator MUST be at the start of the new line, and each
+subsequent line is indented once. Section 7.1 says the same of an arrow function's `=>`. Section 5 says a split
+condition is indented at least once, so it's left alone.
+
+Only two inherited sniffs check the placement, each for one case: `Universal.Operators.ConcatPosition` for `.`, and
+`PSR12.ControlStructures.BooleanOperatorPlacement` for `&&` and `||` in a condition. This sniff covers every other
+binary operator: assignment, arithmetic, comparison, bitwise and logical operators, `??`, `instanceof`, the short
+ternary `?:`, the arrow function's `=>`, and the pipe operator `|>` (PHP 8.5). It checks the indent of all of them,
+including `.`. A full ternary is checked by `PERCS31.ControlStructures.MultiLineTernaryOperator`, and `=>` in an array
+or `match` arm isn't an operator.
+
+**Auto-fixable:** yes, unless a comment follows an operator at the end of a line.
 
 **Good:**
 
@@ -1062,6 +1094,11 @@ $total = $price * $quantity
 
 $label
     = $isActive ? 'Active' : 'Inactive';
+
+$this->expectOutputString(
+    'first'
+        . 'second',
+);
 ```
 
 **Bad:**
@@ -1073,6 +1110,14 @@ $total = $price * $quantity +
 
 $label =
     $isActive ? 'Active' : 'Inactive';
+
+$sum = $a
+        + $b;
+
+$this->expectOutputString(
+    'first'
+    . 'second',
+);
 ```
 
 ---

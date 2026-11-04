@@ -153,6 +153,8 @@
             <property name="allowMultiLine" value="true"/>
         </properties>
     </rule>
+    <!-- No space before the semicolon that ends an arrow function (7.1) -->
+    <rule ref="PERCS31.Functions.ArrowFunctionSemicolonSpacing"/>
     <!-- No space before a named argument's colon, one after (4.7) -->
     <rule ref="SlevomatCodingStandard.Functions.NamedArgumentSpacing"/>
     <!-- Trailing commas: disallowed on single-line lists, required on multi-line ones (2.6) -->

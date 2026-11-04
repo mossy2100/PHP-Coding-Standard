@@ -10,6 +10,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **Continuation line indent (breaking).** As PER Coding Style 3.1 requires, a line starting with a wrapped operator,
+  including `.` and an arrow function's `=>`, must be indented once past the line its expression starts on. In a call's
+  argument or an array element that starts its own line, that's once past the argument, not lined up with it. A control
+  structure's condition isn't checked. New code `PERCS31.Operators.OperatorPlacement.Indent`. Auto-fixable.
+- **`PERCS31.Functions.ArrowFunctionSemicolonSpacing` (breaking).** No space before the semicolon that ends an arrow
+  function, as PER Coding Style 3.1 requires. Auto-fixable.
 - **Method chain layout (breaking).** As PER Coding Style 3.1 requires, in a method chain split across lines, each `->`
   or `?->` must start its line, indented once, and the first method must be on the next line, not the object's line.
   Adds `PEAR.WhiteSpace.ObjectOperatorIndent` and the new `PERCS31.Formatting.MethodChaining`. Auto-fixable.
