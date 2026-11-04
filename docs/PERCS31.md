@@ -88,6 +88,7 @@ Sniffs from PHP_CodeSniffer's other standards and the two base packages, each fo
 
 Reference: [PHPCSExtra repository and documentation](https://github.com/PHPCSStandards/PHPCSExtra)
 
+- **Universal.Attributes.BracketSpacing**: Disallows a space after `#[` or before `]`, e.g. `#[ Override ]` (12.1).
 - **Universal.Attributes.DisallowAttributeParentheses**: Disallows `()` on an attribute with no arguments, e.g.
   `#[Override()]` (12.1).
 - **Universal.Classes.DisallowAnonClassParentheses**: Disallows `()` on an anonymous class with no arguments, e.g.
@@ -96,6 +97,8 @@ Reference: [PHPCSExtra repository and documentation](https://github.com/PHPCSSta
 - **Universal.Operators.ConcatPosition**: Requires a wrapped `.` at the start of the line, not the end (6.4).
 - **Universal.PHP.LowercasePHPTag**: Requires the `<?php` tag in lower case (3).
 - **Universal.PHP.RequireExitDieParentheses**: Warns about `exit` or `die` without parentheses, as a SHOULD (4.7).
+- **Universal.WhiteSpace.CommaSpacing**: In an attribute block, requires no space before a comma and one after, e.g.
+  `#[Foo, Bar]` (12.3). Only its attribute block codes are used, as other commas are checked elsewhere.
 - **Universal.UseStatements.LowercaseFunctionConst**: Requires `function` and `const` in lower case in a `use` statement
   (2.5).
 

@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **Spacing inside attribute blocks (breaking).** As PER Coding Style 3.1 requires, there's no space after `#[` or
+  before `]`, and attributes in one block are separated by a comma with a space after it and none before, e.g.
+  `#[Foo, Bar]`. Adds PHPCSExtra's `Universal.Attributes.BracketSpacing`, and the attribute block codes of
+  `Universal.WhiteSpace.CommaSpacing`. Auto-fixable.
 - **`PERCS31.Strings.HeredocIndentation` (breaking).** A heredoc's or nowdoc's body and closing marker must be indented
   once past the line it starts on, as PER Coding Style 3.1 requires. Auto-fixable, keeping any extra indentation within
   the text.

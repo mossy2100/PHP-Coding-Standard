@@ -84,6 +84,15 @@
     <!-- No () on an attribute without arguments (12.1) -->
     <rule ref="Universal.Attributes.DisallowAttributeParentheses"/>
 
+    <!-- No space after #[ or before ] (12.1) -->
+    <rule ref="Universal.Attributes.BracketSpacing"/>
+
+    <!-- In an attribute block, a comma with no space before it and one after (12.3). Only the attribute block codes:
+         the sniff checks every comma otherwise. -->
+    <rule ref="Universal.WhiteSpace.CommaSpacing.SpaceBeforeInAttributeBlock"/>
+    <rule ref="Universal.WhiteSpace.CommaSpacing.NoSpaceAfterInAttributeBlock"/>
+    <rule ref="Universal.WhiteSpace.CommaSpacing.TooMuchSpaceAfterInAttributeBlock"/>
+
     <!-- No () on an anonymous class without arguments (8) -->
     <rule ref="Universal.Classes.DisallowAnonClassParentheses"/>
 
