@@ -74,7 +74,8 @@ Sniffs from PHP_CodeSniffer and Slevomat that Jumbo adds on top of PERCS31. They
 ### Squiz
 
 - **Squiz.Arrays.ArrayDeclaration**: The checks PERCS31 leaves out: one space after a comma, no space inside an empty
-  array `[]`, and no mix of keyed and unkeyed values. The spacing around `=>` is left to
+  array `[]`, and no mix of keyed and unkeyed values. Which line a comma goes on is left to
+  [`Jumbo.Arrays.ElementComma`](#jumboarrayselementcomma). The spacing around `=>` is left to
   [`Jumbo.WhiteSpace.ArrowSpacing`](PERCS31.md#jumbowhitespacearrowspacing), as Squiz only checks it in a single-line array. Its alignment checks and
   `SingleLineNotAllowed` stay excluded, so keys, values and arrows are not aligned, and a single-line array with several
   values is allowed. `Jumbo.Arrays.ArrayDeclaration` requires single-line where it fits.
@@ -186,6 +187,7 @@ gives the reason. The custom sniffs for PER Coding Style itself are in [PERCS31]
 | Sniff                                                      | Checks                                                          | Fixable |
 | ---------------------------------------------------------- | --------------------------------------------------------------- | ------- |
 | `Jumbo.Arrays.ArrayDeclaration`                            | A multi-line array is on one line if it fits                    | Yes     |
+| `Jumbo.Arrays.ElementComma`                               | A multi-line array element's comma on the element's last line   | Yes     |
 | `Jumbo.Classes.EmptyLinesAroundClassBraces`                | No blank lines inside class braces, allowing `{}`               | Yes     |
 | `Jumbo.Classes.RequireSingleLineMethodSignature`           | A short signature on one line, skipping a promoted hook         | Yes     |
 | `Jumbo.ControlStructures.LanguageConstructWithParentheses` | No `echo('x')`, allowing `exit()` and `die()`                   | Yes     |
@@ -243,6 +245,40 @@ $user = [
 | `maxLineLength` | int  | 120     | Maximum line length for a collapsed array. |
 
 To use a different limit, set every line-length property, as described in [Line Length](LineLength.md).
+
+---
+
+### Jumbo.Arrays.ElementComma
+
+Requires the comma after an element of a multi-line array to be on the element's last line, not the next one.
+
+**Why:** PER Coding Style says nothing about where an array element's comma goes. Squiz `ArrayDeclaration`'s `NoComma`
+check covers it, but only for a keyed element, and it expects the comma on the line after a heredoc's closing marker,
+as before PHP 7.3. So it reports `EOT,`, and its fix puts the comma on a line of its own. PERCS31 excludes it, and this
+sniff replaces it in Jumbo, for keyed and unkeyed elements. A heredoc's or nowdoc's closing marker counts as the
+element's last line.
+
+**Auto-fixable:** yes, unless a comment is between the element and its comma.
+
+**Good:**
+
+```php
+$messages = [
+    'greeting' => <<<EOT
+        Hello, {$name}.
+        EOT,
+    'farewell' => 'Goodbye.',
+];
+```
+
+**Bad:**
+
+```php
+$messages = [
+    'greeting' => 'Hello.'
+    , 'farewell' => 'Goodbye.',
+];
+```
 
 ---
 

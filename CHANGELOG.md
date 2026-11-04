@@ -10,6 +10,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`Jumbo.Arrays.ElementComma` (breaking).** In a multi-line array, the comma after an element must be on the
+  element's last line, keyed or not, in the Jumbo standard. It replaces Squiz `ArrayDeclaration`'s `NoComma`, which
+  only checked a keyed element, and reported a heredoc element written `EOT,`, as PHP 7.3 and later allow. Auto-fixable.
+- **`SlevomatCodingStandard.Arrays.TrailingArrayComma` in PERCS31.** Requires the trailing comma after a multi-line
+  array's last element, keyed or not, as PER Coding Style 3.1 requires, including after a heredoc. It replaces Squiz
+  `ArrayDeclaration`'s `NoCommaAfterLast` and `NoComma`, between which the trailing comma was checked before.
 - **`Jumbo.TypeHints.CompoundTypeLayout` (breaking).** As PER Coding Style 3.1 requires, a compound type split across
   lines has one type per line, or for a DNF type, one union segment per line with its intersections kept together.
   Auto-fixable.

@@ -63,7 +63,7 @@
     <!-- ====== SQUIZ ====== -->
 
     <!-- A multi-line array: the first value on the next line, one value per line, and the closing bracket on the next
-         line after the last value (11); a trailing comma only when multi-line (2.6). The other checks aren't PER
+         line after the last value (11); no trailing comma on a single line (2.6). The other checks aren't PER
          rules. -->
     <rule ref="Squiz.Arrays.ArrayDeclaration">
         <exclude name="Squiz.Arrays.ArrayDeclaration.KeyNotAligned"/>
@@ -82,6 +82,11 @@
         <exclude name="Squiz.Arrays.ArrayDeclaration.SpaceInEmptyArray"/>
         <exclude name="Squiz.Arrays.ArrayDeclaration.KeySpecified"/>
         <exclude name="Squiz.Arrays.ArrayDeclaration.NoKeySpecified"/>
+        <!-- Where an element's comma goes isn't a PER rule, and this check gets a heredoc element wrong. Jumbo uses
+             Jumbo.Arrays.ElementComma instead. -->
+        <exclude name="Squiz.Arrays.ArrayDeclaration.NoComma"/>
+        <!-- A multi-line array's trailing comma is checked by SlevomatCodingStandard.Arrays.TrailingArrayComma -->
+        <exclude name="Squiz.Arrays.ArrayDeclaration.NoCommaAfterLast"/>
     </rule>
 
     <!-- ====== PHPCSEXTRA ====== -->
@@ -120,6 +125,8 @@
 
     <!-- The closing bracket of a multi-line array on its own line (11) -->
     <rule ref="SlevomatCodingStandard.Arrays.MultiLineArrayEndBracketPlacement"/>
+    <!-- A trailing comma after the last element of a multi-line array, keyed or not, including after a heredoc (2.6) -->
+    <rule ref="SlevomatCodingStandard.Arrays.TrailingArrayComma"/>
 
     <!-- Separate attribute blocks on separate lines (12.3) -->
     <rule ref="SlevomatCodingStandard.Attributes.DisallowMultipleAttributesPerLine"/>

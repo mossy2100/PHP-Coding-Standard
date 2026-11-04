@@ -1,0 +1,42 @@
+<?php
+
+// === VALID ===
+
+$keyed = [
+    'name' => 1,
+    'call' => foo(
+        1,
+    ),
+    'last' => 2,
+];
+$heredocs = [
+    'keyed' => <<<EOT
+        Hi {$name}
+        EOT,
+    <<<'EOT'
+        Plain
+        EOT,
+];
+
+// === INVALID ===
+
+$keyed = [
+    'name' => 1,
+    'last' => 2,
+];
+$unkeyed = [
+    1,
+    2,
+];
+$afterCall = [
+    foo(
+        1,
+    ),
+];
+$long = array(
+    1,
+);
+$comment = [
+    1 // Not fixable.
+    ,
+];

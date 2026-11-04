@@ -331,6 +331,10 @@
         </properties>
     </rule>
 
+    <!-- The comma after a multi-line array's element on the element's last line, replacing Squiz's NoComma, which
+         only checks a keyed element and gets a heredoc element wrong -->
+    <rule ref="Jumbo.Arrays.ElementComma"/>
+
     <!-- Multi-line foreach, for, switch and match headers that fit must be written on one line; Slevomat's
          RequireSingleLineCondition covers if, elseif, while and do-while -->
     <rule ref="Jumbo.ControlStructures.RequireSingleLineHeader">

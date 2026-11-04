@@ -84,9 +84,11 @@ Sniffs from PHP_CodeSniffer's other standards and the two base packages, each fo
 ### Squiz
 
 - **Squiz.Arrays.ArrayDeclaration**: Requires the first value of a multi-line array on the next line, one value per
-  line, and the closing bracket on the next line after the last value (11), and a trailing comma only on a multi-line
+  line, and the closing bracket on the next line after the last value (11), and no trailing comma on a single-line
   array (2.6). Its other checks aren't PER rules, so they're excluded: alignment, spacing around `=>` and commas, the
-  spacing in `[]`, and mixing keyed and unkeyed values.
+  spacing in `[]`, mixing keyed and unkeyed values, and which line a comma goes on. Its check for a multi-line array's
+  trailing comma is replaced by Slevomat's `Arrays.TrailingArrayComma`, as it missed a keyed last element, and wanted
+  the comma after a heredoc on the next line, as before PHP 7.3.
 
 ### PHPCSExtra
 
@@ -111,6 +113,8 @@ Reference: [PHPCSExtra repository and documentation](https://github.com/PHPCSSta
 Reference: [Slevomat coding standard repository and documentation](https://github.com/slevomat/coding-standard)
 
 - **Arrays.MultiLineArrayEndBracketPlacement**: Requires the closing bracket of a multi-line array on its own line (11).
+- **Arrays.TrailingArrayComma**: Requires a trailing comma after the last element of a multi-line array or destructuring
+  list, including after a heredoc's closing marker (2.6).
 - **Attributes.DisallowMultipleAttributesPerLine**: Requires separate attribute blocks on separate lines (12.3).
 - **Attributes.RequireAttributeAfterDocComment**: Requires a doc comment before the attributes, not after (12.2).
 - **Classes.BackedEnumTypeSpacing**: Requires no space before a backed enum's colon, and one after (9).
