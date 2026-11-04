@@ -140,6 +140,7 @@ section gives the reason.
 | `PERCS31.Classes.ClassDeclaration`                      | Class declarations, allowing an empty body as `{}`                | Yes     |
 | `PERCS31.Classes.ClassInstantiationNoBrackets`          | A warning for `(new Foo())->bar()`                                | Yes     |
 | `PERCS31.Classes.EnumMemberVisibility`                  | `private`, not `protected`, for a method or constant in an enum   | Yes     |
+| `PERCS31.Classes.PropertyHookLayout`                    | A hook list's braces, and the spacing of a short hook's `=>`      | Partly  |
 | `PERCS31.Classes.PromotedPropertyHooks`                 | A hook on a promoted parameter is a single short hook on one line | No      |
 | `PERCS31.Classes.PropertyDeclaration`                   | No leading `_`, no `var`, a visibility, and `get` before `set`    | Partly  |
 | `PERCS31.ControlStructures.MatchArrowSpacing`           | One space around `=>` in `match` arms                             | Yes     |
@@ -395,6 +396,54 @@ enum Suit
     {
         return '♥';
     }
+}
+```
+
+---
+
+### PERCS31.Classes.PropertyHookLayout
+
+Checks the layout of a property's hook list: its braces, and the `=>` of a short hook.
+
+**Why:** [PER Coding Style 3.1, Section 4.9](https://www.php-fig.org/per/coding-style/#49-property-hooks) sets the layout of property hooks, and no inherited sniff knows about them.
+This sniff checks:
+
+- The opening brace is on the same line as the property, after a single space.
+- In the long form, the closing brace is on its own line, with no comment after it.
+- A short hook's `=>` has a single space either side, and its body starts on the same line.
+- A short hook listed inline has a single space after the opening brace and before the closing one.
+
+Indentation is checked by `PERCS31.WhiteSpace.ScopeIndent`, and one hook per line by
+`PERCS31.Formatting.DisallowMultipleStatements`.
+
+**Auto-fixable:** yes, except a comment after the closing brace, or a comment in the way.
+
+**Good:**
+
+```php
+class User
+{
+    public string $name {
+        get => ucfirst($this->name);
+        set => trim($value);
+    }
+
+    public string $email { get => strtolower($this->email); }
+}
+```
+
+**Bad:**
+
+```php
+class User
+{
+    public string $name
+    {
+        get  =>  ucfirst($this->name);
+        set =>
+            trim($value); }
+
+    public string $email {get => strtolower($this->email);}
 }
 ```
 

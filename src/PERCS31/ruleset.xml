@@ -210,6 +210,9 @@
     <!-- Properties: no leading underscore, no var, a visibility, and get before set with no bodies (4.3, 4.10) -->
     <rule ref="PERCS31.Classes.PropertyDeclaration"/>
 
+    <!-- The layout of a property's hook list: its braces, and a short hook's => (4.9) -->
+    <rule ref="PERCS31.Classes.PropertyHookLayout"/>
+
     <!-- A hook on a promoted constructor parameter only as a single short hook on one line (4.9) -->
     <rule ref="PERCS31.Classes.PromotedPropertyHooks"/>
 
