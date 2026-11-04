@@ -106,6 +106,25 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a class constant with no visibility is an error in PERCS31, as PER says MUST, not PSR-12's warning.
+     */
+    public function testConstantVisibilityIsAnError(): void
+    {
+        $file = $this->copyToTempFile(null, "<?php\n\nclass Holder\n{\n    const LIMIT = 1;\n}\n");
+
+        try {
+            $result = $this->runTool(
+                'phpcs',
+                ['-s', '--standard=PERCS31', '--sniffs=PSR12.Properties.ConstantVisibility', '--report=emacs', $file],
+            );
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertStringContainsString('error - Visibility must be declared', $result['output']);
+    }
+
+    /**
      * Test that PERCS31 allows one blank line before a parameter's attributes, and reports every other blank line in a
      * multi-line declaration. The parent's EmptyLine, which reports them all, is excluded in the ruleset.
      */

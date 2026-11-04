@@ -28,6 +28,11 @@
         <exclude name="PSR12.Files.FileHeader"/>
     </rule>
 
+    <!-- Visibility on every constant is a MUST (4.3), but PSR12.Properties.ConstantVisibility only gives a warning -->
+    <rule ref="PSR12.Properties.ConstantVisibility.NotFound">
+        <type>error</type>
+    </rule>
+
     <!-- Wrapped && and || at the start of the line in a condition, not the end (5.1, 6.4) -->
     <rule ref="PSR12.ControlStructures.BooleanOperatorPlacement">
         <properties>

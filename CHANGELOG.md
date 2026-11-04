@@ -140,6 +140,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- **A class constant with no visibility is an error (breaking).** `PSR12.Properties.ConstantVisibility` only gives a
+  warning, but PER Coding Style 3.1 says visibility MUST be declared on all constants, so PERCS31 makes it an error.
 - **Renamed the package from `oceanmoon/coding-standard` to `mossy2100/coding-standard`, and the standard from
   `OceanMoon` to `Mossy2100` (breaking),** matching the author's GitHub and Packagist name. Use
   `<rule ref="Mossy2100"/>` in `phpcs.xml`. Sniff codes change to match: `OceanMoon.Arrays.ArrayDeclaration` becomes

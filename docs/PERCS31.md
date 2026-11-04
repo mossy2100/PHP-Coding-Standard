@@ -57,6 +57,8 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 - **PSR2.ControlStructures.SwitchDeclaration**, by [`PERCS31.ControlStructures.SwitchDeclaration`](#percs31controlstructuresswitchdeclaration), which adds PER's
   `switch` rules.
 - **PSR12.Operators.OperatorSpacing**, by [`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing), which also covers the pipe operator `|>`.
+- **PSR12.Properties.ConstantVisibility** is kept, but a constant with no visibility is an error, not a warning, as
+  [Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says MUST.
 - **PSR12.ControlStructures.BooleanOperatorPlacement** is kept, with `allowOnly` set to `first`, so a wrapped `&&` or
   `||` in a condition starts the line (5.1, 6.4). PSR-12 only requires consistency.
 
