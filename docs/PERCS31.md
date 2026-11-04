@@ -153,6 +153,7 @@ section gives the reason.
 | `PERCS31.Files.LineLength`                              | A warning over 120 characters, and a hidden one over 80           | No      |
 | `PERCS31.Formatting.DisallowMultipleStatements`         | One statement per line, allowing `{ get; set; }`                  | Yes     |
 | `PERCS31.Formatting.EmptyBody`                          | An empty class, function, closure or anonymous class body is `{}` | Yes     |
+| `PERCS31.Formatting.TrailingComma`                      | A trailing comma in a multi-line `match` or group `use` only      | Yes     |
 | `PERCS31.Functions.MultiLineFunctionDeclaration`        | Function and closure declarations, allowing an empty body as `{}` | Yes     |
 | `PERCS31.NamingConventions.UpperCaseConstantName`       | Constants in UPPER_CASE, or PascalCase in an enum                 | No      |
 | `PERCS31.NamingConventions.ValidConstantName`           | No leading underscore on a constant                               | No      |
@@ -817,6 +818,50 @@ final class Point
 }
 
 $noop = static function (): void {
+};
+```
+
+---
+
+### PERCS31.Formatting.TrailingComma
+
+Requires a trailing comma after the last arm of a multi-line `match`, or the last name in a multi-line group `use`, and
+disallows one when the list is on a single line.
+
+**Why:** [PER Coding Style 3.1, Section 2.6](https://www.php-fig.org/per/coding-style/#26-trailing-commas) says the last item of a list split across lines MUST have a trailing comma, and
+the last item of a list on one line MUST NOT. Slevomat's trailing comma sniffs cover calls, declarations and closure
+`use` lists, and the Squiz array sniff covers arrays, but none covers `match` or group `use`.
+
+**Auto-fixable:** yes. A missing comma goes after the last item, before any comment.
+
+**Good:**
+
+```php
+use Vendor\Package\{
+    ClassA,
+    ClassB,
+};
+use Vendor\Other\{ClassC, ClassD};
+
+$label = match ($code) {
+    200 => 'OK',
+    default => 'Error',
+};
+$short = match ($code) { 200 => 'OK', default => 'Error' };
+```
+
+**Bad:**
+
+```php
+use Vendor\Package\{
+    ClassA,
+    ClassB
+};
+use Vendor\Other\{ClassC, ClassD,};
+
+$label = match ($code) {
+    200 => 'OK',
+    default => 'Error'
 };
 ```
 

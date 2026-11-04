@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`PERCS31.Formatting.TrailingComma` (breaking).** As PER Coding Style 3.1 requires, the last arm of a multi-line
+  `match` and the last name in a multi-line group `use` must have a trailing comma, and one on a single line is an error.
+  Auto-fixable.
 - **Blank lines and spacing around attributes (breaking).** As PER Coding Style 3.1 requires,
   `PERCS31.Attributes.AttributePlacement` now reports a blank line between a docblock and the attributes after it, or
   between two attribute blocks, and anything but a single space between an attribute and its parameter on the same line.
