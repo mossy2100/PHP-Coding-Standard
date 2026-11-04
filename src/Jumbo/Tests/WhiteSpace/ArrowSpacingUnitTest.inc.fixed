@@ -8,20 +8,20 @@ $label = match ($size) {
 
 // Aligned arrows.
 $label = match ($size) {
-    1       => 'one',
-    2       => 'two',
+    1 => 'one',
+    2 => 'two',
     default => 'many',
 };
 
 // Extra space after the arrow.
 $label = match ($size) {
-    1 =>  'one',
+    1 => 'one',
     default => 'many',
 };
 
 // No spaces.
 $label = match ($size) {
-    1=>'one',
+    1 => 'one',
     default => 'many',
 };
 
@@ -38,3 +38,10 @@ $label = match ($size) {
     1 => ['a'  => 1],
     default => [],
 };
+
+// Array and yield arrows aren't checked by default.
+$array = ['a'=>1, 'b'  =>  2];
+function generate(): iterable
+{
+    yield 'a'=>1;
+}

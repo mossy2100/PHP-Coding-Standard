@@ -262,8 +262,9 @@
     <!-- A trailing comma in a multi-line match or group use, and none on a single line (2.6) -->
     <rule ref="Jumbo.Formatting.TrailingComma"/>
 
-    <!-- One space around => in match arms, as in the example in 5.2 -->
-    <rule ref="Jumbo.ControlStructures.MatchArrowSpacing"/>
+    <!-- One space around => in match arms, as in the example in 5.2. The sniff's array and yield checks are off by
+         default, as PER leaves them undefined. -->
+    <rule ref="Jumbo.WhiteSpace.ArrowSpacing"/>
 
     <!-- At least one space around binary operators, including |> (6.2). The codes for more than one space are
          excluded, as PER allows more. -->

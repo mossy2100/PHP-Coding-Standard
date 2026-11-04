@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Jumbo\Tests\ControlStructures;
+namespace Jumbo\Tests\WhiteSpace;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffTestCase;
 
 /**
- * Unit tests for Jumbo.ControlStructures.MatchArrowSpacing sniff.
+ * Unit tests for Jumbo.WhiteSpace.ArrowSpacing sniff.
  */
-class MatchArrowSpacingUnitTest extends AbstractSniffTestCase
+class ArrowSpacingUnitTest extends AbstractSniffTestCase
 {
     /**
      * Returns the lines where errors should occur.
@@ -19,6 +19,24 @@ class MatchArrowSpacingUnitTest extends AbstractSniffTestCase
      */
     protected function getErrorList(string $testFile = ''): array
     {
+        if ($testFile === 'ArrowSpacingUnitTest.2.inc') {
+            // With checkArray and checkYield set.
+            return [
+                // No spaces, and two spaces, in a single-line array.
+                26 => 4,
+                // Aligned arrows in a multi-line array.
+                30 => 1,
+                // No spaces after a closure element.
+                34 => 2,
+                // A long array.
+                38 => 2,
+                // Destructuring.
+                39 => 2,
+                // A yield.
+                44 => 2,
+            ];
+        }
+
         return [
             // Aligned arrows.
             11 => 1,

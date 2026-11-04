@@ -160,8 +160,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`Jumbo.ControlStructures.RequireSingleLineHeader` (breaking).** Requires a multi-line `foreach`, `for`, `switch` or
   `match` header to be written on one line if it fits, as Slevomat's `RequireSingleLineCondition` does for `if` and
   `while`. Auto-fixable.
-- **`Jumbo.ControlStructures.MatchArrowSpacing` (breaking).** Requires one space before and after `=>` in a `match` arm,
-  so arms aren't aligned. No stock sniff checks these. Auto-fixable.
+- **`Jumbo.WhiteSpace.ArrowSpacing` (breaking).** Requires one space before and after `=>` in a `match` arm, so arms
+  aren't aligned. No stock sniff checks these. Properties `checkArray` and `checkYield` extend it to arrays and `yield`,
+  which Jumbo turns on, so array arrows are never aligned, single-line or multi-line. Auto-fixable.
 - **`Jumbo.Classes.PromotedPropertyHooks` (breaking).** A hook on a promoted constructor parameter must be a single hook
   with a short `=>` body, on one line, as PER Coding Style 3.1 requires, e.g.
   `public function __construct(public string $name { set => trim($value); })`. Otherwise, declare the property in the

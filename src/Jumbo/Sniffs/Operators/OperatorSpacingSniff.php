@@ -26,6 +26,15 @@ use PHP_CodeSniffer\Util\Tokens;
  * MUST NOT have a space either side, so this sniff reports one there instead.
  *
  * The `&` of a by-reference hook, e.g. `&get => $this->items;`, isn't an operator either, so it's skipped.
+ *
+ * `=>` isn't registered, although PHP_CodeSniffer counts it as an assignment token. Section 6.2 doesn't list it, so
+ * section 6 leaves its spacing undefined. Each use has its own sniff:
+ * - An array: Jumbo.WhiteSpace.ArrowSpacing, in Jumbo only.
+ * - `foreach`: Squiz.ControlStructures.ForEachLoopDeclaration.
+ * - A `match` arm: Jumbo.WhiteSpace.ArrowSpacing.
+ * - An arrow function: SlevomatCodingStandard.Functions.ArrowFunctionDeclaration.
+ * - A property hook: Jumbo.Classes.PropertyHookLayout.
+ * - `yield`: Jumbo.WhiteSpace.ArrowSpacing, in Jumbo only.
  */
 class OperatorSpacingSniff extends SquizSniff
 {
@@ -42,6 +51,10 @@ class OperatorSpacingSniff extends SquizSniff
         if (defined('T_PIPE')) {
             $targets[] = T_PIPE;
         }
+
+        // The parent registers PHP_CodeSniffer's assignment tokens, which include `=>`. Section 6.2 doesn't list it,
+        // so section 6 leaves it undefined, and its uses are checked by their own sniffs.
+        $targets = array_filter($targets, static fn(int|string $target): bool => $target !== T_DOUBLE_ARROW);
 
         return array_values(array_unique($targets));
     }

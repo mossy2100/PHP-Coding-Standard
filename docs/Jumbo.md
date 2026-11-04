@@ -46,6 +46,8 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
   (`orderHooksWithBodies` set to `true`).
 - `Jumbo.Classes.PropertyHookLayout` reports a space in a by-reference hook, `& get` (`checkReferenceSpacing` set to
   `true`).
+- `Jumbo.WhiteSpace.ArrowSpacing` checks the spacing around `=>` in every array and `yield`, not just a `match` arm
+  (`checkArray` and `checkYield` set to `true`). It replaces Squiz `ArrayDeclaration`'s arrow spacing checks.
 - `Jumbo.Operators.OperatorPlacement` requires a wrapped line in a list item, such as a call argument, to be indented
   once past the item, not lined up with it (`requireListItemIndent` set to `true`).
 - `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat` reports `T|null`, which should be `?T`, as an error, not a
@@ -71,18 +73,19 @@ Sniffs from PHP_CodeSniffer and Slevomat that Jumbo adds on top of PERCS31. They
 
 ### Squiz
 
-- **Squiz.Arrays.ArrayDeclaration**: The checks PERCS31 leaves out: one space around `=>` and after a comma, no space
-  inside an empty array `[]`, and no mix of keyed and unkeyed values. Its alignment checks and `SingleLineNotAllowed`
-  stay excluded, so keys, values and arrows are not aligned, and a single-line array with several values is allowed.
-  `Jumbo.Arrays.ArrayDeclaration` requires single-line where it fits.
+- **Squiz.Arrays.ArrayDeclaration**: The checks PERCS31 leaves out: one space after a comma, no space inside an empty
+  array `[]`, and no mix of keyed and unkeyed values. The spacing around `=>` is left to
+  [`Jumbo.WhiteSpace.ArrowSpacing`](PERCS31.md#jumbowhitespacearrowspacing), as Squiz only checks it in a single-line array. Its alignment checks and
+  `SingleLineNotAllowed` stay excluded, so keys, values and arrows are not aligned, and a single-line array with several
+  values is allowed. `Jumbo.Arrays.ArrayDeclaration` requires single-line where it fits.
 - **Squiz.NamingConventions.ValidVariableName**: Enforces `$camelCase` for variables, parameters, and properties. Its
   checks for an underscore on properties are excluded, as one requires it on private properties. See
   [Variable and Property Names](VariableAndPropertyNames.md).
 - **Squiz.Strings.DoubleQuoteUsage.NotRequired**: Ensures strings use single quotes unless double quotes are necessary.
-- **Squiz.WhiteSpace.OperatorSpacing**: Requires exactly one space around operators, including before `=` and `=>`, so
-  assignments and array arrows are not aligned. Used through [`Jumbo.Operators.OperatorSpacing`](PERCS31.md#jumbooperatorsoperatorspacing), which extends it to
+- **Squiz.WhiteSpace.OperatorSpacing**: Requires exactly one space around operators, including before `=`, so
+  assignments are not aligned. Used through [`Jumbo.Operators.OperatorSpacing`](PERCS31.md#jumbooperatorsoperatorspacing), which extends it to
   `&&`, `||`, `and`, `or`, `xor`, `.` and `|>`. PERCS31 excludes its codes for more than one space, and Jumbo turns them
-  back on. `match` arms are covered by [`Jumbo.ControlStructures.MatchArrowSpacing`](PERCS31.md#jumbocontrolstructuresmatcharrowspacing).
+  back on. `=>` is covered by [`Jumbo.WhiteSpace.ArrowSpacing`](PERCS31.md#jumbowhitespacearrowspacing).
 - **Squiz.WhiteSpace.ObjectOperatorSpacing**: Disallows spaces around `->`, `?->` and `::`, e.g. `$a -> b()`. A line
   break before one, in a wrapped method chain, is allowed.
 

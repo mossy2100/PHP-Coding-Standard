@@ -150,7 +150,6 @@ section gives the reason.
 | `Jumbo.Classes.PropertyHookLayout`                    | A hook list's braces, and the spacing of a short hook's `=>`      | Partly  |
 | `Jumbo.Classes.PromotedPropertyHooks`                 | A hook on a promoted parameter is a single short hook on one line | No      |
 | `Jumbo.Classes.PropertyDeclaration`                   | No leading `_`, no `var`, a visibility, and `get` before `set`    | Partly  |
-| `Jumbo.ControlStructures.MatchArrowSpacing`           | One space around `=>` in `match` arms                             | Yes     |
 | `Jumbo.ControlStructures.MultiLineTernaryOperator`    | A multi-line ternary takes three lines, `?` and `:` leading       | Yes     |
 | `Jumbo.ControlStructures.SwitchDeclaration`           | `switch` rules, with a `break` in the last case                   | Yes     |
 | `Jumbo.Files.FileHeader`                              | The file header, allowing `<?php declare(...) ?>` above markup    | Yes     |
@@ -171,6 +170,7 @@ section gives the reason.
 | `Jumbo.Strings.HeredocIndentation`                    | A heredoc or nowdoc indented once past the line it starts on      | Yes     |
 | `Jumbo.TypeHints.CompoundTypeLayout`                  | One type, or one DNF union segment, per line of a split type      | Yes     |
 | `Jumbo.TypeHints.CompoundTypeOperatorSpacing`         | No space around `\|` or `&` in a type, but a split before one     | Yes     |
+| `Jumbo.WhiteSpace.ArrowSpacing`                       | One space around `=>` in `match` arms                             | Yes     |
 | `Jumbo.WhiteSpace.ScopeClosingBrace`                  | A closing brace on its own line, allowing `{}`                    | Yes     |
 | `Jumbo.WhiteSpace.ScopeIndent`                        | Indentation, including property hooks and anonymous classes       | Yes     |
 
@@ -614,39 +614,6 @@ interface Named
 | Property               | Type | Default | Description                                                      |
 | ---------------------- | ---- | ------- | ---------------------------------------------------------------- |
 | `orderHooksWithBodies` | bool | false   | Check the hook order in every hook list, not just bodiless ones. |
-
----
-
-### Jumbo.ControlStructures.MatchArrowSpacing
-
-Requires exactly one space before and after the `=>` in a `match` arm.
-
-**Why:** [PER Coding Style 3.1, Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) shows a `match` expression with one space each side of `=>`, and says to
-"note the placement of parentheses, spaces, and braces". Although the specification doesn't say so explicitly, it
-appears to imply the same rule as for the `=>` of a property hook (4.9) and an arrow function (7.1). No inherited sniff
-checks a `match` arm, which has its own token, so aligned arms aren't caught.
-
-**Auto-fixable:** yes.
-
-A line break before or after the arrow is allowed, for wrapping a long arm.
-
-**Good:**
-
-```php
-$label = match ($size) {
-    1 => 'one',
-    default => 'many',
-};
-```
-
-**Bad:**
-
-```php
-$label = match ($size) {
-    1       => 'one',
-    default => 'many',
-};
-```
 
 ---
 
@@ -1388,6 +1355,51 @@ function reflect(
     // ...
 }
 ```
+
+---
+
+### Jumbo.WhiteSpace.ArrowSpacing
+
+Requires exactly one space before and after the `=>` in a `match` arm, and optionally in an array element or a `yield`.
+
+**Why:** [PER Coding Style 3.1, Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) shows a `match` expression with one space each side of `=>`, and says to
+"note the placement of parentheses, spaces, and braces". Although the specification doesn't say so explicitly, it
+appears to imply the same rule as for the `=>` of a property hook (4.9) and an arrow function (7.1). No inherited sniff
+checks a `match` arm, which has its own token, so aligned arms aren't caught.
+
+Section 6.2 doesn't list `=>` among the binary operators, so section 6 leaves its spacing undefined elsewhere. So an
+array's and a `yield`'s are only checked if `checkArray` or `checkYield` is set, as the Jumbo standard does. A
+`foreach`'s, an arrow function's and a property hook's `=>` have their own sniffs.
+
+**Auto-fixable:** yes.
+
+A line break before or after the arrow is allowed, for wrapping a long arm, element or value.
+
+**Good:**
+
+```php
+$label = match ($size) {
+    1 => 'one',
+    default => 'many',
+};
+```
+
+**Bad:**
+
+```php
+$label = match ($size) {
+    1       => 'one',
+    default => 'many',
+};
+```
+
+**Configuration:**
+
+| Property     | Type | Default | Description                               |
+| ------------ | ---- | ------- | ----------------------------------------- |
+| `checkMatch` | bool | true    | Check the `=>` in a `match` arm.          |
+| `checkArray` | bool | false   | Check the `=>` in an array element.       |
+| `checkYield` | bool | false   | Check the `=>` in `yield $key => $value`. |
 
 ---
 

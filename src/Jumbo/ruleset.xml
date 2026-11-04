@@ -30,6 +30,15 @@
         </properties>
     </rule>
 
+    <!-- One space around => in every array and yield $key => $value too, not just a match arm. This replaces
+         Squiz.Arrays.ArrayDeclaration's arrow spacing checks, which cover only a single-line array. -->
+    <rule ref="Jumbo.WhiteSpace.ArrowSpacing">
+        <properties>
+            <property name="checkArray" value="true"/>
+            <property name="checkYield" value="true"/>
+        </properties>
+    </rule>
+
     <!-- No space between a by-reference hook's & and its name: &get, not & get -->
     <rule ref="Jumbo.Classes.PropertyHookLayout">
         <properties>
@@ -66,20 +75,8 @@
 
     <!-- ====== SQUIZ ====== -->
 
-    <!-- Arrays: the checks PERCS31 leaves out. One space around =>, one after a comma, none inside [], and no mix of
-         keyed and unkeyed values. -->
-    <rule ref="Squiz.Arrays.ArrayDeclaration.NoSpaceBeforeDoubleArrow">
-        <severity>5</severity>
-    </rule>
-    <rule ref="Squiz.Arrays.ArrayDeclaration.SpaceBeforeDoubleArrow">
-        <severity>5</severity>
-    </rule>
-    <rule ref="Squiz.Arrays.ArrayDeclaration.NoSpaceAfterDoubleArrow">
-        <severity>5</severity>
-    </rule>
-    <rule ref="Squiz.Arrays.ArrayDeclaration.SpaceAfterDoubleArrow">
-        <severity>5</severity>
-    </rule>
+    <!-- Arrays: the checks PERCS31 leaves out. One space after a comma, none inside [], and no mix of keyed and
+         unkeyed values. The spacing around => is left to Jumbo.WhiteSpace.ArrowSpacing, which covers every array. -->
     <rule ref="Squiz.Arrays.ArrayDeclaration.NoSpaceAfterComma">
         <severity>5</severity>
     </rule>
