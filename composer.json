@@ -30,7 +30,8 @@
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
         "slevomat/coding-standard": "^8.27",
         "phpcsstandards/phpcsextra": "^1.5",
-        "phpcsstandards/phpcsutils": "^1.2"
+        "phpcsstandards/phpcsutils": "^1.2",
+        "php-collective/code-sniffer": "^0.6.10"
     },
     "require-dev": {
         "phpstan/phpstan": "^2.1",

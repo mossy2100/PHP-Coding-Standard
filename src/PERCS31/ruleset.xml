@@ -233,6 +233,9 @@
     <!-- Indentation, including property hooks (2.4, 4.9) and an anonymous class with attributes (8) -->
     <rule ref="Jumbo.WhiteSpace.ScopeIndent"/>
 
+    <!-- A line indented further than its scope, after a complete statement (2.4, 5) -->
+    <rule ref="Jumbo.WhiteSpace.ConsistentIndent"/>
+
     <!-- One statement per line, allowing { get; set; } on an abstract or interface property (2.3, 4.10) -->
     <rule ref="Jumbo.Formatting.DisallowMultipleStatements"/>
 

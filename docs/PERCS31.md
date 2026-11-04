@@ -3,10 +3,10 @@
 A PHP_CodeSniffer standard for [PER Coding Style 3.1](https://www.php-fig.org/per/coding-style/), and nothing more. It's built on PSR-12, which PER Coding Style
 extends.
 
-No complete PHP_CodeSniffer standard for PER Coding Style exists at the time of development. PSR-12's sniffs get some PER rules wrong, such as
-rejecting an empty body written as `{}`, and don't yet support PHP 8.4 and 8.5 features such as property hooks and the pipe
-operator. This standard fixes both, using sniffs from PHP_CodeSniffer, Slevomat and PHPCSExtra where they fit, and
-custom sniffs where nothing did.
+No complete PHP_CodeSniffer standard for PER Coding Style exists at the time of development. PSR-12's sniffs get some
+PER rules wrong, such as rejecting an empty body written as `{}`, and don't yet support PHP 8.4 and 8.5 features such as
+property hooks and the pipe operator. This standard fixes both, using sniffs from PHP_CodeSniffer, Slevomat, PHPCSExtra
+and php-collective where they fit, and custom sniffs where nothing did.
 
 The [Jumbo standard](Jumbo.md) is PERCS31 plus my own preferences. Use PERCS31 on its own to follow PER Coding Style without them.
 
@@ -176,6 +176,7 @@ section gives the reason.
 | `Jumbo.TypeHints.CompoundTypeLayout`                  | One type, or one DNF union segment, per line of a split type      | Yes     |
 | `Jumbo.TypeHints.CompoundTypeOperatorSpacing`         | No space around `\|` or `&` in a type, but a split before one     | Yes     |
 | `Jumbo.WhiteSpace.ArrowSpacing`                       | One space around `=>` in `match` arms                             | Yes     |
+| `Jumbo.WhiteSpace.ConsistentIndent`                   | No line indented further than its scope, after a statement        | Yes     |
 | `Jumbo.WhiteSpace.ScopeClosingBrace`                  | A closing brace on its own line, allowing `{}`                    | Yes     |
 | `Jumbo.WhiteSpace.ScopeIndent`                        | Indentation, including property hooks and anonymous classes       | Yes     |
 
@@ -1439,6 +1440,45 @@ $label = match ($size) {
 
 ---
 
+### Jumbo.WhiteSpace.ConsistentIndent
+
+Reports a line indented further than its scope, when the line before it ends a statement. This extends
+`PhpCollective.WhiteSpace.ConsistentIndent`, from [php-collective/code-sniffer](https://github.com/php-collective/code-sniffer).
+
+**Why:** [PER Coding Style 3.1, Section 2.4](https://www.php-fig.org/per/coding-style/#24-indenting) sets an indent of 4 spaces for each level, and section 5 says a structure's
+body is indented once. `Jumbo.WhiteSpace.ScopeIndent`, like PSR-12's, only reports indentation that's too small. The
+php-collective sniff reports a line indented too far after a complete statement, including inside a property hook. It
+skips a body's first line, continuation lines, arrays, closures and `switch` cases, which it can't judge safely.
+
+This sniff only adds to the operators that may start a continuation line, which are skipped: every binary operator
+section 6.4 allows a statement to be split at. The original's list predates the pipe operator `|>`, so it reported
+section 6.4's own example. It also missed `%`, `**`, `instanceof`, bitwise, comparison and assignment operators, and an
+arrow function's `=>`.
+
+**Auto-fixable:** yes.
+
+**Good:**
+
+```php
+function total(array $items): int
+{
+    $sum = array_sum($items);
+    return $sum;
+}
+```
+
+**Bad:**
+
+```php
+function total(array $items): int
+{
+    $sum = array_sum($items);
+        return $sum;
+}
+```
+
+---
+
 ### Jumbo.WhiteSpace.ScopeClosingBrace
 
 Checks that a scope's closing brace is on a line by itself, and indented to match, except in an empty body written as
@@ -1517,3 +1557,6 @@ class User
   value, and `function (): void {}` has no arrow function equivalent.
 - **The pipe operator `|>` on PHP 8.4.** It's only checked when PHP_CodeSniffer runs on PHP 8.5, as 8.4 has no `T_PIPE`
   token.
+- **Over-indentation of a body's first line (2.4, 5).** `Jumbo.WhiteSpace.ScopeIndent` only reports too little
+  indentation, and [`Jumbo.WhiteSpace.ConsistentIndent`](#jumbowhitespaceconsistentindent) only a line after a complete
+  statement. So in `if ($a) {` followed by `        foo();`, the over-indented first line isn't reported.
