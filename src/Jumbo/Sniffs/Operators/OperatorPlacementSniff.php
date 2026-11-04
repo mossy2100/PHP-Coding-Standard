@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Jumbo\Sniffs\Operators;
 
 use Jumbo\Helpers\OperatorHelper;
+use Jumbo\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -431,7 +432,7 @@ class OperatorPlacementSniff implements Sniff
      */
     private function isUnaryOrReference(File $phpcsFile, int $stackPtr): bool
     {
-        if (OperatorHelper::isHookReference($phpcsFile, $stackPtr)) {
+        if (PropertyHookHelper::isHookReference($phpcsFile, $stackPtr)) {
             return true;
         }
 

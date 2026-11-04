@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jumbo\Sniffs\Operators;
 
-use Jumbo\Helpers\OperatorHelper;
+use Jumbo\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\OperatorSpacingSniff as SquizSniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -56,7 +56,7 @@ class OperatorSpacingSniff extends SquizSniff
     public function process(File $phpcsFile, int $stackPtr): ?int
     {
         // The `&` of a by-reference hook, `&get`, isn't an operator.
-        if (OperatorHelper::isHookReference($phpcsFile, $stackPtr)) {
+        if (PropertyHookHelper::isHookReference($phpcsFile, $stackPtr)) {
             return null;
         }
 

@@ -77,6 +77,30 @@ class PropertyHookHelper
     ];
 
     /**
+     * The tokens PHP_CodeSniffer gives a `&`.
+     *
+     * @var list<int|string>
+     */
+    private const array AMPERSANDS = [
+        T_BITWISE_AND,
+        T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG,
+        T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG,
+    ];
+
+    /**
+     * Tokens that can come directly before a hook name, or its `&`, in a property's hook list.
+     *
+     * @var list<int|string>
+     */
+    private const array BEFORE_HOOK_NAME = [
+        T_OPEN_CURLY_BRACKET,
+        T_SEMICOLON,
+        T_CLOSE_CURLY_BRACKET,
+        T_FINAL,
+        T_ATTRIBUTE_END,
+    ];
+
+    /**
      * The file whose hook scopes are cached, for isInsidePropertyHook().
      *
      * @var ?WeakReference<File>
@@ -94,6 +118,35 @@ class PropertyHookHelper
      * @var array<int, int>
      */
     private static array $cachedScopes = [];
+
+    /**
+     * Check whether a `&` marks a by-reference `get` hook, e.g. `&get => $this->items;`, rather than an operator.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the `&`.
+     * @return bool True if the `&` comes before a `get` hook name in a property's hook list.
+     */
+    public static function isHookReference(File $phpcsFile, int $stackPtr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        if (!in_array($tokens[$stackPtr]['code'], self::AMPERSANDS, true)) {
+            return false;
+        }
+
+        $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
+        if ($next === false || $tokens[$next]['code'] !== T_STRING || strtolower($tokens[$next]['content']) !== 'get') {
+            return false;
+        }
+
+        // A hook name follows the list's opening brace, the end of the previous hook, a modifier or an attribute.
+        $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
+        if ($previous === false || !in_array($tokens[$previous]['code'], self::BEFORE_HOOK_NAME, true)) {
+            return false;
+        }
+
+        // Scanning for hook scopes is the expensive part, so it comes last.
+        return self::isInsidePropertyHook($phpcsFile, $stackPtr);
+    }
 
     /**
      * Check if a token is inside a property hook, i.e. between the braces of a property's hook list.
