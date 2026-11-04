@@ -54,6 +54,7 @@ The code is checked with:
 - squizlabs/php_codesniffer ^4.0
 - slevomat/coding-standard ^8.27
 - phpcsstandards/phpcsextra ^1.5
+- phpcsstandards/phpcsutils ^1.2
 - dealerdirect/phpcodesniffer-composer-installer ^1.0
 
 ---

@@ -34,6 +34,8 @@ class ArrowSpacingUnitTest extends AbstractSniffTestCase
                 39 => 2,
                 // A yield.
                 44 => 2,
+                // A long-syntax destructuring list.
+                53 => 2,
             ];
         }
 

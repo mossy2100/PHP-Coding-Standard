@@ -49,5 +49,8 @@ foreach ($pairs as $key=>$value) {
     echo $key, $value;
 }
 
+// A long-syntax destructuring list.
+list('q' => $q) = $pair;
+
 // phpcs:set Jumbo.WhiteSpace.ArrowSpacing checkArray false
 // phpcs:set Jumbo.WhiteSpace.ArrowSpacing checkYield false

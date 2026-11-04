@@ -29,11 +29,13 @@
         "squizlabs/php_codesniffer": "^4.0",
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
         "slevomat/coding-standard": "^8.27",
-        "phpcsstandards/phpcsextra": "^1.5"
+        "phpcsstandards/phpcsextra": "^1.5",
+        "phpcsstandards/phpcsutils": "^1.2"
     },
     "require-dev": {
         "phpstan/phpstan": "^2.1",
-        "phpunit/phpunit": "^12.0"
+        "phpunit/phpunit": "^12.0",
+        "phpcsstandards/phpcsdevtools": "^1.2"
     },
     "scripts": {
         "fix": "vendor/bin/phpcbf -vp",
@@ -49,7 +51,7 @@
         ]
     },
     "extra": {
-        "phpcodesniffer-search-depth": 3
+        "phpcodesniffer-search-depth": 2
     },
     "config": {
         "allow-plugins": {

@@ -7,6 +7,9 @@ namespace Jumbo\Sniffs\Attributes;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Tokens\Collections;
+use PHPCSUtils\Utils\Parentheses;
+use PHPCSUtils\Utils\PassedParameters;
 
 /**
  * Requires an attribute to be on the line before its target, except on a parameter in a single-line parameter list.
@@ -47,30 +50,6 @@ class AttributePlacementSniff implements Sniff
     public const string CODE_CLOSURE_SPACING = 'ClosureSpacing';
 
     public const string CODE_CLOSURE_INDENT = 'ClosureIndent';
-
-    /**
-     * Unmatched tokens that, walking back from a comma, show it isn't in a call's argument list.
-     *
-     * @var list<int|string>
-     */
-    private const array LIST_BOUNDARIES = [
-        T_SEMICOLON,
-        T_OPEN_SHORT_ARRAY,
-        T_OPEN_SQUARE_BRACKET,
-        T_OPEN_CURLY_BRACKET,
-    ];
-
-    /**
-     * Tokens other than a function name that can come before a call's `(`, as in `$f()` or `$a->b()()`.
-     *
-     * @var list<int|string>
-     */
-    private const array CALLABLE_ENDS = [
-        T_VARIABLE,
-        T_CLOSE_PARENTHESIS,
-        T_CLOSE_SQUARE_BRACKET,
-        T_CLOSE_CURLY_BRACKET,
-    ];
 
     /**
      * The tokens that own a parameter list.
@@ -340,8 +319,8 @@ class AttributePlacementSniff implements Sniff
     private function processClosure(File $phpcsFile, int $stackPtr, int $closerPtr, int $targetPtr): void
     {
         $firstPtr = $this->findFirstAttribute($phpcsFile, $stackPtr);
-        $listOpener = $this->findArgumentListOpener($phpcsFile, $firstPtr);
-        if ($listOpener === null) {
+        $arguments = $this->findCallArguments($phpcsFile, $firstPtr);
+        if ($arguments === null) {
             if ($this->checkClosureAttributesOutsideCalls) {
                 $this->checkInlineSpacing($phpcsFile, $closerPtr, $targetPtr, 'Expected 1 space between an attribute '
                     . 'and its closure', self::CODE_CLOSURE_SPACING);
@@ -350,7 +329,7 @@ class AttributePlacementSniff implements Sniff
             return;
         }
 
-        if (!$this->isArgumentListSplit($phpcsFile, $listOpener)) {
+        if (!$this->isArgumentListSplit($phpcsFile, $arguments)) {
             $this->checkInlineSpacing($phpcsFile, $closerPtr, $targetPtr, 'In a single-line argument list, a '
                 . 'closure\'s attribute must be inline, after a single space', self::CODE_CLOSURE_SPACING);
             return;
@@ -466,85 +445,55 @@ class AttributePlacementSniff implements Sniff
     }
 
     /**
-     * Find the opening parenthesis of the call an attributed closure is a direct argument of, if any.
+     * Find the arguments of the call an attributed closure is a direct argument of, if any.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $attributePtr The position of the closure's first attribute block's opener.
-     * @return int|null The position of the call's `(`, or null if the closure isn't one of its arguments.
+     * @return array<int|string, array<string, int|string>>|null The call's arguments, as PHPCSUtils'
+     *     PassedParameters::getParameters() gives them, or null if the closure isn't one of them.
      */
-    private function findArgumentListOpener(File $phpcsFile, int $attributePtr): ?int
+    private function findCallArguments(File $phpcsFile, int $attributePtr): ?array
     {
-        $tokens = $phpcsFile->getTokens();
-        $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($attributePtr - 1), null, true);
-        if ($previous === false || !in_array($tokens[$previous]['code'], [T_OPEN_PARENTHESIS, T_COMMA], true)) {
+        $opener = Parentheses::getLastOpener($phpcsFile, $attributePtr);
+        if ($opener === false) {
             return null;
         }
 
-        // From a comma, walk back over earlier arguments to the list's opener.
-        for ($i = $previous; $i >= 0 && $tokens[$i]['code'] !== T_OPEN_PARENTHESIS; $i--) {
-            $code = $tokens[$i]['code'];
-            if ($code === T_CLOSE_PARENTHESIS && isset($tokens[$i]['parenthesis_opener'])) {
-                $i = $tokens[$i]['parenthesis_opener'];
-            } elseif ($code === T_ATTRIBUTE_END && isset($tokens[$i]['attribute_opener'])) {
-                $i = $tokens[$i]['attribute_opener'];
-            } elseif (isset($tokens[$i]['bracket_opener']) && $tokens[$i]['bracket_opener'] < $i) {
-                $i = $tokens[$i]['bracket_opener'];
-            } elseif (in_array($code, self::LIST_BOUNDARIES, true)) {
-                return null;
+        $tokens = $phpcsFile->getTokens();
+        $namePtr = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($opener - 1), null, true);
+        if ($namePtr === false || !isset(Collections::functionCallTokens()[$tokens[$namePtr]['code']])) {
+            return null;
+        }
+
+        // A named argument's closure follows `name:`, so it can't start its own line; it's treated as being elsewhere.
+        $arguments = PassedParameters::getParameters($phpcsFile, $namePtr);
+        foreach ($arguments as $argument) {
+            $first = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, (int) $argument['start'], null, true);
+            if ($first === $attributePtr) {
+                return isset($argument['name_token']) ? null : $arguments;
             }
         }
 
-        if ($i < 0 || isset($tokens[$i]['parenthesis_owner'])) {
-            return null;
-        }
-
-        $beforeOpener = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($i - 1), null, true);
-        if ($beforeOpener === false) {
-            return null;
-        }
-
-        $code = $tokens[$beforeOpener]['code'];
-        $isCall = isset(Tokens::FUNCTION_NAME_TOKENS[$code]) || in_array($code, self::CALLABLE_ENDS, true);
-
-        return $isCall ? $i : null;
+        return null;
     }
 
     /**
-     * Check whether a call's argument list is split across lines, as section 4.7 means it: the first argument, or one
-     * after a comma, starts a new line. An argument split over lines, such as a closure, doesn't split the list.
+     * Check whether a call's argument list is split across lines, as section 4.7 means it: an argument starts a new
+     * line. An argument split over lines, such as a closure, doesn't split the list.
      *
      * @param File $phpcsFile The file being scanned.
-     * @param int $opener The position of the call's `(`.
+     * @param array<int|string, array<string, int|string>> $arguments The call's arguments, from PHPCSUtils.
      * @return bool True if the list is split.
      */
-    private function isArgumentListSplit(File $phpcsFile, int $opener): bool
+    private function isArgumentListSplit(File $phpcsFile, array $arguments): bool
     {
         $tokens = $phpcsFile->getTokens();
-        $closer = $tokens[$opener]['parenthesis_closer'];
-        for ($i = $opener; $i < $closer; $i++) {
-            if ($i !== $opener) {
-                if ($tokens[$i]['code'] === T_OPEN_PARENTHESIS && isset($tokens[$i]['parenthesis_closer'])) {
-                    $i = $tokens[$i]['parenthesis_closer'];
-                    continue;
-                }
-
-                if ($tokens[$i]['code'] === T_ATTRIBUTE && isset($tokens[$i]['attribute_closer'])) {
-                    $i = $tokens[$i]['attribute_closer'];
-                    continue;
-                }
-
-                if (isset($tokens[$i]['bracket_closer']) && $tokens[$i]['bracket_closer'] > $i) {
-                    $i = $tokens[$i]['bracket_closer'];
-                    continue;
-                }
-
-                if ($tokens[$i]['code'] !== T_COMMA) {
-                    continue;
-                }
-            }
-
-            $next = $phpcsFile->findNext(T_WHITESPACE, ($i + 1), ($closer + 1), true);
-            if ($next !== false && $tokens[$next]['line'] > $tokens[$i]['line']) {
+        foreach ($arguments as $argument) {
+            // A named argument starts at its name.
+            $start = (int) ($argument['name_token'] ?? $argument['start']);
+            $first = $phpcsFile->findNext(T_WHITESPACE, $start, null, true);
+            $before = $first === false ? false : $phpcsFile->findPrevious(T_WHITESPACE, ($first - 1), null, true);
+            if ($first !== false && $before !== false && $tokens[$first]['line'] > $tokens[$before]['line']) {
                 return true;
             }
         }
