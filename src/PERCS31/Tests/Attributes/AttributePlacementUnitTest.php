@@ -46,6 +46,11 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             91 => 1,
             // Anonymous class: a function call's argument.
             93 => 1,
+            // A blank line after a docblock, and between two attribute blocks.
+            122 => 1,
+            129 => 1,
+            // Two spaces, and no space, between an attribute and its parameter.
+            134 => 2,
         ];
     }
 

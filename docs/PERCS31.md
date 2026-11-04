@@ -227,6 +227,10 @@ An attribute on an anonymous class follows [PER Coding Style 3.1, Section 8](htt
 after `new`, indented once, with `class` on the line after them at the same indent. `PERCS31.WhiteSpace.ScopeIndent`
 then indents the class body from `class`.
 
+It also reports a blank line between a docblock and the attributes after it, or between two attribute blocks, and
+anything but a single space between an attribute and its parameter on the same line, as section 12.2 requires. A blank
+line between a parameter and the next parameter's attributes is allowed, as 12.2 also says.
+
 **Auto-fixable:** yes, unless a comment is between the attribute and its target. For an anonymous class, the fix puts
 each attribute block on its own line.
 

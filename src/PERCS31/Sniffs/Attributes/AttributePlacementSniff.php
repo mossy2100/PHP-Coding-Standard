@@ -22,12 +22,20 @@ use PHP_CodeSniffer\Util\Tokens;
  * PER Coding Style 3.1, section 8, sets the layout for attributes on an anonymous class: they start on the line after
  * `new`, indented once, with `class` on the line after them, at the same indent. The fix puts each attribute block on
  * its own line.
+ *
+ * Section 12.2 also says there MUST NOT be a blank line between a docblock and the attributes after it, or between two
+ * attribute blocks, and that an attribute inline with its parameter is separated from it by a single space. Both are
+ * checked here too.
  */
 class AttributePlacementSniff implements Sniff
 {
     public const string CODE_SAME_LINE = 'SameLine';
 
     public const string CODE_ANON_CLASS = 'AnonClass';
+
+    public const string CODE_BLANK_LINE_BEFORE = 'BlankLineBefore';
+
+    public const string CODE_PARAMETER_SPACING = 'ParameterSpacing';
 
     /**
      * The tokens that own a parameter list.
@@ -61,6 +69,7 @@ class AttributePlacementSniff implements Sniff
             return;
         }
 
+        $this->checkBlankLineBefore($phpcsFile, $stackPtr);
         $closerPtr = $tokens[$stackPtr]['attribute_closer'];
         $targetPtr = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($closerPtr + 1), null, true);
 
@@ -93,6 +102,7 @@ class AttributePlacementSniff implements Sniff
         if ($listOpener !== null) {
             $listCloser = $tokens[$listOpener]['parenthesis_closer'];
             if ($tokens[$listOpener]['line'] === $tokens[$listCloser]['line']) {
+                $this->checkParameterSpacing($phpcsFile, $closerPtr, $targetPtr);
                 return;
             }
         }
@@ -118,6 +128,75 @@ class AttributePlacementSniff implements Sniff
         assert(is_int($firstOnLine));
         $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1));
         $phpcsFile->fixer->replaceToken($nextPtr, $phpcsFile->eolChar . $indent);
+    }
+
+    /**
+     * Check that there's no blank line between an attribute block and a docblock or attribute block before it.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the attribute block's opener.
+     */
+    private function checkBlankLineBefore(File $phpcsFile, int $stackPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $previous = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
+        if (
+            $previous === false
+            || !in_array($tokens[$previous]['code'], [T_DOC_COMMENT_CLOSE_TAG, T_ATTRIBUTE_END], true)
+            || ($tokens[$stackPtr]['line'] - $tokens[$previous]['line']) < 2
+        ) {
+            return;
+        }
+
+        $error = $tokens[$previous]['code'] === T_DOC_COMMENT_CLOSE_TAG
+            ? 'There must be no blank line between a docblock and the attributes after it'
+            : 'There must be no blank line between two attribute blocks';
+        $fix = $phpcsFile->addFixableError($error, $stackPtr, self::CODE_BLANK_LINE_BEFORE);
+        if (!$fix) {
+            return;
+        }
+
+        $indent = str_repeat(' ', ($tokens[$stackPtr]['column'] - 1));
+        $phpcsFile->fixer->beginChangeset();
+        for ($i = ($previous + 1); $i < $stackPtr; $i++) {
+            $phpcsFile->fixer->replaceToken($i, '');
+        }
+
+        $phpcsFile->fixer->addContent($previous, $phpcsFile->eolChar . $indent);
+        $phpcsFile->fixer->endChangeset();
+    }
+
+    /**
+     * Check that an attribute inline with its parameter is separated from it by a single space.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $closerPtr The position of the attribute block's closer.
+     * @param int $targetPtr The position of the first token of the parameter.
+     */
+    private function checkParameterSpacing(File $phpcsFile, int $closerPtr, int $targetPtr): void
+    {
+        $spacing = $phpcsFile->getTokensAsString(($closerPtr + 1), ($targetPtr - $closerPtr - 1));
+        $hasComment = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($closerPtr + 1), $targetPtr) !== false;
+        if ($spacing === ' ' || $hasComment) {
+            return;
+        }
+
+        $fix = $phpcsFile->addFixableError(
+            'Expected 1 space between an attribute and its parameter',
+            $closerPtr,
+            self::CODE_PARAMETER_SPACING,
+        );
+        if (!$fix) {
+            return;
+        }
+
+        $phpcsFile->fixer->beginChangeset();
+        for ($i = ($closerPtr + 1); $i < $targetPtr; $i++) {
+            $phpcsFile->fixer->replaceToken($i, '');
+        }
+
+        $phpcsFile->fixer->addContent($closerPtr, ' ');
+        $phpcsFile->fixer->endChangeset();
     }
 
     /**

@@ -108,3 +108,42 @@ function anonymousClasses(): array
 
     return [new class {}];
 }
+
+class BlankLines
+{
+    /**
+     * Valid: the docblock, then the attributes, then the method.
+     */
+    #[Foo]
+    #[Bar]
+    public function valid(#[Foo] int $a): void
+    {
+    }
+
+    // Valid: a blank line between a parameter and the next one's attributes.
+    public function blankBeforeParameterAttribute(
+        int $a,
+
+        #[Foo]
+        int $b,
+    ): void {
+    }
+
+    /**
+     * A blank line after the docblock.
+     */
+    #[Foo]
+    public function docblockGap(): void
+    {
+    }
+
+    #[Foo]
+    #[Bar]
+    public function blockGap(): void
+    {
+    }
+
+    public function parameterSpacing(#[Foo] int $a, #[Bar] int $b): void
+    {
+    }
+}

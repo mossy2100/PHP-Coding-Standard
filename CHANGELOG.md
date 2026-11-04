@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **Blank lines and spacing around attributes (breaking).** As PER Coding Style 3.1 requires,
+  `PERCS31.Attributes.AttributePlacement` now reports a blank line between a docblock and the attributes after it, or
+  between two attribute blocks, and anything but a single space between an attribute and its parameter on the same line.
+  Auto-fixable.
 - **Spacing inside attribute blocks (breaking).** As PER Coding Style 3.1 requires, there's no space after `#[` or
   before `]`, and attributes in one block are separated by a comma with a space after it and none before, e.g.
   `#[Foo, Bar]`. Adds PHPCSExtra's `Universal.Attributes.BracketSpacing`, and the attribute block codes of
