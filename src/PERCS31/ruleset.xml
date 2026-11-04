@@ -49,6 +49,9 @@
     <!-- Exactly one space after a cast (6.1) -->
     <rule ref="Generic.Formatting.SpaceAfterCast"/>
 
+    <!-- A heredoc's or nowdoc's body and closing marker indented once past the line it starts on (10) -->
+    <rule ref="PERCS31.Strings.HeredocIndentation"/>
+
     <!-- A warning for a heredoc that could be a nowdoc (10) -->
     <rule ref="Generic.Strings.UnnecessaryHeredoc"/>
 

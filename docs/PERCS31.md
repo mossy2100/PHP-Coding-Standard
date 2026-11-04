@@ -158,6 +158,7 @@ section gives the reason.
 | `PERCS31.Operators.OperatorSpacing`                     | At least one space around binary operators, including `\|>`       | Yes     |
 | `PERCS31.PHP.DisallowMultiConstantDefinition`           | One constant per statement                                        | Yes     |
 | `PERCS31.PHP.RequireCloneParentheses`                   | A warning for `clone $a`, not `clone($a)`                         | Yes     |
+| `PERCS31.Strings.HeredocIndentation`                    | A heredoc or nowdoc indented once past the line it starts on      | Yes     |
 | `PERCS31.TypeHints.CompoundTypeOperatorSpacing`         | No space around `\|` or `&` in a type, but a split before one     | Yes     |
 | `PERCS31.WhiteSpace.ScopeClosingBrace`                  | A closing brace on its own line, allowing `{}`                    | Yes     |
 | `PERCS31.WhiteSpace.ScopeIndent`                        | Indentation, including property hooks and anonymous classes       | Yes     |
@@ -1076,6 +1077,42 @@ $copy = clone($original);
 ```php
 $copy = clone $original;
 $copy = clone ($original);
+```
+
+---
+
+### PERCS31.Strings.HeredocIndentation
+
+Requires a heredoc's or nowdoc's body and closing marker to be indented once past the line the `<<<` is on.
+
+**Why:** [PER Coding Style 3.1, Section 10](https://www.php-fig.org/per/coding-style/#10-heredoc-and-nowdoc) says subsequent lines in a heredoc or nowdoc MUST be indented once past the
+scope they're declared in, and its examples indent them once past the line holding `<<<`. No inherited sniff checks it.
+PHP removes the closing marker's indentation from every body line, and rejects a body line indented less than the
+marker, so this sniff checks the marker.
+
+**Auto-fixable:** yes. The fix moves the marker and every body line by the same amount, keeping any extra indentation
+within the text.
+
+**Good:**
+
+```php
+function greet(string $name): string
+{
+    return <<<EOT
+        Hello, {$name}.
+        EOT;
+}
+```
+
+**Bad:**
+
+```php
+function greet(string $name): string
+{
+    return <<<EOT
+Hello, {$name}.
+EOT;
+}
 ```
 
 ---
