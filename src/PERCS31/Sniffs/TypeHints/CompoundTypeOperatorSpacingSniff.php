@@ -20,7 +20,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  * - A line break after the symbol, which leaves it at the end of the line, is reported, and the fix moves the symbol
  *   to the start of the next line.
  *
- * Which types go on which line isn't checked.
+ * Which types go on which line is checked by PERCS31.TypeHints.CompoundTypeLayout.
  */
 class CompoundTypeOperatorSpacingSniff implements Sniff
 {

@@ -198,6 +198,8 @@
 
     <!-- No space around | or & in a compound type, but a split before one allowed (2.5) -->
     <rule ref="PERCS31.TypeHints.CompoundTypeOperatorSpacing"/>
+    <!-- A compound type split across lines has one type, or one union segment, per line (2.5) -->
+    <rule ref="PERCS31.TypeHints.CompoundTypeLayout"/>
 
     <!-- ====== PERCS31 ====== -->
 

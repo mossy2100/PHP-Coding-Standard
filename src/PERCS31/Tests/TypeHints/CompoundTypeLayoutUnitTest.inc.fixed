@@ -1,0 +1,48 @@
+<?php
+
+// === VALID ===
+
+function oneLine(int|string $a): ArrayAccess&Traversable {}
+
+function unionPerLine(
+    \ReflectionObject
+    |\ReflectionClass
+    |\ReflectionMethod $reflect,
+) {}
+
+function segmentPerLine(
+    array
+    |(ArrayAccess&Traversable)
+    |(Traversable&Countable) $input,
+) {}
+
+class NotSplitAtSymbol
+{
+    public const int|string
+        VALUE = 1;
+}
+
+// === INVALID ===
+
+function twoTypesOnLine(
+    \ReflectionObject
+    |\ReflectionClass
+    |\ReflectionMethod $reflect,
+) {}
+
+function splitIntersection(
+    array
+    |(ArrayAccess&Traversable) $input,
+) {}
+
+function intersectionPerLine(
+    Countable
+    &Traversable
+    &Stringable $input,
+) {}
+
+function twoSegmentsOnLine(
+    array
+    |(ArrayAccess&Traversable)
+    |(Traversable&Countable) $input,
+) {}
