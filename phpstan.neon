@@ -5,6 +5,7 @@ parameters:
         - src
     excludePaths:
         - src/Jumbo/Sniffs/WhiteSpace/ScopeIndentSniff.php
+        - src/Jumbo/Sniffs/Files/DeclareStatementSniff.php
     treatPhpDocTypesAsCertain: false
     scanDirectories:
         - vendor/squizlabs/php_codesniffer

@@ -13,3 +13,12 @@ declare(ticks=1,encoding='UTF-8');
 declare(ticks=1,encoding='UTF-8');
 declare(ticks=1);
 declare(encoding='UTF-8');
+
+// Block declares, with several directives and a string value.
+declare(ticks=1,encoding='UTF-8') {
+    $a = 1;
+}
+declare(ticks=1,encoding='UTF-8') {
+    $a = 1;
+}
+declare(encoding='UTF-8');

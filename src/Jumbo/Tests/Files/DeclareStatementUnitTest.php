@@ -20,16 +20,20 @@ class DeclareStatementUnitTest extends AbstractSniffTestCase
     protected function getErrorList(string $testFile = ''): array
     {
         return [
-            // Several directives: a space after the comma.
+            // A space after the comma.
             11 => 1,
-            // Several directives: a space after declare.
+            // A space after declare.
             12 => 1,
-            // Several directives: spaces throughout the parentheses, reported once.
-            13 => 1,
-            // One integer directive, left to the parent: spaces around the equals sign.
+            // Spaces everywhere inside the parentheses: around each directive, equals sign, value and comma.
+            13 => 6,
+            // Spaces around the equals sign, with an integer value and with a string value.
             14 => 2,
-            // A string value: spaces around the equals sign, reported once.
-            15 => 1,
+            15 => 2,
+            // A block declare with several directives: two spaces before the brace, and the brace not aligned.
+            21 => 1,
+            23 => 1,
+            // A space before the semicolon, with a string value.
+            24 => 1,
         ];
     }
 

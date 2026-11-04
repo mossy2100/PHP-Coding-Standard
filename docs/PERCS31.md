@@ -706,14 +706,15 @@ switch (true) {
 
 ### Jumbo.Files.DeclareStatement
 
-Checks the format of a declare statement, including one with several directives. This replaces
+Checks the format of a declare statement, including one with several directives or a string value. This is a fork of
 `PSR12.Files.DeclareStatement`.
 
 **Why:** [PER Coding Style 3.1, Section 3](https://www.php-fig.org/per/coding-style/#3-declare-statements-namespace-and-import-statements) says declare statements MUST NOT contain any spaces inside the parentheses. The
-parent assumes a single directive with an integer value, so it rejects a statement with several, or with a string
-value such as `encoding='UTF-8'`, however it's spaced. This sniff leaves a single integer directive to the parent. For
-anything else, it reports a space between `declare` and `(`, and any whitespace inside the parentheses, including after
-a comma. The parent's other layout checks, such as for a block declare's braces, aren't run for those statements.
+original assumes a single directive with an integer value, so it rejects `declare(ticks=1,strict_types=1);` and
+`declare(encoding='UTF-8');`, however they're spaced, and its later checks, such as for a block declare's braces, then
+look in the wrong place. The fork checks each directive in turn, with any value, so every check works for every declare
+statement, including a block declare with several directives. Its codes and messages are the original's. It's
+temporary, until PHP_CodeSniffer handles several directives.
 
 **Auto-fixable:** yes.
 
