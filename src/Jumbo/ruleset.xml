@@ -23,6 +23,13 @@
         </properties>
     </rule>
 
+    <!-- No space between a by-reference hook's & and its name: &get, not & get -->
+    <rule ref="Jumbo.Classes.PropertyHookLayout">
+        <properties>
+            <property name="checkReferenceSpacing" value="true"/>
+        </properties>
+    </rule>
+
     <!-- A wrapped line in a list item, such as a call argument, indented once past the item, so each item stays
          distinct; PERCS31 also allows it lined up with the item -->
     <rule ref="Jumbo.Operators.OperatorPlacement">

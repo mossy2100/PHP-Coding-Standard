@@ -87,3 +87,23 @@ abstract class MixedBodies
         set ;
     }
 }
+
+class ReferenceHooks
+{
+    // PER says nothing about a space after a by-reference hook's &, so it's allowed by default.
+    public array $allowed = [] {
+        & get => $this->allowed;
+    }
+
+    // phpcs:set Jumbo.Classes.PropertyHookLayout checkReferenceSpacing true
+    public array $spaced = [] {
+        & get => $this->spaced;
+    }
+
+    public array $inline = [] { & get => $this->inline; }
+
+    public array $unspaced = [] {
+        &get => $this->unspaced;
+    }
+    // phpcs:set Jumbo.Classes.PropertyHookLayout checkReferenceSpacing false
+}

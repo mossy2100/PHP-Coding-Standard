@@ -11,10 +11,12 @@ and [wiki](https://github.com/PHPCSStandards/PHP_CodeSniffer/wiki).
 ## PERCS31
 
 The Jumbo standard is built on [PERCS31](PERCS31.md), the package's standard for PER Coding Style 3.1, which is built on PSR-12.
-Everything PERCS31 includes is included here, with six changes:
+Everything PERCS31 includes is included here, with seven changes:
 
 - `Jumbo.Classes.PropertyDeclaration` checks the hook order in every hook list, including ones with bodies
   (`orderHooksWithBodies` set to `true`).
+- `Jumbo.Classes.PropertyHookLayout` reports a space in a by-reference hook, `& get` (`checkReferenceSpacing` set to
+  `true`).
 - `Jumbo.Operators.OperatorPlacement` requires a wrapped line in a list item, such as a call argument, to be indented
   once past the item, not lined up with it (`requireListItemIndent` set to `true`).
 - `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat` reports `T|null`, which should be `?T`, as an error, not a

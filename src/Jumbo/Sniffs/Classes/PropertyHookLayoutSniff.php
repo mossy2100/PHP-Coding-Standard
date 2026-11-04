@@ -22,6 +22,9 @@ use PHP_CodeSniffer\Util\Tokens;
  * `{ get; set; }`: a single space inside each brace, no space before each `;`, and a single space between operations.
  * A bodiless hook in a list with bodies also has no space before its `;`.
  *
+ * PER says nothing about a space in a by-reference hook, `& get`, so it's only reported when checkReferenceSpacing is
+ * set, as it is in Jumbo.
+ *
  * Indentation is checked by Jumbo.WhiteSpace.ScopeIndent, one hook per line by
  * Jumbo.Formatting.DisallowMultipleStatements, and `get` before `set` by Jumbo.Classes.PropertyDeclaration.
  */
@@ -44,6 +47,14 @@ class PropertyHookLayoutSniff implements Sniff
     public const string CODE_BODILESS_LAYOUT = 'BodilessLayout';
 
     public const string CODE_SPACE_BEFORE_SEMICOLON = 'SpaceBeforeSemicolon';
+
+    public const string CODE_SPACE_AFTER_REFERENCE = 'SpaceAfterReference';
+
+    /**
+     * Whether to report whitespace between a by-reference hook's `&` and its name, e.g. `& get`. PER says nothing
+     * about it, so it's off by default.
+     */
+    public bool $checkReferenceSpacing = false;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -74,6 +85,10 @@ class PropertyHookLayoutSniff implements Sniff
         }
 
         $this->checkOpener($phpcsFile, $opener);
+        if ($this->checkReferenceSpacing) {
+            $this->checkReferences($phpcsFile, $opener, $closer);
+        }
+
         $arrows = $this->findArrows($phpcsFile, $opener, $closer);
         $hasBlockBody = $phpcsFile->findNext(T_OPEN_CURLY_BRACKET, ($opener + 1), $closer) !== false;
         if ($arrows === [] && !$hasBlockBody) {
@@ -91,6 +106,38 @@ class PropertyHookLayoutSniff implements Sniff
             $this->checkLongFormCloser($phpcsFile, $opener, $closer);
         } elseif ($arrows !== []) {
             $this->checkInlineSpacing($phpcsFile, $opener, $closer);
+        }
+    }
+
+    /**
+     * Report whitespace between a by-reference hook's `&` and its name, e.g. `& get`.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the hook list's opening brace.
+     * @param int $closer The position of the hook list's closing brace.
+     */
+    private function checkReferences(File $phpcsFile, int $opener, int $closer): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        for ($i = ($opener + 1); $i < $closer; $i++) {
+            if ($tokens[($i + 1)]['code'] !== T_WHITESPACE || !PropertyHookHelper::isHookReference($phpcsFile, $i)) {
+                continue;
+            }
+
+            // A comment between them would have to move, so leave that alone.
+            $name = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), null, true);
+            if ($name === false || $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($i + 1), $name) !== false) {
+                continue;
+            }
+
+            $fix = $phpcsFile->addFixableError(
+                'There must be no space between a by-reference hook\'s "&" and its name',
+                $i,
+                self::CODE_SPACE_AFTER_REFERENCE,
+            );
+            if ($fix) {
+                $this->setSpacing($phpcsFile, $i, $name, '');
+            }
         }
     }
 

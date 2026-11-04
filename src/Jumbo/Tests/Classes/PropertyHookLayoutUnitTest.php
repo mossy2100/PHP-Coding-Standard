@@ -41,6 +41,9 @@ class PropertyHookLayoutUnitTest extends AbstractSniffTestCase
             72 => 1,
             // A space before a bodiless hook's ; in a list with bodies.
             87 => 1,
+            // With checkReferenceSpacing, a space after a by-reference hook's &, long and inline.
+            100 => 1,
+            103 => 1,
         ];
     }
 
