@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Jumbo Coding Standard">
-    <description>Coding standard for the Mossy2100 packages by Shaun Moss.</description>
+<ruleset name="Jumbo">
+    <description>Coding standard created for the PHP packages by Shaun Moss.</description>
 
     <!-- Paths to check -->
     <file>src</file>
@@ -11,5 +11,4 @@
     <exclude-pattern>*/Tests/*.inc</exclude-pattern>
     <exclude-pattern>*/Tests/*.inc.fixed</exclude-pattern>
     <exclude-pattern>*/ScopeIndentSniff.php</exclude-pattern>
-
 </ruleset>

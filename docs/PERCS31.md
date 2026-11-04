@@ -3,15 +3,14 @@
 A PHP_CodeSniffer standard for [PER Coding Style 3.1](https://www.php-fig.org/per/coding-style/), and nothing more. It's built on PSR-12, which PER Coding Style
 extends.
 
-No complete PHP_CodeSniffer standard for PER Coding Style exists yet. PSR-12's sniffs get some PER rules wrong, such as
-rejecting an empty body written as `{}`, and don't know PHP 8.4 and 8.5 features such as property hooks and the pipe
+No complete PHP_CodeSniffer standard for PER Coding Style exists at the time of development. PSR-12's sniffs get some PER rules wrong, such as
+rejecting an empty body written as `{}`, and don't yet support PHP 8.4 and 8.5 features such as property hooks and the pipe
 operator. This standard fixes both, using sniffs from PHP_CodeSniffer, Slevomat and PHPCSExtra where they fit, and
 custom sniffs where nothing did.
 
-The [Jumbo standard](../README.md) is PERCS31 plus house rules. Use PERCS31 on its own to follow PER Coding Style without them.
+The [Jumbo standard](../README.md) is PERCS31 plus my own preferences. Use PERCS31 on its own to follow PER Coding Style without them.
 
 **Contents:**
-
 - [Usage](#usage)
 - [PSR-12](#psr-12)
 - [Inherited Sniffs](#inherited-sniffs)

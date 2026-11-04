@@ -16,13 +16,18 @@ The Jumbo Coding Standard has two rulesets, each usable as a PHP_CodeSniffer sta
   Coding Style existed. See [PERCS31](docs/PERCS31.md).
 - **Jumbo**: PERCS31 plus house rules, for consistent naming and modern PHP 8.4+ code.
 
-**Key features of Jumbo:**
+### Key features of Jumbo
 
 - Follows PER Coding Style 3.1, through PERCS31.
 - Enforces `$camelCase` naming for variables, parameters and properties.
 - Enforces consistent array formatting: single-line if it fits, otherwise one element per line with a trailing comma. No
   alignment of arrows or assignments, to keep diffs small.
 - Enforces correct indentation for property hooks.
+
+### Why the name "Jumbo"?
+
+* Refers to a famous elephant, the elephant being PHP's spirit animal.
+* It sounds good.
 
 ---
 
