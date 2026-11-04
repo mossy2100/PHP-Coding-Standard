@@ -40,3 +40,21 @@ $comment = [
     1 // Not fixable.
     ,
 ];
+
+// Destructuring lists: a valid one, two invalid ones, and an empty slot, which has no element to check.
+[
+    'p' => $p,
+    'q' => $q,
+] = $pair;
+[
+    'p' => $p,
+    'q' => $q,
+] = $pair;
+list(
+    $a,
+    $b,
+) = $pair;
+[
+    ,
+    $b,
+] = $pair;

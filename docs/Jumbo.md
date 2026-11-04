@@ -250,13 +250,14 @@ To use a different limit, set every line-length property, as described in [Line 
 
 ### Jumbo.Arrays.ElementComma
 
-Requires the comma after an element of a multi-line array to be on the element's last line, not the next one.
+Requires the comma after an element of a multi-line array or destructuring list to be on the element's last line, not
+the next one.
 
 **Why:** PER Coding Style says nothing about where an array element's comma goes. Squiz `ArrayDeclaration`'s `NoComma`
 check covers it, but only for a keyed element, and it expects the comma on the line after a heredoc's closing marker,
 as before PHP 7.3. So it reports `EOT,`, and its fix puts the comma on a line of its own. PERCS31 excludes it, and this
-sniff replaces it in Jumbo, for keyed and unkeyed elements. A heredoc's or nowdoc's closing marker counts as the
-element's last line.
+sniff replaces it in Jumbo, for keyed and unkeyed elements, in arrays and in destructuring lists such as
+`[$a, $b] = $pair;`. A heredoc's or nowdoc's closing marker counts as the element's last line.
 
 **Auto-fixable:** yes, unless a comment is between the element and its comma.
 

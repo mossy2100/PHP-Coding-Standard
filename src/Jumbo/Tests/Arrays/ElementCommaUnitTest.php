@@ -30,6 +30,10 @@ class ElementCommaUnitTest extends AbstractSniffTestCase
             41 => 1,
             // A comment between the element and its comma (not fixable).
             45 => 1,
+            // A short destructuring list.
+            55 => 1,
+            // A long-syntax destructuring list.
+            60 => 1,
         ];
     }
 

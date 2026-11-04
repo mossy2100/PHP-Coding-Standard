@@ -8,10 +8,12 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 use PHPCSUtils\Utils\Arrays;
+use PHPCSUtils\Utils\Lists;
 use PHPCSUtils\Utils\PassedParameters;
 
 /**
- * Requires the comma after an element of a multi-line array to be on the element's last line, not the next one.
+ * Requires the comma after an element of a multi-line array or destructuring list to be on the element's last line, not
+ * the next one.
  *
  * PER Coding Style 3.1 says nothing about where an array element's comma goes, so this is an extra rule, for the
  * Jumbo standard only. It replaces Squiz.Arrays.ArrayDeclaration's NoComma check, which only checks a keyed element,
@@ -31,7 +33,7 @@ class ElementCommaSniff implements Sniff
      */
     public function register(): array
     {
-        return [T_ARRAY, T_OPEN_SHORT_ARRAY];
+        return [T_ARRAY, T_OPEN_SHORT_ARRAY, T_LIST];
     }
 
     /**
@@ -43,7 +45,13 @@ class ElementCommaSniff implements Sniff
     public function process(File $phpcsFile, int $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
-        if ($tokens[$stackPtr]['code'] === T_OPEN_SHORT_ARRAY && !Arrays::isShortArray($phpcsFile, $stackPtr)) {
+        $code = $tokens[$stackPtr]['code'];
+        if ($code === T_LIST || ($code === T_OPEN_SHORT_ARRAY && Lists::isShortList($phpcsFile, $stackPtr))) {
+            $this->processList($phpcsFile, $stackPtr);
+            return;
+        }
+
+        if ($code === T_OPEN_SHORT_ARRAY && !Arrays::isShortArray($phpcsFile, $stackPtr)) {
             return;
         }
 
@@ -54,6 +62,31 @@ class ElementCommaSniff implements Sniff
 
         foreach (PassedParameters::getParameters($phpcsFile, $stackPtr) as $element) {
             $this->checkElement($phpcsFile, (int) $element['start'], (int) $element['end'], $openClose['closer']);
+        }
+    }
+
+    /**
+     * Check each element of a multi-line destructuring list, as in `[` ... `] = $pair;` or `list(` ... `) = $pair;`.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of `list` or the short list's `[`.
+     */
+    private function processList(File $phpcsFile, int $stackPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $openClose = Lists::getOpenClose($phpcsFile, $stackPtr);
+        if ($openClose === false || $tokens[$openClose['opener']]['line'] === $tokens[$openClose['closer']]['line']) {
+            return;
+        }
+
+        foreach (Lists::getAssignments($phpcsFile, $stackPtr) as $element) {
+            $start = $element['key_token'] ?? $element['assignment_token'];
+            $end = $element['assignment_end_token'];
+            if ($element['is_empty'] || !is_int($start) || !is_int($end)) {
+                continue;
+            }
+
+            $this->checkElement($phpcsFile, $start, $end, $openClose['closer']);
         }
     }
 
