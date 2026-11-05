@@ -191,6 +191,33 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a class member on a file's last line doesn't crash the run, so another file's report isn't lost.
+     */
+    public function testMemberOnLastLineDoesNotCrashTheRun(): void
+    {
+        $members = [
+            'class A { public int $a = 1;',
+            "class A { public int \$a {\n    get => 1;\n}",
+            'class A { const B = 1;',
+            'enum A { case B;',
+        ];
+        foreach ($members as $code) {
+            $file = $this->copyToTempFile(null, "<?php\n\n$code }\n");
+
+            try {
+                $result = $this->runTool('phpcs', ['--standard=Jumbo', '--report=emacs', $file]);
+                $fixer = $this->runTool('phpcbf', ['--standard=Jumbo', $file]);
+            } finally {
+                unlink($file);
+            }
+
+            $this->assertNotSame(255, $result['exitCode'], $result['output']);
+            $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
+            $this->assertNotSame(255, $fixer['exitCode'], $fixer['output']);
+        }
+    }
+
+    /**
      * Test that a heredoc on the line after `=`, or after an `=` on the next line, is fixed to `$x = <<<'EOT'`, with
      * OperatorPlacement leaving the `=` alone, and the result passes.
      */

@@ -103,13 +103,10 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Arrays.SingleLineArrayWhitespace**: Checks whitespace in single-line array declarations.
 - **Attributes.AttributesOrder**: Requires attributes to be ordered alphabetically.
 - **Classes.ClassMemberSpacing**: Enforces spacing between class members.
-- **Classes.ConstantSpacing**: Enforces spacing around class constants.
 - **Classes.DisallowStringExpressionPropertyFetch**: Disallows string expressions for property access.
-- **Classes.EnumCaseSpacing**: Enforces spacing between enum cases.
 - **Classes.MethodSpacing**: Enforces spacing between methods.
 - **Classes.ModernClassNameReference**: Requires `::class` instead of `get_class()`, `get_parent_class()` and
   `get_called_class()`.
-- **Classes.PropertySpacing**: Enforces spacing between properties.
 - **Classes.RequireMultiLineMethodSignature**: Requires multi-line format for long method signatures.
 - **Classes.RequireSelfReference**: Requires `self::` instead of `ClassName::` for self-references.
 - **Classes.RequireSingleLineMethodSignature**: Requires single-line format for short method signatures. Used through
@@ -197,7 +194,10 @@ gives the reason. The custom sniffs for PER Coding Style itself are in [PERCS31]
 | ---------------------------------------------------------- | --------------------------------------------------------------- | ------- |
 | `Jumbo.Arrays.ArrayDeclaration`                            | A multi-line array is on one line if it fits                    | Yes     |
 | `Jumbo.Arrays.ElementComma`                                | A multi-line array element's comma on the element's last line   | Yes     |
+| `Jumbo.Classes.ConstantSpacing`                            | Blank lines after a constant, safe on the last line             | Yes     |
 | `Jumbo.Classes.EmptyLinesAroundClassBraces`                | No blank lines inside class braces, allowing `{}`               | Yes     |
+| `Jumbo.Classes.EnumCaseSpacing`                            | Blank lines after an enum case, safe on the last line           | Yes     |
+| `Jumbo.Classes.PropertySpacing`                            | Blank lines after a property, safe on the last line             | Yes     |
 | `Jumbo.Classes.RequireSingleLineMethodSignature`           | A short signature on one line, skipping a promoted hook         | Yes     |
 | `Jumbo.ControlStructures.LanguageConstructWithParentheses` | No `echo('x')`, allowing `exit()` and `die()`                   | Yes     |
 | `Jumbo.ControlStructures.RequireSingleLineHeader`          | A multi-line loop, `switch` or `match` header fits on a line    | Yes     |
@@ -305,6 +305,20 @@ parent. See [PERCS31.Formatting.EmptyBody](PERCS31.md#percs31formattingemptybody
 
 ---
 
+### Jumbo.Classes.ConstantSpacing, EnumCaseSpacing and PropertySpacing
+
+Enforce the blank lines after a class constant, enum case or property. These replace
+`SlevomatCodingStandard.Classes.ConstantSpacing`, `EnumCaseSpacing` and `PropertySpacing`, and skip a member on the last
+line of a file.
+
+**Why:** the parents assume there's a line after every member, so `public int $a = 1; }` on a file's last line is a PHP
+fatal error. That ends the whole run, and loses the report for every other file. PERCS31 reports the closing brace
+anyway. Each sniff only adds that one check, and can go once Slevomat fixes it.
+
+**Auto-fixable:** yes, as the parents.
+
+---
+
 ### Jumbo.Classes.RequireSingleLineMethodSignature
 
 Requires a method signature that fits within the line length to be written on one line, skipping one with a hook on a
@@ -381,7 +395,7 @@ replaces `SlevomatCodingStandard.Functions.RequireSingleLineCall`, and skips a c
 
 **Why:** the parent's `ignoreWithComplexParameter` option skips a call with a closure, arrow function or array argument,
 but not one with an anonymous class. So it reports `consume(new class {` ... `});`, and its fix puts the whole class
-body on one line, which then crashes `SlevomatCodingStandard.Classes.PropertySpacing`.
+body on one line, which then crashes Slevomat's property spacing sniff.
 
 **Auto-fixable:** yes, as the parent.
 

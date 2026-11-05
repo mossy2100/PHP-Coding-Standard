@@ -23,6 +23,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   interfaces, traits, enums, enum cases, enum constants, functions, methods, properties, parameters and variables. In
   PERCS31 it has a severity of 4, so it's hidden by default; run `phpcs --warning-severity=4` to see it. Jumbo shows it.
   Set `excludedNames` or `excludedAcronyms`, as comma-separated lists, to allow exceptions.
+- **`Jumbo.Classes.ConstantSpacing`, `EnumCaseSpacing` and `PropertySpacing`.** Replace Slevomat's sniffs of the same
+  names, which end the whole run with a fatal error on a member on a file's last line, e.g. `public int $a = 1; }`.
+  Update any `phpcs:ignore` comments or `<exclude>` rules that name them.
 - **`PERCS31.Arrays.ArrayBracketSpacing` (breaking).** A blank line before the closing bracket of a multi-line array is
   an error, as PER Coding Style 3.1 requires it on the next line after the last value. It extends php-collective's
   `ArrayBracketSpacing`, skipping a destructuring assignment. Auto-fixable, except after a comment.

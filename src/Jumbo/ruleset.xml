@@ -157,11 +157,13 @@
 
     <!-- Classes -->
     <rule ref="SlevomatCodingStandard.Classes.ClassMemberSpacing"/>
-    <rule ref="SlevomatCodingStandard.Classes.ConstantSpacing">
+    <!-- The Jumbo versions of ConstantSpacing, EnumCaseSpacing and PropertySpacing, which skip a member on a file's
+         last line, as the parents crash the whole run on one -->
+    <rule ref="Jumbo.Classes.ConstantSpacing">
         <properties>
             <property name="minLinesCountBeforeWithoutComment" value="1"/>
         </properties>
-        <exclude name="SlevomatCodingStandard.Classes.ConstantSpacing.IncorrectCountOfBlankLinesAfterConstant"/>
+        <exclude name="Jumbo.Classes.ConstantSpacing.IncorrectCountOfBlankLinesAfterConstant"/>
     </rule>
     <rule ref="SlevomatCodingStandard.Classes.DisallowStringExpressionPropertyFetch"/>
     <!-- Replaced by Jumbo.Classes.EmptyLinesAroundClassBraces, which allows an empty body as {} -->
@@ -171,14 +173,14 @@
             <property name="linesCountBeforeClosingBrace" value="0"/>
         </properties>
     </rule>
-    <rule ref="SlevomatCodingStandard.Classes.EnumCaseSpacing">
+    <rule ref="Jumbo.Classes.EnumCaseSpacing">
         <properties>
             <property name="minLinesCountBeforeWithoutComment" value="1"/>
         </properties>
     </rule>
     <rule ref="SlevomatCodingStandard.Classes.MethodSpacing"/>
     <rule ref="SlevomatCodingStandard.Classes.ModernClassNameReference"/>
-    <rule ref="SlevomatCodingStandard.Classes.PropertySpacing">
+    <rule ref="Jumbo.Classes.PropertySpacing">
         <properties>
             <property name="minLinesCountBeforeWithoutComment" value="1"/>
         </properties>
