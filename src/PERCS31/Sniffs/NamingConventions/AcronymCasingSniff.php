@@ -13,12 +13,11 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * PER Coding Style 3.1, section 2.7, RECOMMENDS treating abbreviations, acronyms and initialisms like regular words, so
  * `HttpClient`, not `HTTPClient`. It doesn't limit that to some names, so this sniff checks a namespace, class,
- * interface, trait, enum, enum case, enum constant, function, method, property, parameter or variable. It reports a run
- * of two or more capitals, unless the last one starts a word. So `getID` and `IOStream` are reported, but `AClass` and
- * `getXAxis` aren't, as a single capital is already written like a word.
- *
- * This is a best guess, as the sniff can't tell what's a word. `getIDs` passes, as `Ds` could be one, and assuming an
- * `s` is a plural would only suit English, and would report `whenXIs`.
+ * interface, trait, enum, enum case, enum constant, function, method, property, parameter or variable. It reports two
+ * or more capitals in a row. Single letters could be words of their own, so `parseURL` could be read as `parse`, `U`,
+ * `R` and `L`, so this sniff doesn't allow a one-letter word before a capital. So `getID`, `getIDs`, `AClass` and
+ * `whenXIs` are all reported. A single capital that isn't followed by another, as in `getX` or `X509Certificate`,
+ * isn't.
  *
  * It doesn't check:
  * - PHP's reserved variables, such as `$_SERVER`, which aren't ours to name.
@@ -27,9 +26,9 @@ use PHP_CodeSniffer\Util\Tokens;
  *   control. It's checked where it's declared.
  *
  * Set excludedNames to allow whole names, and excludedAcronyms to allow acronyms in any name, as comma-separated lists.
- * Each part of a namespace is checked as a name of its own. An acronym must match a whole run of capitals, so excluding
- * `HTTP` allows `HTTPClient` and `HTTPs`, but not `HTTPSClient`. Listing several lets them combine, as in
- * `XMLHTTPRequest`.
+ * Each part of a namespace is checked as a name of its own. An acronym must match a whole run of capitals, not counting
+ * a last capital that starts a word. So excluding `HTTP` allows `HTTPClient` and `HTTPs`, but not `HTTPSClient`, and
+ * excluding `T` allows a prefix, as in `TType`. Listing several lets them combine, as in `XMLHTTPRequest`.
  *
  * The warning has a severity of 4, below phpcs's default --warning-severity of 5, as with other RECOMMENDED rules. It
  * isn't fixable, as references to the name elsewhere wouldn't change.
@@ -137,7 +136,7 @@ class AcronymCasingSniff implements Sniff
             // The last capital starts a word if a lower-case letter follows it, as in `HTTPClient`.
             $next = $name[($offset + strlen($run))] ?? '';
             $acronym = ctype_lower($next) ? substr($run, 0, -1) : $run;
-            if (strlen($acronym) >= 2 && !$this->isExcludedAcronym($run) && !$this->isExcludedAcronym($acronym)) {
+            if (!$this->isExcludedAcronym($run) && !$this->isExcludedAcronym($acronym)) {
                 return true;
             }
         }

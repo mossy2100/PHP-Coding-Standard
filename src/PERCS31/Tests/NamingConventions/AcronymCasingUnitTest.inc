@@ -6,12 +6,8 @@ class HttpClient
 {
     public function getHttpResponse(): void {}
 
-    public function getXAxis(): void {}
-
-    // The sniff can't tell if Ds is a word, so a plural of two capitals passes.
-    public function getIDs(): void {}
-
-    public function whenXIs(): void {}
+    // A single capital that isn't followed by another.
+    public function getX(): void {}
 
     public function __construct() {}
 
@@ -20,13 +16,7 @@ class HttpClient
 
 class A {}
 
-class AClass {}
-
-class ASync {}
-
 class X509Certificate {}
-
-class OAuthToken {}
 
 interface JsonParser {}
 
@@ -56,9 +46,22 @@ class HTTPClient
     public function getID(): void {}
 
     public function &getURLs(): array {}
+
+    // A one-letter word before a capital isn't allowed.
+    public function getIDs(): array {}
+
+    public function getXAxis(): void {}
+
+    public function whenXIs(): void {}
 }
 
 class ID {}
+
+class AClass {}
+
+class TType {}
+
+class OAuthToken {}
 
 class IOStream {}
 
@@ -166,4 +169,12 @@ class URLClient {}
 class HTTPSClient {}
 
 class HTTPClientForURL {}
+
+// A single letter can be excluded too, such as a prefix.
+// phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms T, O
+class TTypeTwo {}
+
+class OAuthTwo {}
+
+class ATypeTwo {}
 // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms

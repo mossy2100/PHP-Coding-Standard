@@ -1068,17 +1068,17 @@ An arrow function has no braces, so the brace checks don't apply.
 ### PERCS31.NamingConventions.AcronymCasing
 
 Warns about an acronym in capitals in a name: a namespace, class, interface, trait, enum, enum case, enum constant,
-function, method, property, parameter or variable. It reports a run of two or more capitals, unless the last one starts
-a word.
+function, method, property, parameter or variable. It reports two or more capitals in a row.
 
 **Why:** [PER Coding Style 3.1, Section 2.7](https://www.php-fig.org/per/coding-style/#27-naming) RECOMMENDS treating acronyms like regular words. The warning has a severity
 of 4, like other RECOMMENDED rules. That's below `phpcs`'s default of 5, so run `phpcs --warning-severity=4` to see it.
 
+One-letter words aren't allowed before a capital, as `parseURL` could otherwise be read as `parse`, `U`, `R` and `L`. So
+`getID`, `getIDs`, `AClass`, `TType`, `OAuthToken` and `whenXIs` are all reported.
+
 Section 2.7 doesn't limit this to some names, so it applies to all of them. It doesn't report:
 
-- A single capital, which is already written like a word, as in `AClass` and `getXAxis`.
-- A capital and lower-case letters straight after a capital, as in `getIDs`. The sniff can't tell if `Ds` is a word, and
-  assuming an `s` is a plural would only suit English. So this is a best guess: use `excludedNames` for a wrong one.
+- A single capital that isn't followed by another, as in `getX` or `X509Certificate`.
 - PHP's reserved variables, such as `$_SERVER`.
 - A constant outside an enum, as UPPER_CASE is required, or one in UPPER_CASE in an enum, which has its own warning.
 - A property where it's used, such as `$this->userID` or `self::$userID`, as it may belong to a class you don't control.
@@ -1090,8 +1090,9 @@ Two properties allow exceptions, each a comma-separated list. Matching is case-s
 
 - `excludedNames` allows whole names. Each part of a namespace counts as a name of its own, so `PERCS31` allows
   `PERCS31\Sniffs`, but not `PERCS31\HTTP`.
-- `excludedAcronyms` allows acronyms in any name. An acronym must match a whole run of capitals, so `HTTP` allows
-  `HTTPClient` and `HTTPs`, but not `HTTPSClient`. Listing several lets them combine, as in `XMLHTTPRequest`.
+- `excludedAcronyms` allows acronyms in any name. An acronym must match a whole run of capitals, not counting a last
+  capital that starts a word. So `HTTP` allows `HTTPClient` and `HTTPs`, but not `HTTPSClient`, and `T` allows a prefix,
+  as in `TType`. Listing several lets them combine, as in `XMLHTTPRequest`.
 
 ```xml
 <rule ref="PERCS31.NamingConventions.AcronymCasing">
