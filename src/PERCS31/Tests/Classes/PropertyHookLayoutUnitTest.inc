@@ -107,3 +107,94 @@ class ReferenceHooks
     }
     // phpcs:set PERCS31.Classes.PropertyHookLayout checkReferenceSpacing false
 }
+
+class HookBodies
+{
+    // A long-form hook body on one line.
+    public string $oneLine {
+        get { return $this->oneLine; }
+    }
+
+    // The whole list on one line, which is only allowed for a single short hook.
+    public string $allOnOne { get { return $this->allOnOne; } }
+
+    // The closing brace after the body's last statement.
+    public string $closerAfterBody {
+        get {
+            return $this->closerAfterBody; }
+    }
+
+    // The body starting after the opening brace.
+    public string $bodyAfterOpener {
+        get { return $this->bodyAfterOpener;
+        }
+    }
+
+    // Parameters don't change anything.
+    public string $withParameters {
+        set(string $value) { $this->withParameters = $value; }
+    }
+
+    // Two hooks on one line.
+    public string $twoOnOneLine {
+        get { return 'a'; } set { $this->twoOnOneLine = $value; }
+    }
+
+    // A short hook and a hook with a body, inline.
+    public string $mixedInline { get => 'a'; set { $this->mixedInline = $value; } }
+
+    // An empty body, inline.
+    public string $emptyInline { set {} }
+
+    // A body of only a comment.
+    public string $commentBody {
+        set { /* Nothing. */ }
+    }
+
+    // A comment in the way can't be fixed.
+    public string $commentInTheWay {
+        get { /* Why. */ return 'a';
+        }
+    }
+}
+
+class ValidHookBodies
+{
+    public string $full {
+        get {
+            return $this->full;
+        }
+
+        set(string $value) {
+            $this->full = $value;
+        }
+    }
+
+    // An empty body has nothing to move.
+    public string $empty {
+        get => 'a';
+        set {}
+    }
+
+    public string $emptyWithSpace {
+        get => 'a';
+        set { }
+    }
+
+    // A comment may follow the opening brace.
+    public string $commentAfterOpener {
+        get { // Why.
+            return 'a';
+        }
+    }
+
+    // The braces of a short hook's expression aren't a hook's body.
+    public string $matchBody {
+        get => match (true) {
+            default => 'a',
+        };
+    }
+
+    // Only a {} body rules out an inline list.
+    public string $inlineShort { get => 'a'; }
+}

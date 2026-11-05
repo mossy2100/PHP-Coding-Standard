@@ -44,6 +44,26 @@ class PropertyHookLayoutUnitTest extends AbstractSniffTestCase
             // With checkReferenceSpacing, a space after a by-reference hook's &, long and inline.
             100 => 1,
             103 => 1,
+            // A hook body on one line.
+            115 => 2,
+            // The whole list on one line: the hook, its body, and both closing braces.
+            119 => 4,
+            // A hook's closing brace after the body.
+            124 => 1,
+            // A hook's body after its opening brace.
+            129 => 1,
+            // A hook with parameters and a body on one line.
+            135 => 2,
+            // Two hooks on one line.
+            140 => 5,
+            // A short hook and a hook with a body, inline.
+            144 => 5,
+            // An empty body, inline: the hook, and the list's closing brace.
+            147 => 2,
+            // A body of only a comment.
+            151 => 1,
+            // A comment before the body, in the way of the fix (not fixable).
+            156 => 1,
         ];
     }
 

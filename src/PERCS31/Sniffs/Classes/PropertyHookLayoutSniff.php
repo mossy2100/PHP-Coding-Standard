@@ -15,6 +15,9 @@ use PHP_CodeSniffer\Util\Tokens;
  * PER Coding Style 3.1, section 4.9, says:
  * - The opening brace MUST be on the same line as the property, after a single space.
  * - In the long form, the closing brace MUST be on its own line, with no comment after it.
+ * - The entire body of the hook definition, and the body of each hook, MUST be indented one level, and hooks MUST be
+ *   separated by a line break. So in a list with a `{}` body, each hook starts on its own line, each body starts on the
+ *   line after its `{`, and each `}` is first on its line. An empty body, `{}`, has nothing to move.
  * - A short hook's `=>` MUST have a single space on either side, and its body MUST begin on the same line.
  * - A short hook listed inline MUST have a single space after the opening brace and before the closing one.
  *
@@ -25,7 +28,8 @@ use PHP_CodeSniffer\Util\Tokens;
  * PER says nothing about a space in a by-reference hook, `& get`, so it's only reported when checkReferenceSpacing is
  * set, as it is in Jumbo.
  *
- * Indentation is checked by PERCS31.WhiteSpace.ScopeIndent, one hook per line by
+ * A hook on a promoted constructor parameter is reported by PERCS31.Classes.PromotedPropertyHooks, so its body isn't
+ * checked here. Indentation is checked by PERCS31.WhiteSpace.ScopeIndent, several statements on a line by
  * PERCS31.Formatting.DisallowMultipleStatements, and `get` before `set` by PERCS31.Classes.PropertyDeclaration.
  */
 class PropertyHookLayoutSniff implements Sniff
@@ -49,6 +53,17 @@ class PropertyHookLayoutSniff implements Sniff
     public const string CODE_SPACE_BEFORE_SEMICOLON = 'SpaceBeforeSemicolon';
 
     public const string CODE_SPACE_AFTER_REFERENCE = 'SpaceAfterReference';
+
+    public const string CODE_HOOK_NOT_ON_OWN_LINE = 'HookNotOnOwnLine';
+
+    public const string CODE_HOOK_BODY_NOT_ON_NEW_LINE = 'HookBodyNotOnNewLine';
+
+    public const string CODE_HOOK_CLOSER_NOT_ON_OWN_LINE = 'HookCloserNotOnOwnLine';
+
+    /**
+     * The spaces per indent level the fixes use. PERCS31.WhiteSpace.ScopeIndent checks the result.
+     */
+    private const int INDENT = 4;
 
     /**
      * Whether to report whitespace between a by-reference hook's `&` and its name, e.g. `& get`. PER says nothing
@@ -102,7 +117,14 @@ class PropertyHookLayoutSniff implements Sniff
 
         $this->checkBodilessSemicolons($phpcsFile, $opener, $closer);
         $tokens = $phpcsFile->getTokens();
-        if ($tokens[$opener]['line'] !== $tokens[$closer]['line']) {
+
+        // A property inside parentheses is a promoted constructor parameter.
+        $isPromoted = isset($tokens[$stackPtr]['nested_parenthesis']);
+        $hasHookBodies = !$isPromoted && $this->checkHookBodies($phpcsFile, $opener, $closer);
+
+        // A list on one line with a `{}` body is long form too. Its closing brace moves in the same pass as the rest,
+        // as ScopeIndent and ConsistentIndent can't agree on the indentation after a line with two closing braces.
+        if ($hasHookBodies || $tokens[$opener]['line'] !== $tokens[$closer]['line']) {
             $this->checkLongFormCloser($phpcsFile, $opener, $closer);
         } elseif ($arrows !== []) {
             $this->checkInlineSpacing($phpcsFile, $opener, $closer);
@@ -379,6 +401,133 @@ class PropertyHookLayoutSniff implements Sniff
             if ($fix) {
                 $this->setSpacing($phpcsFile, $name, $i, '');
             }
+        }
+    }
+
+    /**
+     * Check the layout of a list with at least one `{}` body: each hook starts on its own line, and each body is on its
+     * own lines, between its braces.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the hook list's opening brace.
+     * @param int $closer The position of the hook list's closing brace.
+     * @return bool True if the list has a `{}` body.
+     */
+    private function checkHookBodies(File $phpcsFile, int $opener, int $closer): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $bodies = [];
+        // Where a hook can end, so another can start: the list's opening brace, a `;`, or a body's closing brace.
+        $boundaries = [$opener];
+        $inShortBody = false;
+        for ($i = ($opener + 1); $i < $closer; $i++) {
+            $code = $tokens[$i]['code'];
+            if ($code === T_DOUBLE_ARROW) {
+                $inShortBody = true;
+            } elseif ($code === T_SEMICOLON) {
+                $inShortBody = false;
+                $boundaries[] = $i;
+            } elseif ($code === T_OPEN_CURLY_BRACKET && !$inShortBody) {
+                $bodies[] = $i;
+            }
+
+            $jumpTo = $tokens[$i]['parenthesis_closer'] ?? $tokens[$i]['bracket_closer']
+                ?? $tokens[$i]['attribute_closer'] ?? null;
+            if (is_int($jumpTo) && $jumpTo > $i && $jumpTo < $closer) {
+                $i = $jumpTo;
+                if ($code === T_OPEN_CURLY_BRACKET && !$inShortBody) {
+                    $boundaries[] = $i;
+                }
+            }
+        }
+
+        // A short hook may be inline, and a list with no bodies must be, so only a `{}` body rules them out.
+        if ($bodies === []) {
+            return false;
+        }
+
+        $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $opener, true);
+        assert(is_int($firstOnLine));
+        $hookIndent = $tokens[$firstOnLine]['column'] - 1 + self::INDENT;
+
+        foreach ($boundaries as $boundary) {
+            $this->checkHookStart($phpcsFile, $boundary, $closer, $hookIndent);
+        }
+
+        foreach ($bodies as $body) {
+            $this->checkHookBody($phpcsFile, $body, $hookIndent);
+        }
+
+        return true;
+    }
+
+    /**
+     * Check that whatever follows the end of a hook, or the list's opening brace, isn't a hook on the same line.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $boundary The position of the token before the hook.
+     * @param int $closer The position of the hook list's closing brace.
+     * @param int $hookIndent The number of spaces a hook is indented.
+     */
+    private function checkHookStart(File $phpcsFile, int $boundary, int $closer, int $hookIndent): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($boundary + 1), $closer, true);
+        if ($next === false || $tokens[$next]['line'] !== $tokens[$boundary]['line']) {
+            return;
+        }
+
+        $error = 'A property hook must start on its own line when a hook in the list has a body in braces';
+        if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($boundary + 1), $next) !== false) {
+            $phpcsFile->addError($error, $next, self::CODE_HOOK_NOT_ON_OWN_LINE);
+        } elseif ($phpcsFile->addFixableError($error, $next, self::CODE_HOOK_NOT_ON_OWN_LINE)) {
+            $this->setSpacing($phpcsFile, $boundary, $next, $phpcsFile->eolChar . str_repeat(' ', $hookIndent));
+        }
+    }
+
+    /**
+     * Check that a hook's body starts on the line after its opening brace, and that its closing brace is first on its
+     * line. An empty body has nothing to move. A comment may follow the opening brace.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $bodyOpener The position of the hook's opening brace.
+     * @param int $hookIndent The number of spaces a hook is indented.
+     */
+    private function checkHookBody(File $phpcsFile, int $bodyOpener, int $hookIndent): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $bodyCloser = $tokens[$bodyOpener]['bracket_closer'] ?? null;
+        if (!is_int($bodyCloser)) {
+            return;
+        }
+
+        $last = $phpcsFile->findPrevious(T_WHITESPACE, ($bodyCloser - 1), $bodyOpener, true);
+        if ($last === false || $last === $bodyOpener) {
+            return;
+        }
+
+        $first = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($bodyOpener + 1), $bodyCloser, true);
+        if ($first !== false && $tokens[$first]['line'] === $tokens[$bodyOpener]['line']) {
+            $error = 'The body of a property hook must start on the line after its opening brace';
+            if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($bodyOpener + 1), $first) !== false) {
+                $phpcsFile->addError($error, $first, self::CODE_HOOK_BODY_NOT_ON_NEW_LINE);
+            } elseif ($phpcsFile->addFixableError($error, $first, self::CODE_HOOK_BODY_NOT_ON_NEW_LINE)) {
+                $indent = str_repeat(' ', ($hookIndent + self::INDENT));
+                $this->setSpacing($phpcsFile, $bodyOpener, $first, $phpcsFile->eolChar . $indent);
+            }
+        }
+
+        if ($tokens[$last]['line'] !== $tokens[$bodyCloser]['line']) {
+            return;
+        }
+
+        $fix = $phpcsFile->addFixableError(
+            'The closing brace of a property hook must be on its own line',
+            $bodyCloser,
+            self::CODE_HOOK_CLOSER_NOT_ON_OWN_LINE,
+        );
+        if ($fix) {
+            $this->setSpacing($phpcsFile, $last, $bodyCloser, $phpcsFile->eolChar . str_repeat(' ', $hookIndent));
         }
     }
 

@@ -156,7 +156,7 @@ section gives the reason.
 | `PERCS31.Classes.ClassDeclaration`                      | Class declarations, allowing an empty body as `{}`                | Yes     |
 | `PERCS31.Classes.ClassInstantiationNoBrackets`          | A warning for `(new Foo())->bar()`                                | Yes     |
 | `PERCS31.Classes.EnumMemberVisibility`                  | `private`, not `protected`, for a method or constant in an enum   | Yes     |
-| `PERCS31.Classes.PropertyHookLayout`                    | A hook list's braces, and the spacing of a short hook's `=>`      | Partly  |
+| `PERCS31.Classes.PropertyHookLayout`                    | A hook list's and hook body's braces, and a short hook's `=>`     | Partly  |
 | `PERCS31.Classes.PromotedPropertyHooks`                 | A hook on a promoted parameter is a single short hook on one line | No      |
 | `PERCS31.Classes.PropertyDeclaration`                   | No leading `_`, no `var`, a visibility, and `get` before `set`    | Partly  |
 | `PERCS31.ControlStructures.MultiLineTernaryOperator`    | A multi-line ternary takes three lines, `?` and `:` leading       | Yes     |
@@ -458,14 +458,17 @@ This sniff checks:
 
 - The opening brace is on the same line as the property, after a single space.
 - In the long form, the closing brace is on its own line, with no comment after it.
+- In a list with a `{}` body, each hook starts on its own line, each body starts on the line after its `{`, and each
+  `}` is first on its line. An empty body, `{}`, has nothing to move, and a comment may follow the `{`.
 - A short hook's `=>` has a single space either side, and its body starts on the same line.
 - A short hook listed inline has a single space after the opening brace and before the closing one.
 - A list with no bodies, as on an interface or abstract property, is on one line, written as `{ get; set; }`: a single
   space inside each brace, no space before each `;`, and a single space between operations ([Section 4.10](https://www.php-fig.org/per/coding-style/#410-interface-and-abstract-properties)).
 - A bodiless hook in a list with bodies has no space before its `;`.
 
-Indentation is checked by `PERCS31.WhiteSpace.ScopeIndent`, and one hook per line by
-`PERCS31.Formatting.DisallowMultipleStatements`.
+Indentation is checked by `PERCS31.WhiteSpace.ScopeIndent`, and several statements on a line by
+`PERCS31.Formatting.DisallowMultipleStatements`. A hook on a promoted constructor parameter is reported by
+`PERCS31.Classes.PromotedPropertyHooks`.
 
 PER says nothing about a space in a by-reference hook, `& get`, so it passes. Set `checkReferenceSpacing` to report
 it, as the Jumbo standard does.
@@ -503,6 +506,12 @@ class User
             trim($value); }
 
     public string $email {get => strtolower($this->email);}
+
+    public string $phone {
+        get { return $this->phone; }
+    }
+
+    public string $city { get { return $this->city; } }
 }
 
 interface Named
