@@ -168,6 +168,29 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that phpcbf doesn't fail on section 4.9's "not allowed" promoted hook, which only a person can fix, and that
+     * it's still reported.
+     */
+    public function testPhpcbfDoesNotLoopOnTooComplexPromotedHook(): void
+    {
+        $source = "<?php\n\nclass Example\n{\n    public function __construct(\n        public string \$name {\n"
+            . "            set {\n                \$this->name = ucfirst(\$value);\n            }\n        },\n"
+            . "    ) {}\n}\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $fixer = $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
+        $this->assertStringContainsString('PromotedPropertyHooks.TooComplex', $result['output']);
+        $this->assertStringNotContainsString('MultiLineFunctionDeclaration.Indent', $result['output']);
+    }
+
+    /**
      * Test that a heredoc on the line after `=`, or after an `=` on the next line, is fixed to `$x = <<<'EOT'`, with
      * OperatorPlacement leaving the `=` alone, and the result passes.
      */

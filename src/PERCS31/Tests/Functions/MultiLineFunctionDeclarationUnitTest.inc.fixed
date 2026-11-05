@@ -53,3 +53,24 @@ $closeWithLast = fn(
     int $a,
     int $b
 ): int => $a + $b;
+
+// A promoted parameter's multi-line hook list isn't indented as a parameter. PromotedPropertyHooks reports it.
+class PromotedHookList
+{
+    public function __construct(
+        public string $name {
+            set {
+                $this->name = ucfirst($value);
+            }
+        },
+    ) {}
+}
+
+// A valid one-line hook is still checked.
+class PromotedOneLineHook
+{
+    public function __construct(
+        public string $name { set => ucfirst($value); },
+        public string $other,
+    ) {}
+}

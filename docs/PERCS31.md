@@ -1666,6 +1666,8 @@ class User
   value, and `function (): void {}` has no arrow function equivalent.
 - **A trailing comma in a split list of `match` conditions (2.6).** A comma before `=>` isn't required when an arm's
   conditions are on several lines, and no sniff requires one in a split attribute block with a single attribute.
+- **Whether a fall-through comment is clear (5.2).** Any comment just before the next `case` or `default` passes, as the
+  spec doesn't set any wording.
 - **The pipe operator `|>` on PHP 8.4.** It's only checked when PHP_CodeSniffer runs on PHP 8.5, as 8.4 has no `T_PIPE`
   token.
 - **Over-indentation of a body's first line (2.4, 5).** `PERCS31.WhiteSpace.ScopeIndent` only reports too little

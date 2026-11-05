@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\Functions;
 
 use PERCS31\Helpers\EmptyBodyHelper;
+use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\Squiz\Sniffs\Functions\MultiLineFunctionDeclarationSniff as SquizSniff;
 
@@ -24,6 +25,10 @@ use PHP_CodeSniffer\Standards\Squiz\Sniffs\Functions\MultiLineFunctionDeclaratio
  * parameters, both before an attribute and before a parameter with none. The parent's check can't be run on its own,
  * so the PERCS31 ruleset excludes EmptyLine, and this sniff reports blank lines itself (BlankLine), except a single
  * one between parameters. A `use` list keeps the parent's rule.
+ *
+ * The parent would also indent every line of a promoted parameter's multi-line hook list as a parameter, fighting
+ * PERCS31.WhiteSpace.ScopeIndent until phpcbf fails. PERCS31.Classes.PromotedPropertyHooks already reports that code,
+ * and it has to be rewritten, so this sniff leaves its parameter list alone.
  */
 class MultiLineFunctionDeclarationSniff extends SquizSniff
 {
@@ -78,6 +83,24 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
         $this->processBracket($phpcsFile, $opener, $tokens);
         $this->processArgumentList($phpcsFile, $stackPtr, $this->indent);
         $this->checkBlankLines($phpcsFile, $stackPtr);
+    }
+
+    /**
+     * Processes a multi-line function's arguments, unless a promoted parameter has a multi-line hook list.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the function keyword.
+     * @param int $indent The number of spaces code should be indented.
+     * @param string $type The type of the token the brackets belong to.
+     * @return void
+     */
+    public function processArgumentList(File $phpcsFile, int $stackPtr, int $indent, string $type = 'function'): void
+    {
+        if (PropertyHookHelper::hasMultiLinePromotedPropertyHook($phpcsFile, $stackPtr)) {
+            return;
+        }
+
+        parent::processArgumentList($phpcsFile, $stackPtr, $indent, $type);
     }
 
     /**

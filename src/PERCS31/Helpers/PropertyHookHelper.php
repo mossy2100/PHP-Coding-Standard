@@ -253,6 +253,42 @@ class PropertyHookHelper
     }
 
     /**
+     * Check whether a function's parameter list has a promoted constructor parameter with a hook list over several
+     * lines, which PERCS31.Classes.PromotedPropertyHooks reports.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $functionPtr The position of the function keyword.
+     * @return bool True if a parameter in the list has one.
+     */
+    public static function hasMultiLinePromotedPropertyHook(File $phpcsFile, int $functionPtr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $opener = $tokens[$functionPtr]['parenthesis_opener'] ?? null;
+        $closer = $tokens[$functionPtr]['parenthesis_closer'] ?? null;
+        if (!is_int($opener) || !is_int($closer)) {
+            return false;
+        }
+
+        for ($i = ($opener + 1); $i < $closer; $i++) {
+            if ($tokens[$i]['code'] !== T_VARIABLE || !self::isPropertyVariable($phpcsFile, $i)) {
+                continue;
+            }
+
+            $hookOpener = self::findHookListOpener($phpcsFile, $i);
+            $hookCloser = $hookOpener === false ? null : ($tokens[$hookOpener]['bracket_closer'] ?? null);
+            if (!is_int($hookOpener) || !is_int($hookCloser)) {
+                continue;
+            }
+
+            if ($tokens[$hookOpener]['line'] !== $tokens[$hookCloser]['line']) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Check whether a function's parameter list has a promoted constructor parameter with hooks.
      *
      * @param File $phpcsFile The file being scanned.
