@@ -1,0 +1,30 @@
+<?php
+
+// phpcs:set PERCS31.Operators.OperatorPlacement requireListItemIndent true
+
+// === VALID ===
+
+foo(
+    'first'
+        . 'second',
+);
+$grouped = (
+    $a
+    && $b
+);
+
+// === INVALID: lined up with the list item ===
+
+foo(
+    'first'
+        . 'second',
+);
+$array = [
+    'key' => $a
+        + $b,
+];
+$match = match (true) {
+    $a
+        && $b => 1,
+    default => 2,
+};

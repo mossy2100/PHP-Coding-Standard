@@ -10,16 +10,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- **`Jumbo.WhiteSpace.ConsistentIndent` (breaking).** Reports a line indented further than its scope after a complete
+- **`PERCS31.WhiteSpace.ConsistentIndent` (breaking).** Reports a line indented further than its scope after a complete
   statement, as PER Coding Style 3.1 requires an indent of 4 spaces per level. It extends php-collective's
   `ConsistentIndent`, adding the pipe operator and the other binary operators to the lines it treats as continuation
-  lines. php-collective/code-sniffer isn't a dependency: its sniff is copied in, under its MIT licence. Auto-fixable.
-- **`Jumbo.Files.DeclareStatement` (breaking).** Replaces `PSR12.Files.DeclareStatement`, which rejected a declare
+  lines. `php-collective/code-sniffer` is now a dependency. Auto-fixable.
+- **`PERCS31.Files.DeclareStatement` (breaking).** Replaces `PSR12.Files.DeclareStatement`, which rejected a declare
   statement with several directives, such as `declare(ticks=1,strict_types=1);`, or a string value, such as
   `declare(encoding='UTF-8');`, however it was spaced. As PER Coding Style 3.1 requires, there must be no spaces inside
   the parentheses, including after a comma. Its codes change prefix from `PSR12.Files.DeclareStatement` to
-  `Jumbo.Files.DeclareStatement`. It also fixes `declare(...){`, with no space before the brace, which ran `phpcbf` out
-  of memory. Auto-fixable.
+  `PERCS31.Files.DeclareStatement`. It also fixes `declare(...){`, with no space before the brace, which ran `phpcbf`
+  out of memory. Auto-fixable.
 - **`Jumbo.Arrays.ElementComma` (breaking).** In a multi-line array or destructuring list, the comma after an element
   must be on the element's last line, keyed or not, in the Jumbo standard. It replaces Squiz `ArrayDeclaration`'s
   `NoComma`, which only checked a keyed element, and reported a heredoc element written `EOT,`, as PHP 7.3 and later
@@ -27,27 +27,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`SlevomatCodingStandard.Arrays.TrailingArrayComma` in PERCS31.** Requires the trailing comma after a multi-line
   array's last element, keyed or not, as PER Coding Style 3.1 requires, including after a heredoc. It replaces Squiz
   `ArrayDeclaration`'s `NoCommaAfterLast` and `NoComma`, between which the trailing comma was checked before.
-- **`Jumbo.TypeHints.CompoundTypeLayout` (breaking).** As PER Coding Style 3.1 requires, a compound type split across
+- **`PERCS31.TypeHints.CompoundTypeLayout` (breaking).** As PER Coding Style 3.1 requires, a compound type split across
   lines has one type per line, or for a DNF type, one union segment per line with its intersections kept together.
   Auto-fixable.
 - **Continuation line indent (breaking).** As PER Coding Style 3.1 requires, a line starting with a wrapped operator,
   including `.` and an arrow function's `=>`, must be indented once past the line its expression starts on. In a list
   item, such as a call's argument or an array element, PERCS31 also allows it lined up with the item, and Jumbo requires
   it once past (new property `requireListItemIndent`). Grouping parentheses, a control structure's condition and a
-  `case` condition aren't checked. New code `Jumbo.Operators.OperatorPlacement.Indent`. Auto-fixable.
-- **`Jumbo.Functions.ArrowFunctionSemicolonSpacing` (breaking).** No space before the semicolon that ends an arrow
+  `case` condition aren't checked. New code `PERCS31.Operators.OperatorPlacement.Indent`. Auto-fixable.
+- **`PERCS31.Functions.ArrowFunctionSemicolonSpacing` (breaking).** No space before the semicolon that ends an arrow
   function, as PER Coding Style 3.1 requires. Auto-fixable.
-- **Arrow function parameter lists (breaking).** `Jumbo.Functions.MultiLineFunctionDeclaration` now checks an arrow
+- **Arrow function parameter lists (breaking).** `PERCS31.Functions.MultiLineFunctionDeclaration` now checks an arrow
   function's split parameter list, as PER Coding Style 3.1 requires: the first parameter on the next line, one
   parameter per line, each indented once, and the closing parenthesis on a line of its own. Auto-fixable.
 - **Method chain layout (breaking).** As PER Coding Style 3.1 requires, in a method chain split across lines, each `->`
   or `?->` must start its line, indented once, and the first method must be on the next line, not the object's line.
-  Adds `PEAR.WhiteSpace.ObjectOperatorIndent` and the new `Jumbo.Formatting.MethodChaining`. Auto-fixable.
-- **`Jumbo.Formatting.TrailingComma` (breaking).** As PER Coding Style 3.1 requires, the last arm of a multi-line
+  Adds `PEAR.WhiteSpace.ObjectOperatorIndent` and the new `PERCS31.Formatting.MethodChaining`. Auto-fixable.
+- **`PERCS31.Formatting.TrailingComma` (breaking).** As PER Coding Style 3.1 requires, the last arm of a multi-line
   `match` and the last name in a multi-line group `use` must have a trailing comma, and one on a single line is an error.
   Auto-fixable.
 - **Blank lines and spacing around attributes (breaking).** As PER Coding Style 3.1 requires,
-  `Jumbo.Attributes.AttributePlacement` now reports a blank line between a docblock and the attributes after it, or
+  `PERCS31.Attributes.AttributePlacement` now reports a blank line between a docblock and the attributes after it, or
   between two attribute blocks, and anything but a single space between an attribute and its parameter on the same line.
   A closure that's a call's argument follows the parameter rule: its attribute is inline after a single space when the
   argument list is on one line, and on its own line before it when the list is split. Jumbo also requires a closure's
@@ -57,10 +57,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   before `]`, and attributes in one block are separated by a comma with a space after it and none before, e.g.
   `#[Foo, Bar]`. Adds PHPCSExtra's `Universal.Attributes.BracketSpacing`, and the attribute block codes of
   `Universal.WhiteSpace.CommaSpacing`. Auto-fixable.
-- **`Jumbo.Strings.HeredocIndentation` (breaking).** A heredoc's or nowdoc's body and closing marker must be indented
+- **`PERCS31.Strings.HeredocIndentation` (breaking).** A heredoc's or nowdoc's body and closing marker must be indented
   once past the line it starts on, as PER Coding Style 3.1 requires. Auto-fixable, keeping any extra indentation within
   the text.
-- **`Jumbo.Classes.PropertyHookLayout` (breaking).** Checks the layout of a property's hooks, as PER Coding Style 3.1
+- **`PERCS31.Classes.PropertyHookLayout` (breaking).** Checks the layout of a property's hooks, as PER Coding Style 3.1
   requires: the opening brace on the property's line after a single space, the closing brace of a multi-line list on its
   own line with no comment after it, a single space either side of a short hook's `=>` with its body on the same line,
   and a single space inside the braces of an inline hook. A list with no bodies, as on an interface or abstract
@@ -69,61 +69,62 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `& get` (new property `checkReferenceSpacing`).
 - **`<?php declare(strict_types=1) ?>` above markup is allowed.** As PER Coding Style 3.1 says, a file with markup
   outside PHP tags declares strict types on its first line, between its own tags, with or without the `;`.
-  `Jumbo.Files.FileHeader` and `Jumbo.TypeHints.DeclareStrictTypes` replace `PSR12.Files.FileHeader` and
+  `PERCS31.Files.FileHeader` and `Jumbo.TypeHints.DeclareStrictTypes` replace `PSR12.Files.FileHeader` and
   `SlevomatCodingStandard.TypeHints.DeclareStrictTypes`, which required blank lines around it. Update any `phpcs:ignore`
   comments or `<exclude>` rules that name the old codes.
-- **`Jumbo.TypeHints.CompoundTypeOperatorSpacing`.** A union, intersection or DNF type can now be split across lines,
+- **`PERCS31.TypeHints.CompoundTypeOperatorSpacing`.** A union, intersection or DNF type can now be split across lines,
   with the `|` or `&` starting each line, as PER Coding Style 3.1 allows. It replaces
   `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.DisallowedWhitespaceAroundOperator`, which counted the line break
   as a space. Spaces around the symbol on one line, or the symbol at the end of a line, are still errors. Auto-fixable.
 - **One blank line before a parameter's attributes is allowed.** As PER Coding Style 3.1 allows, a multi-line parameter
   list can have a blank line between a parameter and the attributes of the next.
-  `Jumbo.Functions.MultiLineFunctionDeclaration` now reports other blank lines in the list itself, as `BlankLine`, in
+  `PERCS31.Functions.MultiLineFunctionDeclaration` now reports other blank lines in the list itself, as `BlankLine`, in
   place of the parent's `EmptyLine`, which reported them all. Update any `phpcs:ignore` comments or `<exclude>` rules
   that name `EmptyLine`.
-- **`Jumbo.NamingConventions.UpperCaseConstantName`.** Replaces `Generic.NamingConventions.UpperCaseConstantName`, which
-  required an enum constant in UPPER_CASE. As PER Coding Style 3.1 allows, an enum constant can now be in PascalCase,
-  and an UPPER_CASE one gets a warning with a severity of 4, as PascalCase is recommended. It's hidden by default; run
-  `phpcs --warning-severity=4` to see it. Any other constant still must be in UPPER_CASE. A global `const` is now
-  reported as `Constants must be uppercase`, with the `ConstantNotUpperCase` code of a `define()` constant, not as a
-  class constant.
-- **`Jumbo.Files.LineLength`.** Replaces `Generic.Files.LineLength`. A line over 120 characters still gets a `TooLong`
+- **`PERCS31.NamingConventions.UpperCaseConstantName`.** Replaces `Generic.NamingConventions.UpperCaseConstantName`,
+  which required an enum constant in UPPER_CASE. As PER Coding Style 3.1 allows, an enum constant can now be in
+  PascalCase, and an UPPER_CASE one gets a warning with a severity of 4, as PascalCase is recommended. It's hidden by
+  default; run `phpcs --warning-severity=4` to see it. Any other constant still must be in UPPER_CASE. A global `const`
+  is now reported as `Constants must be uppercase`, with the `ConstantNotUpperCase` code of a `define()` constant, not
+  as a class constant.
+- **`PERCS31.Files.LineLength`.** Replaces `Generic.Files.LineLength`. A line over 120 characters still gets a `TooLong`
   warning, and a line over 80 now gets an `OverRecommended` warning with a severity of 4, as PER Coding Style 3.1 says
   lines SHOULD NOT be longer than 80. It's hidden by default; run `phpcs --warning-severity=4` to see it. Update any
   `phpcs:ignore` comments or `<exclude>` rules that name `Generic.Files.LineLength`.
 - **The PERCS31 ruleset.** A second ruleset in the package, for [PER Coding Style 3.1](https://www.php-fig.org/per/coding-style/) and nothing more, built on PSR-12.
   Use `<rule ref="PERCS31"/>` to follow PER Coding Style without the extra rules. The Jumbo ruleset is PERCS31 plus
-  extra rules, and both use the same `Jumbo.*` sniffs. See [PERCS31](docs/PERCS31.md).
-- **`Jumbo.Operators.OperatorSpacing` (breaking).** Replaces `PSR12.Operators.OperatorSpacing` and
+  extra rules. PERCS31's custom sniffs are `PERCS31.*`, and the ones Jumbo adds are `Jumbo.*`. See
+  [PERCS31](docs/PERCS31.md).
+- **`PERCS31.Operators.OperatorSpacing` (breaking).** Replaces `PSR12.Operators.OperatorSpacing` and
   `Squiz.WhiteSpace.OperatorSpacing`. It requires at least one space around a binary operator, and adds the pipe
   operator `|>`. The Jumbo standard requires exactly one, as before, and now also around `&&`, `||`, `and`, `or`, `xor`
   and `.`, e.g. `$a  &&  $b` is now an error. Auto-fixable. The `|` in a multi-catch is a union type, so it must have no
   spaces, e.g. `catch (A|B $e)`, as PER Coding Style 3.1 requires; PSR-12's sniff required them.
-- **`orderHooksWithBodies` on `Jumbo.Classes.PropertyDeclaration`.** `HookOrder` only checks a hook list with no bodies
-  by default, as PER Coding Style 3.1 only sets the order of an abstract or interface property's hooks. The Jumbo
+- **`orderHooksWithBodies` on `PERCS31.Classes.PropertyDeclaration`.** `HookOrder` only checks a hook list with no
+  bodies by default, as PER Coding Style 3.1 only sets the order of an abstract or interface property's hooks. The Jumbo
   standard turns it on, to check every hook list as before.
 - **`Jumbo.Functions.RequireSingleLineCall`.** Replaces `SlevomatCodingStandard.Functions.RequireSingleLineCall`, which
   reported a call with a multi-line anonymous class argument, e.g. `consume(new class {` ... `});`, and fixed it by
   putting the class body on one line. Such a call is now skipped, as one with a closure argument already was.
-- **`Jumbo.Arrays.OpeningBracketPlacement` (breaking).** The opening bracket of a multi-line array must not be on a line
-  of its own, as PER Coding Style 3.1 requires, e.g. `foo([` ... `]);`, not `foo(` then `[` on the next line. An array
-  that's an element of a multi-line array is allowed. Auto-fixable, except next to another argument.
+- **`PERCS31.Arrays.OpeningBracketPlacement` (breaking).** The opening bracket of a multi-line array must not be on a
+  line of its own, as PER Coding Style 3.1 requires, e.g. `foo([` ... `]);`, not `foo(` then `[` on the next line. An
+  array that's an element of a multi-line array is allowed. Auto-fixable, except next to another argument.
 - **The pipe operator `|>` (PHP 8.5) (breaking).** As PER Coding Style 3.1 requires, `|>` needs a space either side, and
-  starts the line when a statement wraps at it. `Jumbo.Operators.OperatorSpacing` checks the spacing, and
-  `Jumbo.Operators.OperatorPlacement` now covers `|>`. Only checked when PHPCS runs on PHP 8.5. Auto-fixable.
-- **`Jumbo.ControlStructures.SwitchDeclaration` (breaking).** Replaces `PSR2.ControlStructures.SwitchDeclaration`,
+  starts the line when a statement wraps at it. `PERCS31.Operators.OperatorSpacing` checks the spacing, and
+  `PERCS31.Operators.OperatorPlacement` now covers `|>`. Only checked when PHPCS runs on PHP 8.5. Auto-fixable.
+- **`PERCS31.ControlStructures.SwitchDeclaration` (breaking).** Replaces `PSR2.ControlStructures.SwitchDeclaration`,
   adding two rules from PER Coding Style 3.1: the last non-empty case must end with `break`, `return` or similar, and a
   multi-line case condition must be wrapped in parentheses, with `):` on a line of their own. Auto-fixable.
-- **`Jumbo.PHP.RequireCloneParentheses`.** A warning for `clone $a`, which should be `clone($a)`, as PER Coding Style
+- **`PERCS31.PHP.RequireCloneParentheses`.** A warning for `clone $a`, which should be `clone($a)`, as PER Coding Style
   3.1 says `clone()` SHOULD be called with parentheses. Auto-fixable.
 - **`Generic.Strings.UnnecessaryHeredoc`.** A warning for a heredoc with no interpolation or escape sequences, which
   could be a nowdoc, as PER Coding Style 3.0 says a nowdoc SHOULD be used wherever possible. Auto-fixable.
-- **`Jumbo.Attributes.DisallowMultiLineAttributesJoining` (breaking).** An attribute block split over several lines must
-  have one attribute per block, as PER Coding Style 3.0 requires. A joined block on one line, such as
+- **`PERCS31.Attributes.DisallowMultiLineAttributesJoining` (breaking).** An attribute block split over several lines
+  must have one attribute per block, as PER Coding Style 3.0 requires. A joined block on one line, such as
   `#[Attribute, Deprecated]`, is still allowed. Auto-fixable.
-- **`Jumbo.Classes.EnumMemberVisibility` (breaking).** Requires a non-public method or constant in an enum to be
+- **`PERCS31.Classes.EnumMemberVisibility` (breaking).** Requires a non-public method or constant in an enum to be
   `private`, not `protected`, as PER Coding Style 3.1 requires. Auto-fixable.
-- **`Jumbo.NamingConventions.ValidEnumCaseName` (breaking).** Requires enum case names to be in PascalCase, as PER
+- **`PERCS31.NamingConventions.ValidEnumCaseName` (breaking).** Requires enum case names to be in PascalCase, as PER
   Coding Style 3.0 requires, e.g. `case BigJoker;`, not `case BIG_JOKER;` or `case bigJoker;`. Not auto-fixable.
 - **No whitespace after a prefix unary operator (breaking).** A space or line break between a prefix operator and its
   operand is now an error for `!` (`Generic.Formatting.SpaceAfterNot`, with `spacing` set to 0), and for `+`, `~` and
@@ -132,7 +133,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **A wrapped operator must start the next line (breaking).** As PER Coding Style 3.0 requires, a statement that wraps
   at an operator has the operator at the start of the new line, not the end of the previous one, e.g. `$total = $a` then
   `+ $b` on the next line. Three sniffs check this:
-  - `Jumbo.Operators.OperatorPlacement`, a new sniff, for assignment, arithmetic, comparison, bitwise and logical
+  - `PERCS31.Operators.OperatorPlacement`, a new sniff, for assignment, arithmetic, comparison, bitwise and logical
     operators, `??`, `instanceof`, `?:` and an arrow function's `=>`.
   - `Universal.Operators.ConcatPosition`, for `.`.
   - `PSR12.ControlStructures.BooleanOperatorPlacement`, now with `allowOnly` set to `first`, for `&&` and `||` in a
@@ -153,38 +154,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`Jumbo.ControlStructures.LanguageConstructWithParentheses`.** Replaces
   `SlevomatCodingStandard.ControlStructures.LanguageConstructWithParentheses`, which removed the parentheses from
   `die()`, against PER Coding Style 3.0. It still reports `echo('x')` and the like.
-- **`Jumbo.ControlStructures.MultiLineTernaryOperator` (breaking).** Requires a ternary that spans lines to take three,
-  with `?` and `:` each starting a line, indented once, as PER Coding Style 3.0 requires. Replaces
+- **`PERCS31.ControlStructures.MultiLineTernaryOperator` (breaking).** Requires a ternary that spans lines to take
+  three, with `?` and `:` each starting a line, indented once, as PER Coding Style 3.0 requires. Replaces
   `SlevomatCodingStandard.ControlStructures.DisallowTrailingMultiLineTernaryOperator`, which only reported a trailing
   `?`. Auto-fixable.
-- **`Jumbo.NamingConventions.ValidConstantName` (breaking).** Disallows a constant name that starts with an underscore,
-  e.g. `public const int _LIMIT = 10;`, as PER Coding Style 3.0 requires. Not auto-fixable.
+- **`PERCS31.NamingConventions.ValidConstantName` (breaking).** Disallows a constant name that starts with an
+  underscore, e.g. `public const int _LIMIT = 10;`, as PER Coding Style 3.0 requires. Not auto-fixable.
 - **`SlevomatCodingStandard.Classes.ClassKeywordOrder` (breaking).** Requires `abstract` or `final` before `readonly` on
   a class, e.g. `final readonly class`, not `readonly final class`, as PER Coding Style 3.0 requires. Auto-fixable.
-- **`Jumbo.Formatting.EmptyBody` (breaking).** Warns about an empty class or function body that isn't written as `{}` on
-  the same line as the declaration, as PER Coding Style 3.1 recommends, e.g. `public function reset(): void {}`. An
+- **`PERCS31.Formatting.EmptyBody` (breaking).** Warns about an empty class or function body that isn't written as `{}`
+  on the same line as the declaration, as PER Coding Style 3.1 recommends, e.g. `public function reset(): void {}`. An
   empty closure or anonymous class body that isn't `{}` is an error, as PER 3.1 requires it, e.g.
   `static function (): void {}` or `new class {}`. Auto-fixable.
-- **`Jumbo.Formatting.DisallowMultipleStatements`.** Replaces `Generic.Formatting.DisallowMultipleStatements`, which
+- **`PERCS31.Formatting.DisallowMultipleStatements`.** Replaces `Generic.Formatting.DisallowMultipleStatements`, which
   reported `{ get; set; }` on an abstract or interface property as two statements on one line. PER Coding Style 3.0
   requires them on one line. Update any `phpcs:ignore` comments or `<exclude>` rules that name the Generic code.
-- **`Jumbo.Attributes.AttributePlacement` (breaking).** Requires an attribute to be on the line before its target,
+- **`PERCS31.Attributes.AttributePlacement` (breaking).** Requires an attribute to be on the line before its target,
   except on a parameter in a single-line parameter list, where it must be inline, as PER Coding Style 3.0 requires. It
   also reports a blank line, or a comment on a line of its own, between an attribute and its target, replacing
   `SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing`, whose fix deleted such a comment. Attributes on an
   anonymous class follow PER Coding Style 3.1 instead: starting on the line after `new`, indented once, with `class` on
-  the line after them. `Jumbo.WhiteSpace.ScopeIndent` indents the class body to match. Auto-fixable.
+  the line after them. `PERCS31.WhiteSpace.ScopeIndent` indents the class body to match. Auto-fixable.
 - **`Jumbo.NamingConventions.ValidVariableName` (breaking).** Warns about a variable or parameter that starts with an
   underscore, inside a class, enum, trait or interface. `Squiz.NamingConventions.ValidVariableName` reports these
   outside a class, but allows them inside one. Superglobals such as `$_GET` are exempt. Not auto-fixable.
 - **`Jumbo.ControlStructures.RequireSingleLineHeader` (breaking).** Requires a multi-line `foreach`, `for`, `switch` or
   `match` header to be written on one line if it fits, as Slevomat's `RequireSingleLineCondition` does for `if` and
   `while`. Auto-fixable.
-- **`Jumbo.WhiteSpace.ArrowSpacing` (breaking).** Requires one space before and after `=>` in a `match` arm, so arms
+- **`PERCS31.WhiteSpace.ArrowSpacing` (breaking).** Requires one space before and after `=>` in a `match` arm, so arms
   aren't aligned. No stock sniff checks these. Properties `checkArray` and `checkYield` extend it to arrays and `yield`,
   which Jumbo turns on, so array arrows are never aligned, single-line or multi-line. Auto-fixable.
-- **`Jumbo.Classes.PromotedPropertyHooks` (breaking).** A hook on a promoted constructor parameter must be a single hook
-  with a short `=>` body, on one line, as PER Coding Style 3.1 requires, e.g.
+- **`PERCS31.Classes.PromotedPropertyHooks` (breaking).** A hook on a promoted constructor parameter must be a single
+  hook with a short `=>` body, on one line, as PER Coding Style 3.1 requires, e.g.
   `public function __construct(public string $name { set => trim($value); })`. Otherwise, declare the property in the
   class body. Not auto-fixable.
 - **`Jumbo.Classes.RequireSingleLineMethodSignature`, `Jumbo.TypeHints.ParameterTypeHint` and
@@ -200,9 +201,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Renamed the standard from `OceanMoon` to the Jumbo Coding Standard, and the package from `oceanmoon/coding-standard`
   to `mossy2100/coding-standard` (breaking).** The package name matches the author's GitHub and Packagist name. Use
   `<rule ref="Jumbo"/>` in `phpcs.xml`. Sniff codes and class namespaces change to match, e.g.
-  `OceanMoon.WhiteSpace.ScopeIndent` is now `Jumbo.WhiteSpace.ScopeIndent`, and `OceanMoon\Sniffs\...` is now
-  `Jumbo\Sniffs\...`. Update any `phpcs:ignore` comments or `<exclude>` rules that name them.
-- **`Jumbo.Classes.ClassInstantiationNoBrackets` is now a warning, and safer.** Renamed from
+  `OceanMoon.WhiteSpace.ScopeIndent` is now `PERCS31.WhiteSpace.ScopeIndent`, and `OceanMoon\Sniffs\...` is now
+  `PERCS31\Sniffs\...`, or `Jumbo\Sniffs\...` for a sniff only Jumbo uses. Update any `phpcs:ignore` comments or
+  `<exclude>` rules that name them.
+- **`PERCS31.Classes.ClassInstantiationNoBrackets` is now a warning, and safer.** Renamed from
   `OceanMoon.Classes.ClassInstantiationNoBrackets`. As PER Coding Style 3.0 says SHOULD, `(new Foo())->bar()` is now a
   warning, not an error, fixed to `new Foo()->bar()`. It now covers `::` as well as `->` and `?->`, and only reports
   parentheses holding exactly one `new` expression, so `(new Foo() ?: $default)->bar()` and `new self(new Foo())->bar()`
@@ -219,14 +221,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **An empty class or function body can be `{}` (breaking).** `PSR2.Classes.ClassDeclaration`,
   `Squiz.Functions.MultiLineFunctionDeclaration`, `Squiz.WhiteSpace.ScopeClosingBrace` and
   `SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces` rejected it. Each is replaced by a version that allows
-  it, e.g. `Jumbo.Classes.ClassDeclaration`, or `Jumbo.Classes.EmptyLinesAroundClassBraces` for the Slevomat one, so
+  it, e.g. `PERCS31.Classes.ClassDeclaration`, or `Jumbo.Classes.EmptyLinesAroundClassBraces` for the Slevomat one, so
   their error codes change prefix. Update any `phpcs:ignore` comments or `<exclude>` rules that name them.
 - **No space after `fn` (breaking).** Arrow functions are now written `fn($x) => $x`, not `fn ($x) => $x`, as PER Coding
   Style 3.0 requires. Run `phpcbf` to reformat.
 - **`null` must be last in a union type (breaking).** `int|null` and `null|int|string` are now errors, as PER Coding
   Style 3.0 requires `null` last. Set by `nullPosition` on `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat`.
   Auto-fixable.
-- **`Jumbo.Classes.PropertyDeclaration` checks `get` before `set` (breaking).** When a property has both hooks, `set`
+- **`PERCS31.Classes.PropertyDeclaration` checks `get` before `set` (breaking).** When a property has both hooks, `set`
   before `get` is now an error (`HookOrder`). PER Coding Style 3.1 requires `{ get; set; }` on an abstract or interface
   property, so PERCS31 only checks a hook list with no bodies, and the Jumbo standard checks every hook list.
   Auto-fixable, unless there's a comment between the hooks.
@@ -245,7 +247,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `indent` property was removed; `maxLineLength` remains. Run `phpcbf` to reformat existing code. Its error codes are
   replaced by one, `Jumbo.Arrays.ArrayDeclaration.ShouldBeSingleLine`. Update any `phpcs:ignore` comments or `<exclude>`
   rules that name an old code, such as `ListShouldBeSingleLine`.
-- **`Jumbo.Classes.PropertyDeclaration.Underscore` is an error, not a warning, and covers promoted constructor
+- **`PERCS31.Classes.PropertyDeclaration.Underscore` is an error, not a warning, and covers promoted constructor
   parameters (breaking).** A property named like `$_name` was a warning, and a promoted one wasn't reported at all. PER
   Coding Style 3.0 says property names must not start with an underscore.
 - **Requires `slevomat/coding-standard` 8.27 or later** (was 8.25). Earlier versions report
@@ -268,7 +270,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `#[Attribute, Deprecated]`, are now allowed, as PER Coding Style 3.0 allows them.
 - **`SlevomatCodingStandard.Functions.DisallowEmptyFunction`.** It required a comment in an empty function body, so PER
   Coding Style 3.0's recommended `public function reset(): void {}` was an error.
-- **Seven `Jumbo.Classes.PropertyDeclaration` error codes, which duplicated Slevomat sniffs already in the standard.**
+- **Seven `PERCS31.Classes.PropertyDeclaration` error codes, which duplicated Slevomat sniffs already in the standard.**
   Each case is still reported, and fixed, by the Slevomat sniff. Remove any references to the old codes:
   - `Multiple`, now reported by `SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition`.
   - `SpacingAfterType`, `AvizKeywordOrder`, `StaticBeforeVisibility`, `ReadonlyBeforeVisibility`, `FinalAfterVisibility`
@@ -276,7 +278,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
-- **`Jumbo.PHP.DisallowMultiConstantDefinition` fixer keeps the type and modifiers.** Splitting
+- **`PERCS31.PHP.DisallowMultiConstantDefinition` fixer keeps the type and modifiers.** Splitting
   `final public const int A = 1, B = 2;` gave `public const B = 2;`, dropping the type, and indented the new line with a
   tab. Each constant now keeps the full declaration, e.g. `final public const int B = 2;`, with the original
   indentation.

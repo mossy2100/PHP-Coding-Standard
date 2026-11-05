@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jumbo\Sniffs\Operators;
 
-use Jumbo\Helpers\OperatorHelper;
+use PERCS31\Helpers\OperatorHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jumbo\Sniffs\TypeHints;
 
-use Jumbo\Helpers\PropertyHookHelper;
+use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use SlevomatCodingStandard\Sniffs\TypeHints\ParameterTypeHintSpacingSniff as SlevomatSniff;
 

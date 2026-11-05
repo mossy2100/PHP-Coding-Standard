@@ -92,7 +92,7 @@ class RulesetUnitTest extends TestCase
     public function testOperatorSpacingAllowsSeveralSpacesInPercs31Only(): void
     {
         $file = $this->copyToTempFile(null, "<?php\n\n\$total = \$price  +  \$tax;\n\$valid = \$a  &&  \$b;\n");
-        $args = ['-s', '--sniffs=Jumbo.Operators.OperatorSpacing', '--report=emacs', $file];
+        $args = ['-s', '--sniffs=PERCS31.Operators.OperatorSpacing', '--report=emacs', $file];
 
         try {
             $percs31 = $this->runTool('phpcs', ['--standard=PERCS31', ...$args]);
@@ -102,7 +102,7 @@ class RulesetUnitTest extends TestCase
         }
 
         $this->assertSame(0, $percs31['exitCode'], $percs31['output']);
-        $this->assertSame(4, substr_count($jumbo['output'], 'Jumbo.Operators.OperatorSpacing.Spacing'));
+        $this->assertSame(4, substr_count($jumbo['output'], 'PERCS31.Operators.OperatorSpacing.Spacing'));
     }
 
     /**
@@ -131,7 +131,7 @@ class RulesetUnitTest extends TestCase
     public function testBlankLineAllowedOnlyBetweenParameters(): void
     {
         $fixture = dirname(__DIR__, 2) . '/Jumbo/Tests/Ruleset/BlankLinesInDeclaration.inc';
-        $sniff = '--sniffs=Jumbo.Functions.MultiLineFunctionDeclaration';
+        $sniff = '--sniffs=PERCS31.Functions.MultiLineFunctionDeclaration';
         $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', $sniff, '--report=emacs', $fixture]);
 
         preg_match_all('/:(\\d+):\\d+: error - .*\\.BlankLine\\)/', $result['output'], $matches);
@@ -144,8 +144,8 @@ class RulesetUnitTest extends TestCase
      */
     public function testEnumConstantCaseWarningNeedsWarningSeverity4(): void
     {
-        $fixture = dirname(__DIR__, 2) . '/Jumbo/Tests/NamingConventions/UpperCaseConstantNameUnitTest.inc';
-        $args = ['-s', '--standard=PERCS31', '--sniffs=Jumbo.NamingConventions.UpperCaseConstantName', $fixture];
+        $fixture = dirname(__DIR__, 2) . '/PERCS31/Tests/NamingConventions/UpperCaseConstantNameUnitTest.inc';
+        $args = ['-s', '--standard=PERCS31', '--sniffs=PERCS31.NamingConventions.UpperCaseConstantName', $fixture];
         $default = $this->runTool('phpcs', ['--report=emacs', ...$args]);
         $severity4 = $this->runTool('phpcs', ['--report=emacs', '--warning-severity=4', ...$args]);
 
@@ -158,12 +158,12 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that Jumbo.Files.LineLength's warning over 80 characters is hidden by default, and shown at severity 4.
+     * Test that PERCS31.Files.LineLength's warning over 80 characters is hidden by default, and shown at severity 4.
      */
     public function testLineLengthRecommendedLimitNeedsWarningSeverity4(): void
     {
-        $fixture = dirname(__DIR__, 2) . '/Jumbo/Tests/Files/LineLengthUnitTest.inc';
-        $args = ['-s', '--standard=PERCS31', '--sniffs=Jumbo.Files.LineLength', '--report=emacs', $fixture];
+        $fixture = dirname(__DIR__, 2) . '/PERCS31/Tests/Files/LineLengthUnitTest.inc';
+        $args = ['-s', '--standard=PERCS31', '--sniffs=PERCS31.Files.LineLength', '--report=emacs', $fixture];
         $default = $this->runTool('phpcs', $args);
         $severity4 = $this->runTool('phpcs', ['--warning-severity=4', ...$args]);
 
@@ -191,7 +191,7 @@ class RulesetUnitTest extends TestCase
         $ruleset = $this->copyToTempFile(null, <<<'XML'
             <?xml version="1.0"?>
             <ruleset name="ScopeIndentTwoSpaces">
-                <rule ref="Jumbo.WhiteSpace.ScopeIndent">
+                <rule ref="PERCS31.WhiteSpace.ScopeIndent">
                     <properties>
                         <property name="indent" value="2"/>
                     </properties>
@@ -203,7 +203,7 @@ class RulesetUnitTest extends TestCase
             $twoSpaces = $this->runTool('phpcs', ["--standard=$ruleset", $fixture]);
             $default = $this->runTool(
                 'phpcs',
-                ['--standard=Jumbo', '--sniffs=Jumbo.WhiteSpace.ScopeIndent', $fixture],
+                ['--standard=Jumbo', '--sniffs=PERCS31.WhiteSpace.ScopeIndent', $fixture],
             );
         } finally {
             unlink($ruleset);

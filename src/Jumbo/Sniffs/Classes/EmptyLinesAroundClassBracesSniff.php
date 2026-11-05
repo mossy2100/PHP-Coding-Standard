@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jumbo\Sniffs\Classes;
 
-use Jumbo\Helpers\EmptyBodyHelper;
+use PERCS31\Helpers\EmptyBodyHelper;
 use PHP_CodeSniffer\Files\File;
 use SlevomatCodingStandard\Sniffs\Classes\EmptyLinesAroundClassBracesSniff as SlevomatSniff;
 

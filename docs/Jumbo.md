@@ -40,20 +40,20 @@ The line length limit is 120. To change it, see [Line Length](LineLength.md).
 
 The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-12. These are Jumbo's changes to it:
 
-- `Jumbo.Attributes.AttributePlacement` requires a closure's attribute inline, after a single space, outside a call's
+- `PERCS31.Attributes.AttributePlacement` requires a closure's attribute inline, after a single space, outside a call's
   argument list too, e.g. in an assignment or an array (`checkClosureAttributesOutsideCalls` set to `true`).
-- `Jumbo.Classes.PropertyDeclaration` checks the hook order in every hook list, including ones with bodies
+- `PERCS31.Classes.PropertyDeclaration` checks the hook order in every hook list, including ones with bodies
   (`orderHooksWithBodies` set to `true`).
-- `Jumbo.Classes.PropertyHookLayout` reports a space in a by-reference hook, `& get` (`checkReferenceSpacing` set to
+- `PERCS31.Classes.PropertyHookLayout` reports a space in a by-reference hook, `& get` (`checkReferenceSpacing` set to
   `true`).
-- `Jumbo.WhiteSpace.ArrowSpacing` checks the spacing around `=>` in every array and `yield`, not just a `match` arm
+- `PERCS31.WhiteSpace.ArrowSpacing` checks the spacing around `=>` in every array and `yield`, not just a `match` arm
   (`checkArray` and `checkYield` set to `true`). It replaces Squiz `ArrayDeclaration`'s arrow spacing checks.
-- `Jumbo.Operators.OperatorPlacement` requires a wrapped line in a list item, such as a call argument, to be indented
+- `PERCS31.Operators.OperatorPlacement` requires a wrapped line in a list item, such as a call argument, to be indented
   once past the item, not lined up with it (`requireListItemIndent` set to `true`).
 - `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat` reports `T|null`, which should be `?T`, as an error, not a
   warning.
 - `Squiz.Arrays.ArrayDeclaration` also runs the checks PERCS31 leaves out. See [Squiz](#squiz).
-- `Jumbo.Operators.OperatorSpacing` also reports more than one space around an operator, with `ignoreNewlines` on and
+- `PERCS31.Operators.OperatorSpacing` also reports more than one space around an operator, with `ignoreNewlines` on and
   `ignoreSpacingBeforeAssignments` off. See [Squiz](#squiz).
 - `PSR12.Keywords.ShortFormTypeKeywords` is excluded, as `SlevomatCodingStandard.PHP.TypeCast` reports the same casts.
   See [Slevomat](#slevomat).
@@ -68,15 +68,15 @@ Sniffs from PHP_CodeSniffer and Slevomat that Jumbo adds on top of PERCS31. They
 
 - **Generic.Formatting.SpaceAfterNot**: Disallows whitespace after `!`, including a line break (`spacing` set to 0).
 - **Generic.CodeAnalysis.AssignmentInCondition**: Warns about assignments in conditions. See [Yoda-style Comparisons](../README.md#yoda-style-comparisons).
-- **Jumbo.Files.LineLength**: PERCS31's line length check, with `lineLimit` set from the ruleset's `lineLength` entity.
-  See [Line Length](LineLength.md).
+- **PERCS31.Files.LineLength**: PERCS31's line length check, with `lineLimit` set from the ruleset's `lineLength`
+  entity. See [Line Length](LineLength.md).
 
 ### Squiz
 
 - **Squiz.Arrays.ArrayDeclaration**: The checks PERCS31 leaves out: one space after a comma, no space inside an empty
   array `[]`, and no mix of keyed and unkeyed values. Which line a comma goes on is left to
   [`Jumbo.Arrays.ElementComma`](#jumboarrayselementcomma). The spacing around `=>` is left to
-  [`Jumbo.WhiteSpace.ArrowSpacing`](PERCS31.md#jumbowhitespacearrowspacing), as Squiz only checks it in a single-line array. Its alignment checks and
+  [`PERCS31.WhiteSpace.ArrowSpacing`](PERCS31.md#percs31whitespacearrowspacing), as Squiz only checks it in a single-line array. Its alignment checks and
   `SingleLineNotAllowed` stay excluded, so keys, values and arrows are not aligned, and a single-line array with several
   values is allowed. `Jumbo.Arrays.ArrayDeclaration` requires single-line where it fits.
 - **Squiz.NamingConventions.ValidVariableName**: Enforces `$camelCase` for variables, parameters, and properties. Its
@@ -84,9 +84,9 @@ Sniffs from PHP_CodeSniffer and Slevomat that Jumbo adds on top of PERCS31. They
   [Variable and Property Names](VariableAndPropertyNames.md).
 - **Squiz.Strings.DoubleQuoteUsage.NotRequired**: Ensures strings use single quotes unless double quotes are necessary.
 - **Squiz.WhiteSpace.OperatorSpacing**: Requires exactly one space around operators, including before `=`, so
-  assignments are not aligned. Used through [`Jumbo.Operators.OperatorSpacing`](PERCS31.md#jumbooperatorsoperatorspacing), which extends it to
+  assignments are not aligned. Used through [`PERCS31.Operators.OperatorSpacing`](PERCS31.md#percs31operatorsoperatorspacing), which extends it to
   `&&`, `||`, `and`, `or`, `xor`, `.` and `|>`. PERCS31 excludes its codes for more than one space, and Jumbo turns them
-  back on. `=>` is covered by [`Jumbo.WhiteSpace.ArrowSpacing`](PERCS31.md#jumbowhitespacearrowspacing).
+  back on. `=>` is covered by [`PERCS31.WhiteSpace.ArrowSpacing`](PERCS31.md#percs31whitespacearrowspacing).
 - **Squiz.WhiteSpace.ObjectOperatorSpacing**: Disallows spaces around `->`, `?->` and `::`, e.g. `$a -> b()`. A line
   break before one, in a wrapped method chain, is allowed.
 
@@ -187,7 +187,7 @@ gives the reason. The custom sniffs for PER Coding Style itself are in [PERCS31]
 | Sniff                                                      | Checks                                                          | Fixable |
 | ---------------------------------------------------------- | --------------------------------------------------------------- | ------- |
 | `Jumbo.Arrays.ArrayDeclaration`                            | A multi-line array is on one line if it fits                    | Yes     |
-| `Jumbo.Arrays.ElementComma`                               | A multi-line array element's comma on the element's last line   | Yes     |
+| `Jumbo.Arrays.ElementComma`                                | A multi-line array element's comma on the element's last line   | Yes     |
 | `Jumbo.Classes.EmptyLinesAroundClassBraces`                | No blank lines inside class braces, allowing `{}`               | Yes     |
 | `Jumbo.Classes.RequireSingleLineMethodSignature`           | A short signature on one line, skipping a promoted hook         | Yes     |
 | `Jumbo.ControlStructures.LanguageConstructWithParentheses` | No `echo('x')`, allowing `exit()` and `die()`                   | Yes     |
@@ -290,7 +290,7 @@ Disallows blank lines after a class's opening brace and before its closing brace
 
 **Why:** `SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces` rejects an empty body written as `{}` on one line,
 which [PER Coding Style 3.0, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the
-parent. See [Jumbo.Formatting.EmptyBody](PERCS31.md#jumboformattingemptybody).
+parent. See [PERCS31.Formatting.EmptyBody](PERCS31.md#percs31formattingemptybody).
 
 **Auto-fixable:** yes, as the parent.
 
@@ -304,7 +304,7 @@ promoted constructor parameter. This replaces `SlevomatCodingStandard.Classes.Re
 **Why:** the parent takes the `;` in a hook on a promoted constructor parameter, e.g.
 `public string $name { set => trim($value); }`, as the end of the signature, so its fix joins only part of it, and
 `phpcbf` can't finish. [PER Coding Style 3.1, Section 4.9](https://www.php-fig.org/per/coding-style/#49-property-hooks) allows a single short hook there, so this sniff skips a
-function with one, and leaves everything else to the parent. See [`Jumbo.Classes.PromotedPropertyHooks`](PERCS31.md#jumboclassespromotedpropertyhooks).
+function with one, and leaves everything else to the parent. See [`PERCS31.Classes.PromotedPropertyHooks`](PERCS31.md#percs31classespromotedpropertyhooks).
 
 **Auto-fixable:** yes, as the parent.
 
@@ -414,7 +414,7 @@ This sniff fills only that gap. It doesn't report:
 - Superglobals, such as `$_GET` and `$_SERVER`.
 - A name that Squiz already reports, because the rest of it isn't camelCase either, such as `$_user_name`.
 - Properties, including promoted constructor parameters, and static property access (`self::$_count`).
-  `Jumbo.Classes.PropertyDeclaration` checks those where they're declared.
+  `PERCS31.Classes.PropertyDeclaration` checks those where they're declared.
 
 **Good:**
 
@@ -489,7 +489,7 @@ line of a file with markup.
 **Why:** [PER Coding Style 3.1, Section 3](https://www.php-fig.org/per/coding-style/#3-declare-statements-namespace-and-import-statements) says that in a file containing markup outside PHP tags, the declaration MUST be
 on the first line, e.g. `<?php declare(strict_types=1) ?>`. The parent requires a blank line before and after it. This
 sniff accepts that form, with or without the `;`, if it sets `strict_types` to 1, and leaves everything else to the
-parent. See [`Jumbo.Files.FileHeader`](PERCS31.md#jumbofilesfileheader).
+parent. See [`PERCS31.Files.FileHeader`](PERCS31.md#percs31filesfileheader).
 
 **Auto-fixable:** yes, as the parent.
 
@@ -503,7 +503,7 @@ replaces `SlevomatCodingStandard.TypeHints.ParameterTypeHint`.
 **Why:** the parent treats every variable between a function's parentheses as a parameter, so `$value` or `$this` in a
 hook on a promoted constructor parameter is reported as a parameter with no type hint. The other parameters of that
 function aren't checked either. [PER Coding Style 3.1, Section 4.9](https://www.php-fig.org/per/coding-style/#49-property-hooks) allows a single short hook there, so this sniff skips
-a function with one, and leaves everything else to the parent. See [`Jumbo.Classes.PromotedPropertyHooks`](PERCS31.md#jumboclassespromotedpropertyhooks).
+a function with one, and leaves everything else to the parent. See [`PERCS31.Classes.PromotedPropertyHooks`](PERCS31.md#percs31classespromotedpropertyhooks).
 
 **Auto-fixable:** yes, as the parent.
 
@@ -517,7 +517,7 @@ This replaces `SlevomatCodingStandard.TypeHints.ParameterTypeHintSpacing`.
 **Why:** the parent treats every variable between a function's parentheses as a parameter, so `$value` or `$this` in a
 hook on a promoted constructor parameter is reported as a parameter with bad spacing. The other parameters of that
 function aren't checked either. [PER Coding Style 3.1, Section 4.9](https://www.php-fig.org/per/coding-style/#49-property-hooks) allows a single short hook there, so this sniff skips
-a function with one, and leaves everything else to the parent. See [`Jumbo.Classes.PromotedPropertyHooks`](PERCS31.md#jumboclassespromotedpropertyhooks).
+a function with one, and leaves everything else to the parent. See [`PERCS31.Classes.PromotedPropertyHooks`](PERCS31.md#percs31classespromotedpropertyhooks).
 
 **Auto-fixable:** yes, as the parent.
 

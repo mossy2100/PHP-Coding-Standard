@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jumbo\Sniffs\Classes;
 
-use Jumbo\Helpers\PropertyHookHelper;
+use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use SlevomatCodingStandard\Sniffs\Classes\RequireSingleLineMethodSignatureSniff as SlevomatSniff;
 

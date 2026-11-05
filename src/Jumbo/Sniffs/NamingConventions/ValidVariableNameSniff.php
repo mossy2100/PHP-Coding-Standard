@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jumbo\Sniffs\NamingConventions;
 
-use Jumbo\Helpers\PropertyHookHelper;
+use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\AbstractVariableSniff;
 use PHP_CodeSniffer\Util\Common;
@@ -19,7 +19,7 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * - Outside a class, Squiz already reports it.
  * - If the rest of the name isn't camel caps either, Squiz already reports it.
- * - Properties, including promoted constructor parameters, are left to Jumbo.Classes.PropertyDeclaration.
+ * - Properties, including promoted constructor parameters, are left to PERCS31.Classes.PropertyDeclaration.
  * - Static property access (`self::$_x`) is a property, not a variable.
  */
 class ValidVariableNameSniff extends AbstractVariableSniff
@@ -83,7 +83,7 @@ class ValidVariableNameSniff extends AbstractVariableSniff
      */
     protected function processMemberVar(File $phpcsFile, int $stackPtr): void
     {
-        // Properties are checked by Jumbo.Classes.PropertyDeclaration.
+        // Properties are checked by PERCS31.Classes.PropertyDeclaration.
     }
 
     /**

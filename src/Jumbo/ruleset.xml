@@ -17,14 +17,14 @@
     </rule>
 
     <!-- get before set in every hook list, including ones with bodies, not just abstract and interface properties -->
-    <rule ref="Jumbo.Classes.PropertyDeclaration">
+    <rule ref="PERCS31.Classes.PropertyDeclaration">
         <properties>
             <property name="orderHooksWithBodies" value="true"/>
         </properties>
     </rule>
 
     <!-- A closure's attribute inline, after a single space, outside a call's arguments too, e.g. in an assignment -->
-    <rule ref="Jumbo.Attributes.AttributePlacement">
+    <rule ref="PERCS31.Attributes.AttributePlacement">
         <properties>
             <property name="checkClosureAttributesOutsideCalls" value="true"/>
         </properties>
@@ -32,7 +32,7 @@
 
     <!-- One space around => in every array and yield $key => $value too, not just a match arm. This replaces
          Squiz.Arrays.ArrayDeclaration's arrow spacing checks, which cover only a single-line array. -->
-    <rule ref="Jumbo.WhiteSpace.ArrowSpacing">
+    <rule ref="PERCS31.WhiteSpace.ArrowSpacing">
         <properties>
             <property name="checkArray" value="true"/>
             <property name="checkYield" value="true"/>
@@ -40,7 +40,7 @@
     </rule>
 
     <!-- No space between a by-reference hook's & and its name: &get, not & get -->
-    <rule ref="Jumbo.Classes.PropertyHookLayout">
+    <rule ref="PERCS31.Classes.PropertyHookLayout">
         <properties>
             <property name="checkReferenceSpacing" value="true"/>
         </properties>
@@ -48,7 +48,7 @@
 
     <!-- A wrapped line in a list item, such as a call argument, indented once past the item, so each item stays
          distinct; PERCS31 also allows it lined up with the item -->
-    <rule ref="Jumbo.Operators.OperatorPlacement">
+    <rule ref="PERCS31.Operators.OperatorPlacement">
         <properties>
             <property name="requireListItemIndent" value="true"/>
         </properties>
@@ -67,7 +67,7 @@
     <rule ref="Generic.CodeAnalysis.AssignmentInCondition"/>
 
     <!-- Line length: a warning over the limit, with no hard limit, and PERCS31's severity 4 warning over 80 -->
-    <rule ref="Jumbo.Files.LineLength">
+    <rule ref="PERCS31.Files.LineLength">
         <properties>
             <property name="lineLimit" value="&lineLength;"/>
         </properties>
@@ -76,7 +76,7 @@
     <!-- ====== SQUIZ ====== -->
 
     <!-- Arrays: the checks PERCS31 leaves out. One space after a comma, none inside [], and no mix of keyed and
-         unkeyed values. The spacing around => is left to Jumbo.WhiteSpace.ArrowSpacing, which covers every array. -->
+         unkeyed values. The spacing around => is left to PERCS31.WhiteSpace.ArrowSpacing, which covers every array. -->
     <rule ref="Squiz.Arrays.ArrayDeclaration.NoSpaceAfterComma">
         <severity>5</severity>
     </rule>
@@ -113,23 +113,23 @@
     </rule>
 
     <!-- Exactly one space around operators, including before assignments and double arrows (no alignment): the codes
-         Jumbo.Operators.OperatorSpacing reports more than one space with, which PERCS31 excludes -->
-    <rule ref="Jumbo.Operators.OperatorSpacing">
+         PERCS31.Operators.OperatorSpacing reports more than one space with, which PERCS31 excludes -->
+    <rule ref="PERCS31.Operators.OperatorSpacing">
         <properties>
             <property name="ignoreNewlines" value="true"/>
             <property name="ignoreSpacingBeforeAssignments" value="false"/>
         </properties>
     </rule>
-    <rule ref="Jumbo.Operators.OperatorSpacing.SpacingBefore">
+    <rule ref="PERCS31.Operators.OperatorSpacing.SpacingBefore">
         <severity>5</severity>
     </rule>
-    <rule ref="Jumbo.Operators.OperatorSpacing.SpacingAfter">
+    <rule ref="PERCS31.Operators.OperatorSpacing.SpacingAfter">
         <severity>5</severity>
     </rule>
-    <rule ref="Jumbo.Operators.OperatorSpacing.SpacingBeforeAmp">
+    <rule ref="PERCS31.Operators.OperatorSpacing.SpacingBeforeAmp">
         <severity>5</severity>
     </rule>
-    <rule ref="Jumbo.Operators.OperatorSpacing.SpacingAfterAmp">
+    <rule ref="PERCS31.Operators.OperatorSpacing.SpacingAfterAmp">
         <severity>5</severity>
     </rule>
 

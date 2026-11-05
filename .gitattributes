@@ -10,3 +10,4 @@
 /phpunit.xml.dist    export-ignore
 /scripts             export-ignore
 /src/Jumbo/Tests export-ignore
+/src/PERCS31/Tests export-ignore

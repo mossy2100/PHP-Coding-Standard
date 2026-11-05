@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jumbo\Sniffs\TypeHints;
 
-use Jumbo\Helpers\FileHeaderHelper;
+use PERCS31\Helpers\FileHeaderHelper;
 use PHP_CodeSniffer\Files\File;
 use SlevomatCodingStandard\Sniffs\TypeHints\DeclareStrictTypesSniff as SlevomatSniff;
 
