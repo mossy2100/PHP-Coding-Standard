@@ -27,6 +27,10 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * The `&` of a by-reference hook, e.g. `&get => $this->items;`, isn't an operator either, so it's skipped.
  *
+ * The parent skips any `=` directly followed by `&`, so `$x=&$a` passes. This sniff checks it, and fixes it to
+ * `$x = &$a`. It still skips `$x =& $a`, as that has a space either side if `=&` is read as one operator, and PER
+ * doesn't say whether it is.
+ *
  * `=>` isn't registered, although PHP_CodeSniffer counts it as an assignment token. Section 6.2 doesn't list it, so
  * section 6 leaves its spacing undefined. Each use has its own sniff:
  * - An array: PERCS31.WhiteSpace.ArrowSpacing, in Jumbo only.
@@ -81,6 +85,25 @@ class OperatorSpacingSniff extends SquizSniff
         $result = parent::process($phpcsFile, $stackPtr);
 
         return is_int($result) ? $result : null;
+    }
+
+    /**
+     * Check whether a token is an operator to check, including an `=` directly followed by `&`, unless it's `=&` with a
+     * space either side.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the token.
+     * @return bool True if the token's spacing should be checked.
+     */
+    protected function isOperator(File $phpcsFile, int $stackPtr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        if ($tokens[$stackPtr]['code'] === T_EQUAL && ($tokens[($stackPtr + 1)]['code'] ?? null) === T_BITWISE_AND) {
+            return $tokens[($stackPtr - 1)]['code'] !== T_WHITESPACE
+                || ($tokens[($stackPtr + 2)]['code'] ?? null) !== T_WHITESPACE;
+        }
+
+        return parent::isOperator($phpcsFile, $stackPtr);
     }
 
     /**

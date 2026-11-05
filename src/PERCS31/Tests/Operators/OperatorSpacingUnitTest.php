@@ -53,6 +53,13 @@ class OperatorSpacingUnitTest extends AbstractSniffTestCase
             17 => 2,
             // Spaces around a multi-catch's |.
             24 => 1,
+            // A reference assignment with no space around its =.
+            46 => 2,
+            47 => 1,
+            48 => 1,
+            49 => 2,
+            50 => 2,
+            51 => 2,
         ];
     }
 

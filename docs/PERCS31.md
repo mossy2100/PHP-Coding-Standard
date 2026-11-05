@@ -1263,6 +1263,10 @@ space, and section 6 allows more for readability. PSR-12's sniff checks that, bu
 PHP_CodeSniffer 4.0 doesn't define `T_PIPE` itself, but passes PHP's own token through on PHP 8.5, so this sniff
 registers it when it's defined. The pipe isn't checked when PHPCS runs on PHP 8.4.
 
+The parent skips an `=` directly followed by `&`, so this sniff checks it: `$x=&$a` and `$x =&$a` are reported, and
+fixed to `$x = &$a`. `$x =& $a` passes, as it has a space either side if `=&` is read as one operator, and PER doesn't
+say whether it is.
+
 It extends `Squiz.WhiteSpace.OperatorSpacing`, which requires exactly one space, and covers PSR-12's operators too. The
 ruleset excludes the codes for more than one space, `SpacingBefore` and `SpacingAfter` and their `Amp` versions, so only
 a missing space is reported. A standard that wants exactly one space turns them back on, as the [Jumbo standard](Jumbo.md) does.

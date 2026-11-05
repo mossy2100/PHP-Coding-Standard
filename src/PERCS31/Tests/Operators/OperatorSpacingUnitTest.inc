@@ -36,3 +36,16 @@ class ReferenceHooks
 
     public array $list = [] { &get => $this->list; }
 }
+
+// A reference assignment: valid.
+$valid = &$a;
+$alsoValid =& $a;
+$spaced = & $a;
+
+// A reference assignment: no space either side, no space after, and no space before.
+$none=&$a;
+$noneAfter =&$a;
+$noneBefore= &$a;
+$noneBeforeCompound=& $a;
+foo($arg=&$a);
+$element['key']=&$a;
