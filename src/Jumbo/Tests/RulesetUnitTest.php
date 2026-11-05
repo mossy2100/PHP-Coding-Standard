@@ -125,6 +125,28 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a trailing comma in an attribute block on one line is an error, and that one in a split block of one
+     * attribute isn't, as section 2.6 of PER requires it. Universal.Attributes.TrailingComma forbids it by default.
+     */
+    public function testAttributeTrailingComma(): void
+    {
+        $source = "<?php\n\n#[Foo, Bar,]\nfunction a(): void {}\n\n#[Foo(\n    1,\n),]\nfunction b(): void {}\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $result = $this->runTool(
+                'phpcs',
+                ['-s', '--standard=PERCS31', '--sniffs=Universal.Attributes.TrailingComma', '--report=emacs', $file],
+            );
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertMatchesRegularExpression('/:3:\\d+: error - .*ForbiddenSingleLine/', $result['output']);
+        $this->assertStringNotContainsString('ForbiddenSingleAttributeMultiLine', $result['output']);
+    }
+
+    /**
      * Test that PERCS31 allows one blank line between parameters, and reports every other blank line in a multi-line
      * declaration. The parent's EmptyLine, which reports them all, is excluded in the ruleset.
      */

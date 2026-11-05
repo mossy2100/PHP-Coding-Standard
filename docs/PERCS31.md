@@ -102,6 +102,9 @@ Sniffs from PHP_CodeSniffer's other standards and the two base packages, each fo
 Reference: [PHPCSExtra repository and documentation](https://github.com/PHPCSStandards/PHPCSExtra)
 
 - **Universal.Attributes.BracketSpacing**: Disallows a space after `#[` or before `]`, e.g. `#[ Override ]` (12.1).
+- **Universal.Attributes.TrailingComma**: Disallows a trailing comma in an attribute block on one line, and requires one
+  in a split block of several attributes (2.6). Its `ForbiddenSingleAttributeMultiLine` code is excluded, as it forbids
+  the comma in a split block of one attribute, where 2.6 requires it.
 - **Universal.Attributes.DisallowAttributeParentheses**: Disallows `()` on an attribute with no arguments, e.g.
   `#[Override()]` (12.1).
 - **Universal.Classes.DisallowAnonClassParentheses**: Disallows `()` on an anonymous class with no arguments, e.g.
@@ -167,7 +170,7 @@ section gives the reason.
 | `PERCS31.Formatting.DisallowMultipleStatements`         | One statement per line, allowing `{ get; set; }`                  | Yes     |
 | `PERCS31.Formatting.EmptyBody`                          | An empty class, function, closure or anonymous class body is `{}` | Yes     |
 | `PERCS31.Formatting.MethodChaining`                     | The first method of a split chain on the next line                | Yes     |
-| `PERCS31.Formatting.TrailingComma`                      | A trailing comma in a multi-line `match` or group `use` only      | Yes     |
+| `PERCS31.Formatting.TrailingComma`                      | Trailing commas in `match`, group `use` and `new class (...)`     | Yes     |
 | `PERCS31.Functions.ArrowFunctionSemicolonSpacing`       | No space before the `;` that ends an arrow function               | Yes     |
 | `PERCS31.Functions.MultiLineFunctionDeclaration`        | Function, closure and `fn` declarations, allowing `{}` bodies     | Yes     |
 | `PERCS31.NamingConventions.UpperCaseConstantName`       | Constants in UPPER_CASE, or PascalCase in an enum                 | No      |
@@ -913,12 +916,14 @@ $someInstance->create()
 
 ### PERCS31.Formatting.TrailingComma
 
-Requires a trailing comma after the last arm of a multi-line `match`, or the last name in a multi-line group `use`, and
-disallows one when the list is on a single line.
+Requires a trailing comma after the last arm of a multi-line `match`, the last name in a multi-line group `use`, or the
+last argument in an anonymous class's multi-line arguments, and disallows one when the list is on a single line. It also
+disallows one in a `match` arm's conditions on a single line, e.g. `1, 2, => 'a'`.
 
 **Why:** [PER Coding Style 3.1, Section 2.6](https://www.php-fig.org/per/coding-style/#26-trailing-commas) says the last item of a list split across lines MUST have a trailing comma, and
 the last item of a list on one line MUST NOT. Slevomat's trailing comma sniffs cover calls, declarations and closure
-`use` lists, and the Squiz array sniff covers arrays, but none covers `match` or group `use`.
+`use` lists, and the Squiz array sniff covers arrays, but none covers `match`, group `use` or `new class (`. Like
+Slevomat's call sniffs, it doesn't require a comma when the closing parenthesis follows the last argument on its line.
 
 **Auto-fixable:** yes. A missing comma goes after the last item, before any comment.
 
@@ -932,10 +937,16 @@ use Vendor\Package\{
 use Vendor\Other\{ClassC, ClassD};
 
 $label = match ($code) {
-    200 => 'OK',
+    200, 201 => 'OK',
     default => 'Error',
 };
 $short = match ($code) { 200 => 'OK', default => 'Error' };
+
+$first = new class (1, 2) {};
+$second = new class (
+    1,
+    2,
+) {};
 ```
 
 **Bad:**
@@ -948,9 +959,15 @@ use Vendor\Package\{
 use Vendor\Other\{ClassC, ClassD,};
 
 $label = match ($code) {
-    200 => 'OK',
+    200, 201, => 'OK',
     default => 'Error'
 };
+
+$first = new class (1, 2,) {};
+$second = new class (
+    1,
+    2
+) {};
 ```
 
 ---
@@ -1579,6 +1596,8 @@ class User
 
 - **An empty closure SHOULD be an arrow function (7).** Rewriting `function () {}` as `fn() => null` changes the return
   value, and `function (): void {}` has no arrow function equivalent.
+- **A trailing comma in a split list of `match` conditions (2.6).** A comma before `=>` isn't required when an arm's
+  conditions are on several lines, and no sniff requires one in a split attribute block with a single attribute.
 - **The pipe operator `|>` on PHP 8.4.** It's only checked when PHP_CodeSniffer runs on PHP 8.5, as 8.4 has no `T_PIPE`
   token.
 - **Over-indentation of a body's first line (2.4, 5).** `PERCS31.WhiteSpace.ScopeIndent` only reports too little

@@ -93,6 +93,13 @@
 
     <!-- ====== PHPCSEXTRA ====== -->
 
+    <!-- A trailing comma in an attribute block: none on one line, and one in a split block of several attributes (2.6).
+         The code that forbids one in a split block of one attribute is excluded, as 2.6 says a split list MUST have
+         one. -->
+    <rule ref="Universal.Attributes.TrailingComma">
+        <exclude name="Universal.Attributes.TrailingComma.ForbiddenSingleAttributeMultiLine"/>
+    </rule>
+
     <!-- No () on an attribute without arguments (12.1) -->
     <rule ref="Universal.Attributes.DisallowAttributeParentheses"/>
 

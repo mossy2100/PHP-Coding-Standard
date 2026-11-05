@@ -31,3 +31,69 @@ $e = match ($x) {
     1 => 'one',
     default => 'other', // A comment after the last arm.
 };
+
+// === ANONYMOUS CLASS ARGUMENTS, VALID ===
+
+$f = new class (1, 2) {};
+$g = new class {};
+$h = new class () {};
+$i = new class (
+    1,
+    2,
+) {};
+// A closing parenthesis straight after a multi-line last argument isn't a split list, as in a call.
+$j = new class (function () {
+    return 1;
+}) {};
+
+// === MATCH CONDITIONS, VALID ===
+
+$k = match ($x) {
+    1, 2 => 'a',
+    default => 'b',
+};
+$l = match ($x) {
+    [1, 2,] => 'a',
+    default => foo(1, 2),
+};
+// A split list of conditions isn't checked.
+$m = match ($x) {
+    1,
+    2 => 'a',
+    3,
+    4, => 'b',
+    default => 'c',
+};
+// A comma inside a nested match belongs to that match.
+$n = match ($x) {
+    1 => match ($y) {
+        2 => 'a',
+        default => 'b',
+    },
+    default => 'c',
+};
+
+// === ANONYMOUS CLASS ARGUMENTS, INVALID ===
+
+$o = new class (1, 2) {};
+$p = new class (
+    1,
+    2,
+) {};
+$q = new class (
+    1,
+    2, // A comment after the last argument.
+) {};
+
+// === MATCH CONDITIONS, INVALID ===
+
+$r = match ($x) {
+    1, 2 => 'a',
+    default => 'b',
+};
+$s = match ($x) { 1, 2 => 'a', default => 'b' };
+$t = match ($x) {
+    1 => 'a',
+    2, 3 /* A comment. */ => 'b',
+    default => 'c',
+};

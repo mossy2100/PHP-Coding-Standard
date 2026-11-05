@@ -30,6 +30,15 @@ class TrailingCommaUnitTest extends AbstractSniffTestCase
             29 => 1,
             // A multi-line match without one, before a comment.
             32 => 1,
+            // Anonymous class arguments: a comma on one line, then none on several, with and without a comment.
+            78 => 1,
+            81 => 1,
+            85 => 1,
+            // A comma in a match arm's conditions on one line: alone, in a one-line match, before a comment, default.
+            91 => 1,
+            94 => 1,
+            97 => 1,
+            98 => 1,
         ];
     }
 
