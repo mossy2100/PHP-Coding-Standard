@@ -85,6 +85,9 @@ const HTTP_OK = 200;
 enum ValidNames
 {
     const VALID_CONSTANT = 1;
+    // UPPER_CASE with no underscore, which isn't an acronym in a name. It has its own warning.
+    const HTTP = 3;
+    const string URL = 'url';
     const NotFound = 2;
     const string OkStatus = 'ok';
 }
