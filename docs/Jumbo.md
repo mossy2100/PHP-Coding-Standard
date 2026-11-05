@@ -49,7 +49,8 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
 - `PERCS31.WhiteSpace.ArrowSpacing` checks the spacing around `=>` in every array and `yield`, not just a `match` arm
   (`checkArray` and `checkYield` set to `true`). It replaces Squiz `ArrayDeclaration`'s arrow spacing checks.
 - `PERCS31.Operators.OperatorPlacement` requires a wrapped line in a list item, such as a call argument, to be indented
-  once past the item, not lined up with it (`requireListItemIndent` set to `true`).
+  once past the item, not lined up with it (`requireListItemIndent` set to `true`). A wrapped line in grouping
+  parentheses must line up with the group's first line, with no extra indent (`requireGroupingLineUp` set to `true`).
 - `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat` reports `T|null`, which should be `?T`, as an error, not a
   warning.
 - `Squiz.Arrays.ArrayDeclaration` also runs the checks PERCS31 leaves out. See [Squiz](#squiz).

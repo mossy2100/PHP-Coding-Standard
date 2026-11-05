@@ -1253,8 +1253,10 @@ the indent:
   or lined up with the item if it starts its own line. Set `requireListItemIndent` to allow only the first, as the
   Jumbo standard does.
 - **An arrow function's `=>`:** exactly once past the line `fn` starts on, even in a list item.
-- **Grouping parentheses**, as in `$x = (`, a control structure's condition, or a multi-line `case` condition: not
-  checked.
+- **A control structure's condition, or a multi-line `case` condition:** not checked.
+- **Grouping parentheses**, as in `$x = (`: not checked. Set `requireGroupingLineUp` to require a line to line up with
+  the group's first line, or if that's on the `(` line, to be indented once past it, as the Jumbo standard does. An
+  arrow function's body is still indented once.
 
 **Why:** [PER Coding Style 3.1, Section 6.4](https://www.php-fig.org/per/coding-style/#64-operators-placement) says that when a statement is split at an operator, the operator MUST be at
 the start of the new line, and each subsequent line is indented once. Section 7.1 says the same of an arrow function's
@@ -1313,9 +1315,10 @@ $this->expectOutputString(
 
 **Configuration:**
 
-| Property                | Type | Default | Description                                                              |
-| ----------------------- | ---- | ------- | ------------------------------------------------------------------------ |
-| `requireListItemIndent` | bool | false   | Require a wrapped line in a list item to be indented once past the item. |
+| Property                | Type | Default | Description                                                               |
+| ----------------------- | ---- | ------- | ------------------------------------------------------------------------- |
+| `requireListItemIndent` | bool | false   | Require a wrapped line in a list item to be indented once past the item.  |
+| `requireGroupingLineUp` | bool | false   | Require a wrapped line in a group to line up with the group's first line. |
 
 ---
 

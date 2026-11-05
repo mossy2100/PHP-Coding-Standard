@@ -40,6 +40,23 @@ class OperatorPlacementUnitTest extends AbstractSniffTestCase
             return [13 => 1];
         }
 
+        if ($testFile === 'OperatorPlacementUnitTest.5.inc') {
+            return [
+                // With requireGroupingLineUp, not lined up with the group's first line.
+                78 => 1,
+                83 => 1,
+                // Not indented once past the ( line.
+                87 => 1,
+                90 => 1,
+                // Nested in a call argument, and an index.
+                95 => 1,
+                102 => 1,
+                // An arrow function's => and body not indented.
+                108 => 1,
+                113 => 1,
+            ];
+        }
+
         if ($testFile === 'OperatorPlacementUnitTest.3.inc') {
             return [
                 // Indented twice.

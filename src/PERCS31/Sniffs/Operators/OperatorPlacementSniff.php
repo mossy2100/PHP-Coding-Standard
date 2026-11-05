@@ -25,7 +25,10 @@ use PHP_CodeSniffer\Util\Tokens;
  * PER says nothing about an operator wrapped inside a list item, such as a call argument, array element or `match`
  * arm, as that isn't a statement. So there the line may also be lined up with the item, unless requireListItemIndent
  * is set. An arrow function's `=>` is always indented once, as section 7.1 says. Grouping parentheses, as in
- * `$x = ($a && $b);` split over lines, aren't a list, so like a condition, their indent isn't checked.
+ * `$x = ($a && $b);` split over lines, aren't a list, and PER says nothing about them either, so like a condition,
+ * their indent isn't checked, unless requireGroupingLineUp is set. Then a line starting with an operator lines up with
+ * the group's first line, or if that's on the `(` line, is indented once past it. An arrow function's body keeps its
+ * indent, as it continues the arrow function, not the group.
  *
  * It covers assignment, arithmetic, comparison, bitwise and logical operators, `??`, `instanceof`, the short ternary
  * `?:`, the arrow function's `=>`, the pipe operator `|>` (PHP 8.5, PER Coding Style 3.1), and `.` for the indent only.
@@ -49,6 +52,12 @@ class OperatorPlacementSniff implements Sniff
      * nothing about it, so by default the line may also be lined up with the item.
      */
     public bool $requireListItemIndent = false;
+
+    /**
+     * Whether a wrapped line in grouping parentheses must line up with the group's first line, with no extra indent.
+     * PER says nothing about it, so by default its indent isn't checked.
+     */
+    public bool $requireGroupingLineUp = false;
 
     /**
      * The number of spaces in one indent.
@@ -237,18 +246,24 @@ class OperatorPlacementSniff implements Sniff
 
         // An arrow function's => is indented once, as section 7.1 says, wherever the arrow function is.
         $isListItem = false;
+        $isGroup = false;
         if ($tokens[$stackPtr]['code'] !== T_FN_ARROW) {
             $opener = $this->findEnclosingOpener($phpcsFile, $boundary);
             if ($opener !== null && $this->isGroupingOpener($phpcsFile, $opener)) {
-                return;
-            }
+                if (!$this->requireGroupingLineUp) {
+                    return;
+                }
 
-            $isListItem = $opener !== null;
+                $isGroup = !$this->isInArrowFunction($phpcsFile, $opener, $stackPtr);
+            } else {
+                $isListItem = $opener !== null;
+            }
         }
 
         $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $start, true);
         $itemIndent = ($firstOnLine === false ? 1 : $tokens[$firstOnLine]['column']) - 1;
-        $expected = $itemIndent + self::INDENT;
+        $mustLineUp = $isGroup && $firstOnLine === $start;
+        $expected = $itemIndent + ($mustLineUp ? 0 : self::INDENT);
         $found = $tokens[$stackPtr]['column'] - 1;
 
         // A list item that starts its own line may have its wrapped lines lined up with it, unless the standard
@@ -259,22 +274,21 @@ class OperatorPlacementSniff implements Sniff
         }
 
         $operator = $phpcsFile->getTokensAsString($stackPtr, ($lastPtr - $stackPtr + 1));
-        $fix = $allowLinedUp
-            ? $phpcsFile->addFixableError(
-                'A line starting with operator "%s" must be lined up with its list item, or indented once past it; '
-                    . 'expected %s or %s spaces, found %s',
-                $stackPtr,
-                self::CODE_INDENT,
-                [$operator, $itemIndent, $expected, $found],
-            )
-            : $phpcsFile->addFixableError(
-                'A line starting with operator "%s" must be indented once past the line its expression starts on; '
-                    . 'expected %s spaces, found %s',
-                $stackPtr,
-                self::CODE_INDENT,
-                [$operator, $expected, $found],
-            );
-        if (!$fix) {
+        if ($allowLinedUp) {
+            $error = 'A line starting with operator "%s" must be lined up with its list item, or indented once past '
+                . 'it; expected %s or %s spaces, found %s';
+            $data = [$operator, $itemIndent, $expected, $found];
+        } elseif ($mustLineUp) {
+            $error = 'A line starting with operator "%s" must be lined up with the first line in its parentheses; '
+                . 'expected %s spaces, found %s';
+            $data = [$operator, $expected, $found];
+        } else {
+            $error = 'A line starting with operator "%s" must be indented once past the line its expression starts '
+                . 'on; expected %s spaces, found %s';
+            $data = [$operator, $expected, $found];
+        }
+
+        if (!$phpcsFile->addFixableError($error, $stackPtr, self::CODE_INDENT, $data)) {
             return;
         }
 
@@ -396,6 +410,29 @@ class OperatorPlacementSniff implements Sniff
         $code = $tokens[$previous]['code'];
 
         return !isset(Tokens::FUNCTION_NAME_TOKENS[$code]) && !in_array($code, self::CALLABLE_ENDS, true);
+    }
+
+    /**
+     * Check whether an operator is in the body of an arrow function inside a group.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the group's opening bracket.
+     * @param int $stackPtr The position of the operator.
+     * @return bool True if it is.
+     */
+    private function isInArrowFunction(File $phpcsFile, int $opener, int $stackPtr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $arrowFunction = $phpcsFile->findNext(T_FN, ($opener + 1), $stackPtr);
+        while ($arrowFunction !== false) {
+            if (($tokens[$arrowFunction]['scope_closer'] ?? 0) >= $stackPtr) {
+                return true;
+            }
+
+            $arrowFunction = $phpcsFile->findNext(T_FN, ($arrowFunction + 1), $stackPtr);
+        }
+
+        return false;
     }
 
     /**
