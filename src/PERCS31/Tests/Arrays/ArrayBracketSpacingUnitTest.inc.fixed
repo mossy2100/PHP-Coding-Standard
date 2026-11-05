@@ -1,0 +1,78 @@
+<?php
+
+// === VALID ===
+
+$valid = [
+    1,
+    2,
+];
+
+$singleLine = [1, 2];
+
+$blankBetweenValues = [
+    1,
+
+    2,
+];
+
+$blankAfterOpener = [
+
+    1,
+];
+
+$comment = [
+    1, // A note.
+    // Another note.
+];
+
+$blankBeforeComment = [
+    1,
+
+    // A note.
+];
+
+// A destructuring assignment isn't an array declaration.
+[
+    $a,
+    $b,
+
+] = $c;
+
+foreach ($d as [
+    $e,
+
+]) {
+    echo $e;
+}
+
+// === INVALID ===
+
+$oneBlank = [
+    1,
+    2,
+];
+
+$twoBlank = [
+    1,
+    2,
+];
+
+$keyed = [
+    'a' => 1,
+];
+
+$long = array(
+    1,
+);
+
+$nested = [
+    [
+        1,
+    ],
+];
+
+$comment = [
+    1,
+    // A note.
+
+];

@@ -153,6 +153,7 @@ section gives the reason.
 
 | Sniff                                                   | Checks                                                            | Fixable |
 | ------------------------------------------------------- | ----------------------------------------------------------------- | ------- |
+| `PERCS31.Arrays.ArrayBracketSpacing`                    | No blank line before a multi-line array's `]`                     | Yes     |
 | `PERCS31.Arrays.OpeningBracketPlacement`                | A multi-line array's `[` isn't on a line of its own               | Yes     |
 | `PERCS31.Attributes.AttributePlacement`                 | An attribute is on its own line, except on a parameter            | Yes     |
 | `PERCS31.Attributes.DisallowMultiLineAttributesJoining` | One attribute per block when a block spans lines                  | Yes     |
@@ -180,13 +181,45 @@ section gives the reason.
 | `PERCS31.Operators.OperatorSpacing`                     | At least one space around binary operators, including `\|>`       | Yes     |
 | `PERCS31.PHP.DisallowMultiConstantDefinition`           | One constant per statement                                        | Yes     |
 | `PERCS31.PHP.RequireCloneParentheses`                   | A warning for `clone $a`, not `clone($a)`                         | Yes     |
-| `PERCS31.Strings.HeredocIndentation`                    | Where a heredoc or nowdoc begins, and its indentation      | Yes     |
+| `PERCS31.Strings.HeredocIndentation`                    | Where a heredoc or nowdoc begins, and its indentation             | Yes     |
 | `PERCS31.TypeHints.CompoundTypeLayout`                  | One type, or one DNF union segment, per line of a split type      | Yes     |
 | `PERCS31.TypeHints.CompoundTypeOperatorSpacing`         | No space around `\|` or `&` in a type, but a split before one     | Yes     |
 | `PERCS31.WhiteSpace.ArrowSpacing`                       | One space around `=>` in `match` arms                             | Yes     |
 | `PERCS31.WhiteSpace.ConsistentIndent`                   | No line indented further than its scope, after a statement        | Yes     |
 | `PERCS31.WhiteSpace.ScopeClosingBrace`                  | A closing brace on its own line, allowing `{}`                    | Yes     |
 | `PERCS31.WhiteSpace.ScopeIndent`                        | Indentation, including property hooks and anonymous classes       | Yes     |
+
+### PERCS31.Arrays.ArrayBracketSpacing
+
+Disallows a blank line before the closing bracket of a multi-line array. This extends
+`PhpCollective.Arrays.ArrayBracketSpacing`, from [php-collective/code-sniffer](https://github.com/php-collective/code-sniffer).
+
+**Why:** [PER Coding Style 3.1, Section 11](https://www.php-fig.org/per/coding-style/#11-arrays) says the closing bracket MUST be on the next line after the last value.
+Slevomat's `MultiLineArrayEndBracketPlacement` only checks that it starts a line. This subclass skips a destructuring
+assignment, which isn't an array declaration, so section 2.3 allows the blank line.
+
+**Auto-fixable:** yes, except after a comment.
+
+**Good:**
+
+```php
+$values = [
+    1,
+    2,
+];
+```
+
+**Bad:**
+
+```php
+$values = [
+    1,
+    2,
+
+];
+```
+
+---
 
 ### PERCS31.Arrays.OpeningBracketPlacement
 

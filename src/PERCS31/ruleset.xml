@@ -302,6 +302,9 @@
     <!-- Enum cases in PascalCase (9) -->
     <rule ref="PERCS31.NamingConventions.ValidEnumCaseName"/>
 
+    <!-- No blank line before a multi-line array's closing bracket (11) -->
+    <rule ref="PERCS31.Arrays.ArrayBracketSpacing"/>
+
     <!-- A multi-line array's [ not on a line of its own, except as an element of a multi-line array (11) -->
     <rule ref="PERCS31.Arrays.OpeningBracketPlacement"/>
 

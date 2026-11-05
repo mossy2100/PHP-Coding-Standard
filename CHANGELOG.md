@@ -14,6 +14,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   statement, as PER Coding Style 3.1 requires an indent of 4 spaces per level. It extends php-collective's
   `ConsistentIndent`, adding the pipe operator and the other binary operators to the lines it treats as continuation
   lines. `php-collective/code-sniffer` is now a dependency. Auto-fixable.
+- **`PERCS31.Arrays.ArrayBracketSpacing` (breaking).** A blank line before the closing bracket of a multi-line array is
+  an error, as PER Coding Style 3.1 requires it on the next line after the last value. It extends php-collective's
+  `ArrayBracketSpacing`, skipping a destructuring assignment. Auto-fixable, except after a comment.
 - **`PERCS31.Files.DeclareStatement` (breaking).** Replaces `PSR12.Files.DeclareStatement`, which rejected a declare
   statement with several directives, such as `declare(ticks=1,strict_types=1);`, or a string value, such as
   `declare(encoding='UTF-8');`, however it was spaced. As PER Coding Style 3.1 requires, there must be no spaces inside
