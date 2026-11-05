@@ -62,7 +62,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `Universal.WhiteSpace.CommaSpacing`. Auto-fixable.
 - **`PERCS31.Strings.HeredocIndentation` (breaking).** A heredoc's or nowdoc's body and closing marker must be indented
   once past the line it starts on, as PER Coding Style 3.1 requires. Auto-fixable, keeping any extra indentation within
-  the text.
+  the text. A heredoc or nowdoc must also begin on the line of its context, so `return` or `$x =` followed by `<<<` on
+  the next line is an error, and so is `$x` followed by `= <<<`. Auto-fixable, except a comment in the way.
 - **`PERCS31.Classes.PropertyHookLayout` (breaking).** Checks the layout of a property's hooks, as PER Coding Style 3.1
   requires: the opening brace on the property's line after a single space, the closing brace of a multi-line list on its
   own line with no comment after it, a single space either side of a short hook's `=>` with its body on the same line,

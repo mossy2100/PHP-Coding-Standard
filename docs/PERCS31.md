@@ -180,7 +180,7 @@ section gives the reason.
 | `PERCS31.Operators.OperatorSpacing`                     | At least one space around binary operators, including `\|>`       | Yes     |
 | `PERCS31.PHP.DisallowMultiConstantDefinition`           | One constant per statement                                        | Yes     |
 | `PERCS31.PHP.RequireCloneParentheses`                   | A warning for `clone $a`, not `clone($a)`                         | Yes     |
-| `PERCS31.Strings.HeredocIndentation`                    | A heredoc or nowdoc indented once past the line it starts on      | Yes     |
+| `PERCS31.Strings.HeredocIndentation`                    | Where a heredoc or nowdoc begins, and its indentation      | Yes     |
 | `PERCS31.TypeHints.CompoundTypeLayout`                  | One type, or one DNF union segment, per line of a split type      | Yes     |
 | `PERCS31.TypeHints.CompoundTypeOperatorSpacing`         | No space around `\|` or `&` in a type, but a split before one     | Yes     |
 | `PERCS31.WhiteSpace.ArrowSpacing`                       | One space around `=>` in `match` arms                             | Yes     |
@@ -1319,15 +1319,23 @@ $copy = clone ($original);
 
 ### PERCS31.Strings.HeredocIndentation
 
-Requires a heredoc's or nowdoc's body and closing marker to be indented once past the line the `<<<` is on.
+Requires a heredoc or nowdoc to begin on the line of its context, and its body and closing marker to be indented once
+past the line the `<<<` is on.
+
+The `<<<` can't follow `=`, `=>`, or a keyword such as `return`, on an earlier line. `$x` followed by `= <<<` is
+reported too. A `<<<` on its own line is allowed as a list item, after `(`, `[` or `,`. After a binary operator, that
+operator's own sniff moves it to the start of the `<<<` line.
 
 **Why:** [PER Coding Style 3.1, Section 10](https://www.php-fig.org/per/coding-style/#10-heredoc-and-nowdoc) says subsequent lines in a heredoc or nowdoc MUST be indented once past the
 scope they're declared in, and its examples indent them once past the line holding `<<<`. No inherited sniff checks it.
 PHP removes the closing marker's indentation from every body line, and rejects a body line indented less than the
 marker, so this sniff checks the marker.
 
-**Auto-fixable:** yes. The fix moves the marker and every body line by the same amount, keeping any extra indentation
-within the text.
+**Why the `=` rule:** section 10 says the heredoc MUST be on the same line as the variable it's set against. Section 6.4
+only allows a split before `=`, so nothing requires one here.
+
+**Auto-fixable:** yes, except a comment in the way of joining two lines. The indent fix moves the marker and every body
+line by the same amount, keeping any extra indentation within the text.
 
 **Good:**
 
@@ -1338,6 +1346,13 @@ function greet(string $name): string
         Hello, {$name}.
         EOT;
 }
+
+var_dump(
+    'foo',
+    <<<'EOT'
+        Hello
+        EOT,
+);
 ```
 
 **Bad:**
@@ -1349,6 +1364,24 @@ function greet(string $name): string
 Hello, {$name}.
 EOT;
 }
+
+function farewell(): string
+{
+    return
+        <<<'EOT'
+            Goodbye
+            EOT;
+}
+
+$notAllowed =
+    <<<'EOT'
+        Hello
+        EOT;
+
+$alsoNotAllowed
+    = <<<'EOT'
+        Hello
+        EOT;
 ```
 
 ---

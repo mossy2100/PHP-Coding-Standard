@@ -34,7 +34,9 @@ use PHP_CodeSniffer\Util\Tokens;
  * indent anywhere in a control structure's condition, or a multi-line case condition, isn't checked, as section 5
  * says it's indented at least once, and section 5.2's case example lines the operators up with the first condition. A
  * full ternary is checked by PERCS31.ControlStructures.MultiLineTernaryOperator, and `=>` in an array or `match` arm
- * isn't an operator.
+ * isn't an operator. An assignment operator or arrow function's `=>` before a heredoc or nowdoc is left to
+ * PERCS31.Strings.HeredocIndentation, as section 10 says it must begin on the same line as the variable it's set
+ * against.
  */
 class OperatorPlacementSniff implements Sniff
 {
@@ -152,6 +154,14 @@ class OperatorPlacementSniff implements Sniff
         }
 
         $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($lastPtr + 1), null, true);
+        if (
+            $next !== false
+            && in_array($tokens[$next]['code'], [T_START_HEREDOC, T_START_NOWDOC], true)
+            && (isset(Tokens::ASSIGNMENT_TOKENS[$code]) || $code === T_FN_ARROW)
+        ) {
+            return;
+        }
+
         if ($next === false || $tokens[$next]['line'] === $tokens[$lastPtr]['line']) {
             $this->checkIndent($phpcsFile, $stackPtr, $lastPtr);
             return;

@@ -125,6 +125,28 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a heredoc on the line after `=`, or after an `=` on the next line, is fixed to `$x = <<<'EOT'`, with
+     * OperatorPlacement leaving the `=` alone, and the result passes.
+     */
+    public function testHeredocAfterAssignmentIsJoinedToItsVariable(): void
+    {
+        $body = "<<<'EOT'\n    Hello\n    EOT;\n";
+        $file = $this->copyToTempFile(null, "<?php\n\n\$a =\n$body\n\$b\n    = $body");
+
+        try {
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame("<?php\n\n\$a = $body\n\$b = $body", $fixed);
+        $this->assertStringNotContainsString('HeredocIndentation', $result['output']);
+        $this->assertStringNotContainsString('OperatorPlacement', $result['output']);
+    }
+
+    /**
      * Test that a trailing comma in an attribute block on one line is an error, and that one in a split block of one
      * attribute isn't, as section 2.6 of PER requires it. Universal.Attributes.TrailingComma forbids it by default.
      */
