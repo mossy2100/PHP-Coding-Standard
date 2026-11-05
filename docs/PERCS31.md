@@ -109,6 +109,8 @@ Reference: [PHPCSExtra repository and documentation](https://github.com/PHPCSSta
   `#[Override()]` (12.1).
 - **Universal.Classes.DisallowAnonClassParentheses**: Disallows `()` on an anonymous class with no arguments, e.g.
   `new class () {}` (8).
+- **Universal.ControlStructures.DisallowAlternativeSyntax**: Disallows the alternative syntax, e.g.
+  `if ($a): ... endif;`, as a structure's body must be in braces (5).
 - **Universal.Constants.LowercaseClassResolutionKeyword**: Requires `::class` in lower case (2.5).
 - **Universal.Operators.ConcatPosition**: Requires a wrapped `.` at the start of the line, not the end (6.4).
 - **Universal.PHP.LowercasePHPTag**: Requires the `<?php` tag in lower case (3).

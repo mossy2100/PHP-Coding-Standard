@@ -112,6 +112,9 @@
     <rule ref="Universal.WhiteSpace.CommaSpacing.NoSpaceAfterInAttributeBlock"/>
     <rule ref="Universal.WhiteSpace.CommaSpacing.TooMuchSpaceAfterInAttributeBlock"/>
 
+    <!-- A structure's body in braces, not the alternative syntax, e.g. if (): ... endif; (5) -->
+    <rule ref="Universal.ControlStructures.DisallowAlternativeSyntax"/>
+
     <!-- No () on an anonymous class without arguments (8) -->
     <rule ref="Universal.Classes.DisallowAnonClassParentheses"/>
 
