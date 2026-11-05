@@ -302,9 +302,7 @@
     <!-- TypeHints -->
     <!-- The Jumbo version of DeclareStrictTypes, which allows <?php declare(strict_types=1) ?> on the first line
          of a file with markup, as PER Coding Style 3.1 does -->
-    <rule ref="Jumbo.TypeHints.DeclareStrictTypes">
-        <exclude name="Jumbo.TypeHints.DeclareStrictTypes.IncorrectStrictTypesFormat"/>
-    </rule>
+    <rule ref="Jumbo.TypeHints.DeclareStrictTypes"/>
     <!-- The Jumbo versions of ParameterTypeHintSpacing and ParameterTypeHint, which skip a function with a hook on a
          promoted constructor parameter, as the parents read the variables in the hook as parameters -->
     <rule ref="Jumbo.TypeHints.ParameterTypeHintSpacing"/>

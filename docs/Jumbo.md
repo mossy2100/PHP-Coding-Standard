@@ -512,10 +512,12 @@ line of a file with markup.
 
 **Why:** [PER Coding Style 3.1, Section 3](https://www.php-fig.org/per/coding-style/#3-declare-statements-namespace-and-import-statements) says that in a file containing markup outside PHP tags, the declaration MUST be
 on the first line, e.g. `<?php declare(strict_types=1) ?>`. The parent requires a blank line before and after it. This
-sniff accepts that form, with or without the `;`, if it sets `strict_types` to 1, and leaves everything else to the
-parent. See [`PERCS31.Files.FileHeader`](PERCS31.md#percs31filesfileheader).
+sniff accepts that form, with or without the `;`, if it sets `strict_types` to 1. See
+[`PERCS31.Files.FileHeader`](PERCS31.md#percs31filesfileheader). Section 3 also forbids spaces inside the parentheses,
+so it requires `strict_types=1`, where the parent's default is `strict_types = 1`.
 
-**Auto-fixable:** yes, as the parent.
+**Auto-fixable:** yes, as the parent, except a file starting with a block `declare`, as PHP doesn't allow `strict_types`
+in one. It's reported, so you can add `declare(strict_types=1);` before the block.
 
 ---
 

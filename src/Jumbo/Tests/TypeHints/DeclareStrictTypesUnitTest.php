@@ -19,6 +19,21 @@ class DeclareStrictTypesUnitTest extends AbstractSniffTestCase
      */
     protected function getErrorList(string $testFile = ''): array
     {
+        if ($testFile === 'DeclareStrictTypesUnitTest.3.inc' || $testFile === 'DeclareStrictTypesUnitTest.6.inc') {
+            // A block declare: strict_types can't be added to it, so it's not fixable.
+            return [1 => 1];
+        }
+
+        if ($testFile === 'DeclareStrictTypesUnitTest.4.inc') {
+            // No strict_types: the fix adds it with no spaces, as PER requires.
+            return [3 => 1];
+        }
+
+        if ($testFile === 'DeclareStrictTypesUnitTest.5.inc') {
+            // Spaces around the =.
+            return [3 => 1];
+        }
+
         if ($testFile !== 'DeclareStrictTypesUnitTest.2.inc') {
             // The other files use a declare statement between PHP tags on the first line, which is allowed.
             return [];
