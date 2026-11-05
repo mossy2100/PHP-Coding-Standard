@@ -164,7 +164,7 @@ section gives the reason.
 | `Jumbo.Formatting.MethodChaining`                     | The first method of a split chain on the next line                | Yes     |
 | `Jumbo.Formatting.TrailingComma`                      | A trailing comma in a multi-line `match` or group `use` only      | Yes     |
 | `Jumbo.Functions.ArrowFunctionSemicolonSpacing`       | No space before the `;` that ends an arrow function               | Yes     |
-| `Jumbo.Functions.MultiLineFunctionDeclaration`        | Function and closure declarations, allowing an empty body as `{}` | Yes     |
+| `Jumbo.Functions.MultiLineFunctionDeclaration`        | Function, closure and `fn` declarations, allowing `{}` bodies     | Yes     |
 | `Jumbo.NamingConventions.UpperCaseConstantName`       | Constants in UPPER_CASE, or PascalCase in an enum                 | No      |
 | `Jumbo.NamingConventions.ValidConstantName`           | No leading underscore on a constant                               | No      |
 | `Jumbo.NamingConventions.ValidEnumCaseName`           | Enum cases in PascalCase                                          | No      |
@@ -967,8 +967,8 @@ $double = fn(int $x): int => $x * 2 ;
 
 ### Jumbo.Functions.MultiLineFunctionDeclaration
 
-Checks the layout of function and closure declarations, including the placement of the opening brace, except in an empty
-body written as `{}` on one line, e.g. `function reset(): void {}`. This replaces
+Checks the layout of function, closure and arrow function declarations, including the placement of the opening brace,
+except in an empty body written as `{}` on one line, e.g. `function reset(): void {}`. This replaces
 `Squiz.Functions.MultiLineFunctionDeclaration`.
 
 **Why:** `Squiz.Functions.MultiLineFunctionDeclaration` rejects an empty body written as `{}` on one line, which
@@ -981,6 +981,16 @@ wherever they aren't forbidden, and [section 12.4](https://www.php-fig.org/per/c
 and before a parameter with none. So the ruleset excludes the parent's `EmptyLine` code, and this sniff reports blank
 lines itself, as `BlankLine`, except a single one between parameters. A blank line before the closing parenthesis, or
 in a closure's `use` list, is still reported.
+
+The parent doesn't check an arrow function. [Section 7.1](https://www.php-fig.org/per/coding-style/#71-short-closures) says an arrow function follows the same rules as a
+closure, so this sniff checks its split parameter list too:
+
+- The first parameter on the line after `fn(`.
+- One parameter per line, each indented once.
+- The closing parenthesis on a line of its own.
+- Blank lines, as above.
+
+An arrow function has no braces, so the brace checks don't apply.
 
 **Auto-fixable:** yes, as the parent.
 

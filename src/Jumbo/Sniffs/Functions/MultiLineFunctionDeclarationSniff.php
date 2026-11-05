@@ -9,7 +9,8 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\Squiz\Sniffs\Functions\MultiLineFunctionDeclarationSniff as SquizSniff;
 
 /**
- * Checks function and closure declarations, allowing an empty body as `{}` after a single-line signature.
+ * Checks function, closure and arrow function declarations, allowing an empty body as `{}` after a single-line
+ * signature.
  *
  * Squiz.Functions.MultiLineFunctionDeclaration requires the opening brace of a single-line declaration on the next
  * line, so it reports `function foo(): void {}`. PER Coding Style 3.1, sections 4.4 and 7, says an empty function body
@@ -27,6 +28,57 @@ use PHP_CodeSniffer\Standards\Squiz\Sniffs\Functions\MultiLineFunctionDeclaratio
 class MultiLineFunctionDeclarationSniff extends SquizSniff
 {
     public const string CODE_BLANK_LINE = 'BlankLine';
+
+    /**
+     * Returns an array of tokens this test wants to listen for: the parent's, and an arrow function's `fn`.
+     *
+     * @return array<int|string>
+     */
+    public function register(): array
+    {
+        return [...parent::register(), T_FN];
+    }
+
+    /**
+     * Processes this test, when one of its tokens is encountered.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the current token in the stack.
+     */
+    public function process(File $phpcsFile, int $stackPtr): void
+    {
+        if ($phpcsFile->getTokens()[$stackPtr]['code'] === T_FN) {
+            $this->processArrowFunction($phpcsFile, $stackPtr);
+            return;
+        }
+
+        parent::process($phpcsFile, $stackPtr);
+    }
+
+    /**
+     * Checks an arrow function's multi-line parameter list, with the parents' argument list checks.
+     *
+     * PER Coding Style 3.1, section 7.1, says an arrow function follows the same rules as a closure, so a split
+     * parameter list has its first parameter on the next line, one parameter per line, each indented once, and the
+     * closing parenthesis on a line of its own. An arrow function has no braces, so the parents' brace checks don't
+     * apply.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of `fn`.
+     */
+    private function processArrowFunction(File $phpcsFile, int $stackPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $opener = $tokens[$stackPtr]['parenthesis_opener'] ?? null;
+        $closer = $tokens[$stackPtr]['parenthesis_closer'] ?? null;
+        if (!is_int($opener) || !is_int($closer) || $tokens[$opener]['line'] === $tokens[$closer]['line']) {
+            return;
+        }
+
+        $this->processBracket($phpcsFile, $opener, $tokens);
+        $this->processArgumentList($phpcsFile, $stackPtr, $this->indent);
+        $this->checkBlankLines($phpcsFile, $stackPtr);
+    }
 
     /**
      * Processes single-line declarations.

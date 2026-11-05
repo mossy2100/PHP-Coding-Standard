@@ -30,3 +30,26 @@ function badMulti(
 ) {
     return;
 }
+
+// Arrow functions: a valid split parameter list, then the first parameter on the opening line, two parameters on one
+// line, a double indent, and the closing parenthesis after the last parameter.
+$valid = fn(
+    int $a,
+    int $b,
+): int
+    => $a + $b;
+$firstSameLine = fn(
+    int $a,
+    int $b,
+): int => $a + $b;
+$twoPerLine = fn(
+    int $a,
+    int $b,
+): int => $a + $b;
+$doubleIndent = fn(
+    int $a,
+): int => $a;
+$closeWithLast = fn(
+    int $a,
+    int $b
+): int => $a + $b;

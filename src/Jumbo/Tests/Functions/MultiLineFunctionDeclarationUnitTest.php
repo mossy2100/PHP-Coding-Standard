@@ -24,6 +24,12 @@ class MultiLineFunctionDeclarationUnitTest extends AbstractSniffTestCase
             22 => 1,
             // A multi-line declaration with its brace on the next line.
             30 => 1,
+            // Arrow functions: the first parameter on the opening line, two parameters on one line, a double indent,
+            // and the closing parenthesis after the last parameter.
+            41 => 1,
+            45 => 1,
+            48 => 1,
+            52 => 1,
         ];
     }
 

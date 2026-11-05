@@ -37,6 +37,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `case` condition aren't checked. New code `Jumbo.Operators.OperatorPlacement.Indent`. Auto-fixable.
 - **`Jumbo.Functions.ArrowFunctionSemicolonSpacing` (breaking).** No space before the semicolon that ends an arrow
   function, as PER Coding Style 3.1 requires. Auto-fixable.
+- **Arrow function parameter lists (breaking).** `Jumbo.Functions.MultiLineFunctionDeclaration` now checks an arrow
+  function's split parameter list, as PER Coding Style 3.1 requires: the first parameter on the next line, one
+  parameter per line, each indented once, and the closing parenthesis on a line of its own. Auto-fixable.
 - **Method chain layout (breaking).** As PER Coding Style 3.1 requires, in a method chain split across lines, each `->`
   or `?->` must start its line, indented once, and the first method must be on the next line, not the object's line.
   Adds `PEAR.WhiteSpace.ObjectOperatorIndent` and the new `Jumbo.Formatting.MethodChaining`. Auto-fixable.
