@@ -56,6 +56,11 @@
         </properties>
     </rule>
 
+    <!-- PERCS31 hides this at severity 4, as PER only recommends it. Jumbo shows it. -->
+    <rule ref="PERCS31.NamingConventions.AcronymCasing.AcronymNotLikeWord">
+        <severity>5</severity>
+    </rule>
+
     <!-- ====== GENERIC ====== -->
 
     <!-- No whitespace after ! -->

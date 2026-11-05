@@ -59,6 +59,7 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
   See [Slevomat](#slevomat).
 - `PSR2.Files.ClosingTag` is excluded, as `Zend.Files.ClosingTag` reports the same closing tags, and more. See
   [Zend](#zend).
+- `PERCS31.NamingConventions.AcronymCasing`'s warning has a severity of 5, not 4, so it's shown by default.
 
 ---
 

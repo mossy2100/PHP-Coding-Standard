@@ -268,7 +268,7 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that an acronym's warning is hidden by default, and shown at severity 4, only on names in capitals.
+     * Test that an acronym's warning is hidden by default in PERCS31, and shown at severity 4, only on such names.
      */
     public function testAcronymWarningNeedsWarningSeverity4(): void
     {
@@ -279,8 +279,60 @@ class RulesetUnitTest extends TestCase
 
         $this->assertStringNotContainsString('AcronymNotLikeWord', $default['output']);
         preg_match_all('/:(\\d+):\\d+: warning - .*AcronymNotLikeWord/', $severity4['output'], $matches);
-        $expected = ['43', '45', '47', '49', '51', '54', '56', '58', '60', '62', '64', '67'];
+        $expected = [
+            '45',
+            '47',
+            '49',
+            '51',
+            '53',
+            '55',
+            '58',
+            '60',
+            '62',
+            '64',
+            '66',
+            '68',
+            '71',
+            '106',
+            '108',
+            '112',
+            '113',
+            '118',
+            '120',
+            '122',
+            '122',
+            '124',
+            '124',
+            '126',
+            '126',
+            '127',
+            '132',
+            '144',
+            '146',
+            '161',
+            '163',
+            '165',
+        ];
         $this->assertSame($expected, $matches[1], $severity4['output']);
+    }
+
+    /**
+     * Test that Jumbo shows an acronym's warning by default, still as a warning.
+     */
+    public function testAcronymWarningIsShownInJumbo(): void
+    {
+        $file = $this->copyToTempFile(null, "<?php\n\n\$userID = 1;\n");
+
+        try {
+            $result = $this->runTool(
+                'phpcs',
+                ['-s', '--standard=Jumbo', '--sniffs=PERCS31.NamingConventions.AcronymCasing', '--report=emacs', $file],
+            );
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertMatchesRegularExpression('/:3:\\d+: warning - .*AcronymNotLikeWord/', $result['output']);
     }
 
     /**

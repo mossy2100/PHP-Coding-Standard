@@ -8,6 +8,14 @@
     <!-- Use Jumbo Coding Standard (includes PSR12 + additional rules) -->
     <rule ref="Jumbo"/>
 
+    <!-- The standard's name is deliberately in capitals, to match PSR12, and PHP is a sniff category's name -->
+    <rule ref="PERCS31.NamingConventions.AcronymCasing">
+        <properties>
+            <property name="excludedNames" value="PERCS31"/>
+            <property name="excludedAcronyms" value="PHP"/>
+        </properties>
+    </rule>
+
     <exclude-pattern>*/Tests/*.inc</exclude-pattern>
     <exclude-pattern>*/Tests/*.inc.fixed</exclude-pattern>
     <exclude-pattern>*/ScopeIndentSniff.php</exclude-pattern>

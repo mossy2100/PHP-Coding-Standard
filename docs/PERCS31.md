@@ -1067,14 +1067,38 @@ An arrow function has no braces, so the brace checks don't apply.
 
 ### PERCS31.NamingConventions.AcronymCasing
 
-Warns about an acronym in capitals in the name of a class, interface, trait, enum, enum case, function or method. It
-reports a run of two or more capitals, unless the last one starts a word.
+Warns about an acronym in capitals in a name: a namespace, class, interface, trait, enum, enum case, enum constant,
+function, method, property, parameter or variable. It reports a run of two or more capitals, unless the last one starts
+a word.
 
 **Why:** [PER Coding Style 3.1, Section 2.7](https://www.php-fig.org/per/coding-style/#27-naming) RECOMMENDS treating acronyms like regular words. The warning has a severity
 of 4, like other RECOMMENDED rules. That's below `phpcs`'s default of 5, so run `phpcs --warning-severity=4` to see it.
 
-A single capital is already written like a word, so `AClass` and `getXAxis` pass. A name you can't change, such as a
-method overriding a parent's, is reported too.
+Section 2.7 doesn't limit this to some names, so it applies to all of them. It doesn't report:
+
+- A single capital, which is already written like a word, as in `AClass` and `getXAxis`.
+- PHP's reserved variables, such as `$_SERVER`.
+- A constant outside an enum, as UPPER_CASE is required, or one in UPPER_CASE in an enum, which has its own warning.
+- A property where it's used, such as `$this->userID` or `self::$userID`, as it may belong to a class you don't control.
+  It's reported where it's declared.
+
+A name you can't change, such as a method overriding a parent's, is reported too. A variable is reported at each use.
+
+Two properties allow exceptions, each a comma-separated list. Matching is case-sensitive:
+
+- `excludedNames` allows whole names. Each part of a namespace counts as a name of its own, so `PERCS31` allows
+  `PERCS31\Sniffs`, but not `PERCS31\HTTP`.
+- `excludedAcronyms` allows acronyms in any name. An acronym must match a whole run of capitals, so `HTTP` allows
+  `HTTPClient` and `HTTPs`, but not `HTTPSClient`. Listing several lets them combine, as in `XMLHTTPRequest`.
+
+```xml
+<rule ref="PERCS31.NamingConventions.AcronymCasing">
+    <properties>
+        <property name="excludedNames" value="PERCS31,legacyID"/>
+        <property name="excludedAcronyms" value="HTTP,URL"/>
+    </properties>
+</rule>
+```
 
 **Auto-fixable:** no, as references to the name elsewhere wouldn't change.
 
@@ -1083,6 +1107,8 @@ method overriding a parent's, is reported too.
 ```php
 class HttpClient
 {
+    private int $userId = 0;
+
     public function getId(): int {}
 }
 ```
@@ -1092,6 +1118,8 @@ class HttpClient
 ```php
 class HTTPClient
 {
+    private int $userID = 0;
+
     public function getID(): int {}
 }
 ```
@@ -1709,9 +1737,7 @@ class User
   conditions are on several lines, and no sniff requires one in a split attribute block with a single attribute.
 - **Whether a fall-through comment is clear (5.2).** Any comment just before the next `case` or `default` passes, as the
   spec doesn't set any wording.
-- **Avoiding abbreviations, and acronyms in variable and property names (2.7).** Whether a name could avoid an
-  abbreviation can't be judged by a sniff. `PERCS31.NamingConventions.AcronymCasing` only checks declared names, not
-  `$userID`, as there are many more variables, including superglobals such as `$_SERVER`.
+- **Avoiding abbreviations (2.7).** Whether a name could avoid an abbreviation can't be judged by a sniff.
 - **The pipe operator `|>` on PHP 8.4.** It's only checked when PHP_CodeSniffer runs on PHP 8.5, as 8.4 has no `T_PIPE`
   token.
 - **Over-indentation of a body's first line (2.4, 5).** `PERCS31.WhiteSpace.ScopeIndent` only reports too little

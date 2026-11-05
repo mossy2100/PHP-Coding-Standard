@@ -26,6 +26,8 @@ Three sniffs check this between them. This page shows which one checks each kind
 "Variable or parameter" covers function and method parameters, local variables, closure and arrow function parameters,
 `foreach` variables, and global variables.
 
+An acronym in any of these names, such as `$userID`, gets a warning from `PERCS31.NamingConventions.AcronymCasing`.
+
 Squiz allows a leading underscore inside a class, because the Squiz convention prefixes private members with one. The
 two Jumbo sniffs fill that gap.
 
