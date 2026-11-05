@@ -24,6 +24,17 @@ class DeclareStrictTypesUnitTest extends AbstractSniffTestCase
             return [1 => 1];
         }
 
+        // A block declare after a shebang line, then markup before the opening tag: strict_types can't be added.
+        $notFixable = [
+            'DeclareStrictTypesUnitTest.7.inc',
+            'DeclareStrictTypesUnitTest.8.inc',
+            'DeclareStrictTypesUnitTest.9.inc',
+            'DeclareStrictTypesUnitTest.10.inc',
+        ];
+        if (in_array($testFile, $notFixable, true)) {
+            return [2 => 1];
+        }
+
         if ($testFile === 'DeclareStrictTypesUnitTest.4.inc') {
             // No strict_types: the fix adds it with no spaces, as PER requires.
             return [3 => 1];

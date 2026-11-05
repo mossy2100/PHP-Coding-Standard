@@ -21,7 +21,8 @@ use SlevomatCodingStandard\Sniffs\TypeHints\DeclareStrictTypesSniff as SlevomatS
  * is no spaces around the `=`, not the parent's one.
  *
  * The parent's fix adds `strict_types` to an existing declare statement, but in a block `declare`, that's a fatal
- * error. So this sniff reports that case with no fix, and leaves everything else to the parent.
+ * error. So is adding it after markup, as it must be the first statement. So this sniff reports those cases with no
+ * fix, and leaves everything else to the parent.
  */
 class DeclareStrictTypesSniff extends SlevomatSniff
 {
@@ -46,33 +47,63 @@ class DeclareStrictTypesSniff extends SlevomatSniff
             return;
         }
 
-        if ($openTagPointer === 0 && $this->hasBlockDeclareWithoutStrictTypes($phpcsFile)) {
-            $phpcsFile->addError(
-                'Missing declare(strict_types=1), which can\'t be added to a block declare; add it before the block',
-                $openTagPointer,
-                self::CODE_DECLARE_STRICT_TYPES_MISSING,
-            );
-            return;
+        // The parent only checks the file's first opening tag.
+        $isFirstOpenTag = $phpcsFile->findPrevious(T_OPEN_TAG, ($openTagPointer - 1)) === false;
+        if ($isFirstOpenTag && !$this->declaresStrictTypes($phpcsFile)) {
+            if ($this->hasMarkupBefore($phpcsFile, $openTagPointer)) {
+                $phpcsFile->addError(
+                    'Missing declare(strict_types=1), which can\'t be added here, as it must come before any markup',
+                    $openTagPointer,
+                    self::CODE_DECLARE_STRICT_TYPES_MISSING,
+                );
+                return;
+            }
+
+            if ($this->startsWithBlockDeclare($phpcsFile, $openTagPointer)) {
+                $phpcsFile->addError(
+                    'Missing declare(strict_types=1), which can\'t go in a block declare; add it before the block',
+                    $openTagPointer,
+                    self::CODE_DECLARE_STRICT_TYPES_MISSING,
+                );
+                return;
+            }
         }
 
         parent::process($phpcsFile, $openTagPointer);
     }
 
     /**
-     * Check whether the file starts with a block declare statement that doesn't declare strict types.
+     * Check whether there's markup before an opening tag. A shebang line is allowed there, and isn't markup.
      *
      * @param File $phpcsFile The file being scanned.
-     * @return bool True if it does.
+     * @param int $openTagPointer The position of the opening tag.
+     * @return bool True if there is.
      */
-    private function hasBlockDeclareWithoutStrictTypes(File $phpcsFile): bool
+    private function hasMarkupBefore(File $phpcsFile, int $openTagPointer): bool
     {
         $tokens = $phpcsFile->getTokens();
-        $first = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, 1, null, true);
+        for ($i = 0; $i < $openTagPointer; $i++) {
+            if ($tokens[$i]['code'] === T_INLINE_HTML && !($i === 0 && str_starts_with($tokens[$i]['content'], '#!'))) {
+                return true;
+            }
+        }
 
-        return $first !== false
-            && $tokens[$first]['code'] === T_DECLARE
-            && isset($tokens[$first]['scope_opener'])
-            && !$this->declaresStrictTypes($phpcsFile);
+        return false;
+    }
+
+    /**
+     * Check whether the first statement after an opening tag is a block declare statement.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $openTagPointer The position of the opening tag.
+     * @return bool True if it is.
+     */
+    private function startsWithBlockDeclare(File $phpcsFile, int $openTagPointer): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $first = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($openTagPointer + 1), null, true);
+
+        return $first !== false && $tokens[$first]['code'] === T_DECLARE && isset($tokens[$first]['scope_opener']);
     }
 
     /**

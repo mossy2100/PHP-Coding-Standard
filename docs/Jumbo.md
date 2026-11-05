@@ -516,8 +516,9 @@ sniff accepts that form, with or without the `;`, if it sets `strict_types` to 1
 [`PERCS31.Files.FileHeader`](PERCS31.md#percs31filesfileheader). Section 3 also forbids spaces inside the parentheses,
 so it requires `strict_types=1`, where the parent's default is `strict_types = 1`.
 
-**Auto-fixable:** yes, as the parent, except a file starting with a block `declare`, as PHP doesn't allow `strict_types`
-in one. It's reported, so you can add `declare(strict_types=1);` before the block.
+**Auto-fixable:** yes, as the parent, except where adding it would be a fatal error, so those are reported for you to
+fix: a file starting with a block `declare`, as PHP doesn't allow `strict_types` in one, or with markup before its first
+`<?php`, as it must be the first statement. A shebang line is fine.
 
 ---
 
