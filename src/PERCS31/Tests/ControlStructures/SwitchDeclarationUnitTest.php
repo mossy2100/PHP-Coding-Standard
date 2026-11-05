@@ -38,6 +38,10 @@ class SwitchDeclarationUnitTest extends AbstractSniffTestCase
             97 => 1,
             // A comment before the ): not fixable.
             102 => 1,
+            // A default that falls through with no comment, alone, after an if with no else, and nested.
+            157 => 1,
+            168 => 1,
+            180 => 1,
         ];
     }
 

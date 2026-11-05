@@ -18,6 +18,8 @@ use PHP_CodeSniffer\Util\Tokens;
  *   final one". The parent only checks a case that's followed by another. The fix adds `break;` before the `}`.
  * - A multi-line case condition MUST be wrapped in parentheses, and MUST end with a line containing only `):`. The fix
  *   adds the parentheses, or moves the `)` to its own line.
+ * - A non-empty case that continues into the next one MUST have a comment saying so. The parent only checks a `case`,
+ *   so this also checks a `default` that isn't last.
  *
  * Everything else is left to the parent.
  */
@@ -28,6 +30,8 @@ class SwitchDeclarationSniff extends Psr2Sniff
     public const string CODE_MULTI_LINE_CONDITION_PARENTHESES = 'MultiLineConditionParentheses';
 
     public const string CODE_MULTI_LINE_CONDITION_CLOSER = 'MultiLineConditionCloser';
+
+    public const string CODE_TERMINATING_COMMENT = 'TerminatingComment';
 
     /**
      * Tokens that end a case, as the tokenizer and the parent define them.
@@ -54,9 +58,11 @@ class SwitchDeclarationSniff extends Psr2Sniff
         }
 
         $cases = $this->findCases($phpcsFile, $stackPtr, $closer);
-        foreach ($cases as $case) {
+        foreach ($cases as $index => $case) {
             if ($tokens[$case]['code'] === T_CASE) {
                 $this->checkMultiLineCondition($phpcsFile, $case);
+            } elseif (isset($cases[($index + 1)])) {
+                $this->checkDefaultFallThrough($phpcsFile, $case, $cases[($index + 1)]);
             }
         }
 
@@ -88,6 +94,70 @@ class SwitchDeclarationSniff extends Psr2Sniff
     }
 
     /**
+     * Check that a `default` followed by another case, if not empty, ends with a terminating statement or a comment.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $default The position of `default`.
+     * @param int $next The position of the next `case` or `default`.
+     */
+    private function checkDefaultFallThrough(File $phpcsFile, int $default, int $next): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $opener = $tokens[$default]['scope_opener'] ?? null;
+        if (!is_int($opener) || $tokens[$opener]['code'] !== T_COLON) {
+            return;
+        }
+
+        $last = $phpcsFile->findPrevious(T_WHITESPACE, ($next - 1), $default, true);
+        if ($last === false || $last === $opener || isset(Tokens::COMMENT_TOKENS[$tokens[$last]['code']])) {
+            return;
+        }
+
+        if ($this->endsWithTerminator($phpcsFile, $default, $opener, $next)) {
+            return;
+        }
+
+        $phpcsFile->addError(
+            'There must be a comment when fall-through is intentional in a non-empty case body',
+            $default,
+            self::CODE_TERMINATING_COMMENT,
+        );
+    }
+
+    /**
+     * Check whether a case's body ends with a terminating statement.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $case The position of the `case` or `default`.
+     * @param int $opener The position of the case's colon.
+     * @param int $end The position to stop looking at.
+     * @return bool True if it does.
+     */
+    private function endsWithTerminator(File $phpcsFile, int $case, int $opener, int $end): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+
+        // The tokenizer ends a case's scope at a `break`, `return` or similar at its own level.
+        $caseCloser = $tokens[$case]['scope_closer'] ?? null;
+        if (
+            is_int($caseCloser)
+            && $caseCloser < $end
+            && in_array($tokens[$caseCloser]['code'], self::TERMINATORS, true)
+        ) {
+            return true;
+        }
+
+        // Otherwise, the parent's private search, which follows if/else, try/catch and nested switch blocks.
+        $findNestedTerminator = Closure::bind(
+            fn(File $file, int $start, int $stop): int|bool => $this->findNestedTerminator($file, $start, $stop),
+            $this,
+            Psr2Sniff::class,
+        );
+
+        return $findNestedTerminator($phpcsFile, ($opener + 1), $end) !== false;
+    }
+
+    /**
      * Check that the last case, if not empty, ends with a terminating statement.
      *
      * @param File $phpcsFile The file being scanned.
@@ -106,23 +176,7 @@ class SwitchDeclarationSniff extends Psr2Sniff
             return;
         }
 
-        // The tokenizer ends a case's scope at a `break`, `return` or similar at its own level.
-        $caseCloser = $tokens[$case]['scope_closer'] ?? null;
-        if (
-            is_int($caseCloser)
-            && $caseCloser < $closer
-            && in_array($tokens[$caseCloser]['code'], self::TERMINATORS, true)
-        ) {
-            return;
-        }
-
-        // Otherwise, the parent's private search, which follows if/else, try/catch and nested switch blocks.
-        $findNestedTerminator = Closure::bind(
-            fn(File $file, int $start, int $end): int|bool => $this->findNestedTerminator($file, $start, $end),
-            $this,
-            Psr2Sniff::class,
-        );
-        if ($findNestedTerminator($phpcsFile, ($opener + 1), $closer) !== false) {
+        if ($this->endsWithTerminator($phpcsFile, $case, $opener, $closer)) {
             return;
         }
 

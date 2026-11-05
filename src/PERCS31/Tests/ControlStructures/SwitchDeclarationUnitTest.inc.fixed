@@ -109,3 +109,86 @@ switch (true) {
         foo();
         break;
 }
+
+// === DEFAULT BEFORE ANOTHER CASE, VALID ===
+
+switch ($a) {
+    default:
+    case 1:
+        foo();
+        break;
+}
+
+switch ($a) {
+    default:
+        bar();
+        break;
+    case 1:
+        foo();
+        break;
+}
+
+switch ($a) {
+    default:
+        return 1;
+    case 1:
+        foo();
+        break;
+}
+
+switch ($a) {
+    default:
+        bar();
+        // No break.
+    case 1:
+        foo();
+        break;
+}
+
+switch ($a) {
+    default:
+        if ($b) {
+            return 1;
+        } else {
+            return 2;
+        }
+    case 1:
+        foo();
+        break;
+}
+
+// === DEFAULT BEFORE ANOTHER CASE, INVALID ===
+
+switch ($a) {
+    default:
+        bar();
+    case 1:
+        foo();
+        break;
+}
+
+switch ($a) {
+    case 1:
+        foo();
+        break;
+    default:
+        if ($b) {
+            return 1;
+        }
+    case 2:
+        foo();
+        break;
+}
+
+switch ($a) {
+    case 1:
+        switch ($b) {
+            default:
+                bar();
+            case 2:
+                foo();
+                break;
+        }
+
+        break;
+}
