@@ -18,6 +18,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   structure, such as `if ($a): ... endif;`, is now reported directly, as PER Coding Style 3.1 says a structure's body
   MUST be in braces. It was only reported as a spacing error before. Auto-fixable, including in a file that mixes PHP
   and HTML.
+- **`PERCS31.NamingConventions.AcronymCasing`.** A severity 4 warning for an acronym in capitals in a class, interface,
+  trait, enum, enum case, function or method name, e.g. `HTTPClient` or `getID()`, as PER Coding Style 3.1 recommends
+  writing acronyms like words. It's hidden by default; run `phpcs --warning-severity=4` to see it.
 - **`PERCS31.Arrays.ArrayBracketSpacing` (breaking).** A blank line before the closing bracket of a multi-line array is
   an error, as PER Coding Style 3.1 requires it on the next line after the last value. It extends php-collective's
   `ArrayBracketSpacing`, skipping a destructuring assignment. Auto-fixable, except after a comment.

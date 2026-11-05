@@ -176,6 +176,7 @@ section gives the reason.
 | `PERCS31.Formatting.TrailingComma`                      | Trailing commas in `match`, group `use` and `new class (...)`     | Yes     |
 | `PERCS31.Functions.ArrowFunctionSemicolonSpacing`       | No space before the `;` that ends an arrow function               | Yes     |
 | `PERCS31.Functions.MultiLineFunctionDeclaration`        | Function, closure and `fn` declarations, allowing `{}` bodies     | Yes     |
+| `PERCS31.NamingConventions.AcronymCasing`               | A severity 4 warning for an acronym in capitals in a name         | No      |
 | `PERCS31.NamingConventions.UpperCaseConstantName`       | Constants in UPPER_CASE, or PascalCase in an enum                 | No      |
 | `PERCS31.NamingConventions.ValidConstantName`           | No leading underscore on a constant                               | No      |
 | `PERCS31.NamingConventions.ValidEnumCaseName`           | Enum cases in PascalCase                                          | No      |
@@ -1064,6 +1065,39 @@ An arrow function has no braces, so the brace checks don't apply.
 
 ---
 
+### PERCS31.NamingConventions.AcronymCasing
+
+Warns about an acronym in capitals in the name of a class, interface, trait, enum, enum case, function or method. It
+reports a run of two or more capitals, unless the last one starts a word.
+
+**Why:** [PER Coding Style 3.1, Section 2.7](https://www.php-fig.org/per/coding-style/#27-naming) RECOMMENDS treating acronyms like regular words. The warning has a severity
+of 4, like other RECOMMENDED rules. That's below `phpcs`'s default of 5, so run `phpcs --warning-severity=4` to see it.
+
+A single capital is already written like a word, so `AClass` and `getXAxis` pass. A name you can't change, such as a
+method overriding a parent's, is reported too.
+
+**Auto-fixable:** no, as references to the name elsewhere wouldn't change.
+
+**Good:**
+
+```php
+class HttpClient
+{
+    public function getId(): int {}
+}
+```
+
+**Bad:**
+
+```php
+class HTTPClient
+{
+    public function getID(): int {}
+}
+```
+
+---
+
 ### PERCS31.NamingConventions.UpperCaseConstantName
 
 Requires constant names in UPPER_CASE, except in an enum, where PascalCase is also allowed, and recommended. This
@@ -1146,9 +1180,10 @@ Requires enum case names to be in PascalCase: a capital first letter, only lette
 apart from a single letter.
 
 **Why:** [PER Coding Style 3.0, Section 9](https://www.php-fig.org/per/coding-style/#9-enumerations) says enum case declarations MUST use PascalCase. No inherited sniff checks it.
-A run of capitals inside a name, such as `HTTPStatus`, is allowed, as PER section 2.7 only recommends treating acronyms
-as words. Based on `PhpCollective.Classes.EnumCaseCasing`, from php-collective/code-sniffer, which skips a name with no
-capitals, such as `hearts`.
+A run of capitals inside a name, such as `HTTPStatus`, is allowed here, as PER section 2.7 only recommends treating
+acronyms as words. [`PERCS31.NamingConventions.AcronymCasing`](#percs31namingconventionsacronymcasing) warns about it.
+Based on `PhpCollective.Classes.EnumCaseCasing`, from php-collective/code-sniffer, which skips a name with no capitals,
+such as `hearts`.
 
 **Auto-fixable:** no. Renaming a case would break references to it in other files.
 
@@ -1674,6 +1709,9 @@ class User
   conditions are on several lines, and no sniff requires one in a split attribute block with a single attribute.
 - **Whether a fall-through comment is clear (5.2).** Any comment just before the next `case` or `default` passes, as the
   spec doesn't set any wording.
+- **Avoiding abbreviations, and acronyms in variable and property names (2.7).** Whether a name could avoid an
+  abbreviation can't be judged by a sniff. `PERCS31.NamingConventions.AcronymCasing` only checks declared names, not
+  `$userID`, as there are many more variables, including superglobals such as `$_SERVER`.
 - **The pipe operator `|>` on PHP 8.4.** It's only checked when PHP_CodeSniffer runs on PHP 8.5, as 8.4 has no `T_PIPE`
   token.
 - **Over-indentation of a body's first line (2.4, 5).** `PERCS31.WhiteSpace.ScopeIndent` only reports too little

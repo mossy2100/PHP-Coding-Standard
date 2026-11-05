@@ -268,6 +268,22 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that an acronym's warning is hidden by default, and shown at severity 4, only on names in capitals.
+     */
+    public function testAcronymWarningNeedsWarningSeverity4(): void
+    {
+        $fixture = dirname(__DIR__, 2) . '/PERCS31/Tests/NamingConventions/AcronymCasingUnitTest.inc';
+        $args = ['-s', '--standard=PERCS31', '--sniffs=PERCS31.NamingConventions.AcronymCasing', $fixture];
+        $default = $this->runTool('phpcs', ['--report=emacs', ...$args]);
+        $severity4 = $this->runTool('phpcs', ['--report=emacs', '--warning-severity=4', ...$args]);
+
+        $this->assertStringNotContainsString('AcronymNotLikeWord', $default['output']);
+        preg_match_all('/:(\\d+):\\d+: warning - .*AcronymNotLikeWord/', $severity4['output'], $matches);
+        $expected = ['43', '45', '47', '49', '51', '54', '56', '58', '60', '62', '64', '67'];
+        $this->assertSame($expected, $matches[1], $severity4['output']);
+    }
+
+    /**
      * Test that PERCS31.Files.LineLength's warning over 80 characters is hidden by default, and shown at severity 4.
      */
     public function testLineLengthRecommendedLimitNeedsWarningSeverity4(): void

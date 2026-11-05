@@ -14,7 +14,8 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * PER Coding Style 3.0, section 9, says enum case declarations MUST use PascalCase. A valid name starts with an upper
  * case letter, has only letters and digits, and isn't all upper case, apart from a single letter. A run of capitals
- * inside a name, such as `HTTPStatus`, is allowed, as PER section 2.7 only recommends treating acronyms as words.
+ * inside a name, such as `HTTPStatus`, is allowed here, as PER section 2.7 only recommends treating acronyms as words.
+ * PERCS31.NamingConventions.AcronymCasing warns about it.
  *
  * Based on PhpCollective.Classes.EnumCaseCasing (php-collective/code-sniffer), which skips a name with no capitals,
  * such as `hearts`. This sniff doesn't fix the name, as references to the case elsewhere wouldn't change with it.
