@@ -1077,6 +1077,8 @@ of 4, like other RECOMMENDED rules. That's below `phpcs`'s default of 5, so run 
 Section 2.7 doesn't limit this to some names, so it applies to all of them. It doesn't report:
 
 - A single capital, which is already written like a word, as in `AClass` and `getXAxis`.
+- A capital and lower-case letters straight after a capital, as in `getIDs`. The sniff can't tell if `Ds` is a word, and
+  assuming an `s` is a plural would only suit English. So this is a best guess: use `excludedNames` for a wrong one.
 - PHP's reserved variables, such as `$_SERVER`.
 - A constant outside an enum, as UPPER_CASE is required, or one in UPPER_CASE in an enum, which has its own warning.
 - A property where it's used, such as `$this->userID` or `self::$userID`, as it may belong to a class you don't control.

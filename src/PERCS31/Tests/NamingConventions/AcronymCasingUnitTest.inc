@@ -8,6 +8,11 @@ class HttpClient
 
     public function getXAxis(): void {}
 
+    // The sniff can't tell if Ds is a word, so a plural of two capitals passes.
+    public function getIDs(): void {}
+
+    public function whenXIs(): void {}
+
     public function __construct() {}
 
     public function &getId(): array {}
@@ -51,8 +56,6 @@ class HTTPClient
     public function getID(): void {}
 
     public function &getURLs(): array {}
-
-    public function getIDs(): array {}
 }
 
 class ID {}
@@ -143,7 +146,7 @@ $otherID = 1;
 // A part of a namespace that isn't excluded, and a name that only nearly matches.
 namespace PERCS31\HTTP;
 
-class LegacyIDs {}
+class OtherLegacyID {}
 
 // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedNames
 // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms HTTP, XML

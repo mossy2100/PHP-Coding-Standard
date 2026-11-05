@@ -14,8 +14,11 @@ use PHP_CodeSniffer\Util\Tokens;
  * PER Coding Style 3.1, section 2.7, RECOMMENDS treating abbreviations, acronyms and initialisms like regular words, so
  * `HttpClient`, not `HTTPClient`. It doesn't limit that to some names, so this sniff checks a namespace, class,
  * interface, trait, enum, enum case, enum constant, function, method, property, parameter or variable. It reports a run
- * of two or more capitals, unless the last one starts a word. So `getID`, `getIDs` and `IOStream` are reported, but
- * `AClass` and `getXAxis` aren't, as a single capital is already written like a word.
+ * of two or more capitals, unless the last one starts a word. So `getID` and `IOStream` are reported, but `AClass` and
+ * `getXAxis` aren't, as a single capital is already written like a word.
+ *
+ * This is a best guess, as the sniff can't tell what's a word. `getIDs` passes, as `Ds` could be one, and assuming an
+ * `s` is a plural would only suit English, and would report `whenXIs`.
  *
  * It doesn't check:
  * - PHP's reserved variables, such as `$_SERVER`, which aren't ours to name.
@@ -131,11 +134,9 @@ class AcronymCasingSniff implements Sniff
 
         preg_match_all('/[A-Z]{2,}/', $name, $matches, PREG_OFFSET_CAPTURE);
         foreach ($matches[0] as [$run, $offset]) {
-            // The last capital starts a word if a lower-case letter follows it, as in `HTTPClient`, unless that's a
-            // plural's `s` that ends a word, as in `getIDs`.
-            $rest = substr($name, ($offset + strlen($run)));
-            $startsWord = preg_match('/^[a-z]/', $rest) === 1 && preg_match('/^s(?![a-z])/', $rest) !== 1;
-            $acronym = $startsWord ? substr($run, 0, -1) : $run;
+            // The last capital starts a word if a lower-case letter follows it, as in `HTTPClient`.
+            $next = $name[($offset + strlen($run))] ?? '';
+            $acronym = ctype_lower($next) ? substr($run, 0, -1) : $run;
             if (strlen($acronym) >= 2 && !$this->isExcludedAcronym($run) && !$this->isExcludedAcronym($acronym)) {
                 return true;
             }
