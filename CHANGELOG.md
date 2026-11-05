@@ -20,6 +20,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   the parentheses, including after a comma. Its codes change prefix from `PSR12.Files.DeclareStatement` to
   `PERCS31.Files.DeclareStatement`. It also fixes `declare(...){`, with no space before the brace, which ran `phpcbf`
   out of memory. Auto-fixable.
+- **`Zend.Files.ClosingTag` (breaking).** In the Jumbo standard, a file that mixes PHP and HTML must not end in a closing
+  tag either. It replaces `PSR2.Files.ClosingTag`, which only checks PHP-only files, so the code on those files changes
+  from `PSR2.Files.ClosingTag.NotAllowed` to `Zend.Files.ClosingTag.NotAllowed`. Auto-fixable.
 - **`Jumbo.Arrays.ElementComma` (breaking).** In a multi-line array or destructuring list, the comma after an element
   must be on the element's last line, keyed or not, in the Jumbo standard. It replaces Squiz `ArrayDeclaration`'s
   `NoComma`, which only checked a keyed element, and reported a heredoc element written `EOT,`, as PHP 7.3 and later

@@ -14,6 +14,8 @@
     <rule ref="PERCS31">
         <!-- SlevomatCodingStandard.PHP.TypeCast, below, reports the same long-form casts, and more -->
         <exclude name="PSR12.Keywords.ShortFormTypeKeywords"/>
+        <!-- Zend.Files.ClosingTag, below, reports the same closing tags, and more -->
+        <exclude name="PSR2.Files.ClosingTag"/>
     </rule>
 
     <!-- get before set in every hook list, including ones with bodies, not just abstract and interface properties -->
@@ -349,5 +351,11 @@
     <!-- Leading underscore on a variable or parameter inside a class, which Squiz.NamingConventions.ValidVariableName
          allows there -->
     <rule ref="Jumbo.NamingConventions.ValidVariableName"/>
+
+    <!-- ====== ZEND ====== -->
+
+    <!-- No closing tag at the end of a file, including one that mixes PHP and HTML, which PSR2.Files.ClosingTag
+         allows -->
+    <rule ref="Zend.Files.ClosingTag"/>
 
 </ruleset>

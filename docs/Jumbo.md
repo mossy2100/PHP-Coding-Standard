@@ -57,6 +57,8 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
   `ignoreSpacingBeforeAssignments` off. See [Squiz](#squiz).
 - `PSR12.Keywords.ShortFormTypeKeywords` is excluded, as `SlevomatCodingStandard.PHP.TypeCast` reports the same casts.
   See [Slevomat](#slevomat).
+- `PSR2.Files.ClosingTag` is excluded, as `Zend.Files.ClosingTag` reports the same closing tags, and more. See
+  [Zend](#zend).
 
 ---
 
@@ -176,6 +178,12 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Variables.DisallowVariableVariable**: Disallows variable variables (`$$var`).
 - **Variables.DuplicateAssignmentToVariable**: Disallows duplicate assignments to the same variable.
 - **Variables.UselessVariable**: Disallows useless variables.
+
+### Zend
+
+- **Zend.Files.ClosingTag**: Disallows a closing tag at the end of a file, including one that mixes PHP and HTML.
+  PERCS31's `PSR2.Files.ClosingTag` only checks PHP-only files. A file that ends in HTML has no closing tag at its end,
+  so it passes.
 
 ---
 

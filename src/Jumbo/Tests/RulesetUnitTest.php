@@ -106,6 +106,49 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a closing tag at the end of a file mixing PHP and HTML is an error in Jumbo only, as PER only requires
+     * omitting it from a file containing only PHP.
+     */
+    public function testClosingTagInMixedFileIsAnErrorInJumboOnly(): void
+    {
+        $file = $this->copyToTempFile(null, "<?php\n\n\$a = 1;\n\n?>\n<p>Hi</p>\n<?php\n\n\$b = 2;\n\n?>\n");
+        $args = ['-s', '--sniffs=PSR2.Files.ClosingTag,Zend.Files.ClosingTag', '--report=emacs', $file];
+
+        try {
+            $percs31 = $this->runTool('phpcs', ['--standard=PERCS31', ...$args]);
+            $jumbo = $this->runTool('phpcs', ['--standard=Jumbo', ...$args]);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame(0, $percs31['exitCode'], $percs31['output']);
+        $this->assertStringContainsString('error - A closing tag', $jumbo['output']);
+        $this->assertStringContainsString('Zend.Files.ClosingTag.NotAllowed', $jumbo['output']);
+    }
+
+    /**
+     * Test that a closing tag at the end of a PHP-only file is reported once in each standard, as Jumbo excludes
+     * PSR2.Files.ClosingTag in favour of Zend.Files.ClosingTag, which would otherwise report it a second time.
+     */
+    public function testClosingTagInPhpOnlyFileIsReportedOnce(): void
+    {
+        $file = $this->copyToTempFile(null, "<?php\n\n\$a = 1;\n\n?>\n");
+        $args = ['-s', '--sniffs=PSR2.Files.ClosingTag,Zend.Files.ClosingTag', '--report=emacs', $file];
+
+        try {
+            $percs31 = $this->runTool('phpcs', ['--standard=PERCS31', ...$args]);
+            $jumbo = $this->runTool('phpcs', ['--standard=Jumbo', ...$args]);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame(1, substr_count($percs31['output'], 'PSR2.Files.ClosingTag.NotAllowed'));
+        $this->assertStringNotContainsString('Zend.Files.ClosingTag', $percs31['output']);
+        $this->assertSame(1, substr_count($jumbo['output'], 'Zend.Files.ClosingTag.NotAllowed'));
+        $this->assertStringNotContainsString('PSR2.Files.ClosingTag', $jumbo['output']);
+    }
+
+    /**
      * Test that a class constant with no visibility is an error in PERCS31, as PER says MUST, not PSR-12's warning.
      */
     public function testConstantVisibilityIsAnError(): void
