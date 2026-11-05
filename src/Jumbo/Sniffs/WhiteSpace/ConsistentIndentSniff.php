@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Jumbo\Sniffs\WhiteSpace;
 
+use Jumbo\ThirdParty\PhpCollective\WhiteSpace\ConsistentIndentSniff as PhpCollectiveSniff;
 use PHP_CodeSniffer\Util\Tokens;
-use PhpCollective\Sniffs\WhiteSpace\ConsistentIndentSniff as PhpCollectiveSniff;
 
 /**
  * Reports a line indented further than its scope, after a complete statement.
@@ -14,7 +14,8 @@ use PhpCollective\Sniffs\WhiteSpace\ConsistentIndentSniff as PhpCollectiveSniff;
  * is indented once. Jumbo.WhiteSpace.ScopeIndent, like PSR-12's, only reports indentation that's too small.
  * PhpCollective.WhiteSpace.ConsistentIndent reports a line indented too far, when the line before it ends a statement,
  * including inside a property hook. It skips a body's first line, continuation lines, arrays, closures and switch
- * cases, which it can't judge safely.
+ * cases, which it can't judge safely. The parent is a copy of php-collective/code-sniffer 0.6.10's, in
+ * `src/Jumbo/ThirdParty/PhpCollective`, as that package isn't at 1.0 yet.
  *
  * This subclass only extends the operators that may start a continuation line, which are skipped, to every binary
  * operator section 6.4 allows a statement to be split at. The parent's list predates the pipe operator `|>`, so it

@@ -12,4 +12,5 @@
     <exclude-pattern>*/Tests/*.inc.fixed</exclude-pattern>
     <exclude-pattern>*/ScopeIndentSniff.php</exclude-pattern>
     <exclude-pattern>*/Files/DeclareStatementSniff.php</exclude-pattern>
+    <exclude-pattern>*/Jumbo/ThirdParty/*</exclude-pattern>
 </ruleset>

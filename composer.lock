@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "22e4a2c7739a2175ae8150bc223f664d",
+    "content-hash": "36eed7258572832d273bec0437881cfe",
     "packages": [
         {
             "name": "dealerdirect/phpcodesniffer-composer-installer",
@@ -101,66 +101,6 @@
                 }
             ],
             "time": "2026-05-06T08:26:05+00:00"
-        },
-        {
-            "name": "php-collective/code-sniffer",
-            "version": "0.6.10",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-collective/code-sniffer.git",
-                "reference": "d421bfd46276894adb419dc96ee1d0af408509c3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-collective/code-sniffer/zipball/d421bfd46276894adb419dc96ee1d0af408509c3",
-                "reference": "d421bfd46276894adb419dc96ee1d0af408509c3",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=8.1",
-                "phpcsstandards/phpcsextra": "^1.5.0",
-                "slevomat/coding-standard": "^8.23.0",
-                "squizlabs/php_codesniffer": "^4.0.2"
-            },
-            "require-dev": {
-                "phpstan/phpstan": "^2.0.0",
-                "phpunit/phpunit": "^10.3 || ^11.2 || ^12.0 || ^13.0"
-            },
-            "bin": [
-                "bin/tokenize"
-            ],
-            "type": "phpcodesniffer-standard",
-            "autoload": {
-                "psr-4": {
-                    "PhpCollective\\": "PhpCollective/",
-                    "PhpCollectiveStrict\\": "PhpCollectiveStrict/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "The PHP Collective",
-                    "homepage": "https://github.com/php-collective"
-                }
-            ],
-            "description": "PhpCollective Code Sniffer Standards",
-            "homepage": "https://github.com/php-collective/code-sniffer",
-            "keywords": [
-                "codesniffer",
-                "framework",
-                "phpcs",
-                "standards",
-                "static analysis"
-            ],
-            "support": {
-                "issues": "https://github.com/php-collective/code-sniffer/issues",
-                "source": "https://github.com/php-collective/code-sniffer"
-            },
-            "time": "2026-10-25T14:14:51+00:00",
-            "published-time": "2026-10-25T20:41:29+00:00"
         },
         {
             "name": "phpcsstandards/phpcsextra",

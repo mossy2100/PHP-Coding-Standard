@@ -1453,7 +1453,9 @@ $label = match ($size) {
 ### Jumbo.WhiteSpace.ConsistentIndent
 
 Reports a line indented further than its scope, when the line before it ends a statement. This extends
-`PhpCollective.WhiteSpace.ConsistentIndent`, from [php-collective/code-sniffer](https://github.com/php-collective/code-sniffer).
+`PhpCollective.WhiteSpace.ConsistentIndent`, from [php-collective/code-sniffer](https://github.com/php-collective/code-sniffer) 0.6.10. That package isn't at 1.0 yet, so
+it isn't a dependency. The sniff and its parent class are copied into `src/Jumbo/ThirdParty/PhpCollective`, under their
+MIT licence, with only the namespaces changed.
 
 **Why:** [PER Coding Style 3.1, Section 2.4](https://www.php-fig.org/per/coding-style/#24-indenting) sets an indent of 4 spaces for each level, and section 5 says a structure's
 body is indented once. `Jumbo.WhiteSpace.ScopeIndent`, like PSR-12's, only reports indentation that's too small. The

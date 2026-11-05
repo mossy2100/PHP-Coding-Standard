@@ -4,8 +4,12 @@ parameters:
     paths:
         - src
     excludePaths:
-        - src/Jumbo/Sniffs/WhiteSpace/ScopeIndentSniff.php
-        - src/Jumbo/Sniffs/Files/DeclareStatementSniff.php
+        analyseAndScan:
+            - src/Jumbo/Sniffs/WhiteSpace/ScopeIndentSniff.php
+            - src/Jumbo/Sniffs/Files/DeclareStatementSniff.php
+        # The vendored php-collective copy is still scanned, as Jumbo.WhiteSpace.ConsistentIndent extends it.
+        analyse:
+            - src/Jumbo/ThirdParty
     treatPhpDocTypesAsCertain: false
     scanDirectories:
         - vendor/squizlabs/php_codesniffer
