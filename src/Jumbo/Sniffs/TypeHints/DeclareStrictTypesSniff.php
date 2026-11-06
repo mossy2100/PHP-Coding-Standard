@@ -21,8 +21,12 @@ use SlevomatCodingStandard\Sniffs\TypeHints\DeclareStrictTypesSniff as SlevomatS
  * is no spaces around the `=`, not the parent's one.
  *
  * The parent's fix adds `strict_types` to an existing declare statement, but in a block `declare`, that's a fatal
- * error. So is adding it after markup, as it must be the first statement. So this sniff reports those cases with no
- * fix, and leaves everything else to the parent.
+ * error, so this sniff adds a separate statement on the line above. Adding it after markup is a fatal error too, as it
+ * must be the first statement, so that's reported with no fix.
+ *
+ * Section 3 lists "One or more declare statements" as one block, with no blank line in it. The parent always wants a
+ * blank line after `strict_types`, so this sniff wants none if another declare statement follows. It leaves everything
+ * else to the parent.
  */
 class DeclareStrictTypesSniff extends SlevomatSniff
 {
@@ -60,16 +64,53 @@ class DeclareStrictTypesSniff extends SlevomatSniff
             }
 
             if ($this->startsWithBlockDeclare($phpcsFile, $openTagPointer)) {
-                $phpcsFile->addError(
-                    'Missing declare(strict_types=1), which can\'t go in a block declare; add it before the block',
+                $fix = $phpcsFile->addFixableError(
+                    'Missing declare(strict_types=1) before the block declare',
                     $openTagPointer,
                     self::CODE_DECLARE_STRICT_TYPES_MISSING,
                 );
+                if ($fix) {
+                    $block = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($openTagPointer + 1), null, true);
+                    assert(is_int($block));
+                    $phpcsFile->fixer->addContentBefore($block, 'declare(strict_types=1);' . $phpcsFile->eolChar);
+                }
+
                 return;
             }
         }
 
+        $linesCountAfterDeclare = $this->linesCountAfterDeclare;
+        if ($isFirstOpenTag && $this->startsWithTwoDeclares($phpcsFile, $openTagPointer)) {
+            $this->linesCountAfterDeclare = 0;
+        }
+
         parent::process($phpcsFile, $openTagPointer);
+        $this->linesCountAfterDeclare = $linesCountAfterDeclare;
+    }
+
+    /**
+     * Check whether the first two statements after an opening tag are declare statements.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $openTagPointer The position of the opening tag.
+     * @return bool True if they are.
+     */
+    private function startsWithTwoDeclares(File $phpcsFile, int $openTagPointer): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $first = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($openTagPointer + 1), null, true);
+        if ($first === false || $tokens[$first]['code'] !== T_DECLARE) {
+            return false;
+        }
+
+        $end = $tokens[$first]['scope_closer'] ?? $phpcsFile->findNext(T_SEMICOLON, ($first + 1));
+        if (!is_int($end)) {
+            return false;
+        }
+
+        $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($end + 1), null, true);
+
+        return $next !== false && $tokens[$next]['code'] === T_DECLARE;
     }
 
     /**

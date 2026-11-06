@@ -16,6 +16,10 @@ use PHP_CodeSniffer\Standards\PSR12\Sniffs\Files\FileHeaderSniff as Psr12Sniff;
  * `<?php declare(strict_types=1) ?>`. PSR12.Files.FileHeader reads that as a header, and requires blank lines after
  * the tag and the declaration. This sniff skips such a file, as the parent skips other files that mix PHP and markup,
  * and leaves everything else to the parent.
+ *
+ * Section 3 also lists "One or more declare statements" as one block, with no blank line in it. The parent ends the
+ * header at a block declare, so it wants a blank line before one. This sniff counts one as a declare statement, so
+ * there's no blank line between it and the declare statements before it.
  */
 class FileHeaderSniff extends Psr12Sniff
 {
@@ -35,5 +39,31 @@ class FileHeaderSniff extends Psr12Sniff
         $result = parent::process($phpcsFile, $stackPtr);
 
         return is_int($result) ? $result : null;
+    }
+
+    /**
+     * Get the lines of the file's header, including a block declare that follows it.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the opening tag.
+     * @return array<int, array<string, mixed>> The header's lines.
+     */
+    public function getHeaderLines(File $phpcsFile, int $stackPtr): array
+    {
+        $tokens = $phpcsFile->getTokens();
+        $lines = parent::getHeaderLines($phpcsFile, $stackPtr);
+        $last = end($lines);
+        if ($last === false || !in_array($last['type'], ['tag', 'docblock', 'declare'], true)) {
+            return $lines;
+        }
+
+        $next = $phpcsFile->findNext(T_WHITESPACE, ($last['end'] + 1), null, true);
+        if ($next === false || $tokens[$next]['code'] !== T_DECLARE || !isset($tokens[$next]['scope_closer'])) {
+            return $lines;
+        }
+
+        $lines[] = ['type' => 'declare', 'start' => $next, 'end' => $tokens[$next]['scope_closer']];
+
+        return $lines;
     }
 }

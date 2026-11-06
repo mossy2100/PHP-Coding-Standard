@@ -514,10 +514,12 @@ line of a file with markup.
 on the first line, e.g. `<?php declare(strict_types=1) ?>`. The parent requires a blank line before and after it. This
 sniff accepts that form, with or without the `;`, if it sets `strict_types` to 1. See
 [`PERCS31.Files.FileHeader`](PERCS31.md#percs31filesfileheader). Section 3 also forbids spaces inside the parentheses,
-so it requires `strict_types=1`, where the parent's default is `strict_types = 1`.
+so it requires `strict_types=1`, where the parent's default is `strict_types = 1`. And it lists declare statements as
+one block with no blank line in it, where the parent always wants a blank line after `strict_types`, so this sniff wants
+none if another declare statement follows.
 
-**Auto-fixable:** yes, as the parent, except where adding it would be a fatal error, so those are reported for you to
-fix: a file starting with a block `declare`, as PHP doesn't allow `strict_types` in one, or with markup before its first
+**Auto-fixable:** yes, as the parent. PHP doesn't allow `strict_types` in a block `declare`, so for a file starting with
+one, the fix adds `declare(strict_types=1);` on the line above. It's not fixable with markup before the file's first
 `<?php`, as it must be the first statement. A shebang line is fine.
 
 ---

@@ -20,11 +20,11 @@ class DeclareStrictTypesUnitTest extends AbstractSniffTestCase
     protected function getErrorList(string $testFile = ''): array
     {
         if ($testFile === 'DeclareStrictTypesUnitTest.3.inc' || $testFile === 'DeclareStrictTypesUnitTest.6.inc') {
-            // A block declare: strict_types can't be added to it, so it's not fixable.
+            // A block declare: the fix adds a separate statement above it.
             return [1 => 1];
         }
 
-        // A block declare after a shebang line, then markup before the opening tag: strict_types can't be added.
+        // A block declare after a shebang line, then markup before the opening tag, where it's not fixable.
         $notFixable = [
             'DeclareStrictTypesUnitTest.7.inc',
             'DeclareStrictTypesUnitTest.8.inc',
@@ -33,6 +33,16 @@ class DeclareStrictTypesUnitTest extends AbstractSniffTestCase
         ];
         if (in_array($testFile, $notFixable, true)) {
             return [2 => 1];
+        }
+
+        if ($testFile === 'DeclareStrictTypesUnitTest.13.inc') {
+            // A blank line between two declare statements.
+            return [3 => 1];
+        }
+
+        if ($testFile === 'DeclareStrictTypesUnitTest.11.inc' || $testFile === 'DeclareStrictTypesUnitTest.12.inc') {
+            // Two declare statements with no blank line, as PER requires.
+            return [];
         }
 
         if ($testFile === 'DeclareStrictTypesUnitTest.4.inc') {

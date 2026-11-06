@@ -24,8 +24,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   PERCS31 it has a severity of 4, so it's hidden by default; run `phpcs --warning-severity=4` to see it. Jumbo shows it.
   Set `excludedNames` or `excludedAcronyms`, as comma-separated lists, to allow exceptions.
 - **`Jumbo.TypeHints.DeclareStrictTypes` writes `strict_types=1`.** Its fix wrote `strict_types = 1`, which PER Coding
-  Style 3.1 forbids. A file starting with a block `declare` is now reported with no fix, as adding `strict_types` to one
-  is a fatal error.
+  Style 3.1 forbids. For a file starting with a block `declare`, it adds a separate statement on the line above, as
+  `strict_types` in one is a fatal error.
 - **`Jumbo.Classes.ConstantSpacing`, `EnumCaseSpacing` and `PropertySpacing`.** Replace Slevomat's sniffs of the same
   names, which end the whole run with a fatal error on a member on a file's last line, e.g. `public int $a = 1; }`.
   Update any `phpcs:ignore` comments or `<exclude>` rules that name them.
@@ -95,6 +95,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   property, must be on one line as `{ get; set; }`, and a bodiless hook has no space before its `;`, as section 4.10
   requires. Auto-fixable, except a comment after the closing brace, or a comment in the way. Jumbo also reports a space
   in a by-reference hook, `& get` (new property `checkReferenceSpacing`).
+- **No blank line between declare statements, including a block `declare` (breaking).** As PER Coding Style 3.1
+  requires, `declare(strict_types=1);` then a blank line then `declare(ticks=1) {` is now an error, in PERCS31 and
+  Jumbo. Auto-fixable. Jumbo no longer wants a blank line after `strict_types` when another declare statement follows.
 - **`<?php declare(strict_types=1) ?>` above markup is allowed.** As PER Coding Style 3.1 says, a file with markup
   outside PHP tags declares strict types on its first line, between its own tags, with or without the `;`.
   `PERCS31.Files.FileHeader` and `Jumbo.TypeHints.DeclareStrictTypes` replace `PSR12.Files.FileHeader` and

@@ -799,6 +799,10 @@ header, and requires a blank line after the tag and after the declaration, so it
 skips such a file, as the parent skips other files that mix PHP and markup. The `;` before the `?>` may be included or
 left out.
 
+Section 3 also lists "One or more declare statements" as one block, with no blank line in it. The parent ends the header
+at a block declare, and wants a blank line before one. This sniff counts one as a declare statement, so there's no blank
+line between it and a declare statement before it.
+
 **Auto-fixable:** yes, as the parent.
 
 **Good:**

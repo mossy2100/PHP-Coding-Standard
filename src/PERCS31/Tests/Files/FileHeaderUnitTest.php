@@ -19,6 +19,11 @@ class FileHeaderUnitTest extends AbstractSniffTestCase
      */
     protected function getErrorList(string $testFile = ''): array
     {
+        if ($testFile === 'FileHeaderUnitTest.2.inc') {
+            // A blank line between a declare statement and a block declare.
+            return [3 => 1];
+        }
+
         if ($testFile !== 'FileHeaderUnitTest.1.inc') {
             // The other files use a declare statement between PHP tags on the first line, which is allowed.
             return [];
