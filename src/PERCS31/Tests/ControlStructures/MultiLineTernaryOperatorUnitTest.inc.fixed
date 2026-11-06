@@ -81,3 +81,35 @@ $c = match ($x) {
         : 4,
     default => 5,
 };
+
+// A ternary's start is the start of its expression, whatever comes before it.
+$first = 1;
+$a += $b ? 1 : 2;
+$a .= $b ? 1 : 2;
+$a -= $b ? 1 : 2;
+$a ??= $b ? 1 : 2;
+$c->d += $b ? 1 : 2;
+echo $b ? 1 : 2;
+print $b ? 1 : 2;
+$b ? foo() : bar();
+$a[$c] = foo($d, $e) ? 1 : 2;
+$a += $c->{$b} ? 1 : 2;
+$c->{$b} ? foo() : bar();
+
+function ternaries()
+{
+    yield $b ? 1 : 2;
+    yield from $b ? $c : $d;
+
+    if ($c) {
+        $a += $b ? 1 : 2;
+    }
+}
+
+// A wrapped one is still checked.
+$a += $b
+    ? 1
+    : 2;
+$a += $b
+    ? 1
+    : 2;

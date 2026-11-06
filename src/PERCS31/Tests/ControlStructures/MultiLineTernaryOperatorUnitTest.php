@@ -37,6 +37,8 @@ class MultiLineTernaryOperatorUnitTest extends AbstractSniffTestCase
             // In a match arm: not indented past the arm, and on two lines.
             74 => 1,
             76 => 1,
+            // A compound assignment on two lines.
+            109 => 1,
         ];
     }
 

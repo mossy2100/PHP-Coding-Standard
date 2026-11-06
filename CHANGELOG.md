@@ -35,6 +35,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   what continues the structure, such as `} else {`. Auto-fixable.
 - **`PERCS31.ControlStructures.MatchArmPlacement` (breaking).** Each `match` arm must start on a new line, as PER Coding
   Style 3.1, section 5.2, shows. Auto-fixable.
+- **A one-line ternary is no longer read as spanning lines.** `PERCS31.ControlStructures.MultiLineTernaryOperator`
+  reported and split one after `+=`, `.=`, `echo`, `print` or `yield`, as a statement, or in a `match` arm.
 - **A `match` arm indented too far is an error (breaking).** `PERCS31.WhiteSpace.ScopeIndent` requires a line starting
   an arm to be indented exactly once, as PER Coding Style 3.1, section 5.2, shows. It only reported too little before.
   Auto-fixable.

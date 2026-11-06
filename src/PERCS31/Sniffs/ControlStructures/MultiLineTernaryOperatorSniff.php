@@ -20,8 +20,9 @@ use SlevomatCodingStandard\Helpers\TernaryOperatorHelper;
  * A short ternary (`?:`) is a binary operator in PER, so it isn't checked here.
  *
  * Finding where a ternary starts and ends uses Slevomat's TernaryOperatorHelper, which is marked internal, so check
- * this sniff after a Slevomat upgrade. It can walk back past a `match` arm to the line the `match` starts on, so this
- * sniff starts at the arm instead. Otherwise `1 => $a ? 2 : 3,` would count as spanning lines.
+ * this sniff after a Slevomat upgrade. It only stops at some tokens, such as `=` and `return`, so it can walk back past
+ * the start of the ternary's statement or `match` arm to an earlier line. So `$a += $b ? 1 : 2;` or `1 => $a ? 2 : 3,`
+ * would count as spanning lines. This sniff also stops at anything else that comes before a ternary's expression.
  */
 class MultiLineTernaryOperatorSniff implements Sniff
 {
@@ -111,7 +112,7 @@ class MultiLineTernaryOperatorSniff implements Sniff
     }
 
     /**
-     * Find where a ternary starts, which in a `match` arm is no earlier than the arm's value or condition.
+     * Find where a ternary starts: no earlier than the token that comes before its expression.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $inlineThenPointer The position of the `?`.
@@ -121,19 +122,32 @@ class MultiLineTernaryOperatorSniff implements Sniff
     private function findStart(File $phpcsFile, int $inlineThenPointer, int $startPointer): int
     {
         $tokens = $phpcsFile->getTokens();
-        $conditions = $tokens[$inlineThenPointer]['conditions'];
-        if (end($conditions) !== T_MATCH) {
-            return $startPointer;
-        }
-
+        $boundaries = [
+            ...array_values(Tokens::ASSIGNMENT_TOKENS),
+            T_SEMICOLON,
+            T_OPEN_CURLY_BRACKET,
+            T_CLOSE_CURLY_BRACKET,
+            T_COMMA,
+            T_MATCH_ARROW,
+            T_ECHO,
+            T_PRINT,
+            T_YIELD,
+            T_YIELD_FROM,
+        ];
+        $closers = [T_CLOSE_PARENTHESIS, T_CLOSE_SQUARE_BRACKET, T_CLOSE_SHORT_ARRAY];
         for ($i = ($inlineThenPointer - 1); $i >= $startPointer; $i--) {
-            $jumpTo = $tokens[$i]['parenthesis_opener'] ?? $tokens[$i]['bracket_opener'] ?? null;
-            if (is_int($jumpTo) && $jumpTo < $i && !isset($tokens[$i]['parenthesis_owner'])) {
-                $i = $jumpTo;
-                continue;
+            // Brackets before the `?` are part of the condition, whatever's inside them.
+            $code = $tokens[$i]['code'];
+            $isDynamicName = $code === T_CLOSE_CURLY_BRACKET && !isset($tokens[$i]['scope_condition']);
+            if ($isDynamicName || in_array($code, $closers, true)) {
+                $jumpTo = $tokens[$i]['parenthesis_opener'] ?? $tokens[$i]['bracket_opener'] ?? null;
+                if (is_int($jumpTo)) {
+                    $i = $jumpTo;
+                    continue;
+                }
             }
 
-            if (in_array($tokens[$i]['code'], [T_MATCH_ARROW, T_COMMA, T_OPEN_CURLY_BRACKET], true)) {
+            if (in_array($code, $boundaries, true)) {
                 $first = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), $inlineThenPointer, true);
 
                 return $first === false ? $startPointer : $first;
