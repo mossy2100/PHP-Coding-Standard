@@ -28,6 +28,7 @@ The Jumbo Coding Standard has two rulesets, each usable as a PHP_CodeSniffer sta
 
 * Refers to a famous elephant, the elephant being PHP's spirit animal.
 * It sounds good.
+* Pairs nicely with `Dumbo`, another famous elephant. `Dumbo` is the `Jumbo` variant for Drupal.
 
 ---
 
