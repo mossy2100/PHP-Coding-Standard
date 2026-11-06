@@ -1306,8 +1306,8 @@ Only two inherited sniffs check the placement, each for one case: `Universal.Ope
 `PSR12.ControlStructures.BooleanOperatorPlacement` for `&&` and `||` in a condition. This sniff covers every other
 binary operator: assignment, arithmetic, comparison, bitwise and logical operators, `??`, `instanceof`, the short
 ternary `?:`, the arrow function's `=>`, and the pipe operator `|>` (PHP 8.5). It checks the indent of all of them,
-including `.`. A full ternary is checked by `PERCS31.ControlStructures.MultiLineTernaryOperator`, and `=>` in an array
-or `match` arm isn't an operator.
+including `.`. A full ternary is checked by `PERCS31.ControlStructures.MultiLineTernaryOperator`, and section 6.2
+doesn't list `=>`, so one in an array or `match` arm isn't checked.
 
 **Auto-fixable:** yes, unless a comment follows an operator at the end of a line.
 
