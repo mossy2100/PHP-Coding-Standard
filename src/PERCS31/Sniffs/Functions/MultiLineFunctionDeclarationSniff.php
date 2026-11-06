@@ -23,8 +23,9 @@ use PHP_CodeSniffer\Standards\Squiz\Sniffs\Functions\MultiLineFunctionDeclaratio
  * The parent also reports any blank line in a multi-line parameter or `use` list (EmptyLine). PER Coding Style 3.1,
  * section 2.3, allows blank lines anywhere they aren't forbidden, and section 12.4's example has one between two
  * parameters, both before an attribute and before a parameter with none. The parent's check can't be run on its own,
- * so the PERCS31 ruleset excludes EmptyLine, and this sniff reports blank lines itself (BlankLine), except a single
- * one between parameters. A `use` list keeps the parent's rule.
+ * so the PERCS31 ruleset excludes EmptyLine, and this sniff reports blank lines itself (BlankLine). PER says nothing
+ * about one before the closing parenthesis, or between `use` items, so those are only reported if
+ * $checkOptionalBlankLines is set. A single one between parameters is always allowed.
  *
  * The parent would also indent every line of a promoted parameter's multi-line hook list as a parameter, fighting
  * PERCS31.WhiteSpace.ScopeIndent until phpcbf fails. PERCS31.Classes.PromotedPropertyHooks already reports that code,
@@ -33,6 +34,13 @@ use PHP_CodeSniffer\Standards\Squiz\Sniffs\Functions\MultiLineFunctionDeclaratio
 class MultiLineFunctionDeclarationSniff extends SquizSniff
 {
     public const string CODE_BLANK_LINE = 'BlankLine';
+
+    /**
+     * Whether to report a blank line before a closing parenthesis or between `use` items, which PER doesn't forbid.
+     *
+     * @var bool
+     */
+    public bool $checkOptionalBlankLines = false;
 
     /**
      * Returns an array of tokens this test wants to listen for: the parent's, and an arrow function's `fn`.
@@ -135,7 +143,7 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
     }
 
     /**
-     * Report each blank line in the parameter and `use` lists, except a single one between parameters.
+     * Report each blank line in the parameter and `use` lists, except those PER allows.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the function keyword.
@@ -162,12 +170,16 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
             $isBlankLine = $tokens[$i]['code'] === T_WHITESPACE
                 && $tokens[$i]['column'] === 1
                 && $tokens[$i]['line'] !== $tokens[($i + 1)]['line'];
-            if (!$isBlankLine || $this->isAllowedBetweenParameters($phpcsFile, $i, $parameterCloser)) {
+            if (
+                !$isBlankLine
+                || $this->isAllowedBetweenParameters($phpcsFile, $i, $parameterCloser)
+                || (!$this->checkOptionalBlankLines && $this->isOptional($phpcsFile, $i, $parameterCloser, $closer))
+            ) {
                 continue;
             }
 
             $fix = $phpcsFile->addFixableError(
-                'Blank lines are not allowed in a multi-line function declaration, except one between parameters',
+                'Blank line not allowed here in a multi-line function declaration',
                 $i,
                 self::CODE_BLANK_LINE,
             );
@@ -175,6 +187,27 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
                 $phpcsFile->fixer->replaceToken($i, '');
             }
         }
+    }
+
+    /**
+     * Check whether a blank line is one PER says nothing about: before a closing parenthesis, or between `use` items.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $blankPtr The blank line's whitespace token.
+     * @param int $parameterCloser The position of the parameter list's closing parenthesis.
+     * @param int $closer The position of the last list's closing parenthesis.
+     * @return bool True if PER neither requires nor forbids the blank line.
+     */
+    private function isOptional(File $phpcsFile, int $blankPtr, int $parameterCloser, int $closer): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $next = $phpcsFile->findNext(T_WHITESPACE, ($blankPtr + 1), null, true);
+        $previous = $phpcsFile->findPrevious(T_WHITESPACE, ($blankPtr - 1), null, true);
+        if ($next === $parameterCloser || $next === $closer) {
+            return $previous === false || $tokens[$previous]['code'] !== T_OPEN_PARENTHESIS;
+        }
+
+        return $blankPtr > $parameterCloser && $previous !== false && $tokens[$previous]['code'] === T_COMMA;
     }
 
     /**

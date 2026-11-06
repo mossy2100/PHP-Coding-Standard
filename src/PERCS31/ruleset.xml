@@ -28,6 +28,9 @@
         <exclude name="PSR12.Files.FileHeader"/>
         <!-- Replaced by a PERCS31 version that accepts a declare statement with several directives (3) -->
         <exclude name="PSR12.Files.DeclareStatement"/>
+        <!-- PER says nothing about a blank line between call arguments, or before the closing parenthesis (2.3). A
+             blank line before the first argument is still reported, as FirstArgumentPosition (4.7) -->
+        <exclude name="PSR2.Methods.FunctionCallSignature.EmptyLine"/>
     </rule>
 
     <!-- Visibility on every constant is a MUST (4.3), but PSR12.Properties.ConstantVisibility only gives a warning -->
@@ -236,8 +239,7 @@
     <!-- Brace sniffs, extended to allow an empty body as {} (4, 4.4, 7, 8) -->
     <rule ref="PERCS31.Classes.ClassDeclaration"/>
     <rule ref="PERCS31.Functions.MultiLineFunctionDeclaration">
-        <!-- Replaced by the sniff's own BlankLine check, which allows a blank line before a parameter's attributes
-             (12.2) -->
+        <!-- Replaced by the sniff's own BlankLine check, which allows the blank lines PER does (2.3, 12.2, 12.4) -->
         <exclude name="PERCS31.Functions.MultiLineFunctionDeclaration.EmptyLine"/>
     </rule>
     <rule ref="PERCS31.WhiteSpace.ScopeClosingBrace"/>

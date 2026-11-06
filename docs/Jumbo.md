@@ -53,6 +53,9 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
   parentheses must line up with the group's first line, with no extra indent (`requireGroupingLineUp` set to `true`).
 - `PERCS31.Formatting.TrailingComma` disallows a comma before a `match` arm's `=>` when its conditions are split over
   lines, which PERCS31 doesn't check (`disallowInSplitMatchConditions` set to `true`).
+- `PERCS31.Functions.MultiLineFunctionDeclaration` reports a blank line before a closing parenthesis or between a
+  closure's `use` items (`checkOptionalBlankLines` set to `true`).
+- `PSR2.Methods.FunctionCallSignature.EmptyLine` reports a blank line in a call's arguments, which PERCS31 excludes.
 - `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat` reports `T|null`, which should be `?T`, as an error, not a
   warning.
 - `Squiz.Arrays.ArrayDeclaration` also runs the checks PERCS31 leaves out. See [Squiz](#squiz).

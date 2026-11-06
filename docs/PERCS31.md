@@ -64,6 +64,10 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 - **PSR12.ControlStructures.BooleanOperatorPlacement** is kept, with `allowOnly` set to `first`, so a wrapped `&&` or
   `||` in a condition starts the line (5.1, 6.4). PSR-12 only requires consistency.
 
+`PSR2.Methods.FunctionCallSignature.EmptyLine` is excluded, with no replacement. PER says nothing about a blank line
+between a call's arguments, or before its closing parenthesis, so section 2.3 allows both. One before the first argument
+is still reported, as `FirstArgumentPosition`.
+
 ---
 
 ## Inherited Sniffs
@@ -1082,8 +1086,10 @@ case, and leaves everything else to the parent. For an empty body after a single
 The parent also reports every blank line in a multi-line parameter or `use` list. [Section 2.3](https://www.php-fig.org/per/coding-style/#23-lines) allows blank lines
 wherever they aren't forbidden, and [section 12.4](https://www.php-fig.org/per/coding-style/#124-example)'s example has one between two parameters, both before an attribute and
 before a parameter with none. So the ruleset excludes the parent's `EmptyLine` code, and this sniff reports blank lines
-itself, as `BlankLine`, except a single one between parameters. A blank line before the closing parenthesis, or in a
-closure's `use` list, is still reported.
+itself, as `BlankLine`, except a single one between parameters.
+
+PER says nothing about a blank line before the closing parenthesis, or between a closure's `use` items, so section 2.3
+allows those too. Set `checkOptionalBlankLines` to report them, as the Jumbo standard does.
 
 The parent doesn't check an arrow function. [Section 7.1](https://www.php-fig.org/per/coding-style/#71-short-closures) says an arrow function follows the same rules as a closure, so
 this sniff checks its split parameter list too:

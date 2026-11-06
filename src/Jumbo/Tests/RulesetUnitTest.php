@@ -387,18 +387,38 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that PERCS31 allows one blank line between parameters, and reports every other blank line in a multi-line
-     * declaration. The parent's EmptyLine, which reports them all, is excluded in the ruleset.
+     * Test that both standards allow one blank line between parameters, and that Jumbo also reports one before a
+     * closing parenthesis or between `use` items, which PER doesn't forbid. The parent's EmptyLine, which reports them
+     * all, is excluded in the ruleset.
      */
-    public function testBlankLineAllowedOnlyBetweenParameters(): void
+    public function testBlankLinesInDeclaration(): void
     {
         $fixture = dirname(__DIR__, 2) . '/Jumbo/Tests/Ruleset/BlankLinesInDeclaration.inc';
         $sniff = '--sniffs=PERCS31.Functions.MultiLineFunctionDeclaration';
-        $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', $sniff, '--report=emacs', $fixture]);
+        foreach (['PERCS31' => ['16', '20'], 'Jumbo' => ['16', '20', '32', '41']] as $standard => $expected) {
+            $result = $this->runTool('phpcs', ['-s', "--standard=$standard", $sniff, '--report=emacs', $fixture]);
 
-        preg_match_all('/:(\\d+):\\d+: error - .*\\.BlankLine\\)/', $result['output'], $matches);
-        $this->assertSame(['16', '20', '32', '41'], $matches[1], $result['output']);
-        $this->assertStringNotContainsString('EmptyLine', $result['output']);
+            preg_match_all('/:(\\d+):\\d+: error - .*\\.BlankLine\\)/', $result['output'], $matches);
+            $this->assertSame($expected, $matches[1], $result['output']);
+            $this->assertStringNotContainsString('EmptyLine', $result['output']);
+        }
+    }
+
+    /**
+     * Test that only Jumbo reports a blank line between a call's arguments or before its closing parenthesis, and that
+     * both standards report one before the first argument.
+     */
+    public function testBlankLinesInCall(): void
+    {
+        $fixture = dirname(__DIR__, 2) . '/Jumbo/Tests/Ruleset/BlankLinesInCall.inc';
+        $sniff = '--sniffs=PSR2.Methods.FunctionCallSignature';
+        foreach (['PERCS31' => [], 'Jumbo' => ['9', '15', '20']] as $standard => $expected) {
+            $result = $this->runTool('phpcs', ['-s', "--standard=$standard", $sniff, '--report=emacs', $fixture]);
+
+            preg_match_all('/:(\\d+):\\d+: error - .*\\.EmptyLine\\)/', $result['output'], $matches);
+            $this->assertSame($expected, $matches[1], $result['output']);
+            $this->assertStringContainsString('FirstArgumentPosition', $result['output']);
+        }
     }
 
     /**

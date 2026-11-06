@@ -359,6 +359,16 @@
         </properties>
     </rule>
 
+    <!-- No blank line in a call's arguments, a closure's use list, or before a closing parenthesis -->
+    <rule ref="PERCS31.Functions.MultiLineFunctionDeclaration">
+        <properties>
+            <property name="checkOptionalBlankLines" value="true"/>
+        </properties>
+    </rule>
+    <rule ref="PSR2.Methods.FunctionCallSignature.EmptyLine">
+        <severity>5</severity>
+    </rule>
+
     <!-- A control structure's closing brace on its own line, except for a comment, or what continues the structure -->
     <rule ref="Jumbo.ControlStructures.StatementAfterClosingBrace"/>
 
