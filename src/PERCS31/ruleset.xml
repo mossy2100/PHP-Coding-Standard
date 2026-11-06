@@ -222,7 +222,10 @@
     <rule ref="PERCS31.Files.FileHeader"/>
 
     <!-- No spaces inside a declare statement's parentheses, including one with several directives (3) -->
-    <rule ref="PERCS31.Files.DeclareStatement"/>
+    <rule ref="PERCS31.Files.DeclareStatement">
+        <!-- PERCS31.WhiteSpace.ScopeClosingBrace reports the same thing, and with both fixes, the result has a blank line -->
+        <exclude name="PERCS31.Files.DeclareStatement.CurlyBracketNotOnNewLine"/>
+    </rule>
 
     <!-- Line length (2.3): a warning over 120 characters, no hard limit, and a severity 4 warning over 80, which phpcs
          only shows with warning-severity set to 4 -->

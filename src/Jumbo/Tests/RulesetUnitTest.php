@@ -191,6 +191,43 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a one-line block declare is fixed with no stray blank line, which two fixes for its brace would add.
+     */
+    public function testOneLineBlockDeclareIsFixedWithNoBlankLine(): void
+    {
+        $file = $this->copyToTempFile(null, "<?php\n\ndeclare(ticks=1) { echo 1; }\n");
+
+        try {
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame("<?php\n\ndeclare(ticks=1) {\n    echo 1;\n}\n", $fixed);
+    }
+
+    /**
+     * Test that PERCS31 allows a statement after a block declare's closing brace, and Jumbo doesn't.
+     */
+    public function testStatementAfterClosingBraceIsAnErrorInJumboOnly(): void
+    {
+        $source = "<?php\n\ndeclare(strict_types=1);\ndeclare(ticks=1) {\n    echo 1;\n} echo 2;\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $perCs = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            $jumbo = $this->runTool('phpcs', ['-s', '--standard=Jumbo', '--report=emacs', $file]);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertStringNotContainsString('FileHeader', $perCs['output']);
+        $this->assertStringNotContainsString('StatementAfter', $perCs['output']);
+        $this->assertStringContainsString('StatementAfterClosingBrace.StatementAfter', $jumbo['output']);
+    }
+
+    /**
      * Test that a class member on a file's last line doesn't crash the run, so another file's report isn't lost.
      */
     public function testMemberOnLastLineDoesNotCrashTheRun(): void

@@ -26,6 +26,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`Jumbo.TypeHints.DeclareStrictTypes` writes `strict_types=1`.** Its fix wrote `strict_types = 1`, which PER Coding
   Style 3.1 forbids. For a file starting with a block `declare`, it adds a separate statement on the line above, as
   `strict_types` in one is a fatal error.
+- **`Jumbo.ControlStructures.StatementAfterClosingBrace` (breaking).** A statement after a control structure's closing
+  brace on the same line, e.g. `} stop();`, is an error in the Jumbo standard. Auto-fixable.
 - **`Jumbo.Classes.ConstantSpacing`, `EnumCaseSpacing` and `PropertySpacing`.** Replace Slevomat's sniffs of the same
   names, which end the whole run with a fatal error on a member on a file's last line, e.g. `public int $a = 1; }`.
   Update any `phpcs:ignore` comments or `<exclude>` rules that name them.
