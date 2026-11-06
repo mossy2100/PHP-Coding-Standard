@@ -282,6 +282,28 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a match arm split before its value is brought onto one line if it fits, in Jumbo, and left in PERCS31.
+     */
+    public function testWrappedMatchArmIsJoinedInJumboOnly(): void
+    {
+        $header = "<?php\n\ndeclare(strict_types=1);\n\nnamespace A;\n\n\$a = match (\$x) {\n";
+        $footer = "    default => 9,\n};\n";
+        foreach (['Jumbo' => "    1, 2 => 3,\n", 'PERCS31' => "    1,\n    2\n    => 3,\n"] as $standard => $expected) {
+            $file = $this->copyToTempFile(null, $header . "    1,\n    2\n    => 3,\n" . $footer);
+
+            try {
+                $fixer = $this->runTool('phpcbf', ["--standard=$standard", $file]);
+                $fixed = (string) file_get_contents($file);
+            } finally {
+                unlink($file);
+            }
+
+            $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
+            $this->assertSame($header . $expected . $footer, $fixed);
+        }
+    }
+
+    /**
      * Test that a class member on a file's last line doesn't crash the run, so another file's report isn't lost.
      */
     public function testMemberOnLastLineDoesNotCrashTheRun(): void

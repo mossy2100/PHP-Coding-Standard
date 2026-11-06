@@ -9,20 +9,31 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Requires a `match` arm that wraps to be indented one level past its first line.
+ * Requires a `match` arm to be on one line up to its value, if it fits, and otherwise indented one level past its first
+ * line.
  *
  * PER Coding Style 3.1 doesn't say how a wrapped arm is indented, so this is an extra rule, to keep each arm distinct.
  * It checks a line starting with a later condition, the `=>`, or the value after the `=>`. A line starting with an
  * operator is left to PERCS31.Operators.OperatorPlacement, and the lines inside brackets to the sniffs for those.
+ *
+ * If the arm's conditions, `=>` and the first line of its value fit within maxLineLength, they must be on one line. A
+ * comment among them is left to a person.
  */
 class MatchArmWrapIndentSniff implements Sniff
 {
     public const string CODE_INDENT = 'Indent';
 
+    public const string CODE_SHOULD_BE_SINGLE_LINE = 'ShouldBeSingleLine';
+
     /**
      * The number of spaces in one indent.
      */
     public int $indent = 4;
+
+    /**
+     * The longest a line can be, to bring a wrapped arm onto one line.
+     */
+    public int $maxLineLength = 120;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -55,12 +66,13 @@ class MatchArmWrapIndentSniff implements Sniff
             $code = $tokens[$i]['code'];
             if ($code === T_MATCH_ARROW) {
                 $inBody = true;
-                if ($armStart !== false) {
-                    $this->checkLine($phpcsFile, $i, $armStart);
-                    $value = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), $closer, true);
-                    if ($value !== false) {
-                        $this->checkLine($phpcsFile, $value, $armStart);
-                    }
+                $value = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), $closer, true);
+                if ($armStart === false || $value === false) {
+                    continue;
+                }
+
+                if (!$this->checkFitsOnOneLine($phpcsFile, $armStart, $value)) {
+                    $this->checkLines($phpcsFile, $armStart, $i, $value);
                 }
             } elseif ($code === T_COMMA) {
                 $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), $closer, true);
@@ -68,15 +80,108 @@ class MatchArmWrapIndentSniff implements Sniff
                     // The comma that ends an arm.
                     $armStart = $next;
                     $inBody = false;
-                } elseif ($next !== false && $armStart !== false && $tokens[$next]['code'] !== T_MATCH_ARROW) {
-                    // A comma between two conditions.
-                    $this->checkLine($phpcsFile, $next, $armStart);
                 }
             }
 
             $jumpTo = $tokens[$i]['parenthesis_closer'] ?? $tokens[$i]['bracket_closer']
                 ?? $tokens[$i]['attribute_closer'] ?? null;
             if (is_int($jumpTo) && $jumpTo > $i && $jumpTo < $closer) {
+                $i = $jumpTo;
+            }
+        }
+    }
+
+    /**
+     * Report an arm that's split before its value, but would fit on one line, and fix it by joining the lines.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $armStart The position of the arm's first token.
+     * @param int $value The position of the first token of the arm's value.
+     * @return bool True if it was reported.
+     */
+    private function checkFitsOnOneLine(File $phpcsFile, int $armStart, int $value): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        if (
+            $tokens[$armStart]['line'] === $tokens[$value]['line']
+            || $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($armStart + 1), $value) !== false
+        ) {
+            return false;
+        }
+
+        // The arm's start to its value, with each line break as one space, then the rest of the value's first line.
+        $joined = $tokens[$armStart]['column'] - 1;
+        for ($i = $armStart; $i < $value; $i++) {
+            $isBreak = $tokens[$i]['code'] === T_WHITESPACE && str_contains($tokens[$i]['content'], "\n");
+            $isIndent = $tokens[$i]['code'] === T_WHITESPACE && $tokens[$i]['column'] === 1;
+            if ($isIndent) {
+                continue;
+            }
+
+            $joined += $isBreak ? 1 : $tokens[$i]['length'];
+        }
+
+        for ($i = $value; isset($tokens[$i]) && $tokens[$i]['line'] === $tokens[$value]['line']; $i++) {
+            if ($tokens[$i]['content'] !== "\n") {
+                $joined += $tokens[$i]['length'];
+            }
+        }
+
+        if ($joined > $this->maxLineLength) {
+            return false;
+        }
+
+        $fix = $phpcsFile->addFixableError(
+            'A match arm that fits within %s characters must be on one line up to its value',
+            $armStart,
+            self::CODE_SHOULD_BE_SINGLE_LINE,
+            [$this->maxLineLength],
+        );
+        if (!$fix) {
+            return true;
+        }
+
+        $phpcsFile->fixer->beginChangeset();
+        for ($i = ($armStart + 1); $i < $value; $i++) {
+            if ($tokens[$i]['code'] !== T_WHITESPACE) {
+                continue;
+            }
+
+            $phpcsFile->fixer->replaceToken($i, '');
+            if ($tokens[($i - 1)]['code'] !== T_WHITESPACE) {
+                $phpcsFile->fixer->addContent(($i - 1), ' ');
+            }
+        }
+
+        $phpcsFile->fixer->endChangeset();
+
+        return true;
+    }
+
+    /**
+     * Check the indent of each line that starts with a condition, the `=>` or the value, up to the arm's value.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $armStart The position of the arm's first token.
+     * @param int $arrow The position of the arm's `=>`.
+     * @param int $value The position of the first token of the arm's value.
+     */
+    private function checkLines(File $phpcsFile, int $armStart, int $arrow, int $value): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $this->checkLine($phpcsFile, $arrow, $armStart);
+        $this->checkLine($phpcsFile, $value, $armStart);
+        for ($i = ($armStart + 1); $i < $arrow; $i++) {
+            if ($tokens[$i]['code'] === T_COMMA) {
+                $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), $arrow, true);
+                if ($next !== false) {
+                    $this->checkLine($phpcsFile, $next, $armStart);
+                }
+            }
+
+            $jumpTo = $tokens[$i]['parenthesis_closer'] ?? $tokens[$i]['bracket_closer']
+                ?? $tokens[$i]['attribute_closer'] ?? null;
+            if (is_int($jumpTo) && $jumpTo > $i && $jumpTo < $arrow) {
                 $i = $jumpTo;
             }
         }

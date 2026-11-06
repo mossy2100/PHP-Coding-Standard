@@ -20,13 +20,18 @@ class MatchArmWrapIndentUnitTest extends AbstractSniffTestCase
     protected function getErrorList(string $testFile = ''): array
     {
         return [
-            // A later condition, a value after =>, and a line starting with =>, not indented once.
-            41 => 1,
-            43 => 1,
-            45 => 1,
-            47 => 1,
-            49 => 1,
-            57 => 1,
+            // Would fit on one line up to the value: conditions, conditions and =>, a value after =>, a line starting
+            // with =>, and a value that continues over lines.
+            37 => 1,
+            39 => 1,
+            42 => 1,
+            44 => 1,
+            46 => 1,
+            // Too long for one line, and not indented once: conditions, a value after =>, and a line starting with =>.
+            51 => 1,
+            52 => 1,
+            54 => 1,
+            56 => 1,
         ];
     }
 

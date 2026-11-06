@@ -204,7 +204,7 @@ gives the reason. The custom sniffs for PER Coding Style itself are in [PERCS31]
 | `Jumbo.Classes.RequireSingleLineMethodSignature`           | A short signature on one line, skipping a promoted hook         | Yes     |
 | `Jumbo.ControlStructures.LanguageConstructWithParentheses` | No `echo('x')`, allowing `exit()` and `die()`                   | Yes     |
 | `Jumbo.ControlStructures.RequireSingleLineHeader`          | A multi-line loop, `switch` or `match` header fits on a line    | Yes     |
-| `Jumbo.ControlStructures.MatchArmWrapIndent`               | A wrapped `match` arm indented once past its first line         | Yes     |
+| `Jumbo.ControlStructures.MatchArmWrapIndent`               | One line if it fits, else a wrapped `match` arm indented once   | Yes     |
 | `Jumbo.ControlStructures.StatementAfterClosingBrace`       | A control structure's `}` on its own line                       | Yes     |
 | `Jumbo.Functions.RequireSingleLineCall`                    | A call that fits is on one line, skipping a class or `match`    | Yes     |
 | `Jumbo.Namespaces.UnusedUses`                              | No unused `use` statements, safe with a miscased `use Function` | Yes     |
@@ -395,11 +395,13 @@ To use a different limit, set every line-length property, as described in [Line 
 
 ### Jumbo.ControlStructures.MatchArmWrapIndent
 
-Requires a `match` arm that wraps to be indented one level past its first line, for a line starting with a later
-condition, the `=>`, or the value after the `=>`. Set `indent` to change the number of spaces, which is 4 by default.
+Requires a `match` arm's conditions, its `=>` and the first line of its value to be on one line, if they fit. Otherwise,
+a line starting with a later condition, the `=>`, or the value must be indented one level past the arm's first line. Set
+`indent` to change the number of spaces, which is 4 by default.
 
-**Why:** PER Coding Style 3.1 doesn't say how a wrapped arm is indented, so this is an extra rule, to keep each arm
-distinct. `PERCS31.Operators.OperatorPlacement` checks a line starting with an operator.
+**Why:** PER Coding Style 3.1 doesn't say how a wrapped arm is laid out, so this is an extra rule, matching how Jumbo
+treats calls and arrays that fit, and keeping each arm distinct. `PERCS31.Operators.OperatorPlacement` checks a line
+starting with an operator. A comment among the arm's parts is left to a person.
 
 **Auto-fixable:** yes.
 
@@ -407,8 +409,9 @@ distinct. `PERCS31.Operators.OperatorPlacement` checks a line starting with an o
 
 ```php
 $label = match ($code) {
-    200,
-        201 => 'OK',
+    200, 201 => 'OK',
+    $thisIsAVeryLongConditionThatTakesUpMostOfTheLineByItself,
+        $andThisIsAnotherOneThatWillNotFitOnTheSameLineAsThatOne => 'Long',
     default => 'Error',
 };
 ```

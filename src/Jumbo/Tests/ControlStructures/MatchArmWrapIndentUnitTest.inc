@@ -1,19 +1,21 @@
 <?php
 
+// phpcs:set Jumbo.ControlStructures.MatchArmWrapIndent maxLineLength 40
+
 // === VALID ===
 
 $a = match ($x) {
     1 => 2,
     3, 4 => 5,
-    6,
-        7 => 8,
-    9 =>
-        10,
-    11
+    // Too long for one line, so each wraps, indented once.
+    100000000000,
+        200000000000,
+        300000000000 => 8,
+    400000000000000000000000000000000000 =>
+        900,
+    500000000000000000000000000000000000
         => 12,
-    13,
-        14
-        => 15,
+    // The rest of the value is left alone.
     16 => foo(
         17,
     ),
@@ -22,17 +24,12 @@ $a = match ($x) {
     ],
     20 => $y
         + 21,
+    // A comment among them is left to a person.
+    30,
+        31 // Why.
+        => 32,
     default => 22,
 };
-
-function f(int $x): int
-{
-    return match ($x) {
-        1,
-            2 => 3,
-        default => 4,
-    };
-}
 
 // === INVALID ===
 
@@ -40,21 +37,24 @@ $b = match ($x) {
     1,
     2 => 3,
     4,
-            5 => 6,
+        5
+        => 6,
     7 =>
-    8,
-    9 =>
-            10,
-    11
-    => 12,
-    default => 13,
+        8,
+    9
+        => 10,
+    11 =>
+    foo(
+        12,
+    ),
+    100000000000,
+    200000000000,
+            300000000000 => 13,
+    400000000000000000000000000000000000 =>
+    900,
+    500000000000000000000000000000000000
+    => 14,
+    default => 15,
 };
 
-function g(int $x): int
-{
-    return match ($x) {
-        1,
-        2 => 3,
-        default => 4,
-    };
-}
+// phpcs:set Jumbo.ControlStructures.MatchArmWrapIndent maxLineLength 120
