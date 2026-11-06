@@ -66,10 +66,9 @@ class OperatorSpacingUnitTest extends AbstractSniffTestCase
     /**
      * Returns the lines where warnings should occur.
      *
-     * @param string $testFile The name of the test input file.
      * @return array<int, int> Line number => warning count.
      */
-    protected function getWarningList(string $testFile = ''): array
+    protected function getWarningList(): array
     {
         return [];
     }

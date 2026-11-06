@@ -14,10 +14,9 @@ class AcronymCasingUnitTest extends AbstractSniffTestCase
     /**
      * Returns the lines where errors should occur.
      *
-     * @param string $testFile The name of the test input file.
      * @return array<int, int> Line number => error count.
      */
-    protected function getErrorList(string $testFile = ''): array
+    protected function getErrorList(): array
     {
         return [];
     }
@@ -25,10 +24,9 @@ class AcronymCasingUnitTest extends AbstractSniffTestCase
     /**
      * Returns the lines where warnings should occur.
      *
-     * @param string $testFile The name of the test input file.
      * @return array<int, int> Line number => warning count.
      */
-    protected function getWarningList(string $testFile = ''): array
+    protected function getWarningList(): array
     {
         // The warnings have a severity of 4, so they're hidden at the default severity of 5 this test runs at.
         // RulesetUnitTest checks them with --warning-severity=4.
