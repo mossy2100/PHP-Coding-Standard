@@ -208,9 +208,8 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that a statement after a block declare in the header is a spacing error, as section 3 wants a blank line,
-     * and that one after any other control structure isn't reported, as PERCS31 reads section 4 as classes and
-     * functions.
+     * Test that a statement after a block declare in the header is one spacing error in both standards, as section 3
+     * wants a blank line, and that one after any other control structure is an error in Jumbo only.
      */
     public function testStatementAfterClosingBrace(): void
     {
@@ -220,13 +219,17 @@ class RulesetUnitTest extends TestCase
             $file = $this->copyToTempFile(null, $source);
 
             try {
-                $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+                $perCs = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+                $jumbo = $this->runTool('phpcs', ['-s', '--standard=Jumbo', '--report=emacs', $file]);
             } finally {
                 unlink($file);
             }
 
-            $hasError = str_contains($result['output'], 'SpacingAfterDeclareBlock');
-            $this->assertSame($source === $block, $hasError, $result['output']);
+            $isBlock = $source === $block;
+            $this->assertSame($isBlock, str_contains($perCs['output'], 'SpacingAfterDeclareBlock'), $perCs['output']);
+            $this->assertSame($isBlock, str_contains($jumbo['output'], 'SpacingAfterDeclareBlock'), $jumbo['output']);
+            $this->assertStringNotContainsString('StatementAfter', $perCs['output']);
+            $this->assertSame(!$isBlock, str_contains($jumbo['output'], 'StatementAfter'), $jumbo['output']);
         }
     }
 
