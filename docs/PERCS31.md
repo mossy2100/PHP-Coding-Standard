@@ -43,6 +43,8 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 
 - **PSR2.Classes.PropertyDeclaration** and **Generic.WhiteSpace.ScopeIndent**, by [`PERCS31.Classes.PropertyDeclaration`](#percs31classespropertydeclaration)
   and [`PERCS31.WhiteSpace.ScopeIndent`](#percs31whitespacescopeindent), which support property hooks (PHP 8.4).
+- **PSR12.ControlStructures.ControlStructureSpacing**, by
+  [`PERCS31.ControlStructures.ControlStructureSpacing`](#percs31controlstructurescontrolstructurespacing), which allows a multi-line array as the whole condition.
 - **Generic.Formatting.DisallowMultipleStatements**, by [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements), which allows
   `{ get; set; }` on an abstract or interface property.
 - **PSR2.Classes.ClassDeclaration**, **Squiz.Functions.MultiLineFunctionDeclaration** and
@@ -167,6 +169,7 @@ section gives the reason.
 | `PERCS31.Classes.PropertyHookLayout`                    | A hook list's and hook body's braces, and a short hook's `=>`     | Partly  |
 | `PERCS31.Classes.PromotedPropertyHooks`                 | A hook on a promoted parameter is a single short hook on one line | No      |
 | `PERCS31.Classes.PropertyDeclaration`                   | No leading `_`, no `var`, a visibility, and `get` before `set`    | Partly  |
+| `PERCS31.ControlStructures.ControlStructureSpacing`     | A control structure's parentheses, allowing an array as the condition | Yes |
 | `PERCS31.ControlStructures.MatchArmPlacement`           | Each `match` arm starts on a new line                             | Yes     |
 | `PERCS31.ControlStructures.MultiLineTernaryOperator`    | A multi-line ternary takes three lines, `?` and `:` leading       | Yes     |
 | `PERCS31.ControlStructures.SwitchDeclaration`           | `switch` rules, with a `break` in the last case                   | Yes     |
@@ -682,6 +685,43 @@ interface Named
 | Property               | Type | Default | Description                                                      |
 | ---------------------- | ---- | ------- | ---------------------------------------------------------------- |
 | `orderHooksWithBodies` | bool | false   | Check the hook order in every hook list, not just bodiless ones. |
+
+---
+
+### PERCS31.ControlStructures.ControlStructureSpacing
+
+Checks the layout of a control structure's parentheses, as `PSR12.ControlStructures.ControlStructureSpacing` does, but
+allows a multi-line array as the whole condition. This extends that sniff.
+
+**Why:** [PER Coding Style 3.1, Section 5](https://www.php-fig.org/per/coding-style/#5-control-structures) says a split expression's first condition must be on the line after `(`. But
+`PERCS31.Arrays.OpeningBracketPlacement` won't allow `[` on a line of its own, so an array that's the whole condition
+can't satisfy both. So the `[` stays on the `(` line, and only the `)` is checked. The array sniffs check the array's
+own lines.
+
+**Auto-fixable:** yes.
+
+**Good:**
+
+```php
+if ([
+    1,
+    2,
+]
+) {
+    foo();
+}
+```
+
+**Bad:**
+
+```php
+if ([
+    1,
+    2,
+]) {
+    foo();
+}
+```
 
 ---
 

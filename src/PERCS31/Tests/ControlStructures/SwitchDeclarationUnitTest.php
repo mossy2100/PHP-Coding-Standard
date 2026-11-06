@@ -54,6 +54,8 @@ class SwitchDeclarationUnitTest extends AbstractSniffTestCase
             243 => 1,
             251 => 1,
             252 => 1,
+            // A condition that only starts with an array isn't exempt.
+            259 => 1,
         ];
     }
 

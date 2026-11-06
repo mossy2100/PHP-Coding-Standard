@@ -254,3 +254,10 @@ if ($a) {
             break;
     }
 }
+
+switch ($a) {
+    case ([1] === $b
+        && $c
+    ):
+        break;
+}
