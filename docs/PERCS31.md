@@ -760,9 +760,13 @@ Checks `switch` statements. This replaces `PSR2.ControlStructures.SwitchDeclarat
 **Why:** [PER Coding Style 3.1, Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) adds both rules. The parent only checks a case that's followed by another,
 and doesn't check multi-line conditions.
 
-**Auto-fixable:** yes. The fix adds `break;` before the `}`, or adds the parentheses, or moves the `)` to its own line.
-It's left to a person when there's a comment in the way, or the `}` follows code on its line. A `default` that falls
-through isn't fixable, as only a person knows if that's intended.
+A multi-line `case` condition must also follow the rule for any expression split inside parentheses. The first condition
+must be on the line after `(`, and each line must be indented at least once past the `case`. A condition that's only an
+array is exempt, as its `[` must stay on the `(` line.
+
+**Auto-fixable:** yes. The fix adds `break;` before the `}`, adds the parentheses, moves the `)` to its own line, moves
+the first condition to the next line, or indents a line. It's left to a person when there's a comment in the way, or the
+`}` follows code on its line. A `default` that falls through isn't fixable, as only a person knows if that's intended.
 
 **Good:**
 
@@ -1295,7 +1299,8 @@ indent:
   lined up with the item if it starts its own line. Set `requireListItemIndent` to allow only the first, as the Jumbo
   standard does.
 - **An arrow function's `=>`:** exactly once past the line `fn` starts on, even in a list item.
-- **A control structure's condition, or a multi-line `case` condition:** not checked.
+- **A control structure's condition, or a multi-line `case` condition:** not checked here. See
+  [`PERCS31.ControlStructures.SwitchDeclaration`](#percs31controlstructuresswitchdeclaration) for a `case`.
 - **Grouping parentheses**, as in `$x = (`: not checked. Set `requireGroupingLineUp` to require a line to line up with
   the group's first line, or if that's on the `(` line, to be indented once past it, as the Jumbo standard does. An
   arrow function's body is still indented once.

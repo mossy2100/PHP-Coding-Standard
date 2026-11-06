@@ -186,3 +186,71 @@ switch ($a) {
 
         break;
 }
+
+// A split condition: the first condition on the next line, and each line indented.
+switch ($a) {
+    case (
+        $b
+        && $c
+    ):
+        break;
+    case (
+            $b
+            && $c
+    ):
+        break;
+    case ( // A comment.
+        $b
+
+        && $c
+    ):
+        break;
+    case (
+        // A comment.
+        foo(
+            1,
+        )
+    ):
+        break;
+    case (
+        $b === 'x
+y'
+        && $c
+    ):
+        break;
+    case ([
+        1,
+    ]
+    ):
+        break;
+}
+
+switch ($a) {
+    case ($b
+        && $c
+    ):
+        break;
+    case ( $b
+        && $c
+    ):
+        break;
+    case (/* A comment. */ $b
+        && $c
+    ):
+        break;
+    case (
+    $b
+    && $c
+    ):
+        break;
+}
+
+if ($a) {
+    switch ($b) {
+        case (
+        $c
+        && $d
+        ):
+            break;
+    }
+}

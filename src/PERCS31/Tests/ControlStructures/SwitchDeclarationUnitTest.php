@@ -20,6 +20,8 @@ class SwitchDeclarationUnitTest extends AbstractSniffTestCase
     protected function getErrorList(string $testFile = ''): array
     {
         return [
+            // The first condition is on the ( line.
+            42 => 1,
             // A final default with no break.
             64 => 1,
             // A final case with no break.
@@ -28,20 +30,31 @@ class SwitchDeclarationUnitTest extends AbstractSniffTestCase
             74 => 1,
             // The } follows code on its line: not fixable.
             81 => 1,
-            // The ) isn't on a line of its own.
+            // The ) isn't on a line of its own, and the first condition is on the ( line.
+            85 => 1,
             86 => 1,
-            // Whitespace before the ).
+            // Whitespace before the ), and the first condition is on the ( line.
+            89 => 1,
             90 => 1,
             // No parentheses.
             93 => 1,
             // No parentheses, and a trailing comment: not fixable.
             97 => 1,
-            // A comment before the ): not fixable.
+            // A comment before the ): not fixable. The first condition is on the ( line: fixable.
+            101 => 1,
             102 => 1,
             // A default that falls through with no comment, alone, after an if with no else, and nested.
             157 => 1,
             168 => 1,
             180 => 1,
+            // A split condition: the first condition on the ( line, then lines not indented.
+            229 => 1,
+            233 => 1,
+            237 => 1,
+            242 => 1,
+            243 => 1,
+            251 => 1,
+            252 => 1,
         ];
     }
 

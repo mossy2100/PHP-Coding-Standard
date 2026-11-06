@@ -37,6 +37,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   Style 3.1, section 5.2, shows. Auto-fixable.
 - **A one-line ternary is no longer read as spanning lines.** `PERCS31.ControlStructures.MultiLineTernaryOperator`
   reported and split one after `+=`, `.=`, `echo`, `print` or `yield`, as a statement, or in a `match` arm.
+- **A multi-line `case` condition must start on the next line and be indented (breaking).**
+  `PERCS31.ControlStructures.SwitchDeclaration` reports `case ($a`, and a line not indented past the `case`, as PER
+  Coding Style 3.1, section 5.2, requires. Auto-fixable, unless a comment is in the way.
 - **More blank lines are allowed in PERCS31.** PER Coding Style 3.1 doesn't forbid a blank line between call arguments
   or `use` items, or before a closing parenthesis, or more than one between parameters, so PERCS31 no longer reports
   them. The Jumbo standard still does, using the new `PERCS31.Functions.MultiLineFunctionDeclaration` property

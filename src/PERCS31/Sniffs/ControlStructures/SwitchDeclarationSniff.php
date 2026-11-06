@@ -18,6 +18,8 @@ use PHP_CodeSniffer\Util\Tokens;
  *   final one". The parent only checks a case that's followed by another. The fix adds `break;` before the `}`.
  * - A multi-line case condition MUST be wrapped in parentheses, and MUST end with a line containing only `):`. The fix
  *   adds the parentheses, or moves the `)` to its own line.
+ * - An expression split inside parentheses MUST have its first condition on the next line, with each subsequent line
+ *   indented at least once. The fix moves the first condition, or indents the line once past the `case`.
  * - A non-empty case that continues into the next one MUST have a comment saying so. The parent only checks a `case`,
  *   so this also checks a `default` that isn't last.
  *
@@ -25,11 +27,17 @@ use PHP_CodeSniffer\Util\Tokens;
  */
 class SwitchDeclarationSniff extends Psr2Sniff
 {
+    private const int CONDITION_INDENT = 4;
+
     public const string CODE_MISSING_TERMINATOR = 'MissingTerminator';
 
     public const string CODE_MULTI_LINE_CONDITION_PARENTHESES = 'MultiLineConditionParentheses';
 
     public const string CODE_MULTI_LINE_CONDITION_CLOSER = 'MultiLineConditionCloser';
+
+    public const string CODE_MULTI_LINE_CONDITION_FIRST_LINE = 'MultiLineConditionFirstLine';
+
+    public const string CODE_MULTI_LINE_CONDITION_INDENT = 'MultiLineConditionIndent';
 
     public const string CODE_TERMINATING_COMMENT = 'TerminatingComment';
 
@@ -203,7 +211,8 @@ class SwitchDeclarationSniff extends Psr2Sniff
     }
 
     /**
-     * Check that a multi-line case condition is wrapped in parentheses, with `):` on a line of their own.
+     * Check that a multi-line case condition is wrapped in parentheses, with its first condition on the next line, its
+     * lines indented, and `):` on a line of their own.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $case The position of `case`.
@@ -249,6 +258,13 @@ class SwitchDeclarationSniff extends Psr2Sniff
             return;
         }
 
+        // An array's `[` must stay on the `(` line, as PERCS31.Arrays.OpeningBracketPlacement requires.
+        $condition = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($first + 1), $last, true);
+        if ($condition !== false && $tokens[$condition]['code'] !== T_OPEN_SHORT_ARRAY) {
+            $this->checkFirstConditionLine($phpcsFile, $first, $last, $indent);
+            $this->checkConditionIndent($phpcsFile, $case, $first, $last);
+        }
+
         $beforeCloser = $phpcsFile->findPrevious(T_WHITESPACE, ($last - 1), $case, true);
         if ($beforeCloser === false || $tokens[$beforeCloser]['line'] !== $tokens[$last]['line']) {
             return;
@@ -272,5 +288,89 @@ class SwitchDeclarationSniff extends Psr2Sniff
 
         $phpcsFile->fixer->addContentBefore($last, $phpcsFile->eolChar . $indent);
         $phpcsFile->fixer->endChangeset();
+    }
+
+    /**
+     * Check that a split condition's first condition is on the line after the opening parenthesis.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the opening parenthesis.
+     * @param int $closer The position of the closing parenthesis.
+     * @param string $indent The indent of the `case`.
+     */
+    private function checkFirstConditionLine(File $phpcsFile, int $opener, int $closer, string $indent): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $condition = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($opener + 1), $closer, true);
+        if ($condition === false || $tokens[$condition]['line'] !== $tokens[$opener]['line']) {
+            return;
+        }
+
+        $error = 'The first condition of a multi-line case condition must be on the line after the opening parenthesis';
+        $next = $phpcsFile->findNext(T_WHITESPACE, ($opener + 1), $closer, true);
+        if ($next !== $condition) {
+            $phpcsFile->addError($error, $condition, self::CODE_MULTI_LINE_CONDITION_FIRST_LINE);
+            return;
+        }
+
+        $fix = $phpcsFile->addFixableError($error, $condition, self::CODE_MULTI_LINE_CONDITION_FIRST_LINE);
+        if (!$fix) {
+            return;
+        }
+
+        $phpcsFile->fixer->beginChangeset();
+        for ($i = ($opener + 1); $i < $condition; $i++) {
+            $phpcsFile->fixer->replaceToken($i, '');
+        }
+
+        $phpcsFile->fixer->addContent($opener, $phpcsFile->eolChar . $indent . str_repeat(' ', self::CONDITION_INDENT));
+        $phpcsFile->fixer->endChangeset();
+    }
+
+    /**
+     * Check that each line inside a split condition's parentheses is indented at least once past the `case`.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $case The position of `case`.
+     * @param int $opener The position of the opening parenthesis.
+     * @param int $closer The position of the closing parenthesis.
+     */
+    private function checkConditionIndent(File $phpcsFile, int $case, int $opener, int $closer): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $minimum = ($tokens[$case]['column'] - 1 + self::CONDITION_INDENT);
+        $skipped = Tokens::HEREDOC_TOKENS + Tokens::STRING_TOKENS + [T_WHITESPACE => T_WHITESPACE];
+        for ($i = ($opener + 1); $i < $closer; $i++) {
+            $isLineStart = $tokens[$i]['line'] !== $tokens[($i - 1)]['line'];
+            $code = $tokens[$i]['code'];
+            if ($isLineStart && $code === T_WHITESPACE) {
+                $code = $tokens[($i + 1)]['code'];
+                if ($code === T_WHITESPACE || $tokens[($i + 1)]['line'] !== $tokens[$i]['line']) {
+                    continue;
+                }
+
+                $isIndented = $tokens[($i + 1)]['column'] - 1 >= $minimum;
+                $i++;
+            } elseif ($isLineStart) {
+                $isIndented = $minimum === 0;
+            } else {
+                continue;
+            }
+
+            if ($isIndented || $i >= $closer || isset($skipped[$code])) {
+                continue;
+            }
+
+            $error = 'Each line of a multi-line case condition must be indented at least once';
+            $fix = $phpcsFile->addFixableError($error, $i, self::CODE_MULTI_LINE_CONDITION_INDENT);
+            if ($fix) {
+                $padding = str_repeat(' ', $minimum);
+                if ($tokens[($i - 1)]['code'] === T_WHITESPACE && $tokens[($i - 1)]['column'] === 1) {
+                    $phpcsFile->fixer->replaceToken(($i - 1), $padding);
+                } else {
+                    $phpcsFile->fixer->addContentBefore($i, $padding);
+                }
+            }
+        }
     }
 }
