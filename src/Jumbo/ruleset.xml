@@ -346,9 +346,6 @@
 
     <!-- Multi-line foreach, for, switch and match headers that fit must be written on one line; Slevomat's
          RequireSingleLineCondition covers if, elseif, while and do-while -->
-    <!-- No statement after a control structure's closing brace, on the same line -->
-    <rule ref="Jumbo.ControlStructures.StatementAfterClosingBrace"/>
-
     <rule ref="Jumbo.ControlStructures.RequireSingleLineHeader">
         <properties>
             <property name="maxLineLength" value="&lineLength;"/>

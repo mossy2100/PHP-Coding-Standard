@@ -62,14 +62,7 @@ class FileHeaderSniff extends Psr12Sniff
             return $lines;
         }
 
-        // The line ends after anything following the closing brace, which section 3 doesn't cover.
-        $end = $tokens[$next]['scope_closer'];
-        while (isset($tokens[($end + 1)]) && $tokens[($end + 1)]['line'] === $tokens[$end]['line']) {
-            $end++;
-        }
-
-        $end = $phpcsFile->findPrevious(T_WHITESPACE, $end, null, true);
-        $lines[] = ['type' => 'declare', 'start' => $next, 'end' => $end];
+        $lines[] = ['type' => 'declare', 'start' => $next, 'end' => $tokens[$next]['scope_closer']];
 
         return $lines;
     }

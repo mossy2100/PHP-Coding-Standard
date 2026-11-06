@@ -19,6 +19,11 @@ class FileHeaderUnitTest extends AbstractSniffTestCase
      */
     protected function getErrorList(string $testFile = ''): array
     {
+        if ($testFile === 'FileHeaderUnitTest.5.inc') {
+            // A statement after a block declare, where section 3 wants a blank line.
+            return [6 => 1];
+        }
+
         if ($testFile === 'FileHeaderUnitTest.2.inc') {
             // A blank line between a declare statement and a block declare.
             return [3 => 1];

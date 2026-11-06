@@ -208,23 +208,26 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that PERCS31 allows a statement after a block declare's closing brace, and Jumbo doesn't.
+     * Test that a statement after a block declare in the header is a spacing error, as section 3 wants a blank line,
+     * and that one after any other control structure isn't reported, as PERCS31 reads section 4 as classes and
+     * functions.
      */
-    public function testStatementAfterClosingBraceIsAnErrorInJumboOnly(): void
+    public function testStatementAfterClosingBrace(): void
     {
-        $source = "<?php\n\ndeclare(strict_types=1);\ndeclare(ticks=1) {\n    echo 1;\n} echo 2;\n";
-        $file = $this->copyToTempFile(null, $source);
+        $block = "<?php\n\ndeclare(strict_types=1);\ndeclare(ticks=1) {\n    echo 1;\n} echo 2;\n";
+        $structure = "<?php\n\ndeclare(strict_types=1);\n\nif (\$a) {\n    echo 1;\n} echo 2;\n";
+        foreach ([$block, $structure] as $source) {
+            $file = $this->copyToTempFile(null, $source);
 
-        try {
-            $perCs = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
-            $jumbo = $this->runTool('phpcs', ['-s', '--standard=Jumbo', '--report=emacs', $file]);
-        } finally {
-            unlink($file);
+            try {
+                $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            } finally {
+                unlink($file);
+            }
+
+            $hasError = str_contains($result['output'], 'SpacingAfterDeclareBlock');
+            $this->assertSame($source === $block, $hasError, $result['output']);
         }
-
-        $this->assertStringNotContainsString('FileHeader', $perCs['output']);
-        $this->assertStringNotContainsString('StatementAfter', $perCs['output']);
-        $this->assertStringContainsString('StatementAfterClosingBrace.StatementAfter', $jumbo['output']);
     }
 
     /**

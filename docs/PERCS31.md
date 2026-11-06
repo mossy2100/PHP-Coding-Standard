@@ -1748,6 +1748,9 @@ class User
 - **Whether a fall-through comment is clear (5.2).** Any comment just before the next `case` or `default` passes, as the
   spec doesn't set any wording.
 - **Avoiding abbreviations (2.7).** Whether a name could avoid an abbreviation can't be judged by a sniff.
+- **A comment or statement after a control structure's closing brace (4).** Section 4 says "any closing brace", but it's
+  in the section on classes, so this standard follows PHP_CodeSniffer in reading it as classes and functions. After a
+  block `declare` in the file header, a statement is still reported, as section 3 wants a blank line after the block.
 - **The pipe operator `|>` on PHP 8.4.** It's only checked when PHP_CodeSniffer runs on PHP 8.5, as 8.4 has no `T_PIPE`
   token.
 - **Over-indentation of a body's first line (2.4, 5).** `PERCS31.WhiteSpace.ScopeIndent` only reports too little
