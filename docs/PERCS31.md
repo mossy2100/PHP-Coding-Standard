@@ -11,6 +11,7 @@ and php-collective where they fit, and custom sniffs where nothing did.
 The [Jumbo standard](Jumbo.md) is PERCS31 plus my own preferences. Use PERCS31 on its own to follow PER Coding Style without them.
 
 **Contents:**
+
 - [Usage](#usage)
 - [PSR-12](#psr-12)
 - [Inherited Sniffs](#inherited-sniffs)
@@ -91,11 +92,11 @@ Sniffs from PHP_CodeSniffer's other standards and the two base packages, each fo
 ### Squiz
 
 - **Squiz.Arrays.ArrayDeclaration**: Requires the first value of a multi-line array on the next line, one value per
-  line, and the closing bracket on the next line after the last value (11), and no trailing comma on a single-line
-  array (2.6). Its other checks aren't PER rules, so they're excluded: alignment, spacing around `=>` and commas, the
-  spacing in `[]`, mixing keyed and unkeyed values, and which line a comma goes on. Its check for a multi-line array's
-  trailing comma is replaced by Slevomat's `Arrays.TrailingArrayComma`, as it missed a keyed last element, and wanted
-  the comma after a heredoc on the next line, as before PHP 7.3.
+  line, and the closing bracket on the next line after the last value (11), and no trailing comma on a single-line array
+  (2.6). Its other checks aren't PER rules, so they're excluded: alignment, spacing around `=>` and commas, the spacing
+  in `[]`, mixing keyed and unkeyed values, and which line a comma goes on. Its check for a multi-line array's trailing
+  comma is replaced by Slevomat's `Arrays.TrailingArrayComma`, as it missed a keyed last element, and wanted the comma
+  after a heredoc on the next line, as before PHP 7.3.
 
 ### PHPCSExtra
 
@@ -281,8 +282,8 @@ is a parameter in a single-line parameter list, whose attribute must be inline.
 A closure or arrow function isn't a structure in section 12.2's list. As a call's argument, its attribute follows the
 rule for a parameter:
 
-- **Argument list on one line:** inline, after a single space, e.g. `array_map(#[Pure] static fn($x) => $x, $items)`.
-  A closure split over lines doesn't split the list, as [section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) says, so
+- **Argument list on one line:** inline, after a single space, e.g. `array_map(#[Pure] static fn($x) => $x, $items)`. A
+  closure split over lines doesn't split the list, as [section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) says, so
   `usort($items, #[Pure] static function ($a, $b) {` keeps its attribute inline.
 - **Argument list split:** on its own line before the closure, indented the same.
 
@@ -503,8 +504,8 @@ This sniff checks:
 
 - The opening brace is on the same line as the property, after a single space.
 - In the long form, the closing brace is on its own line, with no comment after it.
-- In a list with a `{}` body, each hook starts on its own line, each body starts on the line after its `{`, and each
-  `}` is first on its line. An empty body, `{}`, has nothing to move, and a comment may follow the `{`.
+- In a list with a `{}` body, each hook starts on its own line, each body starts on the line after its `{`, and each `}`
+  is first on its line. An empty body, `{}`, has nothing to move, and a comment may follow the `{`.
 - A short hook's `=>` has a single space either side, and its body starts on the same line.
 - A short hook listed inline has a single space after the opening brace and before the closing one.
 - A list with no bodies, as on an interface or abstract property, is on one line, written as `{ get; set; }`: a single
@@ -515,8 +516,8 @@ Indentation is checked by `PERCS31.WhiteSpace.ScopeIndent`, and several statemen
 `PERCS31.Formatting.DisallowMultipleStatements`. A hook on a promoted constructor parameter is reported by
 `PERCS31.Classes.PromotedPropertyHooks`.
 
-PER says nothing about a space in a by-reference hook, `& get`, so it passes. Set `checkReferenceSpacing` to report
-it, as the Jumbo standard does.
+PER says nothing about a space in a by-reference hook, `& get`, so it passes. Set `checkReferenceSpacing` to report it,
+as the Jumbo standard does.
 
 **Auto-fixable:** yes, except a comment after the closing brace, or a comment in the way.
 
@@ -804,8 +805,8 @@ Checks the format of a declare statement, including one with several directives 
 original assumes a single directive with an integer value, so it rejects `declare(ticks=1,strict_types=1);` and
 `declare(encoding='UTF-8');`, however they're spaced, and its later checks, such as for a block declare's braces, then
 look in the wrong place. The fork checks each directive in turn, with any value, so every check works for every declare
-statement, including a block declare with several directives. Its codes and messages are the original's. It's
-temporary, until PHP_CodeSniffer handles several directives.
+statement, including a block declare with several directives. Its codes and messages are the original's. It's temporary,
+until PHP_CodeSniffer handles several directives.
 
 **Auto-fixable:** yes.
 
@@ -997,8 +998,8 @@ Requires a trailing comma after the last arm of a multi-line `match`, the last n
 last argument in an anonymous class's multi-line arguments, and disallows one when the list is on a single line. It also
 disallows one in a `match` arm's conditions on a single line, e.g. `1, 2, => 'a'`.
 
-**Why:** [PER Coding Style 3.1, Section 2.6](https://www.php-fig.org/per/coding-style/#26-trailing-commas) says the last item of a list split across lines MUST have a trailing comma, and
-the last item of a list on one line MUST NOT. Slevomat's trailing comma sniffs cover calls, declarations and closure
+**Why:** [PER Coding Style 3.1, Section 2.6](https://www.php-fig.org/per/coding-style/#26-trailing-commas) says the last item of a list split across lines MUST have a trailing comma,
+and the last item of a list on one line MUST NOT. Slevomat's trailing comma sniffs cover calls, declarations and closure
 `use` lists, and the Squiz array sniff covers arrays, but none covers `match`, group `use` or `new class (`. Like
 Slevomat's call sniffs, it doesn't require a comma when the closing parenthesis follows the last argument on its line.
 
@@ -1053,8 +1054,8 @@ $second = new class (
 Disallows a space or line break before the semicolon that ends an arrow function.
 
 **Why:** [PER Coding Style 3.1, Section 7.1](https://www.php-fig.org/per/coding-style/#71-short-closures) says the semicolon at the end of the expression MUST NOT be preceded by a
-space. `SlevomatCodingStandard.Functions.ArrowFunctionDeclaration` checks the spacing around `fn` and `=>`, but not this.
-PER has no such rule for other statements, so `$a = 1 ;` isn't checked.
+space. `SlevomatCodingStandard.Functions.ArrowFunctionDeclaration` checks the spacing around `fn` and `=>`, but not
+this. PER has no such rule for other statements, so `$a = 1 ;` isn't checked.
 
 **Auto-fixable:** yes.
 
@@ -1084,13 +1085,13 @@ case, and leaves everything else to the parent. For an empty body after a single
 `CloseBracketNewLine` check is skipped too, as it can't be run on its own. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
 
 The parent also reports every blank line in a multi-line parameter or `use` list. [Section 2.3](https://www.php-fig.org/per/coding-style/#23-lines) allows blank lines
-wherever they aren't forbidden, and [section 12.4](https://www.php-fig.org/per/coding-style/#124-example)'s example has one between two parameters, both before an attribute
-and before a parameter with none. So the ruleset excludes the parent's `EmptyLine` code, and this sniff reports blank
-lines itself, as `BlankLine`, except a single one between parameters. A blank line before the closing parenthesis, or
-in a closure's `use` list, is still reported.
+wherever they aren't forbidden, and [section 12.4](https://www.php-fig.org/per/coding-style/#124-example)'s example has one between two parameters, both before an attribute and
+before a parameter with none. So the ruleset excludes the parent's `EmptyLine` code, and this sniff reports blank lines
+itself, as `BlankLine`, except a single one between parameters. A blank line before the closing parenthesis, or in a
+closure's `use` list, is still reported.
 
-The parent doesn't check an arrow function. [Section 7.1](https://www.php-fig.org/per/coding-style/#71-short-closures) says an arrow function follows the same rules as a
-closure, so this sniff checks its split parameter list too:
+The parent doesn't check an arrow function. [Section 7.1](https://www.php-fig.org/per/coding-style/#71-short-closures) says an arrow function follows the same rules as a closure, so
+this sniff checks its split parameter list too:
 
 - The first parameter on the line after `fn(`.
 - One parameter per line, each indented once.
@@ -1251,6 +1252,7 @@ apart from a single letter.
 **Why:** [PER Coding Style 3.1, Section 9](https://www.php-fig.org/per/coding-style/#9-enumerations) says enum case declarations MUST use PascalCase. No inherited sniff checks it.
 A run of capitals inside a name, such as `HTTPStatus`, is allowed here, as PER section 2.7 only recommends treating
 acronyms as words. [`PERCS31.NamingConventions.AcronymCasing`](#percs31namingconventionsacronymcasing) warns about it.
+
 Based on `PhpCollective.Classes.EnumCaseCasing`, from php-collective/code-sniffer, which skips a name with no capitals,
 such as `hearts`.
 
@@ -1283,13 +1285,13 @@ enum Suit
 Requires a binary operator to start the next line when a statement wraps at it, not end this one, and that line to be
 indented once past the line its expression starts on. Operators within a line aren't affected.
 
-The expression starts after the nearest `;`, `,`, opening bracket, or full ternary `?` or `:`. Where it is decides
-the indent:
+The expression starts after the nearest `;`, `,`, opening bracket, or full ternary `?` or `:`. Where it is decides the
+indent:
 
 - **A statement:** exactly once past the line it starts on.
-- **A list item**, such as a call argument, an array element or a `match` arm: once past the line the item starts on,
-  or lined up with the item if it starts its own line. Set `requireListItemIndent` to allow only the first, as the
-  Jumbo standard does.
+- **A list item**, such as a call argument, an array element or a `match` arm: once past the line the item starts on, or
+  lined up with the item if it starts its own line. Set `requireListItemIndent` to allow only the first, as the Jumbo
+  standard does.
 - **An arrow function's `=>`:** exactly once past the line `fn` starts on, even in a list item.
 - **A control structure's condition, or a multi-line `case` condition:** not checked.
 - **Grouping parentheses**, as in `$x = (`: not checked. Set `requireGroupingLineUp` to require a line to line up with
@@ -1497,13 +1499,13 @@ $alsoNotAllowed
 
 ### PERCS31.TypeHints.CompoundTypeLayout
 
-Requires a compound type split across lines to have one type per line, or for a DNF type, one union segment per line.
-A type is split if any `|` or `&` outside parentheses starts a line. Then every one of them must, and a `&` inside a DNF
+Requires a compound type split across lines to have one type per line, or for a DNF type, one union segment per line. A
+type is split if any `|` or `&` outside parentheses starts a line. Then every one of them must, and a `&` inside a DNF
 type's parentheses never can.
 
-**Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says each line of a split union or intersection MUST have a single type,
-and each line of a split DNF type MUST have a single union segment, with all of its intersections on that line. No
-inherited sniff checks it.
+**Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says each line of a split union or intersection MUST have a single type, and
+each line of a split DNF type MUST have a single union segment, with all of its intersections on that line. No inherited
+sniff checks it.
 
 **Auto-fixable:** yes, unless a comment comes before a `&` that starts a line inside parentheses.
 
@@ -1688,8 +1690,8 @@ This is a fork of `Generic.WhiteSpace.ScopeIndent`.
   from `class`. The parent expects `class` at the statement's indent. See [PERCS31.Attributes.AttributePlacement](#percs31attributesattributeplacement).
 
 A line starting a `match` arm must be indented exactly once past the line the `match`'s `{` is on, as section 5.2 shows.
-PER says nothing about a later condition in an arm, split over lines, so that isn't checked.
-The parent only reports indentation that's too small, so nothing else reports an arm indented too far.
+PER says nothing about a later condition in an arm, split over lines, so that isn't checked. The parent only reports
+indentation that's too small, so nothing else reports an arm indented too far.
 
 A body's first line must also be indented exactly once, past the line its `{` is on, or past the line a `)` before the
 `{` opens on. This includes closures, `case` bodies and property hooks.
