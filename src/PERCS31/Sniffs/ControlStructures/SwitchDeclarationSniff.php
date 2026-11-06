@@ -258,15 +258,8 @@ class SwitchDeclarationSniff extends Psr2Sniff
             return;
         }
 
-        // An array's `[` must stay on the `(` line, as PERCS31.Arrays.OpeningBracketPlacement requires.
-        $condition = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($first + 1), $last, true);
-        $afterArray = $condition !== false && $tokens[$condition]['code'] === T_OPEN_SHORT_ARRAY
-            ? $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($tokens[$condition]['bracket_closer'] + 1), $last, true)
-            : true;
-        if ($afterArray !== false) {
-            $this->checkFirstConditionLine($phpcsFile, $first, $last, $indent);
-            $this->checkConditionIndent($phpcsFile, $case, $first, $last);
-        }
+        $this->checkFirstConditionLine($phpcsFile, $first, $last, $indent);
+        $this->checkConditionIndent($phpcsFile, $case, $first, $last);
 
         $beforeCloser = $phpcsFile->findPrevious(T_WHITESPACE, ($last - 1), $case, true);
         if ($beforeCloser === false || $tokens[$beforeCloser]['line'] !== $tokens[$last]['line']) {

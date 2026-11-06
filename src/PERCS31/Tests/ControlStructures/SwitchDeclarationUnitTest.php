@@ -47,15 +47,13 @@ class SwitchDeclarationUnitTest extends AbstractSniffTestCase
             168 => 1,
             180 => 1,
             // A split condition: the first condition on the ( line, then lines not indented.
-            229 => 1,
-            233 => 1,
+            224 => 1,
+            228 => 1,
+            232 => 1,
             237 => 1,
-            242 => 1,
-            243 => 1,
-            251 => 1,
-            252 => 1,
-            // A condition that only starts with an array isn't exempt.
-            259 => 1,
+            238 => 1,
+            246 => 1,
+            247 => 1,
         ];
     }
 

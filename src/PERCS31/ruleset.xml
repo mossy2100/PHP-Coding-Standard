@@ -28,8 +28,6 @@
         <exclude name="PSR12.Files.FileHeader"/>
         <!-- Replaced by a PERCS31 version that accepts a declare statement with several directives (3) -->
         <exclude name="PSR12.Files.DeclareStatement"/>
-        <!-- Replaced by a PERCS31 version that allows a multi-line array as the whole condition (5, 11) -->
-        <exclude name="PSR12.ControlStructures.ControlStructureSpacing"/>
         <!-- PER says nothing about a blank line between call arguments, or before the closing parenthesis (2.3). A
              blank line before the first argument is still reported, as FirstArgumentPosition (4.7) -->
         <exclude name="PSR2.Methods.FunctionCallSignature.EmptyLine"/>
@@ -288,9 +286,6 @@
 
     <!-- A trailing comma in a multi-line match or group use, and none on a single line (2.6) -->
     <rule ref="PERCS31.Formatting.TrailingComma"/>
-
-    <!-- A control structure's parentheses, allowing a multi-line array as the whole condition (5, 11) -->
-    <rule ref="PERCS31.ControlStructures.ControlStructureSpacing"/>
 
     <!-- Each match arm on a new line, as in the example in 5.2 -->
     <rule ref="PERCS31.ControlStructures.MatchArmPlacement"/>

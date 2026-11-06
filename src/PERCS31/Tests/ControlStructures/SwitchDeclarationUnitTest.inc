@@ -218,11 +218,6 @@ y'
         && $c
     ):
         break;
-    case ([
-        1,
-    ]
-    ):
-        break;
 }
 
 switch ($a) {
@@ -253,11 +248,4 @@ if ($a) {
         ):
             break;
     }
-}
-
-switch ($a) {
-    case ([1] === $b
-        && $c
-    ):
-        break;
 }
