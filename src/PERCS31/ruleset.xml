@@ -285,6 +285,9 @@
     <!-- A trailing comma in a multi-line match or group use, and none on a single line (2.6) -->
     <rule ref="PERCS31.Formatting.TrailingComma"/>
 
+    <!-- Each match arm on a new line, as in the example in 5.2 -->
+    <rule ref="PERCS31.ControlStructures.MatchArmPlacement"/>
+
     <!-- One space around => in match arms, as in the example in 5.2. The sniff's array and yield checks are off by
          default, as PER leaves them undefined. -->
     <rule ref="PERCS31.WhiteSpace.ArrowSpacing"/>

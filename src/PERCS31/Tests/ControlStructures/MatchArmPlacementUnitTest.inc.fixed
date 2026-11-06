@@ -1,0 +1,69 @@
+<?php
+
+// === VALID ===
+
+$a = match ($x) {
+    1 => 2,
+    default => 3,
+};
+
+// Several conditions in one arm are one arm.
+$b = match ($x) {
+    1, 2, 3 => 4,
+    5,
+    6 => 7,
+    default => 8,
+};
+
+// Commas inside an arm's value aren't the end of an arm.
+$c = match ($x) {
+    1 => foo(2, 3),
+    4 => [5, 6],
+    7 => fn($y, $z) => $y,
+    8 => match ($y) {
+        9 => 10,
+        default => 11,
+    },
+    default => 12,
+};
+
+// A comment after an arm is fine.
+$d = match ($x) {
+    1 => 2, // Why.
+    default => 3, /* Why. */
+};
+
+// === INVALID ===
+
+$e = match ($x) {
+    1 => 2,
+    default => 3,
+};
+
+$f = match ($x) {
+    1 => 2,
+    3 => 4,
+    default => 5,
+};
+
+$g = match ($x) {
+    1 => foo(2, 3),
+    default => 4,
+};
+
+$h = match ($x) {
+    1 => match ($y) {
+        2 => 3,
+        default => 4,
+    },
+    default => 5,
+};
+
+// A whole match on one line.
+$i = match ($x) { 1 => 2,
+default => 3 };
+
+// A comment in the way can't be fixed.
+$j = match ($x) {
+    1 => 2, /* Why. */ default => 3,
+};

@@ -29,6 +29,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`Jumbo.ControlStructures.StatementAfterClosingBrace` (breaking).** A control structure's closing brace must be on
   its own line in the Jumbo standard, so `} stop();` is an error. A comment such as `} // for $i` is allowed, and so is
   what continues the structure, such as `} else {`. Auto-fixable.
+- **`PERCS31.ControlStructures.MatchArmPlacement` (breaking).** Each `match` arm must start on a new line, as PER Coding
+  Style 3.1, section 5.2, shows. Auto-fixable.
 - **A `match` arm indented too far is an error (breaking).** `PERCS31.WhiteSpace.ScopeIndent` requires a line starting
   an arm to be indented exactly once, as PER Coding Style 3.1, section 5.2, shows. It only reported too little before.
   Auto-fixable.

@@ -167,6 +167,7 @@ section gives the reason.
 | `PERCS31.Classes.PropertyHookLayout`                    | A hook list's and hook body's braces, and a short hook's `=>`     | Partly  |
 | `PERCS31.Classes.PromotedPropertyHooks`                 | A hook on a promoted parameter is a single short hook on one line | No      |
 | `PERCS31.Classes.PropertyDeclaration`                   | No leading `_`, no `var`, a visibility, and `get` before `set`    | Partly  |
+| `PERCS31.ControlStructures.MatchArmPlacement`           | Each `match` arm starts on a new line                             | Yes     |
 | `PERCS31.ControlStructures.MultiLineTernaryOperator`    | A multi-line ternary takes three lines, `?` and `:` leading       | Yes     |
 | `PERCS31.ControlStructures.SwitchDeclaration`           | `switch` rules, with a `break` in the last case                   | Yes     |
 | `PERCS31.Files.DeclareStatement`                        | No spaces in `declare(...)`, with one directive or several        | Yes     |
@@ -681,6 +682,35 @@ interface Named
 | Property               | Type | Default | Description                                                      |
 | ---------------------- | ---- | ------- | ---------------------------------------------------------------- |
 | `orderHooksWithBodies` | bool | false   | Check the hook order in every hook list, not just bodiless ones. |
+
+---
+
+### PERCS31.ControlStructures.MatchArmPlacement
+
+Requires each `match` arm to start on a new line. Several conditions in one arm, as in `1, 2, 3 => 'a',`, are one arm.
+
+**Why:** [PER Coding Style 3.1, Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) says a `match` expression looks like its example, which has one arm per line.
+No inherited sniff checks it.
+
+**Auto-fixable:** yes, except with a comment in the way. The arm moves to the next line, and
+`PERCS31.WhiteSpace.ScopeIndent` indents it.
+
+**Good:**
+
+```php
+$label = match ($code) {
+    200, 201 => 'OK',
+    default => 'Error',
+};
+```
+
+**Bad:**
+
+```php
+$label = match ($code) {
+    200, 201 => 'OK', default => 'Error',
+};
+```
 
 ---
 
