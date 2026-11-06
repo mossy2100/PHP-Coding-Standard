@@ -29,6 +29,7 @@
     <rule ref="PERCS31.Attributes.AttributePlacement">
         <properties>
             <property name="checkClosureAttributesOutsideCalls" value="true"/>
+            <property name="checkEnumCaseAttributes" value="true"/>
         </properties>
     </rule>
 

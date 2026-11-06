@@ -63,6 +63,10 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             186 => 1,
             // A blank line after an attribute with a comment at the end of its line.
             201 => 1,
+            // An enum case when set, one not fixable, then a constant as always.
+            233 => 1,
+            238 => 1,
+            241 => 1,
         ];
     }
 

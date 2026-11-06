@@ -43,6 +43,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   into a form that breaks PER Coding Style 3.1, section 11. `PERCS31.ControlStructures.ControlStructureSpacing` replaces
   `PSR12.ControlStructures.ControlStructureSpacing`, so update any `phpcs:ignore` comments or `<exclude>` rules that name
   it.
+- **An enum case's attribute can be on the case's line in PERCS31.** Section 12.2 of PER Coding Style 3.1 doesn't list
+  enum cases. The Jumbo standard still requires the line before, using the new `PERCS31.Attributes.AttributePlacement`
+  property `checkEnumCaseAttributes`.
 - **A default value's `=` can be aligned in PERCS31.** It's a binary operator, so PER Coding Style 3.1 only requires at
   least one space. `PERCS31.Operators.OperatorSpacing` now checks it, with the new property `checkDefaultValues`, in
   place of `Squiz.Functions.FunctionDeclarationArgumentSpacing`. The Jumbo standard still requires exactly one space.

@@ -27,6 +27,9 @@ use PHPCSUtils\Utils\PassedParameters;
  * assignment or an array, PER says nothing. Set checkClosureAttributesOutsideCalls to require the attribute inline
  * with a single space there too, as the Jumbo standard does.
  *
+ * An enum case isn't in section 12.2's list either, so its attribute may be on the case's line. Set
+ * checkEnumCaseAttributes to require it on the line before, as for a constant, as the Jumbo standard does.
+ *
  * It also reports a blank line or a comment between the last attribute and its target. That replaces
  * SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing, whose fix deletes a comment there, and whose only option
  * for an attribute on its target's line, allowOnSameLine, is all or nothing.
@@ -69,6 +72,12 @@ class AttributePlacementSniff implements Sniff
      * an array, as inline with a single space. PER says nothing about it, so it's off by default.
      */
     public bool $checkClosureAttributesOutsideCalls = false;
+
+    /**
+     * Whether to require an enum case's attribute on the line before the case. Section 12.2 doesn't list enum cases, so
+     * it's off by default.
+     */
+    public bool $checkEnumCaseAttributes = false;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -127,6 +136,10 @@ class AttributePlacementSniff implements Sniff
         }
 
         if ($tokens[$targetPtr]['line'] !== $tokens[$closerPtr]['line']) {
+            return;
+        }
+
+        if ($tokens[$targetPtr]['code'] === T_ENUM_CASE && !$this->checkEnumCaseAttributes) {
             return;
         }
 

@@ -228,3 +228,26 @@ foo(
 );
 
 foo(callback: #[Pure] fn() => 1);
+
+enum AttributesOnCases
+{
+    #[Label] case Same;
+
+    #[Label]
+    case Before;
+
+    #[Label, Other] case Compound;
+
+    // phpcs:set PERCS31.Attributes.AttributePlacement checkEnumCaseAttributes true
+    #[Label]
+    case Reported;
+
+    #[Label]
+    case Allowed;
+
+    #[Label] /* A comment. */ case NotFixable;
+    // phpcs:set PERCS31.Attributes.AttributePlacement checkEnumCaseAttributes false
+
+    #[Label]
+    public const int LIMIT = 1;
+}

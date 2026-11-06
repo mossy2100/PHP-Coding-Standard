@@ -297,6 +297,9 @@ Anywhere else, such as in an assignment or an array, PER says nothing, so it isn
 `checkClosureAttributesOutsideCalls` to require the attribute inline after a single space there too, as the Jumbo
 standard does.
 
+An enum case isn't in section 12.2's list either, so `#[Label] case Active;` passes, as does the attribute on the line
+before. Set `checkEnumCaseAttributes` to require the line before, as for a constant, as the Jumbo standard does.
+
 **Why:** `SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing` covers some of this, but its only option for an
 attribute on its target's line, `allowOnSameLine`, is all or nothing, and its fix for a blank line deletes a comment
 between the attribute and its target. So this sniff checks placement itself, and the PERCS31 ruleset doesn't use the
@@ -372,6 +375,7 @@ $handler = new #[Attribute] class {
 | Property                             | Type | Default | Description                                                                 |
 | ------------------------------------ | ---- | ------- | --------------------------------------------------------------------------- |
 | `checkClosureAttributesOutsideCalls` | bool | false   | Require a closure's attribute inline, after a single space, outside a call. |
+| `checkEnumCaseAttributes`            | bool | false   | Require an enum case's attribute on the line before the case.               |
 
 ---
 
