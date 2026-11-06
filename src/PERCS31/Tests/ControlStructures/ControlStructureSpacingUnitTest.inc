@@ -1,0 +1,73 @@
+<?php
+
+// === VALID: a multi-line foreach ===
+
+foreach ([
+    1,
+    2,
+] as $x) {
+    foo();
+}
+
+foreach ([
+    'a' => 1,
+] as $key => $value) {
+    foo();
+}
+
+foreach (
+    $items as $x
+) {
+    foo();
+}
+
+foreach (foo(
+    1,
+) as $x) {
+    bar();
+}
+
+// === VALID: the parent's layout ===
+
+foreach ($items as $x) {
+    foo();
+}
+
+if (
+    $a
+    && $b
+) {
+    foo();
+}
+
+// === INVALID: a space inside a multi-line foreach's parentheses ===
+
+foreach ( [
+    1,
+] as $x) {
+    foo();
+}
+
+foreach ([
+    1,
+] as $x ) {
+    foo();
+}
+
+// === INVALID: the parent's checks still run ===
+
+foreach ( $items as $x ) {
+    foo();
+}
+
+if ($a
+    && $b
+) {
+    foo();
+}
+
+while ($a
+    && $b
+) {
+    foo();
+}

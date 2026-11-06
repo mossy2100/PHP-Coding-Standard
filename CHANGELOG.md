@@ -37,6 +37,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   Style 3.1, section 5.2, shows. Auto-fixable.
 - **A one-line ternary is no longer read as spanning lines.** `PERCS31.ControlStructures.MultiLineTernaryOperator`
   reported and split one after `+=`, `.=`, `echo`, `print` or `yield`, as a statement, or in a `match` arm.
+- **A multi-line array can go in a `foreach` header.** `foreach ([` ... `] as $x) {` was reported, and `phpcbf` rewrote it
+  into a form that breaks PER Coding Style 3.1, section 11. `PERCS31.ControlStructures.ControlStructureSpacing` replaces
+  `PSR12.ControlStructures.ControlStructureSpacing`, so update any `phpcs:ignore` comments or `<exclude>` rules that name
+  it.
 - **A multi-line `case` condition must start on the next line and be indented (breaking).**
   `PERCS31.ControlStructures.SwitchDeclaration` reports `case ($a`, and a line not indented past the `case`, as PER
   Coding Style 3.1, section 5.2, requires. Auto-fixable, unless a comment is in the way.

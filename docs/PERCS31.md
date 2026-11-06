@@ -43,6 +43,8 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 
 - **PSR2.Classes.PropertyDeclaration** and **Generic.WhiteSpace.ScopeIndent**, by [`PERCS31.Classes.PropertyDeclaration`](#percs31classespropertydeclaration)
   and [`PERCS31.WhiteSpace.ScopeIndent`](#percs31whitespacescopeindent), which support property hooks (PHP 8.4).
+- **PSR12.ControlStructures.ControlStructureSpacing**, by
+  [`PERCS31.ControlStructures.ControlStructureSpacing`](#percs31controlstructurescontrolstructurespacing), which drops its rules for a multi-line `foreach`.
 - **Generic.Formatting.DisallowMultipleStatements**, by [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements), which allows
   `{ get; set; }` on an abstract or interface property.
 - **PSR2.Classes.ClassDeclaration**, **Squiz.Functions.MultiLineFunctionDeclaration** and
@@ -155,44 +157,45 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 Each one fills a gap in the inherited sniffs, or replaces an inherited sniff that conflicts with PER Coding Style. Each
 section gives the reason.
 
-| Sniff                                                   | Checks                                                            | Fixable |
-| ------------------------------------------------------- | ----------------------------------------------------------------- | ------- |
-| `PERCS31.Arrays.ArrayBracketSpacing`                    | No blank line before a multi-line array's `]`                     | Yes     |
-| `PERCS31.Arrays.OpeningBracketPlacement`                | A multi-line array's `[` isn't on a line of its own               | Yes     |
-| `PERCS31.Attributes.AttributePlacement`                 | An attribute is on its own line, except on a parameter            | Yes     |
-| `PERCS31.Attributes.DisallowMultiLineAttributesJoining` | One attribute per block when a block spans lines                  | Yes     |
-| `PERCS31.Classes.ClassDeclaration`                      | Class declarations, allowing an empty body as `{}`                | Yes     |
-| `PERCS31.Classes.ClassInstantiationNoBrackets`          | A warning for `(new Foo())->bar()`                                | Yes     |
-| `PERCS31.Classes.EnumMemberVisibility`                  | `private`, not `protected`, for a method or constant in an enum   | Yes     |
-| `PERCS31.Classes.PropertyHookLayout`                    | A hook list's and hook body's braces, and a short hook's `=>`     | Partly  |
-| `PERCS31.Classes.PromotedPropertyHooks`                 | A hook on a promoted parameter is a single short hook on one line | No      |
-| `PERCS31.Classes.PropertyDeclaration`                   | No leading `_`, no `var`, a visibility, and `get` before `set`    | Partly  |
-| `PERCS31.ControlStructures.MatchArmPlacement`           | Each `match` arm starts on a new line                             | Yes     |
-| `PERCS31.ControlStructures.MultiLineTernaryOperator`    | A multi-line ternary takes three lines, `?` and `:` leading       | Yes     |
-| `PERCS31.ControlStructures.SwitchDeclaration`           | `switch` rules, with a `break` in the last case                   | Yes     |
-| `PERCS31.Files.DeclareStatement`                        | No spaces in `declare(...)`, with one directive or several        | Yes     |
-| `PERCS31.Files.FileHeader`                              | The file header, allowing `<?php declare(...) ?>` above markup    | Yes     |
-| `PERCS31.Files.LineLength`                              | A warning over 120 characters, and a hidden one over 80           | No      |
-| `PERCS31.Formatting.DisallowMultipleStatements`         | One statement per line, allowing `{ get; set; }`                  | Yes     |
-| `PERCS31.Formatting.EmptyBody`                          | An empty class, function, closure or anonymous class body is `{}` | Yes     |
-| `PERCS31.Formatting.MethodChaining`                     | The first method of a split chain on the next line                | Yes     |
-| `PERCS31.Formatting.TrailingComma`                      | Trailing commas in `match`, group `use` and `new class (...)`     | Yes     |
-| `PERCS31.Functions.ArrowFunctionSemicolonSpacing`       | No space before the `;` that ends an arrow function               | Yes     |
-| `PERCS31.Functions.MultiLineFunctionDeclaration`        | Function, closure and `fn` declarations, allowing `{}` bodies     | Yes     |
-| `PERCS31.NamingConventions.AcronymCasing`               | A severity 4 warning for an acronym in capitals in a name         | No      |
-| `PERCS31.NamingConventions.UpperCaseConstantName`       | Constants in UPPER_CASE, or PascalCase in an enum                 | No      |
-| `PERCS31.NamingConventions.ValidConstantName`           | No leading underscore on a constant                               | No      |
-| `PERCS31.NamingConventions.ValidEnumCaseName`           | Enum cases in PascalCase                                          | No      |
-| `PERCS31.Operators.OperatorPlacement`                   | A wrapped binary operator starts the next line, indented once     | Yes     |
-| `PERCS31.Operators.OperatorSpacing`                     | At least one space around binary operators, including `\|>`       | Yes     |
-| `PERCS31.PHP.RequireCloneParentheses`                   | A warning for `clone $a`, not `clone($a)`                         | Yes     |
-| `PERCS31.Strings.HeredocIndentation`                    | Where a heredoc or nowdoc begins, and its indentation             | Yes     |
-| `PERCS31.TypeHints.CompoundTypeLayout`                  | One type, or one DNF union segment, per line of a split type      | Yes     |
-| `PERCS31.TypeHints.CompoundTypeOperatorSpacing`         | No space around `\|` or `&` in a type, but a split before one     | Yes     |
-| `PERCS31.WhiteSpace.ArrowSpacing`                       | One space around `=>` in `match` arms                             | Yes     |
-| `PERCS31.WhiteSpace.ConsistentIndent`                   | No line indented further than its scope, after a statement        | Yes     |
-| `PERCS31.WhiteSpace.ScopeClosingBrace`                  | A closing brace on its own line, allowing `{}`                    | Yes     |
-| `PERCS31.WhiteSpace.ScopeIndent`                        | Indentation, including property hooks and anonymous classes       | Yes     |
+| Sniff                                                   | Checks                                                              | Fixable |
+| ------------------------------------------------------- | ------------------------------------------------------------------- | ------- |
+| `PERCS31.Arrays.ArrayBracketSpacing`                    | No blank line before a multi-line array's `]`                       | Yes     |
+| `PERCS31.Arrays.OpeningBracketPlacement`                | A multi-line array's `[` isn't on a line of its own                 | Yes     |
+| `PERCS31.Attributes.AttributePlacement`                 | An attribute is on its own line, except on a parameter              | Yes     |
+| `PERCS31.Attributes.DisallowMultiLineAttributesJoining` | One attribute per block when a block spans lines                    | Yes     |
+| `PERCS31.Classes.ClassDeclaration`                      | Class declarations, allowing an empty body as `{}`                  | Yes     |
+| `PERCS31.Classes.ClassInstantiationNoBrackets`          | A warning for `(new Foo())->bar()`                                  | Yes     |
+| `PERCS31.Classes.EnumMemberVisibility`                  | `private`, not `protected`, for a method or constant in an enum     | Yes     |
+| `PERCS31.Classes.PropertyHookLayout`                    | A hook list's and hook body's braces, and a short hook's `=>`       | Partly  |
+| `PERCS31.Classes.PromotedPropertyHooks`                 | A hook on a promoted parameter is a single short hook on one line   | No      |
+| `PERCS31.Classes.PropertyDeclaration`                   | No leading `_`, no `var`, a visibility, and `get` before `set`      | Partly  |
+| `PERCS31.ControlStructures.ControlStructureSpacing`     | A control structure's parentheses, with no split rule for `foreach` | Yes     |
+| `PERCS31.ControlStructures.MatchArmPlacement`           | Each `match` arm starts on a new line                               | Yes     |
+| `PERCS31.ControlStructures.MultiLineTernaryOperator`    | A multi-line ternary takes three lines, `?` and `:` leading         | Yes     |
+| `PERCS31.ControlStructures.SwitchDeclaration`           | `switch` rules, with a `break` in the last case                     | Yes     |
+| `PERCS31.Files.DeclareStatement`                        | No spaces in `declare(...)`, with one directive or several          | Yes     |
+| `PERCS31.Files.FileHeader`                              | The file header, allowing `<?php declare(...) ?>` above markup      | Yes     |
+| `PERCS31.Files.LineLength`                              | A warning over 120 characters, and a hidden one over 80             | No      |
+| `PERCS31.Formatting.DisallowMultipleStatements`         | One statement per line, allowing `{ get; set; }`                    | Yes     |
+| `PERCS31.Formatting.EmptyBody`                          | An empty class, function, closure or anonymous class body is `{}`   | Yes     |
+| `PERCS31.Formatting.MethodChaining`                     | The first method of a split chain on the next line                  | Yes     |
+| `PERCS31.Formatting.TrailingComma`                      | Trailing commas in `match`, group `use` and `new class (...)`       | Yes     |
+| `PERCS31.Functions.ArrowFunctionSemicolonSpacing`       | No space before the `;` that ends an arrow function                 | Yes     |
+| `PERCS31.Functions.MultiLineFunctionDeclaration`        | Function, closure and `fn` declarations, allowing `{}` bodies       | Yes     |
+| `PERCS31.NamingConventions.AcronymCasing`               | A severity 4 warning for an acronym in capitals in a name           | No      |
+| `PERCS31.NamingConventions.UpperCaseConstantName`       | Constants in UPPER_CASE, or PascalCase in an enum                   | No      |
+| `PERCS31.NamingConventions.ValidConstantName`           | No leading underscore on a constant                                 | No      |
+| `PERCS31.NamingConventions.ValidEnumCaseName`           | Enum cases in PascalCase                                            | No      |
+| `PERCS31.Operators.OperatorPlacement`                   | A wrapped binary operator starts the next line, indented once       | Yes     |
+| `PERCS31.Operators.OperatorSpacing`                     | At least one space around binary operators, including `\|>`         | Yes     |
+| `PERCS31.PHP.RequireCloneParentheses`                   | A warning for `clone $a`, not `clone($a)`                           | Yes     |
+| `PERCS31.Strings.HeredocIndentation`                    | Where a heredoc or nowdoc begins, and its indentation               | Yes     |
+| `PERCS31.TypeHints.CompoundTypeLayout`                  | One type, or one DNF union segment, per line of a split type        | Yes     |
+| `PERCS31.TypeHints.CompoundTypeOperatorSpacing`         | No space around `\|` or `&` in a type, but a split before one       | Yes     |
+| `PERCS31.WhiteSpace.ArrowSpacing`                       | One space around `=>` in `match` arms                               | Yes     |
+| `PERCS31.WhiteSpace.ConsistentIndent`                   | No line indented further than its scope, after a statement          | Yes     |
+| `PERCS31.WhiteSpace.ScopeClosingBrace`                  | A closing brace on its own line, allowing `{}`                      | Yes     |
+| `PERCS31.WhiteSpace.ScopeIndent`                        | Indentation, including property hooks and anonymous classes         | Yes     |
 
 ### PERCS31.Arrays.ArrayBracketSpacing
 
@@ -682,6 +685,44 @@ interface Named
 | Property               | Type | Default | Description                                                      |
 | ---------------------- | ---- | ------- | ---------------------------------------------------------------- |
 | `orderHooksWithBodies` | bool | false   | Check the hook order in every hook list, not just bodiless ones. |
+
+---
+
+### PERCS31.ControlStructures.ControlStructureSpacing
+
+Checks the layout of a control structure's parentheses, as `PSR12.ControlStructures.ControlStructureSpacing` does,
+except for a multi-line `foreach`. This extends that sniff.
+
+**Why:** [PER Coding Style 3.1, Section 5.5](https://www.php-fig.org/per/coding-style/#55-foreach) has no rule for an expression split inside a `foreach`'s parentheses, unlike
+`if`, `switch`, `while`, `do while` and `for`. The parent applies one anyway, so it rejects an array in the header.
+Moving the array down then breaks section 11, which forbids `[` on a line of its own.
+
+For a multi-line `foreach`, this sniff only checks what section 5 requires of every control structure: no space after
+the `(` or before the `)`.
+
+**Auto-fixable:** yes.
+
+**Good:**
+
+```php
+foreach ([
+    'first',
+    'second',
+] as $value) {
+    echo $value;
+}
+```
+
+**Bad:**
+
+```php
+foreach ( [
+    'first',
+    'second',
+] as $value ) {
+    echo $value;
+}
+```
 
 ---
 
