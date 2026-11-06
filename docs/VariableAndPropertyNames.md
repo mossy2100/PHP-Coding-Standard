@@ -33,7 +33,7 @@ two Jumbo sniffs fill that gap.
 
 For properties, `PERCS31.Classes.PropertyDeclaration` replaces PSR-12's `PSR2.Classes.PropertyDeclaration`, which only
 issues a warning for a leading underscore, and doesn't check promoted constructor properties. The Jumbo sniff reports
-both as errors, since [PER Coding Style 3.0, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says property names MUST NOT start with an underscore.
+both as errors, since [PER Coding Style 3.1, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says property names MUST NOT start with an underscore.
 
 ---
 
@@ -59,14 +59,14 @@ $UserName = 'John';    // UpperCamelCase not allowed
 
 ## Why camelCase
 
-PSR-1, PSR-12 and PER Coding Style 3.0 don't set a naming convention for variables or properties.
+PSR-1, PSR-12 and PER Coding Style 3.1 don't set a naming convention for variables or properties.
 [PSR-1, Section 4.2 "Properties"](https://www.php-fig.org/psr/psr-1/#42-properties) only asks for consistency:
 
 > This guide intentionally avoids any recommendation regarding the use of \$StudlyCaps, \$camelCase, or \$under_score
 > property names. Whatever naming convention is used SHOULD be applied consistently within a reasonable scope. That
 > scope may be vendor-level, package-level, class-level, or method-level.
 
-[PER Coding Style 3.0, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) rules out the underscore prefix:
+[PER Coding Style 3.1, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) rules out the underscore prefix:
 
 > Property or constant names MUST NOT be prefixed with a single underscore to indicate protected or private visibility.
 > That is, an underscore prefix explicitly has no meaning.

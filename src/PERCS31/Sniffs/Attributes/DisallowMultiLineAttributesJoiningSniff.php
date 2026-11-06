@@ -11,7 +11,7 @@ use PHP_CodeSniffer\Util\Tokens;
 /**
  * Disallows several attributes in one attribute block when the block spans more than one line.
  *
- * PER Coding Style 3.0, section 12.3, allows several attributes in one block, e.g. `#[Attribute, Deprecated]`, but
+ * PER Coding Style 3.1, section 12.3, allows several attributes in one block, e.g. `#[Attribute, Deprecated]`, but
  * says that if the list is split into multiple lines, the attributes MUST be in separate blocks.
  * SlevomatCodingStandard.Attributes.DisallowAttributesJoining disallows joining altogether, and its fix leaves a block
  * written over several lines in a poor layout, so this sniff replaces it. The fix puts each attribute in its own block,

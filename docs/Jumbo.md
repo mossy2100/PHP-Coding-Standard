@@ -303,7 +303,7 @@ Disallows blank lines after a class's opening brace and before its closing brace
 `SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces`.
 
 **Why:** `SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces` rejects an empty body written as `{}` on one line,
-which [PER Coding Style 3.0, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the
+which [PER Coding Style 3.1, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the
 parent. See [PERCS31.Formatting.EmptyBody](PERCS31.md#percs31formattingemptybody).
 
 **Auto-fixable:** yes, as the parent.
@@ -343,7 +343,7 @@ function with one, and leaves everything else to the parent. See [`PERCS31.Class
 Disallows parentheses around the argument of a language construct, such as `echo('x')`, except `exit` and `die`. This
 replaces `SlevomatCodingStandard.ControlStructures.LanguageConstructWithParentheses`.
 
-**Why:** the Slevomat sniff reports `die()` and fixes it to `die`. [PER Coding Style 3.0, Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) says `exit()` and
+**Why:** the Slevomat sniff reports `die()` and fixes it to `die`. [PER Coding Style 3.1, Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) says `exit()` and
 `die()` SHOULD have parentheses, which `Universal.PHP.RequireExitDieParentheses` checks, so the two sniffs would undo
 each other's fixes. This sniff skips `exit` and `die`, and leaves everything else to the parent.
 
@@ -563,7 +563,7 @@ Disallows whitespace, including a line break, between a prefix unary `+`, `~` or
 others: `SlevomatCodingStandard.Operators.NegationOperatorSpacing` for `-`, `Generic.Formatting.SpaceAfterNot` for `!`,
 `Generic.WhiteSpace.IncrementDecrementSpacing` for `++` and `--`, and Slevomat's `ReferenceSpacing` and
 `SpreadOperatorSpacing` for `&` and `...`. Nothing checks `+`, `~` or `@`. A cast keeps the single space after it that
-[PER Coding Style 3.0, Section 6.1](https://www.php-fig.org/per/coding-style/#61-unary-operators) requires.
+[PER Coding Style 3.1, Section 6.1](https://www.php-fig.org/per/coding-style/#61-unary-operators) requires.
 
 **Auto-fixable:** yes, unless a comment is between the operator and its operand.
 

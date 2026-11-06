@@ -14,7 +14,7 @@ use PHPCSUtils\Utils\PassedParameters;
 /**
  * Requires an attribute to be on the line before its target, except on a parameter in a single-line parameter list.
  *
- * PER Coding Style 3.0, section 12.2, puts an attribute on its own line before a class, function, method, constant or
+ * PER Coding Style 3.1, section 12.2, puts an attribute on its own line before a class, function, method, constant or
  * property, and before a parameter in a multi-line parameter list. In a single-line parameter list, the attribute must
  * be inline with its parameter.
  *

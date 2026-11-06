@@ -11,7 +11,7 @@ use PHP_CodeSniffer\Util\Tokens;
 /**
  * Disallows a constant name that starts with an underscore.
  *
- * PER Coding Style 3.0, section 4.3, says constant names MUST NOT be prefixed with a single underscore.
+ * PER Coding Style 3.1, section 4.3, says constant names MUST NOT be prefixed with a single underscore.
  * Generic.NamingConventions.UpperCaseConstantName only checks the case, so `const _HIDDEN = 1;` passes it. This sniff
  * checks class constants and `const` statements at file scope. A constant made with `define()` isn't checked.
  */

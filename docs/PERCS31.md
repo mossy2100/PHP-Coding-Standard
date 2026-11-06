@@ -275,7 +275,7 @@ $response = $client->post(
 
 ### PERCS31.Attributes.AttributePlacement
 
-Requires an attribute to be on the line before its target, as [PER Coding Style 3.0, Section 12.2](https://www.php-fig.org/per/coding-style/#122-placement) requires. The exception
+Requires an attribute to be on the line before its target, as [PER Coding Style 3.1, Section 12.2](https://www.php-fig.org/per/coding-style/#122-placement) requires. The exception
 is a parameter in a single-line parameter list, whose attribute must be inline.
 
 A closure or arrow function isn't a structure in section 12.2's list. As a call's argument, its attribute follows the
@@ -377,7 +377,7 @@ $handler = new #[Attribute] class {
 Disallows several attributes in one attribute block when the block spans more than one line. A block on one line, such
 as `#[Attribute, Deprecated]`, is allowed. This replaces `SlevomatCodingStandard.Attributes.DisallowAttributesJoining`.
 
-**Why:** [PER Coding Style 3.0, Section 12.3](https://www.php-fig.org/per/coding-style/#123-compound-attributes) allows several attributes in one block, but says that if the list is split
+**Why:** [PER Coding Style 3.1, Section 12.3](https://www.php-fig.org/per/coding-style/#123-compound-attributes) allows several attributes in one block, but says that if the list is split
 into multiple lines, the attributes MUST be in separate blocks. The Slevomat sniff disallows joining altogether, and its
 fix leaves a block written over several lines in a poor layout. No other sniff in PHPCS, Slevomat, PHPCSExtra or the
 other standards checked covers it.
@@ -414,7 +414,7 @@ Checks the declaration of a class, interface, trait or enum, and the placement o
 written as `{}` on one line, e.g. `class Foo {}`. This replaces `PSR2.Classes.ClassDeclaration`.
 
 **Why:** `PSR2.Classes.ClassDeclaration` rejects an empty body written as `{}` on one line, which
-[PER Coding Style 3.0, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the
+[PER Coding Style 3.1, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the
 parent. For an empty body, the checks on `extends` and `implements` still run. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
 
 **Auto-fixable:** yes, as the parent.
@@ -426,7 +426,7 @@ parent. For an empty body, the checks on `extends` and `implements` still run. S
 Warns about parentheses around a class instantiation that's immediately dereferenced with `->`, `?->` or `::`, such as
 `(new Foo())->bar()`.
 
-**Why:** [PER Coding Style 3.0, Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says the instantiation SHOULD NOT be wrapped in parentheses, and PHP 8.4 allows
+**Why:** [PER Coding Style 3.1, Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says the instantiation SHOULD NOT be wrapped in parentheses, and PHP 8.4 allows
 `new Foo()->bar()`. As it's a SHOULD, this is a warning. `SlevomatCodingStandard.PHP.UselessParentheses` has a similar
 check, but it misses `::`, and removes the parentheses from `(new Foo() ?: new Bar())->baz()`, changing its meaning.
 This sniff only reports parentheses holding exactly one `new` expression. A `new` without an argument list, such as
@@ -620,7 +620,7 @@ Verifies that properties are declared correctly. This replaces `PSR2.Classes.Pro
 
 **Why:** PSR-12's `PSR2.Classes.PropertyDeclaration` misreads variables in PHP 8.4 property hook bodies, such as
 `$value` and `$this`, as property declarations, and reports false errors on them. It also only warns about a leading
-underscore, and doesn't check promoted constructor properties, where [PER Coding Style 3.0, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says MUST NOT.
+underscore, and doesn't check promoted constructor properties, where [PER Coding Style 3.1, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says MUST NOT.
 This sniff also checks that `get` comes before `set` in an abstract or interface property's hooks, which no inherited
 sniff does.
 
@@ -629,7 +629,7 @@ sniff does.
 It reports:
 
 - A property name with a leading underscore (`Underscore`), for any visibility, including promoted constructor
-  parameters. PER Coding Style 3.0 disallows it too.
+  parameters. PER Coding Style 3.1 disallows it too.
 - The `var` keyword (`VarUsed`).
 - A property with no visibility (`ScopeMissing`).
 - `set` before `get` in a property's hooks (`HookOrder`). [PER Coding Style 3.1, Section 4.10](https://www.php-fig.org/per/coding-style/#410-interface-and-abstract-properties) requires this for an
@@ -719,14 +719,14 @@ $label = match ($code) {
 Requires a ternary that spans lines to take three, with `?` and `:` each starting a line, indented once. This replaces
 `SlevomatCodingStandard.ControlStructures.DisallowTrailingMultiLineTernaryOperator`.
 
-**Why:** [PER Coding Style 3.0, Section 6.4](https://www.php-fig.org/per/coding-style/#64-operators-placement) says a multi-line ternary MUST occupy three lines, never two, with each
+**Why:** [PER Coding Style 3.1, Section 6.4](https://www.php-fig.org/per/coding-style/#64-operators-placement) says a multi-line ternary MUST occupy three lines, never two, with each
 operator at the start of its line. The Slevomat sniff only reports a `?` at the end of a line. No inherited sniff
 reports a ternary on two lines, a trailing `:`, or the wrong indentation. A short ternary (`?:`) is a binary operator in
 PER, so it isn't checked here.
 
 **Auto-fixable:** yes, unless a comment is next to `?` or `:`.
 
-The indentation is always 4 spaces, as [PER Coding Style 3.0, Section 2.4](https://www.php-fig.org/per/coding-style/#24-indenting) requires. This sniff doesn't use the `indent`
+The indentation is always 4 spaces, as [PER Coding Style 3.1, Section 2.4](https://www.php-fig.org/per/coding-style/#24-indenting) requires. This sniff doesn't use the `indent`
 property of `PERCS31.WhiteSpace.ScopeIndent`.
 
 **Good:**
@@ -880,7 +880,7 @@ measured as by the parent, and gets at most one warning. See [Line Length](LineL
 Requires each statement to be on a line by itself. This replaces `Generic.Formatting.DisallowMultipleStatements`.
 
 **Why:** the Generic sniff treats the operations of an abstract or interface property, `{ get; set; }`, as two
-statements on one line. [PER Coding Style 3.0, Section 4.10](https://www.php-fig.org/per/coding-style/#410-interface-and-abstract-properties) requires them on one line. This sniff skips a semicolon that
+statements on one line. [PER Coding Style 3.1, Section 4.10](https://www.php-fig.org/per/coding-style/#410-interface-and-abstract-properties) requires them on one line. This sniff skips a semicolon that
 ends a `get` or `set` operation when the previous one does too, and leaves everything else to the Generic sniff.
 
 **Auto-fixable:** yes.
@@ -1218,7 +1218,7 @@ enum Suit: string
 
 Disallows a constant name that starts with an underscore, for class constants and `const` statements at file scope.
 
-**Why:** [PER Coding Style 3.0, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says constant names MUST NOT start with an underscore.
+**Why:** [PER Coding Style 3.1, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says constant names MUST NOT start with an underscore.
 `Generic.NamingConventions.UpperCaseConstantName` only checks the case, so `const _HIDDEN = 1;` passes it.
 
 **Auto-fixable:** no. Renaming a constant is a refactor, not a fix.
@@ -1248,7 +1248,7 @@ final class Config
 Requires enum case names to be in PascalCase: a capital first letter, only letters and digits, and not all capitals,
 apart from a single letter.
 
-**Why:** [PER Coding Style 3.0, Section 9](https://www.php-fig.org/per/coding-style/#9-enumerations) says enum case declarations MUST use PascalCase. No inherited sniff checks it.
+**Why:** [PER Coding Style 3.1, Section 9](https://www.php-fig.org/per/coding-style/#9-enumerations) says enum case declarations MUST use PascalCase. No inherited sniff checks it.
 A run of capitals inside a name, such as `HTTPStatus`, is allowed here, as PER section 2.7 only recommends treating
 acronyms as words. [`PERCS31.NamingConventions.AcronymCasing`](#percs31namingconventionsacronymcasing) warns about it.
 Based on `PhpCollective.Classes.EnumCaseCasing`, from php-collective/code-sniffer, which skips a name with no capitals,

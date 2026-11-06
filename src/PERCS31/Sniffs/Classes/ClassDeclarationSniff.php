@@ -12,7 +12,7 @@ use PHP_CodeSniffer\Standards\PSR2\Sniffs\Classes\ClassDeclarationSniff as PSR2S
  * Checks the declaration of a class, interface, trait or enum, allowing an empty body as `{}`.
  *
  * PSR2.Classes.ClassDeclaration requires the opening brace on the line after the declaration, so it reports
- * `class Foo {}`. PER Coding Style 3.0, section 4, says an empty body should be written that way. For an empty body on
+ * `class Foo {}`. PER Coding Style 3.1, section 4, says an empty body should be written that way. For an empty body on
  * one line, this sniff runs only the parent's checks on the declaration itself (`extends`, `implements` and their
  * spacing), and skips its brace checks. Everything else is left to the parent.
  */

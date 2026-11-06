@@ -14,7 +14,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  * Inherited sniffs check the other prefix operators: SlevomatCodingStandard.Operators.NegationOperatorSpacing for `-`,
  * Generic.Formatting.SpaceAfterNot for `!`, Generic.WhiteSpace.IncrementDecrementSpacing for `++` and `--`, and
  * Slevomat's ReferenceSpacing and SpreadOperatorSpacing for `&` and `...`. Nothing checks these three. A cast keeps
- * the single space after it that PER Coding Style 3.0, section 6.1, requires.
+ * the single space after it that PER Coding Style 3.1, section 6.1, requires.
  */
 class UnaryOperatorSpacingSniff implements Sniff
 {

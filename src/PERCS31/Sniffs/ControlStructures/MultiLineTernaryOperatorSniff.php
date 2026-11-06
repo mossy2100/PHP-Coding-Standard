@@ -12,7 +12,7 @@ use SlevomatCodingStandard\Helpers\TernaryOperatorHelper;
 /**
  * Requires a ternary that spans lines to take three, with `?` and `:` each starting a line, indented once.
  *
- * PER Coding Style 3.0, section 6.4, says a multi-line ternary MUST occupy 3 lines, never 2, with each operator at the
+ * PER Coding Style 3.1, section 6.4, says a multi-line ternary MUST occupy 3 lines, never 2, with each operator at the
  * start of its line, indented once. SlevomatCodingStandard.ControlStructures.DisallowTrailingMultiLineTernaryOperator
  * only reports a `?` at the end of a line, so this sniff replaces it. It also reports a ternary on two lines, a
  * trailing `:`, and `?` or `:` indented wrongly, and fixes each to the three-line layout.
@@ -66,7 +66,7 @@ class MultiLineTernaryOperatorSniff implements Sniff
         }
 
         // One level past the indentation of the line the ternary starts on. A level is always 4 spaces, as PER Coding
-        // Style 3.0, section 2.4, requires, so ScopeIndent's indent property isn't used.
+        // Style 3.1, section 2.4, requires, so ScopeIndent's indent property isn't used.
         $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $startPointer, true);
         assert(is_int($firstOnLine));
         $indentation = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1 + 4));

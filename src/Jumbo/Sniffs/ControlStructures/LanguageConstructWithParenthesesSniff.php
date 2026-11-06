@@ -10,7 +10,7 @@ use SlevomatCodingStandard\Sniffs\ControlStructures\LanguageConstructWithParenth
  * Disallows parentheses around the argument of a language construct, such as `echo('x')`, except `exit` and `die`.
  *
  * SlevomatCodingStandard.ControlStructures.LanguageConstructWithParentheses reports `die()` and fixes it to `die`.
- * PER Coding Style 3.0, section 4.7, says `exit()` and `die()` SHOULD always have parentheses, which
+ * PER Coding Style 3.1, section 4.7, says `exit()` and `die()` SHOULD always have parentheses, which
  * Universal.PHP.RequireExitDieParentheses checks, so the two sniffs would undo each other's fixes. This sniff
  * registers every token the parent does except `exit` and `die`, and leaves everything else to the parent.
  */

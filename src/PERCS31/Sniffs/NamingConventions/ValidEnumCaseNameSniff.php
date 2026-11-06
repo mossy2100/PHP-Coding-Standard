@@ -12,7 +12,7 @@ use PHP_CodeSniffer\Util\Tokens;
 /**
  * Requires enum case names to be in PascalCase.
  *
- * PER Coding Style 3.0, section 9, says enum case declarations MUST use PascalCase. A valid name starts with an upper
+ * PER Coding Style 3.1, section 9, says enum case declarations MUST use PascalCase. A valid name starts with an upper
  * case letter, has only letters and digits, and isn't all upper case, apart from a single letter. A run of capitals
  * inside a name, such as `HTTPStatus`, is allowed here, as PER section 2.7 only recommends treating acronyms as words.
  * PERCS31.NamingConventions.AcronymCasing warns about it.

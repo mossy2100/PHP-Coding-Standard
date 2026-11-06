@@ -168,19 +168,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`PERCS31.PHP.RequireCloneParentheses`.** A warning for `clone $a`, which should be `clone($a)`, as PER Coding Style
   3.1 says `clone()` SHOULD be called with parentheses. Auto-fixable.
 - **`Generic.Strings.UnnecessaryHeredoc`.** A warning for a heredoc with no interpolation or escape sequences, which
-  could be a nowdoc, as PER Coding Style 3.0 says a nowdoc SHOULD be used wherever possible. Auto-fixable.
+  could be a nowdoc, as PER Coding Style 3.1 says a nowdoc SHOULD be used wherever possible. Auto-fixable.
 - **`PERCS31.Attributes.DisallowMultiLineAttributesJoining` (breaking).** An attribute block split over several lines
-  must have one attribute per block, as PER Coding Style 3.0 requires. A joined block on one line, such as
+  must have one attribute per block, as PER Coding Style 3.1 requires. A joined block on one line, such as
   `#[Attribute, Deprecated]`, is still allowed. Auto-fixable.
 - **`PERCS31.Classes.EnumMemberVisibility` (breaking).** Requires a non-public method or constant in an enum to be
   `private`, not `protected`, as PER Coding Style 3.1 requires. Auto-fixable.
 - **`PERCS31.NamingConventions.ValidEnumCaseName` (breaking).** Requires enum case names to be in PascalCase, as PER
-  Coding Style 3.0 requires, e.g. `case BigJoker;`, not `case BIG_JOKER;` or `case bigJoker;`. Not auto-fixable.
+  Coding Style 3.1 requires, e.g. `case BigJoker;`, not `case BIG_JOKER;` or `case bigJoker;`. Not auto-fixable.
 - **No whitespace after a prefix unary operator (breaking).** A space or line break between a prefix operator and its
   operand is now an error for `!` (`Generic.Formatting.SpaceAfterNot`, with `spacing` set to 0), and for `+`, `~` and
   `@` (`Jumbo.Operators.UnaryOperatorSpacing`, a new sniff). `-`, `++`, `--`, `&` and `...` were already checked.
   Auto-fixable.
-- **A wrapped operator must start the next line (breaking).** As PER Coding Style 3.0 requires, a statement that wraps
+- **A wrapped operator must start the next line (breaking).** As PER Coding Style 3.1 requires, a statement that wraps
   at an operator has the operator at the start of the new line, not the end of the previous one, e.g. `$total = $a` then
   `+ $b` on the next line. Three sniffs check this:
   - `PERCS31.Operators.OperatorPlacement`, a new sniff, for assignment, arithmetic, comparison, bitwise and logical
@@ -194,7 +194,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `use Function Vendor\helper;` as a class import, and deletes it as unused. This sniff skips a file while its `use`
   keyword is miscased, until `Universal.UseStatements.LowercaseFunctionConst` has fixed it.
 - **PHPCSExtra as a base standard (breaking).** `phpcsstandards/phpcsextra` is now required, and six of its sniffs are
-  used, each for a PER Coding Style 3.0 rule:
+  used, each for a PER Coding Style 3.1 rule:
   - `Universal.Attributes.DisallowAttributeParentheses`: no `()` on an attribute with no arguments.
   - `Universal.Classes.DisallowAnonClassParentheses`: no `()` on an anonymous class with no arguments.
   - `Universal.Constants.LowercaseClassResolutionKeyword`: `::class` in lower case.
@@ -203,24 +203,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - `Universal.UseStatements.LowercaseFunctionConst`: `function` and `const` in lower case in a `use` statement.
 - **`Jumbo.ControlStructures.LanguageConstructWithParentheses`.** Replaces
   `SlevomatCodingStandard.ControlStructures.LanguageConstructWithParentheses`, which removed the parentheses from
-  `die()`, against PER Coding Style 3.0. It still reports `echo('x')` and the like.
+  `die()`, against PER Coding Style 3.1. It still reports `echo('x')` and the like.
 - **`PERCS31.ControlStructures.MultiLineTernaryOperator` (breaking).** Requires a ternary that spans lines to take
-  three, with `?` and `:` each starting a line, indented once, as PER Coding Style 3.0 requires. Replaces
+  three, with `?` and `:` each starting a line, indented once, as PER Coding Style 3.1 requires. Replaces
   `SlevomatCodingStandard.ControlStructures.DisallowTrailingMultiLineTernaryOperator`, which only reported a trailing
   `?`. Auto-fixable.
 - **`PERCS31.NamingConventions.ValidConstantName` (breaking).** Disallows a constant name that starts with an
-  underscore, e.g. `public const int _LIMIT = 10;`, as PER Coding Style 3.0 requires. Not auto-fixable.
+  underscore, e.g. `public const int _LIMIT = 10;`, as PER Coding Style 3.1 requires. Not auto-fixable.
 - **`SlevomatCodingStandard.Classes.ClassKeywordOrder` (breaking).** Requires `abstract` or `final` before `readonly` on
-  a class, e.g. `final readonly class`, not `readonly final class`, as PER Coding Style 3.0 requires. Auto-fixable.
+  a class, e.g. `final readonly class`, not `readonly final class`, as PER Coding Style 3.1 requires. Auto-fixable.
 - **`PERCS31.Formatting.EmptyBody` (breaking).** Warns about an empty class or function body that isn't written as `{}`
   on the same line as the declaration, as PER Coding Style 3.1 recommends, e.g. `public function reset(): void {}`. An
   empty closure or anonymous class body that isn't `{}` is an error, as PER 3.1 requires it, e.g.
   `static function (): void {}` or `new class {}`. Auto-fixable.
 - **`PERCS31.Formatting.DisallowMultipleStatements`.** Replaces `Generic.Formatting.DisallowMultipleStatements`, which
-  reported `{ get; set; }` on an abstract or interface property as two statements on one line. PER Coding Style 3.0
+  reported `{ get; set; }` on an abstract or interface property as two statements on one line. PER Coding Style 3.1
   requires them on one line. Update any `phpcs:ignore` comments or `<exclude>` rules that name the Generic code.
 - **`PERCS31.Attributes.AttributePlacement` (breaking).** Requires an attribute to be on the line before its target,
-  except on a parameter in a single-line parameter list, where it must be inline, as PER Coding Style 3.0 requires. It
+  except on a parameter in a single-line parameter list, where it must be inline, as PER Coding Style 3.1 requires. It
   also reports a blank line, or a comment on a line of its own, between an attribute and its target, replacing
   `SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing`, whose fix deleted such a comment. Attributes on an
   anonymous class follow PER Coding Style 3.1 instead: starting on the line after `new`, indented once, with `class` on
@@ -255,17 +255,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `PERCS31\Sniffs\...`, or `Jumbo\Sniffs\...` for a sniff only Jumbo uses. Update any `phpcs:ignore` comments or
   `<exclude>` rules that name them.
 - **`PERCS31.Classes.ClassInstantiationNoBrackets` is now a warning, and safer.** Renamed from
-  `OceanMoon.Classes.ClassInstantiationNoBrackets`. As PER Coding Style 3.0 says SHOULD, `(new Foo())->bar()` is now a
+  `OceanMoon.Classes.ClassInstantiationNoBrackets`. As PER Coding Style 3.1 says SHOULD, `(new Foo())->bar()` is now a
   warning, not an error, fixed to `new Foo()->bar()`. It now covers `::` as well as `->` and `?->`, and only reports
   parentheses holding exactly one `new` expression, so `(new Foo() ?: $default)->bar()` and `new self(new Foo())->bar()`
   are no longer changed.
-- **Trailing commas follow PER Coding Style 3.0 (breaking).** A multi-line function call, function declaration or
+- **Trailing commas follow PER Coding Style 3.1 (breaking).** A multi-line function call, function declaration or
   closure `use` list now requires a trailing comma, and a single-line one still disallows it. Adds
   `SlevomatCodingStandard.Functions.RequireTrailingCommaInCall`, `...InDeclaration` and `...InClosureUse`. Run `phpcbf`
   to add the commas.
 - **Line length is a soft limit (breaking).** A line over 120 characters is now a warning from
   `Generic.Files.LineLength`, PSR-12's own sniff, not an error from `SlevomatCodingStandard.Files.LineLength`, as PER
-  Coding Style 3.0 says there must be no hard limit. `phpcs` still exits with a non-zero code on warnings by default. To
+  Coding Style 3.1 says there must be no hard limit. `phpcs` still exits with a non-zero code on warnings by default. To
   change the limit, set `lineLimit` on the Generic sniff (see `docs/LineLength.md`). Update any `phpcs:ignore` comments
   or `<exclude>` rules that name `SlevomatCodingStandard.Files.LineLength.LineTooLong`.
 - **An empty class or function body can be `{}` (breaking).** `PSR2.Classes.ClassDeclaration`,
@@ -274,15 +274,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   it, e.g. `PERCS31.Classes.ClassDeclaration`, or `Jumbo.Classes.EmptyLinesAroundClassBraces` for the Slevomat one, so
   their error codes change prefix. Update any `phpcs:ignore` comments or `<exclude>` rules that name them.
 - **No space after `fn` (breaking).** Arrow functions are now written `fn($x) => $x`, not `fn ($x) => $x`, as PER Coding
-  Style 3.0 requires. Run `phpcbf` to reformat.
+  Style 3.1 requires. Run `phpcbf` to reformat.
 - **`null` must be last in a union type (breaking).** `int|null` and `null|int|string` are now errors, as PER Coding
-  Style 3.0 requires `null` last. Set by `nullPosition` on `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat`.
+  Style 3.1 requires `null` last. Set by `nullPosition` on `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat`.
   Auto-fixable.
 - **`PERCS31.Classes.PropertyDeclaration` checks `get` before `set` (breaking).** When a property has both hooks, `set`
   before `get` is now an error (`HookOrder`). PER Coding Style 3.1 requires `{ get; set; }` on an abstract or interface
   property, so PERCS31 only checks a hook list with no bodies, and the Jumbo standard checks every hook list.
   Auto-fixable, unless there's a comment between the hooks.
-- **An arrow function may span lines.** Its expression can go on the next line, as PER Coding Style 3.0 allows.
+- **An arrow function may span lines.** Its expression can go on the next line, as PER Coding Style 3.1 allows.
   `SlevomatCodingStandard.Functions.ArrowFunctionDeclaration` previously required it on one line.
 - **Array formatting follows PER Coding Style, with no alignment (breaking).** `Jumbo.Arrays.ArrayDeclaration` was
   rewritten to do one thing: collapse a multi-line array that fits on one line. Stock sniffs handle the rest:
@@ -299,7 +299,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   rules that name an old code, such as `ListShouldBeSingleLine`.
 - **`PERCS31.Classes.PropertyDeclaration.Underscore` is an error, not a warning, and covers promoted constructor
   parameters (breaking).** A property named like `$_name` was a warning, and a promoted one wasn't reported at all. PER
-  Coding Style 3.0 says property names must not start with an underscore.
+  Coding Style 3.1 says property names must not start with an underscore.
 - **Requires `slevomat/coding-standard` 8.27 or later** (was 8.25). Earlier versions report
   `SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification` on `#[Override]` methods
   that inherit their array shape from the parent's docblock, and 8.25.0 also misreports hooked properties as multiple
@@ -317,9 +317,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   blank lines before, between and after `use` statements. Update any `phpcs:ignore` comments or `<exclude>` rules that
   name a `UseSpacing` code.
 - **`SlevomatCodingStandard.Attributes.DisallowAttributesJoining`.** Several attributes in one block, e.g.
-  `#[Attribute, Deprecated]`, are now allowed, as PER Coding Style 3.0 allows them.
+  `#[Attribute, Deprecated]`, are now allowed, as PER Coding Style 3.1 allows them.
 - **`SlevomatCodingStandard.Functions.DisallowEmptyFunction`.** It required a comment in an empty function body, so PER
-  Coding Style 3.0's recommended `public function reset(): void {}` was an error.
+  Coding Style 3.1's recommended `public function reset(): void {}` was an error.
 - **Seven `PERCS31.Classes.PropertyDeclaration` error codes, which duplicated Slevomat sniffs already in the standard.**
   Each case is still reported, and fixed, by the Slevomat sniff. Remove any references to the old codes:
   - `Multiple`, now reported by `SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition`.

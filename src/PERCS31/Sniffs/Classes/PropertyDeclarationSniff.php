@@ -65,7 +65,7 @@ class PropertyDeclarationSniff extends AbstractVariableSniff
     }
 
     /**
-     * Check for underscore-prefixed property names, which PER Coding Style 3.0 disallows.
+     * Check for underscore-prefixed property names, which PER Coding Style 3.1 disallows.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the property token.

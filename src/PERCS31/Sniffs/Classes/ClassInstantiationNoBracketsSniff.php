@@ -11,7 +11,7 @@ use PHP_CodeSniffer\Util\Tokens;
 /**
  * Warns about parentheses around a class instantiation that's immediately dereferenced, e.g. `(new Foo())->bar()`.
  *
- * PER Coding Style 3.0, section 4, says that when accessing a class member immediately after instantiating a class,
+ * PER Coding Style 3.1, section 4, says that when accessing a class member immediately after instantiating a class,
  * the instantiation SHOULD NOT be wrapped in parentheses. PHP 8.4 allows `new Foo()->bar()`. It's a SHOULD, so this is
  * a warning.
  *

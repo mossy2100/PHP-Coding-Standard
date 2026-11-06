@@ -13,7 +13,7 @@ use PHP_CodeSniffer\Util\Tokens;
  * Ensures each statement is on a line by itself, allowing the operations of an abstract or interface property.
  *
  * Generic.Formatting.DisallowMultipleStatements treats `{ get; set; }` on an abstract or interface property as two
- * statements on one line. PER Coding Style 3.0, section 4.10, requires them on one line. This sniff skips a semicolon
+ * statements on one line. PER Coding Style 3.1, section 4.10, requires them on one line. This sniff skips a semicolon
  * that ends a `get` or `set` operation when the previous one does too, and leaves everything else to the parent.
  */
 class DisallowMultipleStatementsSniff extends GenericSniff
