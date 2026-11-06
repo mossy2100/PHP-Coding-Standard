@@ -213,3 +213,18 @@ final class TrailingComment
     {
     }
 }
+
+// A named argument's closure keeps its attribute inline, even in a split list, as section 4.7 requires one space after
+// the colon. The positional closure beside it has its attribute on the line before.
+foo(
+    #[Pure]
+    function () {
+        return 1;
+    },
+    callback: #[Pure] function () {
+        return 2;
+    },
+    other: #[Pure] fn() => 3,
+);
+
+foo(callback: #[Pure] fn() => 1);

@@ -21,7 +21,9 @@ use PHPCSUtils\Utils\PassedParameters;
  * A closure or arrow function isn't a structure in that list, but as a call's argument, its attribute follows the
  * parameter rule: inline after a single space when the argument list is on one line, and on its own line before the
  * closure, indented the same, when the list is split. A closure split over lines doesn't split the list, as section
- * 4.7 says, so `usort($items, #[Pure] static function ($a, $b) {` keeps its attribute inline. Elsewhere, such as in an
+ * 4.7 says, so `usort($items, #[Pure] static function ($a, $b) {` keeps its attribute inline. A named argument's
+ * closure keeps its attribute inline too, as `callback: #[Pure] function () {`, as section 4.7 requires a single space
+ * between the colon and the value, and PHP doesn't allow the attribute before the name. Elsewhere, such as in an
  * assignment or an array, PER says nothing. Set checkClosureAttributesOutsideCalls to require the attribute inline
  * with a single space there too, as the Jumbo standard does.
  *

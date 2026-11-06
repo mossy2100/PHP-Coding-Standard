@@ -285,6 +285,10 @@ rule for a parameter:
   `usort($items, #[Pure] static function ($a, $b) {` keeps its attribute inline.
 - **Argument list split:** on its own line before the closure, indented the same.
 
+A named argument's closure keeps its attribute inline, even in a split list, as `callback: #[Pure] function () {`.
+Section 4.7 requires a single space between the colon and the value, and PHP doesn't allow the attribute before the
+name.
+
 Anywhere else, such as in an assignment or an array, PER says nothing, so it isn't checked. Set
 `checkClosureAttributesOutsideCalls` to require the attribute inline after a single space there too, as the Jumbo
 standard does.
