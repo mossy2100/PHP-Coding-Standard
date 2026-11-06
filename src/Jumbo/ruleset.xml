@@ -41,10 +41,11 @@
         </properties>
     </rule>
 
-    <!-- No space between a by-reference hook's & and its name: &get, not & get -->
+    <!-- No space between a by-reference hook's & and its name: &get, not & get. One space before a hook's own {. -->
     <rule ref="PERCS31.Classes.PropertyHookLayout">
         <properties>
             <property name="checkReferenceSpacing" value="true"/>
+            <property name="checkHookBraceSpacing" value="true"/>
         </properties>
     </rule>
 

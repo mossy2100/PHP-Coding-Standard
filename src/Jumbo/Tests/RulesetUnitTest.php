@@ -304,6 +304,28 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a hook's own opening brace is moved to one space after its name, in Jumbo, and left in PERCS31.
+     */
+    public function testHookBraceSpacingIsFixedInJumboOnly(): void
+    {
+        $header = "<?php\n\ndeclare(strict_types=1);\n\nnamespace A;\n\nfinal class B\n{\n    public int \$c {\n";
+        $body = "            return 1;\n        }\n    }\n}\n";
+        foreach (['Jumbo' => "        get {\n", 'PERCS31' => "        get\n        {\n"] as $standard => $expected) {
+            $file = $this->copyToTempFile(null, $header . "        get\n        {\n" . $body);
+
+            try {
+                $fixer = $this->runTool('phpcbf', ["--standard=$standard", $file]);
+                $fixed = (string) file_get_contents($file);
+            } finally {
+                unlink($file);
+            }
+
+            $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
+            $this->assertSame($header . $expected . $body, $fixed);
+        }
+    }
+
+    /**
      * Test that a class member on a file's last line doesn't crash the run, so another file's report isn't lost.
      */
     public function testMemberOnLastLineDoesNotCrashTheRun(): void

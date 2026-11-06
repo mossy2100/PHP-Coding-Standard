@@ -216,4 +216,56 @@ class ValidHookBodies
 
     // Only a {} body rules out an inline list.
     public string $inlineShort { get => 'a'; }
+
+    // The space before a hook's own brace.
+    public string $braceOff {
+        get{
+            return 'a';
+        }
+    }
+
+    // phpcs:set PERCS31.Classes.PropertyHookLayout checkHookBraceSpacing true
+    public string $braceOne {
+        get {
+            return 'a';
+        }
+        set(string $value) {
+            $this->braceOne = $value;
+        }
+    }
+
+    public string $braceNone {
+        get {
+            return 'a';
+        }
+        set(string $value) {
+            $this->braceNone = $value;
+        }
+    }
+
+    public string $braceNewLine {
+        get {
+            return 'a';
+        }
+        set(string $value) {
+            $this->braceNewLine = $value;
+        }
+    }
+
+    public string $braceEmpty {
+        set(string $value) {}
+    }
+
+    public string $braceComment {
+        get /* A comment. */ {
+            return 'a';
+        }
+    }
+
+    public array $braceReference = [] {
+        &get {
+            return $this->braceReference;
+        }
+    }
+    // phpcs:set PERCS31.Classes.PropertyHookLayout checkHookBraceSpacing false
 }

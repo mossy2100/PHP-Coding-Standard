@@ -63,6 +63,14 @@ class PropertyHookLayoutUnitTest extends AbstractSniffTestCase
             151 => 1,
             // A comment before the body, in the way of the fix (not fixable).
             156 => 1,
+            // The space before a hook's own brace, when set.
+            219 => 1,
+            222 => 1,
+            229 => 1,
+            233 => 1,
+            239 => 1,
+            243 => 1,
+            249 => 1,
         ];
     }
 

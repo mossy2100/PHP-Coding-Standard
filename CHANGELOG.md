@@ -43,6 +43,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   into a form that breaks PER Coding Style 3.1, section 11. `PERCS31.ControlStructures.ControlStructureSpacing` replaces
   `PSR12.ControlStructures.ControlStructureSpacing`, so update any `phpcs:ignore` comments or `<exclude>` rules that name
   it.
+- **A hook's own `{` must be one space after its name in Jumbo (breaking).** `get{`, `get  {` and `{` on the next line
+  are errors in the Jumbo standard, using the new `PERCS31.Classes.PropertyHookLayout` property `checkHookBraceSpacing`.
+  Auto-fixable, unless a comment is in the way.
 - **A multi-line `case` condition must start on the next line and be indented (breaking).**
   `PERCS31.ControlStructures.SwitchDeclaration` reports `case ($a`, and a line not indented past the `case`, as PER
   Coding Style 3.1, section 5.2, requires. Auto-fixable, unless a comment is in the way.

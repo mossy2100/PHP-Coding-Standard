@@ -521,6 +521,9 @@ Indentation is checked by `PERCS31.WhiteSpace.ScopeIndent`, and several statemen
 PER says nothing about a space in a by-reference hook, `& get`, so it passes. Set `checkReferenceSpacing` to report it,
 as the Jumbo standard does.
 
+PER also says nothing about where a hook's own `{` goes, so `get{` and `{` on the next line both pass. Set
+`checkHookBraceSpacing` to require exactly one space, as in `get {`, as the Jumbo standard does.
+
 **Auto-fixable:** yes, except a comment after the closing brace, or a comment in the way.
 
 **Good:**
@@ -576,6 +579,7 @@ interface Named
 | Property                | Type | Default | Description                                                    |
 | ----------------------- | ---- | ------- | -------------------------------------------------------------- |
 | `checkReferenceSpacing` | bool | false   | Report a space between a by-reference hook's `&` and its name. |
+| `checkHookBraceSpacing` | bool | false   | Require exactly one space before a hook's own `{`.             |
 
 ---
 

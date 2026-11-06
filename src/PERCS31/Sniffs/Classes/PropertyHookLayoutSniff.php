@@ -26,7 +26,8 @@ use PHP_CodeSniffer\Util\Tokens;
  * A bodiless hook in a list with bodies also has no space before its `;`.
  *
  * PER says nothing about a space in a by-reference hook, `& get`, so it's only reported when checkReferenceSpacing is
- * set, as it is in Jumbo.
+ * set, as it is in Jumbo. It also says nothing about where a hook's own `{` goes, so that's only checked when
+ * checkHookBraceSpacing is set, as it is in Jumbo.
  *
  * A hook on a promoted constructor parameter is reported by PERCS31.Classes.PromotedPropertyHooks, so its body isn't
  * checked here. Indentation is checked by PERCS31.WhiteSpace.ScopeIndent, several statements on a line by
@@ -60,6 +61,8 @@ class PropertyHookLayoutSniff implements Sniff
 
     public const string CODE_HOOK_CLOSER_NOT_ON_OWN_LINE = 'HookCloserNotOnOwnLine';
 
+    public const string CODE_SPACE_BEFORE_HOOK_BRACE = 'SpaceBeforeHookBrace';
+
     /**
      * The spaces per indent level the fixes use. PERCS31.WhiteSpace.ScopeIndent checks the result.
      */
@@ -70,6 +73,12 @@ class PropertyHookLayoutSniff implements Sniff
      * about it, so it's off by default.
      */
     public bool $checkReferenceSpacing = false;
+
+    /**
+     * Whether to require exactly one space before a hook's own `{`, e.g. `get {`. PER says nothing about it, so it's
+     * off by default.
+     */
+    public bool $checkHookBraceSpacing = false;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -455,6 +464,10 @@ class PropertyHookLayoutSniff implements Sniff
         }
 
         foreach ($bodies as $body) {
+            if ($this->checkHookBraceSpacing) {
+                $this->checkHookBrace($phpcsFile, $body);
+            }
+
             $this->checkHookBody($phpcsFile, $body, $hookIndent);
         }
 
@@ -482,6 +495,33 @@ class PropertyHookLayoutSniff implements Sniff
             $phpcsFile->addError($error, $next, self::CODE_HOOK_NOT_ON_OWN_LINE);
         } elseif ($phpcsFile->addFixableError($error, $next, self::CODE_HOOK_NOT_ON_OWN_LINE)) {
             $this->setSpacing($phpcsFile, $boundary, $next, $phpcsFile->eolChar . str_repeat(' ', $hookIndent));
+        }
+    }
+
+    /**
+     * Check that a hook's opening brace is exactly one space after its name or parameters.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $bodyOpener The position of the hook's opening brace.
+     */
+    private function checkHookBrace(File $phpcsFile, int $bodyOpener): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $previous = $phpcsFile->findPrevious(T_WHITESPACE, ($bodyOpener - 1), null, true);
+        if ($previous === false) {
+            return;
+        }
+
+        $isOneSpace = ($bodyOpener - $previous) === 2 && $tokens[($bodyOpener - 1)]['content'] === ' ';
+        if ($isOneSpace && !isset(Tokens::COMMENT_TOKENS[$tokens[$previous]['code']])) {
+            return;
+        }
+
+        $error = "A property hook's opening brace must be one space after its name or parameters";
+        if (isset(Tokens::COMMENT_TOKENS[$tokens[$previous]['code']])) {
+            $phpcsFile->addError($error, $bodyOpener, self::CODE_SPACE_BEFORE_HOOK_BRACE);
+        } elseif ($phpcsFile->addFixableError($error, $bodyOpener, self::CODE_SPACE_BEFORE_HOOK_BRACE)) {
+            $this->setSpacing($phpcsFile, $previous, $bodyOpener, ' ');
         }
     }
 
