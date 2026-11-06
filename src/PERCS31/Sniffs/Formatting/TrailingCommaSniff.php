@@ -20,13 +20,20 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * Like Slevomat's call sniffs, this doesn't require a comma in an anonymous class's arguments when the closing
  * parenthesis follows the last one on its line, as in `new class (function () {\n}) {`. A `match` arm's conditions are
- * only checked on one line, so a split list of conditions isn't required to have a comma before `=>`.
+ * only checked on one line, so a split list of conditions isn't required to have a comma before `=>`. Set
+ * disallowInSplitMatchConditions to disallow one there too, as the Jumbo standard does.
  */
 class TrailingCommaSniff implements Sniff
 {
     public const string CODE_MISSING = 'Missing';
 
     public const string CODE_DISALLOWED = 'Disallowed';
+
+    /**
+     * Whether to disallow a comma before `=>` when a `match` arm's conditions are split over lines. PER's rule for a
+     * split list would require one, but its example only has conditions on one line, so by default it isn't checked.
+     */
+    public bool $disallowInSplitMatchConditions = false;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -124,10 +131,10 @@ class TrailingCommaSniff implements Sniff
                 if (
                     $last !== false
                     && $tokens[$last]['code'] === T_COMMA
-                    && $tokens[$last]['line'] === $tokens[$armStart]['line']
+                    && ($this->disallowInSplitMatchConditions || $tokens[$last]['line'] === $tokens[$armStart]['line'])
                 ) {
                     $fix = $phpcsFile->addFixableError(
-                        'The last item in a single-line %s must not have a trailing comma',
+                        'The last item in a %s must not have a trailing comma',
                         $last,
                         self::CODE_DISALLOWED,
                         ['match condition list'],

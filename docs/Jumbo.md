@@ -51,6 +51,8 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
 - `PERCS31.Operators.OperatorPlacement` requires a wrapped line in a list item, such as a call argument, to be indented
   once past the item, not lined up with it (`requireListItemIndent` set to `true`). A wrapped line in grouping
   parentheses must line up with the group's first line, with no extra indent (`requireGroupingLineUp` set to `true`).
+- `PERCS31.Formatting.TrailingComma` disallows a comma before a `match` arm's `=>` when its conditions are split over
+  lines, which PERCS31 doesn't check (`disallowInSplitMatchConditions` set to `true`).
 - `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat` reports `T|null`, which should be `?T`, as an error, not a
   warning.
 - `Squiz.Arrays.ArrayDeclaration` also runs the checks PERCS31 leaves out. See [Squiz](#squiz).
@@ -202,6 +204,7 @@ gives the reason. The custom sniffs for PER Coding Style itself are in [PERCS31]
 | `Jumbo.Classes.RequireSingleLineMethodSignature`           | A short signature on one line, skipping a promoted hook         | Yes     |
 | `Jumbo.ControlStructures.LanguageConstructWithParentheses` | No `echo('x')`, allowing `exit()` and `die()`                   | Yes     |
 | `Jumbo.ControlStructures.RequireSingleLineHeader`          | A multi-line loop, `switch` or `match` header fits on a line    | Yes     |
+| `Jumbo.ControlStructures.MatchArmWrapIndent`               | A wrapped `match` arm indented once past its first line         | Yes     |
 | `Jumbo.ControlStructures.StatementAfterClosingBrace`       | A control structure's `}` on its own line                       | Yes     |
 | `Jumbo.Functions.RequireSingleLineCall`                    | A call that fits is on one line, skipping a class or `match`    | Yes     |
 | `Jumbo.Namespaces.UnusedUses`                              | No unused `use` statements, safe with a miscased `use Function` | Yes     |
@@ -387,6 +390,38 @@ foreach (
 | `maxLineLength` | int  | 120     | Maximum line length for a collapsed header. |
 
 To use a different limit, set every line-length property, as described in [Line Length](LineLength.md).
+
+---
+
+### Jumbo.ControlStructures.MatchArmWrapIndent
+
+Requires a `match` arm that wraps to be indented one level past its first line, for a line starting with a later
+condition, the `=>`, or the value after the `=>`. Set `indent` to change the number of spaces, which is 4 by default.
+
+**Why:** PER Coding Style 3.1 doesn't say how a wrapped arm is indented, so this is an extra rule, to keep each arm
+distinct. `PERCS31.Operators.OperatorPlacement` checks a line starting with an operator.
+
+**Auto-fixable:** yes.
+
+**Good:**
+
+```php
+$label = match ($code) {
+    200,
+        201 => 'OK',
+    default => 'Error',
+};
+```
+
+**Bad:**
+
+```php
+$label = match ($code) {
+    200,
+    201 => 'OK',
+    default => 'Error',
+};
+```
 
 ---
 

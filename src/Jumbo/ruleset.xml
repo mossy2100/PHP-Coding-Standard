@@ -346,6 +346,14 @@
 
     <!-- Multi-line foreach, for, switch and match headers that fit must be written on one line; Slevomat's
          RequireSingleLineCondition covers if, elseif, while and do-while -->
+    <!-- A match arm that wraps indented one level past its first line, and no comma before its => -->
+    <rule ref="Jumbo.ControlStructures.MatchArmWrapIndent"/>
+    <rule ref="PERCS31.Formatting.TrailingComma">
+        <properties>
+            <property name="disallowInSplitMatchConditions" value="true"/>
+        </properties>
+    </rule>
+
     <!-- A control structure's closing brace on its own line, except for a comment, or what continues the structure -->
     <rule ref="Jumbo.ControlStructures.StatementAfterClosingBrace"/>
 

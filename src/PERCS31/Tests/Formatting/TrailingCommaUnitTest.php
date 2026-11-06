@@ -19,6 +19,11 @@ class TrailingCommaUnitTest extends AbstractSniffTestCase
      */
     protected function getErrorList(string $testFile = ''): array
     {
+        if ($testFile === 'TrailingCommaUnitTest.2.inc') {
+            // With disallowInSplitMatchConditions, a comma before => in a split list of conditions.
+            return [6 => 1, 9 => 1];
+        }
+
         return [
             // A multi-line group use without a trailing comma.
             21 => 1,

@@ -1744,7 +1744,9 @@ class User
 - **An empty closure SHOULD be an arrow function (7).** Rewriting `function () {}` as `fn() => null` changes the return
   value, and `function (): void {}` has no arrow function equivalent.
 - **A trailing comma in a split list of `match` conditions (2.6).** A comma before `=>` isn't required when an arm's
-  conditions are on several lines, and no sniff requires one in a split attribute block with a single attribute.
+  conditions are on several lines, and no sniff requires one in a split attribute block with a single attribute. Set
+  `disallowInSplitMatchConditions` on `PERCS31.Formatting.TrailingComma` to disallow the first, as the [Jumbo standard](Jumbo.md)
+  does.
 - **Whether a fall-through comment is clear (5.2).** Any comment just before the next `case` or `default` passes, as the
   spec doesn't set any wording.
 - **Avoiding abbreviations (2.7).** Whether a name could avoid an abbreviation can't be judged by a sniff.
