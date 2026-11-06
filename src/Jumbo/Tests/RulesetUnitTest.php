@@ -387,15 +387,15 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that PERCS31 allows blank lines between parameters, and that Jumbo only allows one before a later
-     * parameter's attributes. Jumbo also reports one before a closing parenthesis or between `use` items, which PER
-     * doesn't forbid. The parent's EmptyLine, which reports them all, is excluded in the ruleset.
+     * Test that both standards allow one blank line between parameters, and that Jumbo also reports more than one, or
+     * one before a closing parenthesis or between `use` items, which PER doesn't forbid. The parent's EmptyLine, which
+     * reports them all, is excluded in the ruleset.
      */
     public function testBlankLinesInDeclaration(): void
     {
         $fixture = dirname(__DIR__, 2) . '/Jumbo/Tests/Ruleset/BlankLinesInDeclaration.inc';
         $sniff = '--sniffs=PERCS31.Functions.MultiLineFunctionDeclaration';
-        foreach (['PERCS31' => ['20'], 'Jumbo' => ['13', '16', '20', '32', '41', '48']] as $standard => $expected) {
+        foreach (['PERCS31' => ['20'], 'Jumbo' => ['16', '20', '32', '41']] as $standard => $expected) {
             $result = $this->runTool('phpcs', ['-s', "--standard=$standard", $sniff, '--report=emacs', $fixture]);
 
             preg_match_all('/:(\\d+):\\d+: error - .*\\.BlankLine\\)/', $result['output'], $matches);

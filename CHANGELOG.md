@@ -41,8 +41,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   or `use` items, or before a closing parenthesis, or more than one between parameters, so PERCS31 no longer reports
   them. The Jumbo standard still does, using the new `PERCS31.Functions.MultiLineFunctionDeclaration` property
   `checkOptionalBlankLines`.
-- **Jumbo only allows a blank line before a parameter's attributes (breaking).** It now reports one before a parameter
-  with no attributes, which it used to allow. Auto-fixable.
 - **A body's first line indented too far is an error (breaking).** `PERCS31.WhiteSpace.ScopeIndent` now reports it,
   including in a closure, a `case` or a property hook. Auto-fixable.
 - **A `match` arm indented too far is an error (breaking).** `PERCS31.WhiteSpace.ScopeIndent` requires a line starting
