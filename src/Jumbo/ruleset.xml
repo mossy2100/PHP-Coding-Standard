@@ -256,7 +256,7 @@
         </properties>
     </rule>
     <!-- The Jumbo version of SlevomatCodingStandard.Functions.RequireSingleLineCall, which skips a call with an
-         anonymous class argument, as the parent's fix puts the class body on one line -->
+         anonymous class or match argument, as the parent's fix puts the body on one line -->
     <rule ref="Jumbo.Functions.RequireSingleLineCall">
         <properties>
             <property name="maxLineLength" value="&lineLength;"/>

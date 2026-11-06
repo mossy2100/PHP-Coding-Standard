@@ -257,6 +257,31 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a `match` as a call's argument doesn't stop phpcbf finishing, as RequireSingleLineCall would collapse
+     * it and other sniffs would expand it, and that a multi-line one is left as it is.
+     */
+    public function testMatchArgumentDoesNotLoopInPhpcbf(): void
+    {
+        $header = "<?php\n\ndeclare(strict_types=1);\n\nnamespace A;\n\n";
+        $multiLine = "\$d = foo(match (\$x) {\n    1 => 2,\n    default => 3,\n});\n";
+        foreach ([$multiLine, "\$d = foo(match (\$x) { 1 => 2, default => 3 });\n"] as $code) {
+            $file = $this->copyToTempFile(null, $header . $code);
+
+            try {
+                $fixer = $this->runTool('phpcbf', ['--standard=Jumbo', $file]);
+                $fixed = (string) file_get_contents($file);
+            } finally {
+                unlink($file);
+            }
+
+            $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
+            if ($code === $multiLine) {
+                $this->assertSame($header . $multiLine, $fixed);
+            }
+        }
+    }
+
+    /**
      * Test that a class member on a file's last line doesn't crash the run, so another file's report isn't lost.
      */
     public function testMemberOnLastLineDoesNotCrashTheRun(): void

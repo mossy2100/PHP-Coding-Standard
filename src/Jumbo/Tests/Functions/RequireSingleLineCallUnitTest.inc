@@ -28,3 +28,24 @@ short(
 $object = new Short(
     1,
 );
+
+// A match argument is skipped, as with an anonymous class.
+short(match ($x) {
+    1 => 2,
+    default => 3,
+});
+
+short(
+    match ($x) {
+        1 => 2,
+        default => 3,
+    },
+);
+
+short(
+    1,
+    match ($x) {
+        1 => 2,
+        default => 3,
+    },
+);

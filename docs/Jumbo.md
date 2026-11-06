@@ -203,7 +203,7 @@ gives the reason. The custom sniffs for PER Coding Style itself are in [PERCS31]
 | `Jumbo.ControlStructures.LanguageConstructWithParentheses` | No `echo('x')`, allowing `exit()` and `die()`                   | Yes     |
 | `Jumbo.ControlStructures.RequireSingleLineHeader`          | A multi-line loop, `switch` or `match` header fits on a line    | Yes     |
 | `Jumbo.ControlStructures.StatementAfterClosingBrace`       | A control structure's `}` on its own line                       | Yes     |
-| `Jumbo.Functions.RequireSingleLineCall`                    | A call that fits is on one line, skipping an anonymous class    | Yes     |
+| `Jumbo.Functions.RequireSingleLineCall`                    | A call that fits is on one line, skipping a class or `match`    | Yes     |
 | `Jumbo.Namespaces.UnusedUses`                              | No unused `use` statements, safe with a miscased `use Function` | Yes     |
 | `Jumbo.NamingConventions.ValidVariableName`                | No leading underscore on a variable or parameter in a class     | No      |
 | `Jumbo.Operators.UnaryOperatorSpacing`                     | No whitespace after a prefix `+`, `~` or `@`                    | Yes     |
@@ -431,11 +431,13 @@ if ($ready) {
 ### Jumbo.Functions.RequireSingleLineCall
 
 Requires a function, method or constructor call that fits within the line length to be written on one line. This
-replaces `SlevomatCodingStandard.Functions.RequireSingleLineCall`, and skips a call with an anonymous class argument.
+replaces `SlevomatCodingStandard.Functions.RequireSingleLineCall`, and skips a call with an anonymous class or `match`
+argument.
 
 **Why:** the parent's `ignoreWithComplexParameter` option skips a call with a closure, arrow function or array argument,
 but not one with an anonymous class. So it reports `consume(new class {` ... `});`, and its fix puts the whole class
-body on one line, which then crashes Slevomat's property spacing sniff.
+body on one line, which then crashes Slevomat's property spacing sniff. Its fix collapses a `match` too, which other
+sniffs expand again, until `phpcbf` gives up.
 
 **Auto-fixable:** yes, as the parent.
 
