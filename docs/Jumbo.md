@@ -62,6 +62,9 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
 - `Squiz.Arrays.ArrayDeclaration` also runs the checks PERCS31 leaves out. See [Squiz](#squiz).
 - `PERCS31.Operators.OperatorSpacing` also reports more than one space around an operator, with `ignoreNewlines` on and
   `ignoreSpacingBeforeAssignments` off. See [Squiz](#squiz).
+- `Squiz.Functions.FunctionDeclarationArgumentSpacing` requires exactly one space around a default value's `=`, using
+  the `SpaceBeforeEquals` and `SpaceAfterEquals` codes PERCS31 excludes (`PERCS31.Operators.OperatorSpacing` has
+  `checkDefaultValues` set to `false`).
 - `PSR12.Keywords.ShortFormTypeKeywords` is excluded, as `SlevomatCodingStandard.PHP.TypeCast` reports the same casts.
   See [Slevomat](#slevomat).
 - `PSR2.Files.ClosingTag` is excluded, as `Zend.Files.ClosingTag` reports the same closing tags, and more. See

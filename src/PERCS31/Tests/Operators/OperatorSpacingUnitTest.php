@@ -60,6 +60,9 @@ class OperatorSpacingUnitTest extends AbstractSniffTestCase
             49 => 2,
             50 => 2,
             51 => 2,
+            // A parameter's default value: none either side, none after, and in an arrow function.
+            65 => 3,
+            67 => 2,
         ];
     }
 

@@ -31,6 +31,11 @@ use PHP_CodeSniffer\Util\Tokens;
  * `$x = &$a`. It still skips `$x =& $a`, as that has a space either side if `=&` is read as one operator, and PER
  * doesn't say whether it is.
  *
+ * The parent skips a parameter's default value, as Squiz.Functions.FunctionDeclarationArgumentSpacing requires exactly
+ * one space there. Its `=` is a binary operator, so section 6.2 applies: the PERCS31 ruleset excludes that sniff's
+ * codes, and this sniff checks it, unless checkDefaultValues is off. A standard that wants exactly one space, as Jumbo
+ * does, turns those codes back on and this property off.
+ *
  * `=>` isn't registered, although PHP_CodeSniffer counts it as an assignment token. Section 6.2 doesn't list it, so
  * section 6 leaves its spacing undefined. Each use has its own sniff:
  * - An array: PERCS31.WhiteSpace.ArrowSpacing, in Jumbo only.
@@ -43,6 +48,11 @@ use PHP_CodeSniffer\Util\Tokens;
 class OperatorSpacingSniff extends SquizSniff
 {
     public const string CODE_CATCH_UNION_SPACING = 'CatchUnionSpacing';
+
+    /**
+     * Whether to check the `=` of a parameter's default value.
+     */
+    public bool $checkDefaultValues = true;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -103,7 +113,31 @@ class OperatorSpacingSniff extends SquizSniff
                 || ($tokens[($stackPtr + 2)]['code'] ?? null) !== T_WHITESPACE;
         }
 
+        if ($this->checkDefaultValues && $this->isDefaultValueEquals($phpcsFile, $stackPtr)) {
+            return true;
+        }
+
         return parent::isOperator($phpcsFile, $stackPtr);
+    }
+
+    /**
+     * Check whether a token is the `=` of a parameter's default value.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the token.
+     * @return bool True if it's an `=` directly inside a function's parameter list.
+     */
+    private function isDefaultValueEquals(File $phpcsFile, int $stackPtr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        if ($tokens[$stackPtr]['code'] !== T_EQUAL || !isset($tokens[$stackPtr]['nested_parenthesis'])) {
+            return false;
+        }
+
+        $opener = array_key_last($tokens[$stackPtr]['nested_parenthesis']);
+        $owner = $tokens[$opener]['parenthesis_owner'] ?? null;
+
+        return is_int($owner) && in_array($tokens[$owner]['code'], [T_FUNCTION, T_CLOSURE, T_FN], true);
     }
 
     /**

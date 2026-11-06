@@ -128,7 +128,15 @@
         <properties>
             <property name="ignoreNewlines" value="true"/>
             <property name="ignoreSpacingBeforeAssignments" value="false"/>
+            <property name="checkDefaultValues" value="false"/>
         </properties>
+    </rule>
+    <!-- Exactly one space around a default value's =, which PERCS31 excludes for at least one -->
+    <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpaceBeforeEquals">
+        <severity>5</severity>
+    </rule>
+    <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpaceAfterEquals">
+        <severity>5</severity>
     </rule>
     <rule ref="PERCS31.Operators.OperatorSpacing.SpacingBefore">
         <severity>5</severity>

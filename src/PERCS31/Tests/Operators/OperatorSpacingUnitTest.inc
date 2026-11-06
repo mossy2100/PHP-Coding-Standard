@@ -61,3 +61,10 @@ class ReferenceHookWithBody
         }
     }
 }
+
+function defaults(int $a=1, int $b = 2, int $d  =4, int $e  = 5)
+{
+    return static fn(int $f=6): int => $f;
+}
+
+declare(ticks=1);

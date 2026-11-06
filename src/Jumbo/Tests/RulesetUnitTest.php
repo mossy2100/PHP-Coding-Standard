@@ -304,6 +304,32 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a default value's `=` can be aligned in PERCS31, which only requires a space, and not in Jumbo.
+     */
+    public function testDefaultParameterSpacing(): void
+    {
+        $fixture = dirname(__DIR__, 2) . '/Jumbo/Tests/Ruleset/DefaultParameterSpacing.inc';
+        $expected = [
+            'PERCS31' => ['7:NoSpaceBefore', '7:NoSpaceAfter'],
+            'Jumbo' => [
+                '7:SpaceBeforeEquals',
+                '7:SpaceAfterEquals',
+                '13:SpaceBeforeEquals',
+                '14:SpaceAfterEquals',
+                '19:SpaceBeforeEquals',
+            ],
+        ];
+        foreach ($expected as $standard => $codes) {
+            $result = $this->runTool('phpcs', ['-s', "--standard=$standard", '--report=emacs', $fixture]);
+
+            $pattern = '/:(\\d+):\\d+: error - .*\\.(NoSpace(?:Before|After)|Space(?:Before|After)Equals)\\)/';
+            preg_match_all($pattern, $result['output'], $matches, PREG_SET_ORDER);
+            $found = array_map(static fn(array $match): string => $match[1] . ':' . $match[2], $matches);
+            $this->assertSame($codes, $found, $result['output']);
+        }
+    }
+
+    /**
      * Test that a hook's own opening brace is moved to one space after its name, in Jumbo, and left in PERCS31.
      */
     public function testHookBraceSpacingIsFixedInJumboOnly(): void

@@ -43,6 +43,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   into a form that breaks PER Coding Style 3.1, section 11. `PERCS31.ControlStructures.ControlStructureSpacing` replaces
   `PSR12.ControlStructures.ControlStructureSpacing`, so update any `phpcs:ignore` comments or `<exclude>` rules that name
   it.
+- **A default value's `=` can be aligned in PERCS31.** It's a binary operator, so PER Coding Style 3.1 only requires at
+  least one space. `PERCS31.Operators.OperatorSpacing` now checks it, with the new property `checkDefaultValues`, in
+  place of `Squiz.Functions.FunctionDeclarationArgumentSpacing`. The Jumbo standard still requires exactly one space.
 - **A hook's own `{` must be one space after its name in Jumbo (breaking).** `get{`, `get  {` and `{` on the next line
   are errors in the Jumbo standard, using the new `PERCS31.Classes.PropertyHookLayout` property `checkHookBraceSpacing`.
   Auto-fixable, unless a comment is in the way.

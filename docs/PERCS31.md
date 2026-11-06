@@ -1431,6 +1431,11 @@ It extends `Squiz.WhiteSpace.OperatorSpacing`, which requires exactly one space,
 ruleset excludes the codes for more than one space, `SpacingBefore` and `SpacingAfter` and their `Amp` versions, so only
 a missing space is reported. A standard that wants exactly one space turns them back on, as the [Jumbo standard](Jumbo.md) does.
 
+The `=` of a parameter's default value is a binary operator too, so `int $a    = 1` passes and `int $a=1` is reported.
+`Squiz.Functions.FunctionDeclarationArgumentSpacing` wants exactly one space, so the ruleset excludes its
+`SpaceBeforeEquals` and `SpaceAfterEquals` codes, and this sniff checks the `=` instead. Set `checkDefaultValues` to
+`false` to leave it to that sniff, as the Jumbo standard does.
+
 The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operator, so it gets the opposite rule:
 [Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the union symbol MUST NOT have a space either side. The parent would require one.
 

@@ -30,6 +30,10 @@
         <exclude name="PSR12.Files.DeclareStatement"/>
         <!-- Replaced by a PERCS31 version without PSR-12's rules for a multi-line foreach (5.5) -->
         <exclude name="PSR12.ControlStructures.ControlStructureSpacing"/>
+        <!-- A default value's = is a binary operator, so it needs at least one space, not exactly one (6.2). Checked by
+             PERCS31.Operators.OperatorSpacing -->
+        <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpaceBeforeEquals"/>
+        <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpaceAfterEquals"/>
         <!-- PER says nothing about a blank line between call arguments, or before the closing parenthesis (2.3). A
              blank line before the first argument is still reported, as FirstArgumentPosition (4.7) -->
         <exclude name="PSR2.Methods.FunctionCallSignature.EmptyLine"/>
