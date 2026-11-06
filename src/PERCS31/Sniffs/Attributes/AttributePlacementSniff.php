@@ -80,6 +80,12 @@ class AttributePlacementSniff implements Sniff
     public bool $checkEnumCaseAttributes = false;
 
     /**
+     * Whether to report a comment on a line of its own between an attribute and its parameter. Section 12.2 only says
+     * "prior to the parameter", not "immediately prior", so it's off by default.
+     */
+    public bool $checkParameterComments = false;
+
+    /**
      * Returns an array of tokens this test wants to listen for.
      *
      * @return array<int|string>
@@ -181,7 +187,8 @@ class AttributePlacementSniff implements Sniff
      * section 12.2 says, and no comment, as the attributes go immediately prior to the structure.
      *
      * A docblock there is reported by SlevomatCodingStandard.Attributes.RequireAttributeAfterDocComment, and a blank
-     * line before a parameter by PERCS31.Functions.MultiLineFunctionDeclaration, so both are left alone.
+     * line before a parameter by PERCS31.Functions.MultiLineFunctionDeclaration, so both are left alone. A comment
+     * before a parameter is only reported if checkParameterComments is set.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the attribute block's opener.
@@ -191,10 +198,11 @@ class AttributePlacementSniff implements Sniff
     private function checkBeforeTarget(File $phpcsFile, int $stackPtr, int $closerPtr, int $targetPtr): void
     {
         $tokens = $phpcsFile->getTokens();
+        $isParameter = $this->findParameterListOpener($phpcsFile, $stackPtr) !== null;
         if (
             $tokens[$targetPtr]['code'] === T_ATTRIBUTE
             || $tokens[$targetPtr]['line'] === $tokens[$closerPtr]['line']
-            || $this->findParameterListOpener($phpcsFile, $stackPtr) !== null
+            || ($isParameter && !$this->checkParameterComments)
             || $phpcsFile->findNext(T_DOC_COMMENT_OPEN_TAG, ($closerPtr + 1), $targetPtr) !== false
         ) {
             return;
@@ -213,7 +221,7 @@ class AttributePlacementSniff implements Sniff
             }
         }
 
-        if (($tokens[$targetPtr]['line'] - $tokens[$closerPtr]['line']) < 2) {
+        if ($isParameter || ($tokens[$targetPtr]['line'] - $tokens[$closerPtr]['line']) < 2) {
             return;
         }
 

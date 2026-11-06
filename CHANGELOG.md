@@ -43,6 +43,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   into a form that breaks PER Coding Style 3.1, section 11. `PERCS31.ControlStructures.ControlStructureSpacing` replaces
   `PSR12.ControlStructures.ControlStructureSpacing`, so update any `phpcs:ignore` comments or `<exclude>` rules that name
   it.
+- **A comment between an attribute and its parameter is an error in Jumbo (breaking).** It uses the new
+  `PERCS31.Attributes.AttributePlacement` property `checkParameterComments`. Not auto-fixable.
 - **An enum case's attribute can be on the case's line in PERCS31.** Section 12.2 of PER Coding Style 3.1 doesn't list
   enum cases. The Jumbo standard still requires the line before, using the new `PERCS31.Attributes.AttributePlacement`
   property `checkEnumCaseAttributes`.

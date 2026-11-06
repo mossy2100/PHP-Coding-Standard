@@ -30,6 +30,7 @@
         <properties>
             <property name="checkClosureAttributesOutsideCalls" value="true"/>
             <property name="checkEnumCaseAttributes" value="true"/>
+            <property name="checkParameterComments" value="true"/>
         </properties>
     </rule>
 

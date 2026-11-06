@@ -240,3 +240,21 @@ enum AttributesOnCases
 
     #[Label] public const int LIMIT = 1;
 }
+
+function commentsBeforeParameters(
+    #[Pure]
+    // A comment, not reported by default.
+    int $a,
+    // phpcs:set PERCS31.Attributes.AttributePlacement checkParameterComments true
+    #[Pure]
+    // A comment.
+    int $b,
+    #[Pure] // A comment at the end of the line.
+    int $c,
+
+    #[Pure]
+
+    int $d,
+    // phpcs:set PERCS31.Attributes.AttributePlacement checkParameterComments false
+): void {
+}

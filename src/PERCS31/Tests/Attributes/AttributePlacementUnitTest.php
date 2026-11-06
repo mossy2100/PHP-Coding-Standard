@@ -67,6 +67,8 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             233 => 1,
             238 => 1,
             241 => 1,
+            // A comment before a parameter, when set.
+            249 => 1,
         ];
     }
 

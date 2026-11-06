@@ -313,8 +313,9 @@ It also reports a blank line between a docblock and the attributes after it, bet
 the last attribute and its target, and anything but a single space between an attribute and its parameter on the same
 line, as section 12.2 requires. A comment on a line of its own between an attribute and its target is reported too, as
 the attributes go immediately prior to the structure. A comment at the end of the attribute's line, as in
-`#[Override] // Stringable`, is fine. A blank line between a parameter and the next parameter's attributes is allowed,
-as 12.2 also says.
+`#[Override] // Stringable`, is fine. Section 12.2 only says "prior to the parameter", so a comment before a parameter
+is only reported if `checkParameterComments` is set, as the Jumbo standard does. A blank line between a parameter and
+the next parameter's attributes is allowed, as 12.2 also says.
 
 **Auto-fixable:** yes, unless a comment is between the attribute and its target. For an anonymous class, the fix puts
 each attribute block on its own line.
@@ -376,6 +377,7 @@ $handler = new #[Attribute] class {
 | ------------------------------------ | ---- | ------- | --------------------------------------------------------------------------- |
 | `checkClosureAttributesOutsideCalls` | bool | false   | Require a closure's attribute inline, after a single space, outside a call. |
 | `checkEnumCaseAttributes`            | bool | false   | Require an enum case's attribute on the line before the case.               |
+| `checkParameterComments`             | bool | false   | Report a comment on its own line between an attribute and its parameter.    |
 
 ---
 
