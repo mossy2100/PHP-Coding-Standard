@@ -1017,7 +1017,6 @@ $label = match ($code) {
     200, 201 => 'OK',
     default => 'Error',
 };
-$short = match ($code) { 200 => 'OK', default => 'Error' };
 
 $first = new class (1, 2) {};
 $second = new class (
