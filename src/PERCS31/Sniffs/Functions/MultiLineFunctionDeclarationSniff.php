@@ -8,6 +8,7 @@ use PERCS31\Helpers\EmptyBodyHelper;
 use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\Squiz\Sniffs\Functions\MultiLineFunctionDeclarationSniff as SquizSniff;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Checks function, closure and arrow function declarations, allowing an empty body as `{}` after a single-line
@@ -25,7 +26,8 @@ use PHP_CodeSniffer\Standards\Squiz\Sniffs\Functions\MultiLineFunctionDeclaratio
  * parameters, both before an attribute and before a parameter with none. The parent's check can't be run on its own,
  * so the PERCS31 ruleset excludes EmptyLine, and this sniff reports blank lines itself (BlankLine). PER says nothing
  * about one before the closing parenthesis or between `use` items, or about how many can go between parameters, so
- * those are only reported if $checkOptionalBlankLines is set. A single one between parameters is always allowed.
+ * those are only reported if $checkOptionalBlankLines is set. That also reports one before a parameter with no
+ * attributes, leaving only a single one before a later parameter's attributes, which section 12.2 mentions.
  *
  * The parent would also indent every line of a promoted parameter's multi-line hook list as a parameter, fighting
  * PERCS31.WhiteSpace.ScopeIndent until phpcbf fails. PERCS31.Classes.PromotedPropertyHooks already reports that code,
@@ -36,8 +38,8 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
     public const string CODE_BLANK_LINE = 'BlankLine';
 
     /**
-     * Whether to report a blank line PER doesn't forbid: before a closing parenthesis, between `use` items, or more
-     * than one between parameters.
+     * Whether to report a blank line PER doesn't forbid: before a closing parenthesis, between `use` items, before a
+     * parameter with no attributes, or more than one before a parameter's attributes.
      *
      * @var bool
      */
@@ -209,12 +211,14 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
             return $previous === false || $tokens[$previous]['code'] !== T_OPEN_PARENTHESIS;
         }
 
-        return $previous !== false && $tokens[$previous]['code'] === T_COMMA;
+        $previousCode = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($blankPtr - 1), null, true);
+
+        return $previousCode !== false && $tokens[$previousCode]['code'] === T_COMMA;
     }
 
     /**
-     * Check whether a blank line is the one PER allows: a single one after a parameter's comma, before the next
-     * parameter or its attributes.
+     * Check whether a blank line is always allowed: a single one after a parameter's comma, before the next parameter's
+     * attributes, or before the next parameter if $checkOptionalBlankLines isn't set.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $blankPtr The blank line's whitespace token.
@@ -230,10 +234,18 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
             return false;
         }
 
-        // Inside the parameter list, not before its closing parenthesis, and only one blank line: the comma before it
-        // is on the line just above.
+        $first = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($blankPtr + 1), null, true);
+        if ($this->checkOptionalBlankLines && ($first === false || $tokens[$first]['code'] !== T_ATTRIBUTE)) {
+            return false;
+        }
+
+        // Inside the parameter list, not before its closing parenthesis, and only one blank line: the comma, or a
+        // comment after it, is on the line just above.
+        $comma = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($blankPtr - 1), null, true);
+
         return $next < $parameterCloser
-            && $tokens[$previous]['code'] === T_COMMA
+            && $comma !== false
+            && $tokens[$comma]['code'] === T_COMMA
             && $tokens[$previous]['line'] === ($tokens[$blankPtr]['line'] - 1);
     }
 }

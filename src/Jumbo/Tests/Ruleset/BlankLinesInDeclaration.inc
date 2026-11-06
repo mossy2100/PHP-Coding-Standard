@@ -42,4 +42,15 @@ final class Example
     ): string {
         return $a;
     }
+
+    public function comments(
+        string $a, // A comment.
+
+        string $b, // A comment.
+
+        #[Decl]
+        string $c,
+    ): string {
+        return $a . $b . $c;
+    }
 }

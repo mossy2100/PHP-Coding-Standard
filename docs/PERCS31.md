@@ -1089,8 +1089,8 @@ before a parameter with none. So the ruleset excludes the parent's `EmptyLine` c
 itself, as `BlankLine`, such as one straight after `(`, or after a parameter's attributes.
 
 PER says nothing about a blank line before the closing parenthesis, or between a closure's `use` items, or about how
-many can go between parameters, so section 2.3 allows those too. Set `checkOptionalBlankLines` to report them, as the
-Jumbo standard does.
+many can go between parameters, so section 2.3 allows those too. Set `checkOptionalBlankLines` to report them, and one
+before a parameter with no attributes, as the Jumbo standard does.
 
 The parent doesn't check an arrow function. [Section 7.1](https://www.php-fig.org/per/coding-style/#71-short-closures) says an arrow function follows the same rules as a closure, so
 this sniff checks its split parameter list too:
