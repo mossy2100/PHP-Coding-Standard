@@ -35,11 +35,6 @@ PERCS31 is installed with the `mossy2100/coding-standard` package, and registere
 </ruleset>
 ```
 
-> [!IMPORTANT]
-> The standard is called PERCS31, but its folder and namespace are `PERCS31`. Use that spelling wherever
-> PHP_CodeSniffer needs the name: `<rule ref="PERCS31"/>`, `--standard=PERCS31` and sniff codes such as
-> `PERCS31.Files.LineLength`. `PERCS31` only works there on a case-insensitive filesystem, so it fails on Linux.
-
 ---
 
 ## PSR-12
