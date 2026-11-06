@@ -51,154 +51,40 @@
         </properties>
     </rule>
 
-    <!-- ====== GENERIC ====== -->
+    <!-- ====== GENERAL (2) ====== -->
 
-    <!-- Short array syntax, and the elements of a multi-line array indented once (11) -->
-    <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
-    <rule ref="Generic.Arrays.ArrayIndent"/>
+    <!-- Line length (2.3): a warning over 120 characters, no hard limit, and a severity 4 warning over 80, which phpcs
+         only shows with warning-severity set to 4 -->
+    <rule ref="PERCS31.Files.LineLength"/>
 
-    <!-- A method chain split across lines: each object operator starts a line indented once, and the first method is
-         on the next line (4.7) -->
-    <rule ref="PEAR.WhiteSpace.ObjectOperatorIndent"/>
-    <rule ref="PERCS31.Formatting.MethodChaining"/>
+    <!-- One statement per line, allowing { get; set; } on an abstract or interface property (2.3, 4.10) -->
+    <rule ref="PERCS31.Formatting.DisallowMultipleStatements"/>
 
-    <!-- Exactly one space after a cast (6.1) -->
-    <rule ref="Generic.Formatting.SpaceAfterCast"/>
+    <!-- Indentation, including property hooks (2.4, 4.9) and an anonymous class with attributes (8) -->
+    <rule ref="PERCS31.WhiteSpace.ScopeIndent"/>
 
-    <!-- A heredoc's or nowdoc's body and closing marker indented once past the line it starts on (10) -->
-    <rule ref="PERCS31.Strings.HeredocIndentation"/>
+    <!-- A line indented further than its scope, after a complete statement (2.4, 5) -->
+    <rule ref="PERCS31.WhiteSpace.ConsistentIndent"/>
 
-    <!-- A warning for a heredoc that could be a nowdoc (10) -->
-    <rule ref="Generic.Strings.UnnecessaryHeredoc"/>
-
-    <!-- ====== SQUIZ ====== -->
-
-    <!-- A multi-line array: the first value on the next line, one value per line, and the closing bracket on the next
-         line after the last value (11); no trailing comma on a single line (2.6). The other checks aren't PER
-         rules. -->
-    <rule ref="Squiz.Arrays.ArrayDeclaration">
-        <exclude name="Squiz.Arrays.ArrayDeclaration.KeyNotAligned"/>
-        <exclude name="Squiz.Arrays.ArrayDeclaration.ValueNotAligned"/>
-        <exclude name="Squiz.Arrays.ArrayDeclaration.CloseBraceNotAligned"/>
-        <exclude name="Squiz.Arrays.ArrayDeclaration.DoubleArrowNotAligned"/>
-        <exclude name="Squiz.Arrays.ArrayDeclaration.SingleLineNotAllowed"/>
-        <exclude name="Squiz.Arrays.ArrayDeclaration.MultiLineNotAllowed"/>
-        <exclude name="Squiz.Arrays.ArrayDeclaration.NoSpaceBeforeDoubleArrow"/>
-        <exclude name="Squiz.Arrays.ArrayDeclaration.SpaceBeforeDoubleArrow"/>
-        <exclude name="Squiz.Arrays.ArrayDeclaration.NoSpaceAfterDoubleArrow"/>
-        <exclude name="Squiz.Arrays.ArrayDeclaration.SpaceAfterDoubleArrow"/>
-        <exclude name="Squiz.Arrays.ArrayDeclaration.NoSpaceAfterComma"/>
-        <exclude name="Squiz.Arrays.ArrayDeclaration.SpaceAfterComma"/>
-        <exclude name="Squiz.Arrays.ArrayDeclaration.SpaceBeforeComma"/>
-        <exclude name="Squiz.Arrays.ArrayDeclaration.SpaceInEmptyArray"/>
-        <exclude name="Squiz.Arrays.ArrayDeclaration.KeySpecified"/>
-        <exclude name="Squiz.Arrays.ArrayDeclaration.NoKeySpecified"/>
-        <!-- Where an element's comma goes isn't a PER rule, and this check gets a heredoc element wrong. Jumbo uses
-             Jumbo.Arrays.ElementComma instead. -->
-        <exclude name="Squiz.Arrays.ArrayDeclaration.NoComma"/>
-        <!-- A multi-line array's trailing comma is checked by SlevomatCodingStandard.Arrays.TrailingArrayComma -->
-        <exclude name="Squiz.Arrays.ArrayDeclaration.NoCommaAfterLast"/>
+    <!-- Brace sniffs, extended to allow an empty body as {} (4, 4.4, 7, 8) -->
+    <rule ref="PERCS31.Classes.ClassDeclaration"/>
+    <rule ref="PERCS31.Functions.MultiLineFunctionDeclaration">
+        <!-- Replaced by the sniff's own BlankLine check, which allows the blank lines PER does (2.3, 12.2, 12.4) -->
+        <exclude name="PERCS31.Functions.MultiLineFunctionDeclaration.EmptyLine"/>
     </rule>
+    <rule ref="PERCS31.WhiteSpace.ScopeClosingBrace"/>
 
-    <!-- ====== PHPCSEXTRA ====== -->
-
-    <!-- A trailing comma in an attribute block: none on one line, and one in a split block of several attributes (2.6).
-         The code that forbids one in a split block of one attribute is excluded, as 2.6 says a split list MUST have
-         one. -->
-    <rule ref="Universal.Attributes.TrailingComma">
-        <exclude name="Universal.Attributes.TrailingComma.ForbiddenSingleAttributeMultiLine"/>
-    </rule>
-
-    <!-- No () on an attribute without arguments (12.1) -->
-    <rule ref="Universal.Attributes.DisallowAttributeParentheses"/>
-
-    <!-- No space after #[ or before ] (12.1) -->
-    <rule ref="Universal.Attributes.BracketSpacing"/>
-
-    <!-- In an attribute block, a comma with no space before it and one after (12.3). Only the attribute block codes:
-         the sniff checks every comma otherwise. -->
-    <rule ref="Universal.WhiteSpace.CommaSpacing.SpaceBeforeInAttributeBlock"/>
-    <rule ref="Universal.WhiteSpace.CommaSpacing.NoSpaceAfterInAttributeBlock"/>
-    <rule ref="Universal.WhiteSpace.CommaSpacing.TooMuchSpaceAfterInAttributeBlock"/>
-
-    <!-- A structure's body in braces, not the alternative syntax, e.g. if (): ... endif; (5) -->
-    <rule ref="Universal.ControlStructures.DisallowAlternativeSyntax"/>
-
-    <!-- No () on an anonymous class without arguments (8) -->
-    <rule ref="Universal.Classes.DisallowAnonClassParentheses"/>
+    <!-- An empty body as {}: a warning for a class or function (4, 4.4), an error for a closure or anonymous class (7, 8) -->
+    <rule ref="PERCS31.Formatting.EmptyBody"/>
 
     <!-- Keywords in lower case (2.5): ::class, and function and const in a use statement -->
     <rule ref="Universal.Constants.LowercaseClassResolutionKeyword"/>
     <rule ref="Universal.UseStatements.LowercaseFunctionConst"/>
 
-    <!-- The <?php tag in lower case (3) -->
-    <rule ref="Universal.PHP.LowercasePHPTag"/>
+    <!-- A severity 4 warning for an acronym in capitals in a name, as it's RECOMMENDED to write it like a word (2.7) -->
+    <rule ref="PERCS31.NamingConventions.AcronymCasing"/>
 
-    <!-- A wrapped . at the start of the line, not the end (6.4) -->
-    <rule ref="Universal.Operators.ConcatPosition"/>
-
-    <!-- exit() and die() with parentheses; a warning, as 4.7 says SHOULD -->
-    <rule ref="Universal.PHP.RequireExitDieParentheses">
-        <type>warning</type>
-    </rule>
-
-    <!-- ====== SLEVOMAT ====== -->
-
-    <!-- The closing bracket of a multi-line array on its own line (11) -->
-    <rule ref="SlevomatCodingStandard.Arrays.MultiLineArrayEndBracketPlacement"/>
-    <!-- A trailing comma after the last element of a multi-line array, keyed or not, including after a heredoc (2.6) -->
-    <rule ref="SlevomatCodingStandard.Arrays.TrailingArrayComma"/>
-
-    <!-- Separate attribute blocks on separate lines (12.3) -->
-    <rule ref="SlevomatCodingStandard.Attributes.DisallowMultipleAttributesPerLine"/>
-    <!-- A doc comment before the attributes, not after (12.2) -->
-    <rule ref="SlevomatCodingStandard.Attributes.RequireAttributeAfterDocComment"/>
-
-    <!-- No space before a backed enum's colon, one after (9) -->
-    <rule ref="SlevomatCodingStandard.Classes.BackedEnumTypeSpacing"/>
-    <!-- One constant per statement (4.3) -->
-    <rule ref="SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition"/>
-    <!-- abstract or final before readonly on a class (4.6) -->
-    <rule ref="SlevomatCodingStandard.Classes.ClassKeywordOrder"/>
-    <!-- One property per statement (4.3) -->
-    <rule ref="SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition"/>
-    <!-- Property modifier order, and the spacing around them and the type (4.3, 4.6) -->
-    <rule ref="SlevomatCodingStandard.Classes.PropertyDeclaration">
-        <properties>
-            <property name="checkPromoted" value="true"/>
-        </properties>
-    </rule>
-
-    <!-- No space after fn, and the expression may be on the next line (7.1) -->
-    <rule ref="SlevomatCodingStandard.Functions.ArrowFunctionDeclaration">
-        <properties>
-            <property name="spacesCountAfterKeyword" value="0"/>
-            <property name="allowMultiLine" value="true"/>
-        </properties>
-    </rule>
-    <!-- No space before the semicolon that ends an arrow function (7.1) -->
-    <rule ref="PERCS31.Functions.ArrowFunctionSemicolonSpacing"/>
-    <!-- No space before a named argument's colon, one after (4.7) -->
-    <rule ref="SlevomatCodingStandard.Functions.NamedArgumentSpacing"/>
-    <!-- Trailing commas: disallowed on single-line lists, required on multi-line ones (2.6) -->
-    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInCall">
-        <properties>
-            <property name="onlySingleLine" value="true"/>
-        </properties>
-    </rule>
-    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInClosureUse">
-        <properties>
-            <property name="onlySingleLine" value="true"/>
-        </properties>
-    </rule>
-    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInDeclaration">
-        <properties>
-            <property name="onlySingleLine" value="true"/>
-        </properties>
-    </rule>
-    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInCall"/>
-    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInClosureUse"/>
-    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInDeclaration"/>
+    <!-- ====== TYPES (2.5) ====== -->
 
     <!-- Union and intersection types: no spaces around | and &, or inside the parentheses, and null last (2.5). ?T is
          a SHOULD, so a warning. Known Slevomat bug, not worked around: a variable after a case body wrapped in braces
@@ -227,7 +113,45 @@
     <!-- A compound type split across lines has one type, or one union segment, per line (2.5) -->
     <rule ref="PERCS31.TypeHints.CompoundTypeLayout"/>
 
-    <!-- ====== PERCS31 ====== -->
+    <!-- ====== TRAILING COMMAS (2.6) ====== -->
+
+    <!-- Trailing commas: disallowed on single-line lists, required on multi-line ones (2.6) -->
+    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInCall">
+        <properties>
+            <property name="onlySingleLine" value="true"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInClosureUse">
+        <properties>
+            <property name="onlySingleLine" value="true"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInDeclaration">
+        <properties>
+            <property name="onlySingleLine" value="true"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInCall"/>
+    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInClosureUse"/>
+    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInDeclaration"/>
+
+    <!-- A trailing comma after the last element of a multi-line array, keyed or not, including after a heredoc (2.6) -->
+    <rule ref="SlevomatCodingStandard.Arrays.TrailingArrayComma"/>
+
+    <!-- A trailing comma in a multi-line match or group use, and none on a single line (2.6) -->
+    <rule ref="PERCS31.Formatting.TrailingComma"/>
+
+    <!-- A trailing comma in an attribute block: none on one line, and one in a split block of several attributes (2.6).
+         The code that forbids one in a split block of one attribute is excluded, as 2.6 says a split list MUST have
+         one. -->
+    <rule ref="Universal.Attributes.TrailingComma">
+        <exclude name="Universal.Attributes.TrailingComma.ForbiddenSingleAttributeMultiLine"/>
+    </rule>
+
+    <!-- ====== FILES (3) ====== -->
+
+    <!-- The <?php tag in lower case (3) -->
+    <rule ref="Universal.PHP.LowercasePHPTag"/>
 
     <!-- The file header (3), allowing a declare statement between PHP tags on the first line of a file with markup -->
     <rule ref="PERCS31.Files.FileHeader"/>
@@ -238,29 +162,32 @@
         <exclude name="PERCS31.Files.DeclareStatement.CurlyBracketNotOnNewLine"/>
     </rule>
 
-    <!-- Line length (2.3): a warning over 120 characters, no hard limit, and a severity 4 warning over 80, which phpcs
-         only shows with warning-severity set to 4 -->
-    <rule ref="PERCS31.Files.LineLength"/>
+    <!-- ====== CLASSES, PROPERTIES AND CONSTANTS (4) ====== -->
 
-    <!-- Brace sniffs, extended to allow an empty body as {} (4, 4.4, 7, 8) -->
-    <rule ref="PERCS31.Classes.ClassDeclaration"/>
-    <rule ref="PERCS31.Functions.MultiLineFunctionDeclaration">
-        <!-- Replaced by the sniff's own BlankLine check, which allows the blank lines PER does (2.3, 12.2, 12.4) -->
-        <exclude name="PERCS31.Functions.MultiLineFunctionDeclaration.EmptyLine"/>
+    <!-- A warning for new Foo() wrapped in parentheses before ->, ?-> or :: (4) -->
+    <rule ref="PERCS31.Classes.ClassInstantiationNoBrackets"/>
+
+    <!-- abstract or final before readonly on a class (4.6) -->
+    <rule ref="SlevomatCodingStandard.Classes.ClassKeywordOrder"/>
+
+    <!-- One constant per statement (4.3) -->
+    <rule ref="SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition"/>
+
+    <!-- No leading underscore on a constant (4.3) -->
+    <rule ref="PERCS31.NamingConventions.ValidConstantName"/>
+
+    <!-- Constants in UPPER_CASE, except in an enum, where a severity 4 warning recommends PascalCase (9) -->
+    <rule ref="PERCS31.NamingConventions.UpperCaseConstantName"/>
+
+    <!-- One property per statement (4.3) -->
+    <rule ref="SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition"/>
+
+    <!-- Property modifier order, and the spacing around them and the type (4.3, 4.6) -->
+    <rule ref="SlevomatCodingStandard.Classes.PropertyDeclaration">
+        <properties>
+            <property name="checkPromoted" value="true"/>
+        </properties>
     </rule>
-    <rule ref="PERCS31.WhiteSpace.ScopeClosingBrace"/>
-
-    <!-- An empty body as {}: a warning for a class or function (4, 4.4), an error for a closure or anonymous class (7, 8) -->
-    <rule ref="PERCS31.Formatting.EmptyBody"/>
-
-    <!-- Indentation, including property hooks (2.4, 4.9) and an anonymous class with attributes (8) -->
-    <rule ref="PERCS31.WhiteSpace.ScopeIndent"/>
-
-    <!-- A line indented further than its scope, after a complete statement (2.4, 5) -->
-    <rule ref="PERCS31.WhiteSpace.ConsistentIndent"/>
-
-    <!-- One statement per line, allowing { get; set; } on an abstract or interface property (2.3, 4.10) -->
-    <rule ref="PERCS31.Formatting.DisallowMultipleStatements"/>
 
     <!-- Properties: no leading underscore, no var, a visibility, and get before set with no bodies (4.3, 4.10) -->
     <rule ref="PERCS31.Classes.PropertyDeclaration"/>
@@ -271,30 +198,35 @@
     <!-- A hook on a promoted constructor parameter only as a single short hook on one line (4.9) -->
     <rule ref="PERCS31.Classes.PromotedPropertyHooks"/>
 
-    <!-- A severity 4 warning for an acronym in capitals in a name, as it's RECOMMENDED to write it like a word (2.7) -->
-    <rule ref="PERCS31.NamingConventions.AcronymCasing"/>
+    <!-- ====== FUNCTIONS AND CALLS (4.7) ====== -->
 
-    <!-- Constants in UPPER_CASE, except in an enum, where a severity 4 warning recommends PascalCase (9) -->
-    <rule ref="PERCS31.NamingConventions.UpperCaseConstantName"/>
+    <!-- No space before a named argument's colon, one after (4.7) -->
+    <rule ref="SlevomatCodingStandard.Functions.NamedArgumentSpacing"/>
 
-    <!-- No leading underscore on a constant (4.3) -->
-    <rule ref="PERCS31.NamingConventions.ValidConstantName"/>
+    <!-- A method chain split across lines: each object operator starts a line indented once, and the first method is
+         on the next line (4.7) -->
+    <rule ref="PEAR.WhiteSpace.ObjectOperatorIndent"/>
+    <rule ref="PERCS31.Formatting.MethodChaining"/>
 
-    <!-- A warning for new Foo() wrapped in parentheses before ->, ?-> or :: (4) -->
-    <rule ref="PERCS31.Classes.ClassInstantiationNoBrackets"/>
+    <!-- exit() and die() with parentheses; a warning, as 4.7 says SHOULD -->
+    <rule ref="Universal.PHP.RequireExitDieParentheses">
+        <type>warning</type>
+    </rule>
 
     <!-- A warning for clone without parentheses, e.g. clone $a (4.7) -->
     <rule ref="PERCS31.PHP.RequireCloneParentheses"/>
 
-    <!-- switch rules, including a terminating statement in the last case, and parentheses around a multi-line case
-         condition (5.2) -->
-    <rule ref="PERCS31.ControlStructures.SwitchDeclaration"/>
+    <!-- ====== CONTROL STRUCTURES (5) ====== -->
 
-    <!-- A trailing comma in a multi-line match or group use, and none on a single line (2.6) -->
-    <rule ref="PERCS31.Formatting.TrailingComma"/>
+    <!-- A structure's body in braces, not the alternative syntax, e.g. if (): ... endif; (5) -->
+    <rule ref="Universal.ControlStructures.DisallowAlternativeSyntax"/>
 
     <!-- A control structure's parentheses, without PSR-12's rules for a multi-line foreach (5, 5.5) -->
     <rule ref="PERCS31.ControlStructures.ControlStructureSpacing"/>
+
+    <!-- switch rules, including a terminating statement in the last case, and parentheses around a multi-line case
+         condition (5.2) -->
+    <rule ref="PERCS31.ControlStructures.SwitchDeclaration"/>
 
     <!-- Each match arm on a new line, as in the example in 5.2 -->
     <rule ref="PERCS31.ControlStructures.MatchArmPlacement"/>
@@ -302,6 +234,11 @@
     <!-- One space around => in match arms, as in the example in 5.2. The sniff's array and yield checks are off by
          default, as PER leaves them undefined. -->
     <rule ref="PERCS31.WhiteSpace.ArrowSpacing"/>
+
+    <!-- ====== OPERATORS (6) ====== -->
+
+    <!-- Exactly one space after a cast (6.1) -->
+    <rule ref="Generic.Formatting.SpaceAfterCast"/>
 
     <!-- At least one space around binary operators, including |> (6.2). The codes for more than one space are
          excluded, as PER allows more. -->
@@ -315,26 +252,114 @@
     <!-- A ternary that spans lines takes three, with ? and : leading, indented once (6.4) -->
     <rule ref="PERCS31.ControlStructures.MultiLineTernaryOperator"/>
 
+    <!-- A wrapped . at the start of the line, not the end (6.4) -->
+    <rule ref="Universal.Operators.ConcatPosition"/>
+
     <!-- Any other wrapped binary operator, and an arrow function's =>, at the start of the line (6.4, 7.1) -->
     <rule ref="PERCS31.Operators.OperatorPlacement"/>
 
-    <!-- private, not protected, for a non-public method or constant in an enum (9) -->
-    <rule ref="PERCS31.Classes.EnumMemberVisibility"/>
+    <!-- ====== CLOSURES AND ANONYMOUS CLASSES (7, 8) ====== -->
+
+    <!-- No space after fn, and the expression may be on the next line (7.1) -->
+    <rule ref="SlevomatCodingStandard.Functions.ArrowFunctionDeclaration">
+        <properties>
+            <property name="spacesCountAfterKeyword" value="0"/>
+            <property name="allowMultiLine" value="true"/>
+        </properties>
+    </rule>
+
+    <!-- No space before the semicolon that ends an arrow function (7.1) -->
+    <rule ref="PERCS31.Functions.ArrowFunctionSemicolonSpacing"/>
+
+    <!-- No () on an anonymous class without arguments (8) -->
+    <rule ref="Universal.Classes.DisallowAnonClassParentheses"/>
+
+    <!-- ====== ENUMS (9) ====== -->
+
+    <!-- No space before a backed enum's colon, one after (9) -->
+    <rule ref="SlevomatCodingStandard.Classes.BackedEnumTypeSpacing"/>
 
     <!-- Enum cases in PascalCase (9) -->
     <rule ref="PERCS31.NamingConventions.ValidEnumCaseName"/>
 
-    <!-- No blank line before a multi-line array's closing bracket (11) -->
-    <rule ref="PERCS31.Arrays.ArrayBracketSpacing"/>
+    <!-- private, not protected, for a non-public method or constant in an enum (9) -->
+    <rule ref="PERCS31.Classes.EnumMemberVisibility"/>
+
+    <!-- ====== HEREDOC AND NOWDOC (10) ====== -->
+
+    <!-- A heredoc's or nowdoc's body and closing marker indented once past the line it starts on (10) -->
+    <rule ref="PERCS31.Strings.HeredocIndentation"/>
+
+    <!-- A warning for a heredoc that could be a nowdoc (10) -->
+    <rule ref="Generic.Strings.UnnecessaryHeredoc"/>
+
+    <!-- ====== ARRAYS (11) ====== -->
+
+    <!-- Short array syntax, and the elements of a multi-line array indented once (11) -->
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+    <rule ref="Generic.Arrays.ArrayIndent"/>
+
+    <!-- A multi-line array: the first value on the next line, one value per line, and the closing bracket on the next
+         line after the last value (11); no trailing comma on a single line (2.6). The other checks aren't PER
+         rules. -->
+    <rule ref="Squiz.Arrays.ArrayDeclaration">
+        <exclude name="Squiz.Arrays.ArrayDeclaration.KeyNotAligned"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.ValueNotAligned"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.CloseBraceNotAligned"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.DoubleArrowNotAligned"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.SingleLineNotAllowed"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.MultiLineNotAllowed"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.NoSpaceBeforeDoubleArrow"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.SpaceBeforeDoubleArrow"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.NoSpaceAfterDoubleArrow"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.SpaceAfterDoubleArrow"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.NoSpaceAfterComma"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.SpaceAfterComma"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.SpaceBeforeComma"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.SpaceInEmptyArray"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.KeySpecified"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.NoKeySpecified"/>
+        <!-- Where an element's comma goes isn't a PER rule, and this check gets a heredoc element wrong. Jumbo uses
+             Jumbo.Arrays.ElementComma instead. -->
+        <exclude name="Squiz.Arrays.ArrayDeclaration.NoComma"/>
+        <!-- A multi-line array's trailing comma is checked by SlevomatCodingStandard.Arrays.TrailingArrayComma -->
+        <exclude name="Squiz.Arrays.ArrayDeclaration.NoCommaAfterLast"/>
+    </rule>
 
     <!-- A multi-line array's [ not on a line of its own, except as an element of a multi-line array (11) -->
     <rule ref="PERCS31.Arrays.OpeningBracketPlacement"/>
+
+    <!-- The closing bracket of a multi-line array on its own line (11) -->
+    <rule ref="SlevomatCodingStandard.Arrays.MultiLineArrayEndBracketPlacement"/>
+
+    <!-- No blank line before a multi-line array's closing bracket (11) -->
+    <rule ref="PERCS31.Arrays.ArrayBracketSpacing"/>
+
+    <!-- ====== ATTRIBUTES (12) ====== -->
+
+    <!-- No () on an attribute without arguments (12.1) -->
+    <rule ref="Universal.Attributes.DisallowAttributeParentheses"/>
+
+    <!-- No space after #[ or before ] (12.1) -->
+    <rule ref="Universal.Attributes.BracketSpacing"/>
+
+    <!-- A doc comment before the attributes, not after (12.2) -->
+    <rule ref="SlevomatCodingStandard.Attributes.RequireAttributeAfterDocComment"/>
 
     <!-- An attribute on the line before its target, except on a parameter in a single-line list, with no blank line
          or comment between them, and the layout of an anonymous class's attributes (8, 12.2) -->
     <rule ref="PERCS31.Attributes.AttributePlacement"/>
 
+    <!-- Separate attribute blocks on separate lines (12.3) -->
+    <rule ref="SlevomatCodingStandard.Attributes.DisallowMultipleAttributesPerLine"/>
+
     <!-- Several attributes may share a block on one line, but not one split over lines (12.3) -->
     <rule ref="PERCS31.Attributes.DisallowMultiLineAttributesJoining"/>
+
+    <!-- In an attribute block, a comma with no space before it and one after (12.3). Only the attribute block codes:
+         the sniff checks every comma otherwise. -->
+    <rule ref="Universal.WhiteSpace.CommaSpacing.SpaceBeforeInAttributeBlock"/>
+    <rule ref="Universal.WhiteSpace.CommaSpacing.NoSpaceAfterInAttributeBlock"/>
+    <rule ref="Universal.WhiteSpace.CommaSpacing.TooMuchSpaceAfterInAttributeBlock"/>
 
 </ruleset>

@@ -18,28 +18,123 @@
         <exclude name="PSR2.Files.ClosingTag"/>
     </rule>
 
+    <!-- ====== GENERAL (2) ====== -->
+
+    <!-- Line length: a warning over the limit, with no hard limit, and PERCS31's severity 4 warning over 80 -->
+    <rule ref="PERCS31.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="&lineLength;"/>
+        </properties>
+    </rule>
+
+    <!-- PERCS31 hides this at severity 4, as PER only recommends it. Jumbo shows it. -->
+    <rule ref="PERCS31.NamingConventions.AcronymCasing.AcronymNotLikeWord">
+        <severity>5</severity>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.PHP.UselessSemicolon"/>
+
+    <!-- ====== TYPES (2.5) ====== -->
+
+    <!-- The Jumbo versions of ParameterTypeHintSpacing and ParameterTypeHint, which skip a function with a hook on a
+         promoted constructor parameter, as the parents read the variables in the hook as parameters -->
+    <rule ref="Jumbo.TypeHints.ParameterTypeHintSpacing"/>
+    <rule ref="Jumbo.TypeHints.ParameterTypeHint">
+        <exclude name="Jumbo.TypeHints.ParameterTypeHint.UselessAnnotation"/>
+    </rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHintSpacing"/>
+    <rule ref="SlevomatCodingStandard.TypeHints.LongTypeHints"/>
+    <!-- ?T for a nullable type is an error here, not PERCS31's warning -->
+    <rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.RequiredShortNullable">
+        <type>error</type>
+    </rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.NullableTypeForNullDefaultValue"/>
+    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint">
+        <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.UselessAnnotation"/>
+    </rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint">
+        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.UselessAnnotation"/>
+    </rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.ClassConstantTypeHint">
+        <exclude name="SlevomatCodingStandard.TypeHints.ClassConstantTypeHint.UselessVarAnnotation"/>
+    </rule>
+
+    <!-- ====== TRAILING COMMAS (2.6) ====== -->
+
+    <rule ref="PERCS31.Formatting.TrailingComma">
+        <properties>
+            <property name="disallowInSplitMatchConditions" value="true"/>
+        </properties>
+    </rule>
+
+    <!-- ====== FILES AND NAMESPACES (3) ====== -->
+
+    <!-- No closing tag at the end of a file, including one that mixes PHP and HTML, which PSR2.Files.ClosingTag
+         allows -->
+    <rule ref="Zend.Files.ClosingTag"/>
+
+    <!-- The Jumbo version of DeclareStrictTypes, which allows <?php declare(strict_types=1) ?> on the first line
+         of a file with markup, as PER Coding Style 3.1 does -->
+    <rule ref="Jumbo.TypeHints.DeclareStrictTypes"/>
+
+    <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses"/>
+    <!-- Slevomat's namespace sniffs skip a group use, so it would hide unused and unsorted imports -->
+    <rule ref="SlevomatCodingStandard.Namespaces.DisallowGroupUse"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.MultipleUsesPerLine"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.NamespaceDeclaration"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.RequireOneNamespaceInFile"/>
+    <!-- Replaced by Jumbo.Namespaces.UnusedUses, which waits while a use keyword is miscased (Slevomat bug) -->
+    <rule ref="Jumbo.Namespaces.UnusedUses">
+        <properties>
+            <property name="searchAnnotations" value="true"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Namespaces.UseFromSameNamespace"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.UselessAlias"/>
+
+    <!-- ====== CLASSES, PROPERTIES AND CONSTANTS (4) ====== -->
+
+    <rule ref="SlevomatCodingStandard.Classes.ClassMemberSpacing"/>
+    <!-- The Jumbo versions of ConstantSpacing, EnumCaseSpacing and PropertySpacing, which skip a member on a file's
+         last line, as the parents crash the whole run on one -->
+    <rule ref="Jumbo.Classes.ConstantSpacing">
+        <properties>
+            <property name="minLinesCountBeforeWithoutComment" value="1"/>
+        </properties>
+        <exclude name="Jumbo.Classes.ConstantSpacing.IncorrectCountOfBlankLinesAfterConstant"/>
+    </rule>
+    <rule ref="Jumbo.Classes.EnumCaseSpacing">
+        <properties>
+            <property name="minLinesCountBeforeWithoutComment" value="1"/>
+        </properties>
+    </rule>
+    <rule ref="Jumbo.Classes.PropertySpacing">
+        <properties>
+            <property name="minLinesCountBeforeWithoutComment" value="1"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Classes.DisallowStringExpressionPropertyFetch"/>
+    <!-- Replaced by Jumbo.Classes.EmptyLinesAroundClassBraces, which allows an empty body as {} -->
+    <rule ref="Jumbo.Classes.EmptyLinesAroundClassBraces">
+        <properties>
+            <property name="linesCountAfterOpeningBrace" value="0"/>
+            <property name="linesCountBeforeClosingBrace" value="0"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Classes.MethodSpacing"/>
+    <rule ref="SlevomatCodingStandard.Classes.ModernClassNameReference"/>
+    <rule ref="SlevomatCodingStandard.Classes.RequireSelfReference"/>
+    <!-- No blank line between trait use statements; PSR12.Traits.UseDeclaration, in PERCS31, checks the rest -->
+    <rule ref="SlevomatCodingStandard.Classes.TraitUseSpacing">
+        <exclude name="SlevomatCodingStandard.Classes.TraitUseSpacing.IncorrectLinesCountBeforeFirstUse"/>
+        <exclude name="SlevomatCodingStandard.Classes.TraitUseSpacing.IncorrectLinesCountAfterLastUse"/>
+    </rule>
+
     <!-- get before set in every hook list, including ones with bodies, not just abstract and interface properties -->
     <rule ref="PERCS31.Classes.PropertyDeclaration">
         <properties>
             <property name="orderHooksWithBodies" value="true"/>
-        </properties>
-    </rule>
-
-    <!-- A closure's attribute inline, after a single space, outside a call's arguments too, e.g. in an assignment -->
-    <rule ref="PERCS31.Attributes.AttributePlacement">
-        <properties>
-            <property name="checkClosureAttributesOutsideCalls" value="true"/>
-            <property name="checkEnumCaseAttributes" value="true"/>
-            <property name="checkParameterComments" value="true"/>
-        </properties>
-    </rule>
-
-    <!-- One space around => in every array and yield $key => $value too, not just a match arm. This replaces
-         Squiz.Arrays.ArrayDeclaration's arrow spacing checks, which cover only a single-line array. -->
-    <rule ref="PERCS31.WhiteSpace.ArrowSpacing">
-        <properties>
-            <property name="checkArray" value="true"/>
-            <property name="checkYield" value="true"/>
         </properties>
     </rule>
 
@@ -51,22 +146,115 @@
         </properties>
     </rule>
 
-    <!-- A wrapped line in a list item, such as a call argument, indented once past the item, so each item stays
-         distinct; PERCS31 also allows it lined up with the item. A wrapped line in grouping parentheses lined up with
-         the group's first line, with no extra indent; PERCS31 doesn't check it. -->
-    <rule ref="PERCS31.Operators.OperatorPlacement">
+    <!-- ====== FUNCTIONS AND CALLS (4.7) ====== -->
+
+    <rule ref="SlevomatCodingStandard.Classes.RequireMultiLineMethodSignature">
         <properties>
-            <property name="requireListItemIndent" value="true"/>
-            <property name="requireGroupingLineUp" value="true"/>
+            <property name="minLineLength" value="&lineLengthPlusOne;"/>
         </properties>
     </rule>
+    <!-- The Jumbo version of RequireSingleLineMethodSignature, which skips a method with a hook on a promoted
+         constructor parameter, as the parent's fix breaks it -->
+    <rule ref="Jumbo.Classes.RequireSingleLineMethodSignature">
+        <properties>
+            <property name="maxLineLength" value="&lineLength;"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Functions.FunctionLength">
+        <properties>
+            <property name="maxLinesLength" value="100"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Functions.RequireMultiLineCall">
+        <properties>
+            <property name="minLineLength" value="&lineLengthPlusOne;"/>
+        </properties>
+    </rule>
+    <!-- The Jumbo version of SlevomatCodingStandard.Functions.RequireSingleLineCall, which skips a call with an
+         anonymous class or match argument, as the parent's fix puts the body on one line -->
+    <rule ref="Jumbo.Functions.RequireSingleLineCall">
+        <properties>
+            <property name="maxLineLength" value="&lineLength;"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Functions.StrictCall"/>
+    <rule ref="SlevomatCodingStandard.Functions.UselessParameterDefaultValue"/>
+    <rule ref="SlevomatCodingStandard.PHP.DisallowDirectMagicInvokeCall"/>
 
-    <!-- PERCS31 hides this at severity 4, as PER only recommends it. Jumbo shows it. -->
-    <rule ref="PERCS31.NamingConventions.AcronymCasing.AcronymNotLikeWord">
+    <!-- No blank line in a call's arguments, a closure's use list, or before a closing parenthesis -->
+    <rule ref="PERCS31.Functions.MultiLineFunctionDeclaration">
+        <properties>
+            <property name="checkOptionalBlankLines" value="true"/>
+        </properties>
+    </rule>
+    <rule ref="PSR2.Methods.FunctionCallSignature.EmptyLine">
         <severity>5</severity>
     </rule>
 
-    <!-- ====== GENERIC ====== -->
+    <!-- No space around ->, ?-> and ::, except a line break in a wrapped chain -->
+    <rule ref="Squiz.WhiteSpace.ObjectOperatorSpacing">
+        <properties>
+            <property name="ignoreNewlines" value="true"/>
+        </properties>
+    </rule>
+
+    <!-- ====== CONTROL STRUCTURES (5) ====== -->
+
+    <rule ref="Generic.CodeAnalysis.AssignmentInCondition"/>
+    <rule ref="SlevomatCodingStandard.ControlStructures.DisallowContinueWithoutIntegerOperandInSwitch"/>
+    <!-- Replaced by Jumbo.ControlStructures.LanguageConstructWithParentheses, which leaves exit() and die() alone -->
+    <rule ref="Jumbo.ControlStructures.LanguageConstructWithParentheses"/>
+    <rule ref="SlevomatCodingStandard.ControlStructures.RequireMultiLineCondition">
+        <properties>
+            <property name="minLineLength" value="&lineLengthPlusOne;"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.ControlStructures.RequireSingleLineCondition">
+        <properties>
+            <property name="maxLineLength" value="&lineLength;"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.ControlStructures.UselessIfConditionWithReturn"/>
+    <rule ref="SlevomatCodingStandard.Exceptions.DeadCatch"/>
+    <rule ref="SlevomatCodingStandard.Exceptions.RequireNonCapturingCatch"/>
+
+    <!-- Multi-line foreach, for, switch and match headers that fit must be written on one line; Slevomat's
+         RequireSingleLineCondition covers if, elseif, while and do-while -->
+    <rule ref="Jumbo.ControlStructures.RequireSingleLineHeader">
+        <properties>
+            <property name="maxLineLength" value="&lineLength;"/>
+        </properties>
+    </rule>
+
+    <!-- A control structure's closing brace on its own line, except for a comment, or what continues the structure -->
+    <rule ref="Jumbo.ControlStructures.StatementAfterClosingBrace"/>
+
+    <!-- A match arm on one line up to its value if it fits, otherwise indented one level past its first line, and no
+         comma before its => -->
+    <rule ref="Jumbo.ControlStructures.MatchArmWrapIndent">
+        <properties>
+            <property name="maxLineLength" value="&lineLength;"/>
+        </properties>
+    </rule>
+
+    <!-- ====== OPERATORS (6) ====== -->
+
+    <rule ref="SlevomatCodingStandard.PHP.TypeCast"/>
+    <rule ref="SlevomatCodingStandard.PHP.ReferenceSpacing"/>
+    <rule ref="SlevomatCodingStandard.Operators.NegationOperatorSpacing"/>
+    <rule ref="SlevomatCodingStandard.Operators.RequireCombinedAssignmentOperator"/>
+    <rule ref="SlevomatCodingStandard.Operators.RequireOnlyStandaloneIncrementAndDecrementOperators"/>
+    <rule ref="SlevomatCodingStandard.Operators.SpreadOperatorSpacing"/>
+    <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceEqualOperator"/>
+    <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceOperator"/>
+    <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullSafeObjectOperator"/>
+    <rule ref="SlevomatCodingStandard.ControlStructures.RequireMultiLineTernaryOperator">
+        <properties>
+            <property name="lineLengthLimit" value="&lineLength;"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.ControlStructures.RequireShortTernaryOperator"/>
+    <rule ref="SlevomatCodingStandard.ControlStructures.RequireTernaryOperator"/>
 
     <!-- No whitespace after ! -->
     <rule ref="Generic.Formatting.SpaceAfterNot">
@@ -75,54 +263,8 @@
         </properties>
     </rule>
 
-    <!-- CodeAnalysis -->
-    <rule ref="Generic.CodeAnalysis.AssignmentInCondition"/>
-
-    <!-- Line length: a warning over the limit, with no hard limit, and PERCS31's severity 4 warning over 80 -->
-    <rule ref="PERCS31.Files.LineLength">
-        <properties>
-            <property name="lineLimit" value="&lineLength;"/>
-        </properties>
-    </rule>
-
-    <!-- ====== SQUIZ ====== -->
-
-    <!-- Arrays: the checks PERCS31 leaves out. One space after a comma, none inside [], and no mix of keyed and
-         unkeyed values. The spacing around => is left to PERCS31.WhiteSpace.ArrowSpacing, which covers every array. -->
-    <rule ref="Squiz.Arrays.ArrayDeclaration.NoSpaceAfterComma">
-        <severity>5</severity>
-    </rule>
-    <rule ref="Squiz.Arrays.ArrayDeclaration.SpaceAfterComma">
-        <severity>5</severity>
-    </rule>
-    <rule ref="Squiz.Arrays.ArrayDeclaration.SpaceBeforeComma">
-        <severity>5</severity>
-    </rule>
-    <rule ref="Squiz.Arrays.ArrayDeclaration.SpaceInEmptyArray">
-        <severity>5</severity>
-    </rule>
-    <rule ref="Squiz.Arrays.ArrayDeclaration.KeySpecified">
-        <severity>5</severity>
-    </rule>
-    <rule ref="Squiz.Arrays.ArrayDeclaration.NoKeySpecified">
-        <severity>5</severity>
-    </rule>
-
-    <!-- Variables and properties in lowerCamelCaps -->
-    <rule ref="Squiz.NamingConventions.ValidVariableName">
-        <exclude name="Squiz.NamingConventions.ValidVariableName.PublicHasUnderscore"/>
-        <exclude name="Squiz.NamingConventions.ValidVariableName.PrivateNoUnderscore"/>
-    </rule>
-
-    <!-- Ensure strings only use double quotes if necessary -->
-    <rule ref="Squiz.Strings.DoubleQuoteUsage.NotRequired"/>
-
-    <!-- No space around ->, ?-> and ::, except a line break in a wrapped chain -->
-    <rule ref="Squiz.WhiteSpace.ObjectOperatorSpacing">
-        <properties>
-            <property name="ignoreNewlines" value="true"/>
-        </properties>
-    </rule>
+    <!-- No whitespace after a prefix unary +, ~ or @ -->
+    <rule ref="Jumbo.Operators.UnaryOperatorSpacing"/>
 
     <!-- Exactly one space around operators, including before assignments and double arrows (no alignment): the codes
          PERCS31.Operators.OperatorSpacing reports more than one space with, which PERCS31 excludes -->
@@ -153,197 +295,58 @@
         <severity>5</severity>
     </rule>
 
-    <!-- ====== SLEVOMAT ====== -->
+    <!-- A wrapped line in a list item, such as a call argument, indented once past the item, so each item stays
+         distinct; PERCS31 also allows it lined up with the item. A wrapped line in grouping parentheses lined up with
+         the group's first line, with no extra indent; PERCS31 doesn't check it. -->
+    <rule ref="PERCS31.Operators.OperatorPlacement">
+        <properties>
+            <property name="requireListItemIndent" value="true"/>
+            <property name="requireGroupingLineUp" value="true"/>
+        </properties>
+    </rule>
 
-    <!-- Arrays -->
+    <!-- ====== CLOSURES (7) ====== -->
+
+    <rule ref="SlevomatCodingStandard.Functions.RequireArrowFunction"/>
+    <rule ref="SlevomatCodingStandard.Functions.StaticClosure"/>
+
+    <!-- ====== ARRAYS (11) ====== -->
+
+    <!-- Arrays: the checks PERCS31 leaves out. One space after a comma, none inside [], and no mix of keyed and
+         unkeyed values. The spacing around => is left to PERCS31.WhiteSpace.ArrowSpacing, which covers every array. -->
+    <rule ref="Squiz.Arrays.ArrayDeclaration.NoSpaceAfterComma">
+        <severity>5</severity>
+    </rule>
+    <rule ref="Squiz.Arrays.ArrayDeclaration.SpaceAfterComma">
+        <severity>5</severity>
+    </rule>
+    <rule ref="Squiz.Arrays.ArrayDeclaration.SpaceBeforeComma">
+        <severity>5</severity>
+    </rule>
+    <rule ref="Squiz.Arrays.ArrayDeclaration.SpaceInEmptyArray">
+        <severity>5</severity>
+    </rule>
+    <rule ref="Squiz.Arrays.ArrayDeclaration.KeySpecified">
+        <severity>5</severity>
+    </rule>
+    <rule ref="Squiz.Arrays.ArrayDeclaration.NoKeySpecified">
+        <severity>5</severity>
+    </rule>
+
+    <!-- One space around => in every array and yield $key => $value too, not just a match arm. This replaces
+         Squiz.Arrays.ArrayDeclaration's arrow spacing checks, which cover only a single-line array. -->
+    <rule ref="PERCS31.WhiteSpace.ArrowSpacing">
+        <properties>
+            <property name="checkArray" value="true"/>
+            <property name="checkYield" value="true"/>
+        </properties>
+    </rule>
+
     <rule ref="SlevomatCodingStandard.Arrays.ArrayAccess"/>
     <rule ref="SlevomatCodingStandard.Arrays.DisallowImplicitArrayCreation"/>
     <rule ref="SlevomatCodingStandard.Arrays.DisallowPartiallyKeyed"/>
     <rule ref="SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace"/>
-
-    <!-- Attributes -->
-    <rule ref="SlevomatCodingStandard.Attributes.AttributesOrder">
-        <properties>
-            <property name="orderAlphabetically" value="true"/>
-        </properties>
-    </rule>
-
-    <!-- Classes -->
-    <rule ref="SlevomatCodingStandard.Classes.ClassMemberSpacing"/>
-    <!-- The Jumbo versions of ConstantSpacing, EnumCaseSpacing and PropertySpacing, which skip a member on a file's
-         last line, as the parents crash the whole run on one -->
-    <rule ref="Jumbo.Classes.ConstantSpacing">
-        <properties>
-            <property name="minLinesCountBeforeWithoutComment" value="1"/>
-        </properties>
-        <exclude name="Jumbo.Classes.ConstantSpacing.IncorrectCountOfBlankLinesAfterConstant"/>
-    </rule>
-    <rule ref="SlevomatCodingStandard.Classes.DisallowStringExpressionPropertyFetch"/>
-    <!-- Replaced by Jumbo.Classes.EmptyLinesAroundClassBraces, which allows an empty body as {} -->
-    <rule ref="Jumbo.Classes.EmptyLinesAroundClassBraces">
-        <properties>
-            <property name="linesCountAfterOpeningBrace" value="0"/>
-            <property name="linesCountBeforeClosingBrace" value="0"/>
-        </properties>
-    </rule>
-    <rule ref="Jumbo.Classes.EnumCaseSpacing">
-        <properties>
-            <property name="minLinesCountBeforeWithoutComment" value="1"/>
-        </properties>
-    </rule>
-    <rule ref="SlevomatCodingStandard.Classes.MethodSpacing"/>
-    <rule ref="SlevomatCodingStandard.Classes.ModernClassNameReference"/>
-    <rule ref="Jumbo.Classes.PropertySpacing">
-        <properties>
-            <property name="minLinesCountBeforeWithoutComment" value="1"/>
-        </properties>
-    </rule>
-    <rule ref="SlevomatCodingStandard.Classes.RequireMultiLineMethodSignature">
-        <properties>
-            <property name="minLineLength" value="&lineLengthPlusOne;"/>
-        </properties>
-    </rule>
-    <rule ref="SlevomatCodingStandard.Classes.RequireSelfReference"/>
-    <!-- The Jumbo version of RequireSingleLineMethodSignature, which skips a method with a hook on a promoted
-         constructor parameter, as the parent's fix breaks it -->
-    <rule ref="Jumbo.Classes.RequireSingleLineMethodSignature">
-        <properties>
-            <property name="maxLineLength" value="&lineLength;"/>
-        </properties>
-    </rule>
-    <!-- No blank line between trait use statements; PSR12.Traits.UseDeclaration, in PERCS31, checks the rest -->
-    <rule ref="SlevomatCodingStandard.Classes.TraitUseSpacing">
-        <exclude name="SlevomatCodingStandard.Classes.TraitUseSpacing.IncorrectLinesCountBeforeFirstUse"/>
-        <exclude name="SlevomatCodingStandard.Classes.TraitUseSpacing.IncorrectLinesCountAfterLastUse"/>
-    </rule>
-
-    <!-- Commenting -->
-    <rule ref="SlevomatCodingStandard.Commenting.AnnotationName"/>
-    <rule ref="SlevomatCodingStandard.Commenting.DeprecatedAnnotationDeclaration"/>
-    <rule ref="SlevomatCodingStandard.Commenting.EmptyComment"/>
-    <rule ref="SlevomatCodingStandard.Commenting.RequireOneLinePropertyDocComment"/>
-    <rule ref="SlevomatCodingStandard.Commenting.UselessInheritDocComment"/>
-
-    <!-- ControlStructures -->
-    <rule ref="SlevomatCodingStandard.ControlStructures.DisallowContinueWithoutIntegerOperandInSwitch"/>
-    <!-- Replaced by Jumbo.ControlStructures.LanguageConstructWithParentheses, which leaves exit() and die() alone -->
-    <rule ref="Jumbo.ControlStructures.LanguageConstructWithParentheses"/>
-    <rule ref="SlevomatCodingStandard.ControlStructures.RequireMultiLineCondition">
-        <properties>
-            <property name="minLineLength" value="&lineLengthPlusOne;"/>
-        </properties>
-    </rule>
-    <rule ref="SlevomatCodingStandard.ControlStructures.RequireMultiLineTernaryOperator">
-        <properties>
-            <property name="lineLengthLimit" value="&lineLength;"/>
-        </properties>
-    </rule>
-    <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceEqualOperator"/>
-    <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceOperator"/>
-    <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullSafeObjectOperator"/>
-    <rule ref="SlevomatCodingStandard.ControlStructures.RequireSingleLineCondition">
-        <properties>
-            <property name="maxLineLength" value="&lineLength;"/>
-        </properties>
-    </rule>
-    <rule ref="SlevomatCodingStandard.ControlStructures.RequireShortTernaryOperator"/>
-    <rule ref="SlevomatCodingStandard.ControlStructures.RequireTernaryOperator"/>
-    <rule ref="SlevomatCodingStandard.ControlStructures.UselessIfConditionWithReturn"/>
-
-    <!-- Exceptions -->
-    <rule ref="SlevomatCodingStandard.Exceptions.DeadCatch"/>
-    <rule ref="SlevomatCodingStandard.Exceptions.RequireNonCapturingCatch"/>
-
-    <!-- Functions -->
-    <rule ref="SlevomatCodingStandard.Functions.FunctionLength">
-        <properties>
-            <property name="maxLinesLength" value="100"/>
-        </properties>
-    </rule>
-    <rule ref="SlevomatCodingStandard.Functions.RequireArrowFunction"/>
-    <rule ref="SlevomatCodingStandard.Functions.RequireMultiLineCall">
-        <properties>
-            <property name="minLineLength" value="&lineLengthPlusOne;"/>
-        </properties>
-    </rule>
-    <!-- The Jumbo version of SlevomatCodingStandard.Functions.RequireSingleLineCall, which skips a call with an
-         anonymous class or match argument, as the parent's fix puts the body on one line -->
-    <rule ref="Jumbo.Functions.RequireSingleLineCall">
-        <properties>
-            <property name="maxLineLength" value="&lineLength;"/>
-        </properties>
-    </rule>
-    <rule ref="SlevomatCodingStandard.Functions.StaticClosure"/>
-    <rule ref="SlevomatCodingStandard.Functions.StrictCall"/>
-    <rule ref="SlevomatCodingStandard.Functions.UselessParameterDefaultValue"/>
-
-    <!-- Namespaces -->
-    <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses"/>
-    <!-- Slevomat's namespace sniffs skip a group use, so it would hide unused and unsorted imports -->
-    <rule ref="SlevomatCodingStandard.Namespaces.DisallowGroupUse"/>
-    <rule ref="SlevomatCodingStandard.Namespaces.MultipleUsesPerLine"/>
-    <rule ref="SlevomatCodingStandard.Namespaces.NamespaceDeclaration"/>
-    <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly"/>
-    <rule ref="SlevomatCodingStandard.Namespaces.RequireOneNamespaceInFile"/>
-    <!-- Replaced by Jumbo.Namespaces.UnusedUses, which waits while a use keyword is miscased (Slevomat bug) -->
-    <rule ref="Jumbo.Namespaces.UnusedUses">
-        <properties>
-            <property name="searchAnnotations" value="true"/>
-        </properties>
-    </rule>
-    <rule ref="SlevomatCodingStandard.Namespaces.UseFromSameNamespace"/>
-    <rule ref="SlevomatCodingStandard.Namespaces.UselessAlias"/>
-
-    <!-- Operators -->
-    <rule ref="SlevomatCodingStandard.Operators.NegationOperatorSpacing"/>
-    <rule ref="SlevomatCodingStandard.Operators.RequireCombinedAssignmentOperator"/>
-    <rule ref="SlevomatCodingStandard.Operators.RequireOnlyStandaloneIncrementAndDecrementOperators"/>
-    <rule ref="SlevomatCodingStandard.Operators.SpreadOperatorSpacing"/>
-
-    <!-- PHP -->
-    <rule ref="SlevomatCodingStandard.PHP.DisallowDirectMagicInvokeCall"/>
-    <rule ref="SlevomatCodingStandard.PHP.ReferenceSpacing"/>
     <rule ref="SlevomatCodingStandard.PHP.ShortList"/>
-    <rule ref="SlevomatCodingStandard.PHP.TypeCast"/>
-    <rule ref="SlevomatCodingStandard.PHP.UselessSemicolon"/>
-
-    <!-- Strings -->
-    <rule ref="SlevomatCodingStandard.Strings.DisallowVariableParsing"/>
-
-    <!-- TypeHints -->
-    <!-- The Jumbo version of DeclareStrictTypes, which allows <?php declare(strict_types=1) ?> on the first line
-         of a file with markup, as PER Coding Style 3.1 does -->
-    <rule ref="Jumbo.TypeHints.DeclareStrictTypes"/>
-    <!-- The Jumbo versions of ParameterTypeHintSpacing and ParameterTypeHint, which skip a function with a hook on a
-         promoted constructor parameter, as the parents read the variables in the hook as parameters -->
-    <rule ref="Jumbo.TypeHints.ParameterTypeHintSpacing"/>
-    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHintSpacing"/>
-    <rule ref="SlevomatCodingStandard.TypeHints.LongTypeHints"/>
-    <!-- ?T for a nullable type is an error here, not PERCS31's warning -->
-    <rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.RequiredShortNullable">
-        <type>error</type>
-    </rule>
-    <rule ref="SlevomatCodingStandard.TypeHints.NullableTypeForNullDefaultValue"/>
-    <rule ref="Jumbo.TypeHints.ParameterTypeHint">
-        <exclude name="Jumbo.TypeHints.ParameterTypeHint.UselessAnnotation"/>
-    </rule>
-    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint">
-        <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.UselessAnnotation"/>
-    </rule>
-    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint">
-        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.UselessAnnotation"/>
-    </rule>
-    <rule ref="SlevomatCodingStandard.TypeHints.ClassConstantTypeHint">
-        <exclude name="SlevomatCodingStandard.TypeHints.ClassConstantTypeHint.UselessVarAnnotation"/>
-    </rule>
-
-    <!-- Variables -->
-    <rule ref="SlevomatCodingStandard.Variables.DisallowVariableVariable"/>
-    <rule ref="SlevomatCodingStandard.Variables.DuplicateAssignmentToVariable"/>
-    <rule ref="SlevomatCodingStandard.Variables.UnusedVariable"/>
-    <rule ref="SlevomatCodingStandard.Variables.UselessVariable"/>
-
-    <!-- ===== MOSSY2100 ====== -->
 
     <!-- Multi-line arrays that fit on one line must be written on one line -->
     <rule ref="Jumbo.Arrays.ArrayDeclaration">
@@ -356,51 +359,53 @@
          only checks a keyed element and gets a heredoc element wrong -->
     <rule ref="Jumbo.Arrays.ElementComma"/>
 
-    <!-- Multi-line foreach, for, switch and match headers that fit must be written on one line; Slevomat's
-         RequireSingleLineCondition covers if, elseif, while and do-while -->
-    <!-- A match arm on one line up to its value if it fits, otherwise indented one level past its first line, and no
-         comma before its => -->
-    <rule ref="Jumbo.ControlStructures.MatchArmWrapIndent">
+    <!-- ====== ATTRIBUTES (12) ====== -->
+
+    <!-- A closure's attribute inline, after a single space, outside a call's arguments too, e.g. in an assignment -->
+    <rule ref="PERCS31.Attributes.AttributePlacement">
         <properties>
-            <property name="maxLineLength" value="&lineLength;"/>
-        </properties>
-    </rule>
-    <rule ref="PERCS31.Formatting.TrailingComma">
-        <properties>
-            <property name="disallowInSplitMatchConditions" value="true"/>
+            <property name="checkClosureAttributesOutsideCalls" value="true"/>
+            <property name="checkEnumCaseAttributes" value="true"/>
+            <property name="checkParameterComments" value="true"/>
         </properties>
     </rule>
 
-    <!-- No blank line in a call's arguments, a closure's use list, or before a closing parenthesis -->
-    <rule ref="PERCS31.Functions.MultiLineFunctionDeclaration">
+    <rule ref="SlevomatCodingStandard.Attributes.AttributesOrder">
         <properties>
-            <property name="checkOptionalBlankLines" value="true"/>
-        </properties>
-    </rule>
-    <rule ref="PSR2.Methods.FunctionCallSignature.EmptyLine">
-        <severity>5</severity>
-    </rule>
-
-    <!-- A control structure's closing brace on its own line, except for a comment, or what continues the structure -->
-    <rule ref="Jumbo.ControlStructures.StatementAfterClosingBrace"/>
-
-    <rule ref="Jumbo.ControlStructures.RequireSingleLineHeader">
-        <properties>
-            <property name="maxLineLength" value="&lineLength;"/>
+            <property name="orderAlphabetically" value="true"/>
         </properties>
     </rule>
 
-    <!-- No whitespace after a prefix unary +, ~ or @ -->
-    <rule ref="Jumbo.Operators.UnaryOperatorSpacing"/>
+    <!-- ====== COMMENTS (NOT IN PER) ====== -->
+
+    <rule ref="SlevomatCodingStandard.Commenting.AnnotationName"/>
+    <rule ref="SlevomatCodingStandard.Commenting.DeprecatedAnnotationDeclaration"/>
+    <rule ref="SlevomatCodingStandard.Commenting.EmptyComment"/>
+    <rule ref="SlevomatCodingStandard.Commenting.RequireOneLinePropertyDocComment"/>
+    <rule ref="SlevomatCodingStandard.Commenting.UselessInheritDocComment"/>
+
+    <!-- ====== STRINGS (NOT IN PER) ====== -->
+
+    <!-- Ensure strings only use double quotes if necessary -->
+    <rule ref="Squiz.Strings.DoubleQuoteUsage.NotRequired"/>
+
+    <rule ref="SlevomatCodingStandard.Strings.DisallowVariableParsing"/>
+
+    <!-- ====== VARIABLES (NOT IN PER) ====== -->
+
+    <!-- Variables and properties in lowerCamelCaps -->
+    <rule ref="Squiz.NamingConventions.ValidVariableName">
+        <exclude name="Squiz.NamingConventions.ValidVariableName.PublicHasUnderscore"/>
+        <exclude name="Squiz.NamingConventions.ValidVariableName.PrivateNoUnderscore"/>
+    </rule>
 
     <!-- Leading underscore on a variable or parameter inside a class, which Squiz.NamingConventions.ValidVariableName
          allows there -->
     <rule ref="Jumbo.NamingConventions.ValidVariableName"/>
 
-    <!-- ====== ZEND ====== -->
-
-    <!-- No closing tag at the end of a file, including one that mixes PHP and HTML, which PSR2.Files.ClosingTag
-         allows -->
-    <rule ref="Zend.Files.ClosingTag"/>
+    <rule ref="SlevomatCodingStandard.Variables.DisallowVariableVariable"/>
+    <rule ref="SlevomatCodingStandard.Variables.DuplicateAssignmentToVariable"/>
+    <rule ref="SlevomatCodingStandard.Variables.UnusedVariable"/>
+    <rule ref="SlevomatCodingStandard.Variables.UselessVariable"/>
 
 </ruleset>
