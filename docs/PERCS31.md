@@ -1658,6 +1658,9 @@ This is a fork of `Generic.WhiteSpace.ScopeIndent`.
 - [PER Coding Style 3.1, Section 8](https://www.php-fig.org/per/coding-style/#8-anonymous-classes) indents an anonymous class with attributes once from the line with `new`, and its body
   from `class`. The parent expects `class` at the statement's indent. See [PERCS31.Attributes.AttributePlacement](#percs31attributesattributeplacement).
 
+A line starting a `match` arm must be indented exactly once past the line the `match`'s `{` is on, as section 5.2 shows.
+The parent only reports indentation that's too small, so nothing else reports an arm indented too far.
+
 **Auto-fixable:** yes.
 
 **Good:**

@@ -930,6 +930,28 @@ class ScopeIndentSniff implements Sniff
                 }
             }
 
+            // PERCS31: a line starting a match arm, or a condition in one, is indented exactly once past the line the
+            // match's opening brace is on, as section 5.2 shows. Nothing else reports one indented too far.
+            if ($checkToken !== null && $exact === false && $checkToken >= $disableExactEnd) {
+                $conditions = $tokens[$checkToken]['conditions'];
+                $match      = array_key_last($conditions);
+                $previous   = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($checkToken - 1), null, true);
+                if ($match !== null
+                    && $conditions[$match] === T_MATCH
+                    && $previous !== false
+                    && ($tokens[$previous]['code'] === T_COMMA
+                    || $previous === $tokens[$match]['scope_opener'])
+                ) {
+                    $first       = $phpcsFile->findFirstOnLine(T_WHITESPACE, $tokens[$match]['scope_opener'], true);
+                    $checkIndent = ($tokens[$first]['column'] - 1 + $this->indent);
+                    if (isset($adjustments[$first]) === true) {
+                        $checkIndent += $adjustments[$first];
+                    }
+
+                    $exact = true;
+                }
+            }
+
             /*
                 The indent of the line is checked by the following IF block.
 

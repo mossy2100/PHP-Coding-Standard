@@ -129,3 +129,136 @@ $invalid = new
     class {
         public int $x = 1;
     };
+
+// A match arm, valid.
+$a = match ($x) {
+    1 => 2,
+    default => 3,
+};
+
+$b = match ($x) {
+    1,
+    2 => 3,
+    default => 4,
+};
+
+$c = match ($x) {
+    1 => foo(
+        2,
+        3,
+    ),
+    2 => [
+        4,
+        5,
+    ],
+    3 => static function () {
+        return 6;
+    },
+    4 => $y
+        + 7,
+    default => match ($y) {
+        1 => 2,
+        default => 3,
+    },
+};
+
+$d = foo(match ($x) {
+    1 => 2,
+    default => 3,
+});
+
+$e = foo(
+    match ($x) {
+        1 => 2,
+        default => 3,
+    },
+);
+
+$f = $y
+    ?? match ($x) {
+        1 => 2,
+        default => 3,
+    };
+
+$g = match (true) {
+    // A comment.
+    $x > 1 => 2,
+
+    /* Another. */
+    default => 3,
+};
+
+$h = [
+    'a' => match ($x) {
+        1 => 2,
+        default => 3,
+    },
+];
+
+function f(int $x): int
+{
+    return match ($x) {
+        1 => 2,
+        default => 3,
+    };
+}
+
+class C
+{
+    public int $p {
+        get => match ($this->q) {
+            1 => 2,
+            default => 3,
+        };
+    }
+
+    public function m(): int
+    {
+        return match ($this->q) {
+            1 => 2,
+            default => 3,
+        };
+    }
+}
+
+$i = match ($x) { 1 => 2, default => 3 };
+
+$j = match (
+    $x
+) {
+    1 => 2,
+    default => 3,
+};
+
+// A match arm indented too far.
+$k = match ($x) {
+    1 => 2,
+    default => 3,
+};
+
+$l = match ($x) {
+    1 => 2,
+    default => 3,
+};
+
+$m = match ($x) {
+    1,
+    2 => 3,
+    default => 4,
+};
+
+$n = match ($x) {
+    1 => match ($y) {
+        1 => 2,
+        default => 3,
+    },
+    default => 4,
+};
+
+function matchInFunction(int $x): int
+{
+    return match ($x) {
+        1 => 2,
+        default => 3,
+    };
+}
