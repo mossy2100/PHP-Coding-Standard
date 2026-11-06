@@ -187,7 +187,6 @@ class PropertyHookHelper
      */
     public static function findHookScopes(File $phpcsFile): array
     {
-        $tokens = $phpcsFile->getTokens();
         $scopes = [];
 
         for ($i = 0; $i < $phpcsFile->numTokens; $i++) {
