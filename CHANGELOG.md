@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`SlevomatCodingStandard.Variables.UnusedVariable` (breaking).** In the Jumbo standard, a variable that's assigned
+  but never used is now an error. Not auto-fixable.
 - **`PERCS31.WhiteSpace.ConsistentIndent` (breaking).** Reports a line indented further than its scope after a complete
   statement, as PER Coding Style 3.1 requires an indent of 4 spaces per level. It extends php-collective's
   `ConsistentIndent`, adding the pipe operator and the other binary operators to the lines it treats as continuation

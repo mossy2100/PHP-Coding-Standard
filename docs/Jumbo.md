@@ -181,6 +181,7 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **TypeHints.ReturnTypeHintSpacing**: Enforces spacing around return type hints.
 - **Variables.DisallowVariableVariable**: Disallows variable variables (`$$var`).
 - **Variables.DuplicateAssignmentToVariable**: Disallows duplicate assignments to the same variable.
+- **Variables.UnusedVariable**: Disallows variables that are assigned but never used.
 - **Variables.UselessVariable**: Disallows useless variables.
 
 ### Zend
