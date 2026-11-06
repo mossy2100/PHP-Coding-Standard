@@ -328,6 +328,18 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that section 12.4's whole example has no blank line or attribute errors, with a blank line before `int $d`.
+     */
+    public function testSpecAttributesExamplePasses(): void
+    {
+        $fixture = self::FIXTURES . '/AttributesExample.inc';
+        $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $fixture]);
+
+        $this->assertStringNotContainsString('MultiLineFunctionDeclaration', $result['output']);
+        $this->assertStringNotContainsString('AttributePlacement', $result['output']);
+    }
+
+    /**
      * Test that PERCS31 allows one blank line between parameters, and reports every other blank line in a multi-line
      * declaration. The parent's EmptyLine, which reports them all, is excluded in the ruleset.
      */

@@ -49,3 +49,15 @@ $noneBefore= &$a;
 $noneBeforeCompound=& $a;
 foo($arg=&$a);
 $element['key']=&$a;
+
+// A by-reference hook with a body in braces: the & isn't an operator.
+class ReferenceHookWithBody
+{
+    private array $items = [];
+
+    public array $long {
+        &get {
+            return $this->items;
+        }
+    }
+}
