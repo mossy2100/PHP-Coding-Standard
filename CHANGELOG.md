@@ -38,8 +38,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **A one-line ternary is no longer read as spanning lines.** `PERCS31.ControlStructures.MultiLineTernaryOperator`
   reported and split one after `+=`, `.=`, `echo`, `print` or `yield`, as a statement, or in a `match` arm.
 - **More blank lines are allowed in PERCS31.** PER Coding Style 3.1 doesn't forbid a blank line between call arguments
-  or `use` items, or before a closing parenthesis, so PERCS31 no longer reports them. The Jumbo standard still does,
-  using the new `PERCS31.Functions.MultiLineFunctionDeclaration` property `checkOptionalBlankLines`.
+  or `use` items, or before a closing parenthesis, or more than one between parameters, so PERCS31 no longer reports
+  them. The Jumbo standard still does, using the new `PERCS31.Functions.MultiLineFunctionDeclaration` property
+  `checkOptionalBlankLines`.
 - **A body's first line indented too far is an error (breaking).** `PERCS31.WhiteSpace.ScopeIndent` now reports it,
   including in a closure, a `case` or a property hook. Auto-fixable.
 - **A `match` arm indented too far is an error (breaking).** `PERCS31.WhiteSpace.ScopeIndent` requires a line starting

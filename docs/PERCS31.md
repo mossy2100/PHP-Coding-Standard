@@ -1086,10 +1086,11 @@ case, and leaves everything else to the parent. For an empty body after a single
 The parent also reports every blank line in a multi-line parameter or `use` list. [Section 2.3](https://www.php-fig.org/per/coding-style/#23-lines) allows blank lines
 wherever they aren't forbidden, and [section 12.4](https://www.php-fig.org/per/coding-style/#124-example)'s example has one between two parameters, both before an attribute and
 before a parameter with none. So the ruleset excludes the parent's `EmptyLine` code, and this sniff reports blank lines
-itself, as `BlankLine`, except a single one between parameters.
+itself, as `BlankLine`, such as one straight after `(`, or after a parameter's attributes.
 
-PER says nothing about a blank line before the closing parenthesis, or between a closure's `use` items, so section 2.3
-allows those too. Set `checkOptionalBlankLines` to report them, as the Jumbo standard does.
+PER says nothing about a blank line before the closing parenthesis, or between a closure's `use` items, or about how
+many can go between parameters, so section 2.3 allows those too. Set `checkOptionalBlankLines` to report them, as the
+Jumbo standard does.
 
 The parent doesn't check an arrow function. [Section 7.1](https://www.php-fig.org/per/coding-style/#71-short-closures) says an arrow function follows the same rules as a closure, so
 this sniff checks its split parameter list too:

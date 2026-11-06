@@ -24,8 +24,8 @@ use PHP_CodeSniffer\Standards\Squiz\Sniffs\Functions\MultiLineFunctionDeclaratio
  * section 2.3, allows blank lines anywhere they aren't forbidden, and section 12.4's example has one between two
  * parameters, both before an attribute and before a parameter with none. The parent's check can't be run on its own,
  * so the PERCS31 ruleset excludes EmptyLine, and this sniff reports blank lines itself (BlankLine). PER says nothing
- * about one before the closing parenthesis, or between `use` items, so those are only reported if
- * $checkOptionalBlankLines is set. A single one between parameters is always allowed.
+ * about one before the closing parenthesis or between `use` items, or about how many can go between parameters, so
+ * those are only reported if $checkOptionalBlankLines is set. A single one between parameters is always allowed.
  *
  * The parent would also indent every line of a promoted parameter's multi-line hook list as a parameter, fighting
  * PERCS31.WhiteSpace.ScopeIndent until phpcbf fails. PERCS31.Classes.PromotedPropertyHooks already reports that code,
@@ -36,7 +36,8 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
     public const string CODE_BLANK_LINE = 'BlankLine';
 
     /**
-     * Whether to report a blank line before a closing parenthesis or between `use` items, which PER doesn't forbid.
+     * Whether to report a blank line PER doesn't forbid: before a closing parenthesis, between `use` items, or more
+     * than one between parameters.
      *
      * @var bool
      */
@@ -190,7 +191,8 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
     }
 
     /**
-     * Check whether a blank line is one PER says nothing about: before a closing parenthesis, or between `use` items.
+     * Check whether a blank line is one PER says nothing about: before a closing parenthesis, or after a comma between
+     * items.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $blankPtr The blank line's whitespace token.
@@ -207,7 +209,7 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
             return $previous === false || $tokens[$previous]['code'] !== T_OPEN_PARENTHESIS;
         }
 
-        return $blankPtr > $parameterCloser && $previous !== false && $tokens[$previous]['code'] === T_COMMA;
+        return $previous !== false && $tokens[$previous]['code'] === T_COMMA;
     }
 
     /**
