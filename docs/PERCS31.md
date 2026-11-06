@@ -1689,6 +1689,7 @@ This is a fork of `Generic.WhiteSpace.ScopeIndent`.
   from `class`. The parent expects `class` at the statement's indent. See [PERCS31.Attributes.AttributePlacement](#percs31attributesattributeplacement).
 
 A line starting a `match` arm must be indented exactly once past the line the `match`'s `{` is on, as section 5.2 shows.
+PER says nothing about a later condition in an arm, split over lines, so that isn't checked.
 The parent only reports indentation that's too small, so nothing else reports an arm indented too far.
 
 **Auto-fixable:** yes.

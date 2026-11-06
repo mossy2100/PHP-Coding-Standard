@@ -230,6 +230,15 @@ $j = match (
     default => 3,
 };
 
+// A later condition in an arm, split over lines, isn't checked.
+$m = match ($x) {
+    1,
+    2 => 3,
+    3,
+        4 => 5,
+    default => 6,
+};
+
 // A match arm indented too far.
 $k = match ($x) {
     1 => 2,
@@ -239,12 +248,6 @@ $k = match ($x) {
 $l = match ($x) {
     1 => 2,
     default => 3,
-};
-
-$m = match ($x) {
-    1,
-    2 => 3,
-    default => 4,
 };
 
 $n = match ($x) {

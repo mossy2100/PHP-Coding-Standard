@@ -930,26 +930,23 @@ class ScopeIndentSniff implements Sniff
                 }
             }
 
-            // PERCS31: a line starting a match arm, or a condition in one, is indented exactly once past the line the
-            // match's opening brace is on, as section 5.2 shows. Nothing else reports one indented too far.
-            if ($checkToken !== null && $exact === false && $checkToken >= $disableExactEnd) {
-                $conditions = $tokens[$checkToken]['conditions'];
-                $match      = array_key_last($conditions);
-                $previous   = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($checkToken - 1), null, true);
-                if ($match !== null
-                    && $conditions[$match] === T_MATCH
-                    && $previous !== false
-                    && ($tokens[$previous]['code'] === T_COMMA
-                    || $previous === $tokens[$match]['scope_opener'])
-                ) {
-                    $first       = $phpcsFile->findFirstOnLine(T_WHITESPACE, $tokens[$match]['scope_opener'], true);
-                    $checkIndent = ($tokens[$first]['column'] - 1 + $this->indent);
-                    if (isset($adjustments[$first]) === true) {
-                        $checkIndent += $adjustments[$first];
-                    }
-
-                    $exact = true;
+            // PERCS31: a line starting a match arm is indented exactly once past the line the match's opening brace is
+            // on, as section 5.2 shows. Nothing else reports one indented too far. PER says nothing about a later
+            // condition in an arm, split over lines, so that's not checked here.
+            if ($checkToken !== null
+                && $exact === false
+                && $checkToken >= $disableExactEnd
+                && $this->startsMatchArm($phpcsFile, $checkToken) === true
+            ) {
+                $conditions  = $tokens[$checkToken]['conditions'];
+                $opener      = $tokens[array_key_last($conditions)]['scope_opener'];
+                $first       = $phpcsFile->findFirstOnLine(T_WHITESPACE, $opener, true);
+                $checkIndent = ($tokens[$first]['column'] - 1 + $this->indent);
+                if (isset($adjustments[$first]) === true) {
+                    $checkIndent += $adjustments[$first];
                 }
+
+                $exact = true;
             }
 
             /*
@@ -1502,5 +1499,54 @@ class ScopeIndentSniff implements Sniff
         }
 
         return true;
+    }
+
+
+    /**
+     * PERCS31: checks whether a token starts a match arm: it follows the match's opening brace, or the comma that ends
+     * the arm before it, and not a comma between two conditions in one arm.
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the token.
+     *
+     * @return bool
+     */
+    private function startsMatchArm(File $phpcsFile, int $stackPtr)
+    {
+        $tokens     = $phpcsFile->getTokens();
+        $conditions = $tokens[$stackPtr]['conditions'];
+        $match      = array_key_last($conditions);
+        if ($match === null || $conditions[$match] !== T_MATCH) {
+            return false;
+        }
+
+        $opener   = $tokens[$match]['scope_opener'];
+        $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
+        if ($previous === $opener) {
+            return true;
+        }
+
+        if ($tokens[$previous]['code'] !== T_COMMA) {
+            return false;
+        }
+
+        // An arm's comma has a => before it, with no comma between them.
+        for ($i = ($previous - 1); $i > $opener; $i--) {
+            if ($tokens[$i]['code'] === T_MATCH_ARROW) {
+                return true;
+            }
+
+            if ($tokens[$i]['code'] === T_COMMA) {
+                return false;
+            }
+
+            if (isset($tokens[$i]['parenthesis_opener']) === true && $tokens[$i]['parenthesis_opener'] < $i) {
+                $i = $tokens[$i]['parenthesis_opener'];
+            } elseif (isset($tokens[$i]['bracket_opener']) === true && $tokens[$i]['bracket_opener'] < $i) {
+                $i = $tokens[$i]['bracket_opener'];
+            }
+        }
+
+        return false;
     }
 }

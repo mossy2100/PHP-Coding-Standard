@@ -31,12 +31,11 @@ class ScopeIndentUnitTest extends AbstractSniffTestCase
             129 => 1,
             130 => 1,
             131 => 1,
-            // A match arm indented too far, or a condition in one, in turn: first, later, split, nested, in a function.
-            235 => 1,
-            241 => 1,
-            246 => 1,
-            252 => 1,
-            261 => 1,
+            // A match arm indented too far: first, later, nested, in a function.
+            244 => 1,
+            250 => 1,
+            255 => 1,
+            264 => 1,
         ];
     }
 
