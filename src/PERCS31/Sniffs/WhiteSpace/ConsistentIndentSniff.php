@@ -11,10 +11,10 @@ use PhpCollective\Sniffs\WhiteSpace\ConsistentIndentSniff as PhpCollectiveSniff;
  * Reports a line indented further than its scope, after a complete statement.
  *
  * PER Coding Style 3.1, section 2.4, sets an indent of 4 spaces for each level, and section 5 says a structure's body
- * is indented once. PERCS31.WhiteSpace.ScopeIndent, like PSR-12's, only reports indentation that's too small.
- * PhpCollective.WhiteSpace.ConsistentIndent reports a line indented too far, when the line before it ends a statement,
- * including inside a property hook. It skips a body's first line, continuation lines, arrays, closures and switch
- * cases, which it can't judge safely.
+ * is indented once. PERCS31.WhiteSpace.ScopeIndent reports too little indentation, and too much on a body's first line.
+ * PhpCollective.WhiteSpace.ConsistentIndent reports a later line indented too far, when the line before it ends a
+ * statement, including inside a property hook. It skips continuation lines, arrays, closures and switch cases, which it
+ * can't judge safely.
  *
  * This subclass only extends the operators that may start a continuation line, which are skipped, to every binary
  * operator section 6.4 allows a statement to be split at. The parent's list predates the pipe operator `|>`, so it

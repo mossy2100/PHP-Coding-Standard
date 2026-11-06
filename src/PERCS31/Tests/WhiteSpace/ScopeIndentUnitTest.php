@@ -36,6 +36,17 @@ class ScopeIndentUnitTest extends AbstractSniffTestCase
             250 => 1,
             255 => 1,
             264 => 1,
+            // A body's first line indented too far.
+            327 => 1,
+            332 => 1,
+            338 => 1,
+            342 => 1,
+            346 => 1,
+            351 => 1,
+            357 => 1,
+            362 => 1,
+            369 => 1,
+            374 => 1,
         ];
     }
 

@@ -949,6 +949,27 @@ class ScopeIndentSniff implements Sniff
                 $exact = true;
             }
 
+            // PERCS31: a body's first line is indented exactly once past the line its opening brace is on, or that brace's
+            // `)` opens on, as sections 2.4 and 5 require. Nothing else reports one indented too far.
+            if ($checkToken !== null
+                && $exact === false
+                && $this->startsBody($phpcsFile, $checkToken) === true
+            ) {
+                $anchor = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($checkToken - 1), null, true);
+                $before = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($anchor - 1), null, true);
+                if ($tokens[$before]['code'] === T_CLOSE_PARENTHESIS) {
+                    $anchor = $tokens[$before]['parenthesis_opener'];
+                }
+
+                $first       = $phpcsFile->findFirstOnLine(T_WHITESPACE, $anchor, true);
+                $checkIndent = ($tokens[$first]['column'] - 1 + $this->indent);
+                if (isset($adjustments[$first]) === true) {
+                    $checkIndent += $adjustments[$first];
+                }
+
+                $exact = true;
+            }
+
             /*
                 The indent of the line is checked by the following IF block.
 
@@ -1499,6 +1520,38 @@ class ScopeIndentSniff implements Sniff
         }
 
         return true;
+    }
+
+
+    /**
+     * PERCS31: checks whether a token is the first code in a body: it follows a scope's opening brace, or a `case` or
+     * `default` colon.
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the token.
+     *
+     * @return bool
+     */
+    private function startsBody(File $phpcsFile, int $stackPtr)
+    {
+        $tokens   = $phpcsFile->getTokens();
+        $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
+        if ($previous === false) {
+            return false;
+        }
+
+        if (isset($this->propertyHookScopes[$previous]) === true) {
+            return $this->propertyHookScopes[$previous] !== $stackPtr;
+        }
+
+        if (isset($tokens[$previous]['scope_opener']) === false
+            || $tokens[$previous]['scope_opener'] !== $previous
+            || $tokens[$previous]['scope_closer'] === $stackPtr
+        ) {
+            return false;
+        }
+
+        return in_array($tokens[$previous]['code'], [T_OPEN_CURLY_BRACKET, T_COLON], true);
     }
 
 

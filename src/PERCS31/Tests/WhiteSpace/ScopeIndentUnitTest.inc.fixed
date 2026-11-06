@@ -265,3 +265,112 @@ function matchInFunction(int $x): int
         default => 3,
     };
 }
+
+// === VALID: a body's first line, indented once ===
+
+if (
+    $a
+    && $b
+) {
+    foo();
+}
+
+foo(function () {
+    return 1;
+});
+
+foo(
+    $a,
+    function () {
+        return 1;
+    },
+);
+
+$a = [
+    'x' => function () {
+        return 1;
+    },
+];
+
+$a->b()
+    ->c(function () {
+        return 1;
+    });
+
+switch ($a) {
+    case 1:
+        // A comment.
+        foo();
+        break;
+    default:
+        bar();
+}
+
+class FirstLineValid
+{
+    public function __construct(
+        public string $name {
+            set {
+                if ($value === '') {
+                    throw new Exception();
+                }
+            }
+        },
+    ) {
+        foo();
+    }
+}
+
+// === INVALID: a body's first line, indented too far ===
+
+if ($a) {
+    foo();
+}
+
+function firstLine()
+{
+    return 1;
+}
+
+if ($a) {
+    foo();
+} else {
+    bar();
+}
+
+$f = function () {
+    return 1;
+};
+
+foo(function () {
+    return 1;
+});
+
+foo(
+    function () {
+        return 1;
+    },
+);
+
+switch ($a) {
+    case 1:
+        foo();
+}
+
+if ($a) {
+    // A comment.
+    foo();
+}
+
+class FirstLineInvalid
+{
+    public string $a {
+        get {
+            return 1;
+        }
+    }
+
+    public string $b {
+        get => 1;
+    }
+}

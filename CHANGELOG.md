@@ -37,6 +37,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   Style 3.1, section 5.2, shows. Auto-fixable.
 - **A one-line ternary is no longer read as spanning lines.** `PERCS31.ControlStructures.MultiLineTernaryOperator`
   reported and split one after `+=`, `.=`, `echo`, `print` or `yield`, as a statement, or in a `match` arm.
+- **A body's first line indented too far is an error (breaking).** `PERCS31.WhiteSpace.ScopeIndent` now reports it,
+  including in a closure, a `case` or a property hook. Auto-fixable.
 - **A `match` arm indented too far is an error (breaking).** `PERCS31.WhiteSpace.ScopeIndent` requires a line starting
   an arm to be indented exactly once, as PER Coding Style 3.1, section 5.2, shows. It only reported too little before.
   Auto-fixable.

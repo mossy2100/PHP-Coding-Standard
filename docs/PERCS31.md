@@ -1630,9 +1630,9 @@ Reports a line indented further than its scope, when the line before it ends a s
 `PhpCollective.WhiteSpace.ConsistentIndent`, from [php-collective/code-sniffer](https://github.com/php-collective/code-sniffer).
 
 **Why:** [PER Coding Style 3.1, Section 2.4](https://www.php-fig.org/per/coding-style/#24-indenting) sets an indent of 4 spaces for each level, and section 5 says a structure's
-body is indented once. `PERCS31.WhiteSpace.ScopeIndent`, like PSR-12's, only reports indentation that's too small. The
-php-collective sniff reports a line indented too far after a complete statement, including inside a property hook. It
-skips a body's first line, continuation lines, arrays, closures and `switch` cases, which it can't judge safely.
+body is indented once. `PERCS31.WhiteSpace.ScopeIndent` reports too little indentation, and too much on a body's first
+line. The php-collective sniff reports a later line indented too far after a complete statement, including inside a
+property hook. It skips continuation lines, arrays, closures and `switch` cases, which it can't judge safely.
 
 This sniff only adds to the operators that may start a continuation line, which are skipped: every binary operator
 section 6.4 allows a statement to be split at. The original's list predates the pipe operator `|>`, so it reported
@@ -1691,6 +1691,9 @@ This is a fork of `Generic.WhiteSpace.ScopeIndent`.
 A line starting a `match` arm must be indented exactly once past the line the `match`'s `{` is on, as section 5.2 shows.
 PER says nothing about a later condition in an arm, split over lines, so that isn't checked.
 The parent only reports indentation that's too small, so nothing else reports an arm indented too far.
+
+A body's first line must also be indented exactly once, past the line its `{` is on, or past the line a `)` before the
+`{` opens on. This includes closures, `case` bodies and property hooks.
 
 **Auto-fixable:** yes.
 
@@ -1756,6 +1759,3 @@ class User
   The [Jumbo standard](Jumbo.md) reports a statement after any control structure's closing brace.
 - **The pipe operator `|>` on PHP 8.4.** It's only checked when PHP_CodeSniffer runs on PHP 8.5, as 8.4 has no `T_PIPE`
   token.
-- **Over-indentation of a body's first line (2.4, 5).** `PERCS31.WhiteSpace.ScopeIndent` only reports too little
-  indentation, and [`PERCS31.WhiteSpace.ConsistentIndent`](#percs31whitespaceconsistentindent) only a line after a complete
-  statement. So in `if ($a) {` followed by `        foo();`, the over-indented first line isn't reported.
