@@ -314,10 +314,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
-- **`PERCS31.PHP.DisallowMultiConstantDefinition` fixer keeps the type and modifiers.** Splitting
-  `final public const int A = 1, B = 2;` gave `public const B = 2;`, dropping the type, and indented the new line with a
-  tab. Each constant now keeps the full declaration, e.g. `final public const int B = 2;`, with the original
-  indentation.
+- **`SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition` replaces our fork (breaking).** Slevomat 8.31.3
+  fixes what the fork was for, so the minimum Slevomat version is now 8.31.3, and the fork
+  `OceanMoon.PHP.DisallowMultiConstantDefinition` is gone. A comma inside parentheses isn't read as a second constant,
+  and the fix keeps the type and modifiers, e.g. `final public const int B = 2;`. Update any `phpcs:ignore` comments or
+  `<exclude>` rules that name the old code.
 
 ---
 

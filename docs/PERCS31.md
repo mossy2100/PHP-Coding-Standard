@@ -132,6 +132,8 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Classes.BackedEnumTypeSpacing**: Requires no space before a backed enum's colon, and one after (9).
 - **Classes.ClassKeywordOrder**: Requires `abstract` or `final` before `readonly` on a class, e.g.
   `final readonly class` (4.6).
+- **Classes.DisallowMultiConstantDefinition**: Disallows several constants in one statement (4.3). Needs Slevomat 8.31.3
+  or later, which stops it flagging a comma inside parentheses, as in `const I = new Complex(0, 1);`.
 - **Classes.DisallowMultiPropertyDefinition**: Disallows several properties in one statement (4.3).
 - **Classes.PropertyDeclaration**: Requires the modifier order, and the spacing around the modifiers and the type,
   including on promoted properties (4.3, 4.6).
@@ -182,7 +184,6 @@ section gives the reason.
 | `PERCS31.NamingConventions.ValidEnumCaseName`           | Enum cases in PascalCase                                          | No      |
 | `PERCS31.Operators.OperatorPlacement`                   | A wrapped binary operator starts the next line, indented once     | Yes     |
 | `PERCS31.Operators.OperatorSpacing`                     | At least one space around binary operators, including `\|>`       | Yes     |
-| `PERCS31.PHP.DisallowMultiConstantDefinition`           | One constant per statement                                        | Yes     |
 | `PERCS31.PHP.RequireCloneParentheses`                   | A warning for `clone $a`, not `clone($a)`                         | Yes     |
 | `PERCS31.Strings.HeredocIndentation`                    | Where a heredoc or nowdoc begins, and its indentation             | Yes     |
 | `PERCS31.TypeHints.CompoundTypeLayout`                  | One type, or one DNF union segment, per line of a split type      | Yes     |
@@ -1362,45 +1363,6 @@ $slug = $title |> trim(...) |> strtolower(...);
 
 ```php
 $slug = $title|>trim(...)|>strtolower(...);
-```
-
----
-
-### PERCS31.PHP.DisallowMultiConstantDefinition
-
-Disallows defining several constants in one statement (e.g. `const A = 1, B = 2;`), for class and file-scope constants.
-This is a fork of `SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition`.
-
-**Why:** the Slevomat sniff mistakes a comma inside parentheses for a constant separator. So it flags a single, valid
-constant such as `const I = new Complex(0, 1);`, or one whose value is `array(1, 2)` or a closure with two parameters
-(PHP 8.5+). This fork skips commas inside parentheses, as upstream already does inside `[...]`. It's temporary: the
-upstream fixes (slevomat/coding-standard#1873 and #1874) were merged on 2026-10-26, and the fork can go once a Slevomat
-release includes them.
-
-**Auto-fixable:** yes.
-
-**Good:**
-
-```php
-class Example
-{
-    public const int A = 1;
-    public const int B = 2;
-    public const array SCORES = [42, 33, 12, 99]; // Not flagged: the commas belong to the array literal.
-}
-
-const I = new Complex(0, 1); // Not flagged: the comma belongs to the constructor call (PHP 8.1+).
-```
-
-**Bad:**
-
-```php
-class Example
-{
-    public const int A = 1, B = 2; // Flagged: two constants in one statement.
-}
-
-const C = 3, D = 4; // Flagged: the same applies outside a class.
 ```
 
 ---

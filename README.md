@@ -52,7 +52,7 @@ The code is checked with:
 
 - PHP ^8.4
 - squizlabs/php_codesniffer ^4.0
-- slevomat/coding-standard ^8.27
+- slevomat/coding-standard ^8.31.3
 - phpcsstandards/phpcsextra ^1.5
 - phpcsstandards/phpcsutils ^1.2
 - php-collective/code-sniffer ^0.6.10

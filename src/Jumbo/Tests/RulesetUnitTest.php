@@ -191,6 +191,29 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a comma inside parentheses in a constant's value isn't read as a second constant, and a real second
+     * constant is fixed with its modifiers and type kept. These need Slevomat 8.31.3.
+     */
+    public function testConstantsPerStatement(): void
+    {
+        $source = "<?php\n\nconst I = new Complex(0, 1);\n\n"
+            . "class Holder\n{\n    final public const int A = 1, B = 2;\n}\n";
+        $file = $this->copyToTempFile(null, $source);
+        $args = ['-s', '--standard=PERCS31', '--sniffs=SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition'];
+
+        try {
+            $result = $this->runTool('phpcs', [...$args, '--report=emacs', $file]);
+            $this->runTool('phpcbf', [...$args, $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame(1, substr_count($result['output'], 'DisallowMultiConstantDefinition'), $result['output']);
+        $this->assertStringContainsString("final public const int A = 1;\n    final public const int B = 2;", $fixed);
+    }
+
+    /**
      * Test that a one-line block declare is fixed with no stray blank line, which two fixes for its brace would add.
      */
     public function testOneLineBlockDeclareIsFixedWithNoBlankLine(): void
