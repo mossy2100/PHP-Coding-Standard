@@ -57,3 +57,27 @@ $indentedTwice = $a
 
 $commented = $a // Why.
     ? $b : $c;
+
+// A ternary in a match arm starts at the arm, not at the match.
+$a = match ($x) {
+    1 => $b ? 2 : 3,
+    2 => foo(1, 2) ? 3 : 4,
+    3 => $b
+        ? 2
+        : 3,
+    $b ? 4 : 5 => 6,
+    $b
+        ? 7
+        : 8 => 9,
+    default => [1, $b ? 2 : 3],
+};
+
+$c = match ($x) {
+    1 => $b
+        ? 2
+        : 3,
+    2 => $b
+        ? 3
+        : 4,
+    default => 5,
+};

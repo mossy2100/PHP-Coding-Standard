@@ -34,6 +34,9 @@ class MultiLineTernaryOperatorUnitTest extends AbstractSniffTestCase
             52 => 1,
             // A comment next to an operator (not fixable).
             56 => 1,
+            // In a match arm: not indented past the arm, and on two lines.
+            74 => 1,
+            76 => 1,
         ];
     }
 
