@@ -8,7 +8,7 @@ PER rules wrong, such as rejecting an empty body written as `{}`, and don't yet 
 property hooks and the pipe operator. This standard fixes both, using sniffs from PHP_CodeSniffer, Slevomat, PHPCSExtra
 and php-collective where they fit, and custom sniffs where nothing did.
 
-The [Jumbo standard](Jumbo.md) is PERCS31 plus my own preferences. Use PERCS31 on its own to follow PER Coding Style without them.
+The [Jumbo standard](Jumbo.md) is PERCS31 plus extra rules. Use PERCS31 on its own to follow PER Coding Style without them.
 
 **Contents:**
 
