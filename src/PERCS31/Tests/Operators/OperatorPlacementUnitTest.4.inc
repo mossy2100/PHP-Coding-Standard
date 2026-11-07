@@ -28,3 +28,10 @@ $match = match (true) {
     && $b => 1,
     default => 2,
 };
+
+// A full ternary in an earlier item, lined up with the item.
+foo(
+    $a ? 1 : 2,
+    $c
+    ?? 1,
+);

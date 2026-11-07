@@ -352,7 +352,8 @@ class OperatorPlacementSniff implements Sniff
      * Find the bracket that opens the list or group an expression is in, from the expression's boundary.
      *
      * A comma boundary means the expression is a later item in a list, so the walk continues back to the list's
-     * opener.
+     * opener, past any full ternary's `?` and `:` in the earlier items. A `?` or `:` before any comma is left alone, as
+     * the expression is then in a ternary's branch.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $boundary The position of the token before the expression, from findExpressionBoundary().
@@ -361,7 +362,15 @@ class OperatorPlacementSniff implements Sniff
     private function findEnclosingOpener(File $phpcsFile, int $boundary): ?int
     {
         $tokens = $phpcsFile->getTokens();
-        while ($boundary >= 0 && $tokens[$boundary]['code'] === T_COMMA) {
+        $isPastComma = false;
+        while ($boundary >= 0) {
+            $code = $tokens[$boundary]['code'];
+            $isTernary = $code === T_INLINE_THEN || $code === T_INLINE_ELSE;
+            if ($code !== T_COMMA && !($isPastComma && $isTernary)) {
+                break;
+            }
+
+            $isPastComma = true;
             $boundary = $this->findExpressionBoundary($phpcsFile, $boundary);
         }
 

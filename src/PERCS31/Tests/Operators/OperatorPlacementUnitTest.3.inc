@@ -118,3 +118,42 @@ class HookParameterType
         ) => $value;
     }
 }
+
+// A full ternary in an earlier item doesn't stop a later item being a list item, so lined up or indented once passes.
+foo(
+    $a ? 1 : 2,
+    $b ? 3 : 4,
+    $c
+    ?? 1,
+    $d
+        ?? 1,
+);
+$e = [
+    $a ? 1 : 2,
+    $c
+    . 1,
+    'f' => $a ? 1 : 2,
+    'g' => $c
+    . 1,
+];
+$h = match ($i) {
+    1 => $a ? 1 : 2,
+    2 => $c
+    . 1,
+    default => 3,
+};
+
+// Neither lined up nor indented once.
+foo(
+    $a ? 1 : 2,
+    $c
+            ?? 1,
+);
+
+// In a ternary's branch, it isn't a list item, so it's indented once past the branch.
+foo(
+    $a
+        ? $b
+        . $c
+        : 2,
+);

@@ -65,6 +65,10 @@ class OperatorPlacementUnitTest extends AbstractSniffTestCase
                 75 => 1,
                 // An arrow function's => indented twice.
                 77 => 1,
+                // After a full ternary in an earlier item, neither lined up nor indented once.
+                150 => 1,
+                // In a ternary's branch, lined up with it.
+                157 => 1,
             ];
         }
 
@@ -77,6 +81,8 @@ class OperatorPlacementUnitTest extends AbstractSniffTestCase
                 24 => 1,
                 // A match arm's condition.
                 28 => 1,
+                // After a full ternary in an earlier item.
+                36 => 1,
             ];
         }
 
