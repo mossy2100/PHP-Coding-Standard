@@ -1,0 +1,50 @@
+<?php
+
+// Valid: on one line, too long to collapse, a method, or a comment.
+function a(int $b): void
+{
+    foo();
+}
+function abcdefghijklmnopqrstuvwxyz(
+    int $abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz,
+    int $bbcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz,
+): void {
+    foo();
+}
+class C
+{
+    public function d(
+        int $e,
+    ): void {
+        foo();
+    }
+}
+function f(
+    // Why.
+    int $g,
+): void {
+    foo();
+}
+
+// Invalid: all of these fit.
+function h(int $i): void {
+    foo();
+}
+function j(A|B $k): void {
+    foo();
+}
+function l(int $m): A|B {
+    foo();
+}
+$n = function ($o) {
+    return 1;
+};
+$p = function () use ($q) {
+    return 1;
+};
+$r = function ($s) use ($t): int {
+    return 1;
+};
+function u(#[V] int $w): void {
+    foo();
+}

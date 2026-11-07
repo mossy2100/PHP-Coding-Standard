@@ -10,6 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **Single-line rules for statements, signatures and class headers (breaking).** In the Jumbo standard, new
+  `Jumbo.Formatting.RequireSingleLineStatement`, `Jumbo.Functions.RequireSingleLineSignature` and
+  `Jumbo.Classes.RequireSingleLineClassHeader` require code split across lines to be on one line, if it fits. A chain of
+  two or more methods is left alone, and so is anything with a comment, a heredoc or a closure, `match` or anonymous
+  class body. Auto-fixable. PERCS31 doesn't check this, as PER allows the splits.
 - **`Jumbo.WhiteSpace.LanguageConstructSpacing` (breaking).** In the Jumbo standard, a language construct such as
   `return`, `echo` or `throw` must be followed by a single space, so no line break. `new` and a `yield` with no value
   are left out. Auto-fixable. PERCS31 doesn't check this.

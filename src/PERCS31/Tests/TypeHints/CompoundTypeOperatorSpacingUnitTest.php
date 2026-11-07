@@ -25,7 +25,8 @@ class CompoundTypeOperatorSpacingUnitTest extends AbstractSniffTestCase
             27 => 1,
             // The symbol at the end of a line.
             31 => 1,
-            // A set hook's parameter type: a union, an intersection, a DNF type, inside its parentheses, and at a line end.
+            // A set hook's parameter type: a union, an intersection, a DNF type, inside its parentheses, and at a
+            // line end.
             44 => 1,
             48 => 1,
             52 => 1,

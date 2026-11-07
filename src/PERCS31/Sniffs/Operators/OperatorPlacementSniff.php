@@ -125,8 +125,7 @@ class OperatorPlacementSniff implements Sniff
      */
     public function register(): array
     {
-        $tokens = Tokens::ASSIGNMENT_TOKENS + Tokens::COMPARISON_TOKENS + Tokens::OPERATORS
-            + Tokens::BOOLEAN_OPERATORS;
+        $tokens = Tokens::ASSIGNMENT_TOKENS + Tokens::COMPARISON_TOKENS + Tokens::OPERATORS + Tokens::BOOLEAN_OPERATORS;
         unset($tokens[T_DOUBLE_ARROW]);
 
         $targets = [...array_values($tokens), T_INSTANCEOF, T_FN_ARROW, T_INLINE_THEN, T_STRING_CONCAT];

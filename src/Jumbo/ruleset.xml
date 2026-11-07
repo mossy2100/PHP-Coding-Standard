@@ -246,6 +246,23 @@
         </properties>
     </rule>
 
+    <!-- A split statement, function signature or class header on one line if it fits. PER allows the split. -->
+    <rule ref="Jumbo.Formatting.RequireSingleLineStatement">
+        <properties>
+            <property name="maxLineLength" value="&lineLength;"/>
+        </properties>
+    </rule>
+    <rule ref="Jumbo.Functions.RequireSingleLineSignature">
+        <properties>
+            <property name="maxLineLength" value="&lineLength;"/>
+        </properties>
+    </rule>
+    <rule ref="Jumbo.Classes.RequireSingleLineClassHeader">
+        <properties>
+            <property name="maxLineLength" value="&lineLength;"/>
+        </properties>
+    </rule>
+
     <!-- ====== OPERATORS (6) ====== -->
 
     <rule ref="SlevomatCodingStandard.PHP.TypeCast"/>

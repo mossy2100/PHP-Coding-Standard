@@ -214,6 +214,7 @@ gives the reason. The custom sniffs for PER Coding Style itself are in [PERCS31]
 | `Jumbo.Classes.EmptyLinesAroundClassBraces`                | No blank lines inside class braces, allowing `{}`               | Yes     |
 | `Jumbo.Classes.EnumCaseSpacing`                            | Blank lines after an enum case, safe on the last line           | Yes     |
 | `Jumbo.Classes.PropertySpacing`                            | Blank lines after a property, safe on the last line             | Yes     |
+| `Jumbo.Classes.RequireSingleLineClassHeader`               | A split class, interface or enum header fits on a line          | Yes     |
 | `Jumbo.Classes.RequireSingleLineMethodSignature`           | A short signature on one line, skipping a promoted hook         | Yes     |
 | `Jumbo.ControlStructures.LanguageConstructWithParentheses` | No `echo('x')`, allowing `exit()` and `die()`                   | Yes     |
 | `Jumbo.ControlStructures.RequireShortTernaryOperator`      | `$a ?: $b`, skipping a nullable type in a `set` hook            | Yes     |
@@ -222,6 +223,8 @@ gives the reason. The custom sniffs for PER Coding Style itself are in [PERCS31]
 | `Jumbo.ControlStructures.StatementAfterClosingBrace`       | A control structure's `}` on its own line                       | Yes     |
 | `Jumbo.PHP.EmbeddedPhp`                                    | A block's tags on their own lines, level with its code          | Mostly  |
 | `Jumbo.Functions.RequireSingleLineCall`                    | A call that fits is on one line, skipping a class or `match`    | Yes     |
+| `Jumbo.Functions.RequireSingleLineSignature`               | A split function or closure signature fits on a line            | Yes     |
+| `Jumbo.Formatting.RequireSingleLineStatement`              | A split statement or `case` label fits on a line                | Yes     |
 | `Jumbo.Namespaces.UnusedUses`                              | No unused `use` statements, safe with a miscased `use Function` | Yes     |
 | `Jumbo.NamingConventions.ValidVariableName`                | No leading underscore on a variable or parameter in a class     | No      |
 | `Jumbo.Operators.UnaryOperatorSpacing`                     | No whitespace after a prefix `+`, `~` or `@`                    | Yes     |
@@ -492,6 +495,74 @@ if ($ready) {
     start();
 } stop();
 ```
+
+---
+
+### Jumbo.Formatting.RequireSingleLineStatement, and the signature and class header sniffs
+
+Require code split across lines to be written on one line, if the whole resulting line fits within `maxLineLength`.
+
+| Sniff                                         | Covers                                                 |
+| --------------------------------------------- | ------------------------------------------------------ |
+| `Jumbo.Formatting.RequireSingleLineStatement` | A statement or `case` label, outside its calls, arrays |
+| `Jumbo.Functions.RequireSingleLineSignature`  | A function or closure's signature, and a `use` list    |
+| `Jumbo.Classes.RequireSingleLineClassHeader`  | A class, interface or enum's `extends`, `implements`   |
+
+**Why:** PER allows these splits, so this is an extra rule, in Jumbo only. Other sniffs already do the same for a call, an
+array, a method signature, a condition and a loop header.
+
+These are left alone:
+
+- A chain of two or more methods, each on its own line. A single wrapped `->` is collapsed.
+- A comment, a heredoc or nowdoc, a multi-line string, or a closure, `match` or anonymous class body. See
+  `Jumbo\Helpers\SingleLineHelper`.
+- A line break only inside a call or array, whose own sniffs report it.
+
+**Auto-fixable:** yes.
+
+**Good:**
+
+```php
+$a = $b ? 1 : 2;
+
+$query
+    ->select()
+    ->where();
+
+function total(array $items): int
+{
+    return 0;
+}
+```
+
+**Bad:**
+
+```php
+$a
+    = $b ? 1 : 2;
+
+$a = $b
+    ? 1
+    : 2;
+
+$a = $b ? (
+    $c
+) : 2;
+
+function total(
+    array $items,
+): int {
+    return 0;
+}
+```
+
+**Configuration:**
+
+| Property        | Type | Default | Description                               |
+| --------------- | ---- | ------- | ----------------------------------------- |
+| `maxLineLength` | int  | 120     | Maximum line length for a collapsed line. |
+
+To use a different limit, set every line-length property, as described in [Line Length](LineLength.md).
 
 ---
 

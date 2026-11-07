@@ -1,0 +1,106 @@
+<?php
+
+// Valid: on one line, too long to collapse, a chain of two or more, a comment, or a body.
+$a = $b ? 1 : 2;
+$abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+    = $abcdefghijklmnopqrstuvwxyz;
+$a
+    ->b()
+    ->c();
+$d = $a
+    ?->b()
+    ?->c();
+$a = $b // Why.
+    + $c;
+$a = $b ?? function () {
+    return 1;
+};
+$a = <<<'X'
+    b
+    X
+    . 'c';
+// Left to their own sniffs.
+$a = foo(
+    1,
+);
+$a = [
+    1,
+];
+for (
+    $i = 0;
+    $i < 1;
+    $i++
+) {
+    foo();
+}
+// Attributes and a case label aren't part of the statement.
+class A
+{
+    #[B]
+    public int $c = 1;
+}
+switch ($a) {
+    case 1:
+        $b = 2;
+        break;
+    default:
+        $c = 3;
+        break;
+}
+#[D]
+const E = 1;
+
+// Invalid: all of these fit.
+$a
+    = $b ? 1 : 2;
+$a =
+    $b;
+$a = (
+    $b
+);
+$a = $b ? (
+    $c
+) : 2;
+$a = $b
+    + $c;
+$a = $b
+    ?? $c;
+$a = $b
+    && $c;
+$a = $b
+    ? 1
+    : 2;
+$a = $b ? $c
+    . $d : 2;
+$a = $b
+    ->c;
+$a = new
+    Foo();
+echo $a,
+    $b;
+function f()
+{
+    return $a
+        + $b;
+}
+class G
+{
+    public int $h
+        = 1;
+
+    public const I = 1
+        + 2;
+
+    public A
+        |B $j;
+}
+switch ($a) {
+    case (
+        $b
+    ):
+        break;
+}
+$a = foo(
+    1,
+)
+    + 2;

@@ -35,11 +35,17 @@ class SingleLineHelper
     private const array CLOSERS = [T_CLOSE_SHORT_ARRAY, T_CLOSE_SQUARE_BRACKET, T_CLOSE_PARENTHESIS];
 
     /**
-     * Tokens with no space on either side.
+     * Tokens with no space on either side: object operators, and the symbols of a compound type.
      *
      * @var list<int|string>
      */
-    private const array OBJECT_OPERATORS = [T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR, T_DOUBLE_COLON];
+    private const array OBJECT_OPERATORS = [
+        T_OBJECT_OPERATOR,
+        T_NULLSAFE_OBJECT_OPERATOR,
+        T_DOUBLE_COLON,
+        T_TYPE_UNION,
+        T_TYPE_INTERSECTION,
+    ];
 
     /**
      * Tokens that stop a construct from being collapsed.
