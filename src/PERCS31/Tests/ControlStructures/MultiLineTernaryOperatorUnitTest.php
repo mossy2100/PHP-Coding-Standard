@@ -38,6 +38,8 @@ class MultiLineTernaryOperatorUnitTest extends AbstractSniffTestCase
             76 => 1,
             // A compound assignment on two lines.
             109 => 1,
+            // After a set hook's nullable type.
+            120 => 1,
         ];
     }
 

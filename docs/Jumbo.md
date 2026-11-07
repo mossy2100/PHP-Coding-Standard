@@ -140,7 +140,9 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **ControlStructures.RequireNullCoalesceOperator**: Requires `??` when possible.
 - **ControlStructures.RequireNullSafeObjectOperator**: Requires `?->` when possible.
 - **ControlStructures.RequireSingleLineCondition**: Requires single-line format for short conditions.
-- **ControlStructures.RequireShortTernaryOperator**: Requires the short ternary `?:` when possible.
+- **ControlStructures.RequireShortTernaryOperator**: Requires the short ternary `?:` when possible. Used through
+  [`Jumbo.ControlStructures.RequireShortTernaryOperator`](#jumbocontrolstructuresrequireshortternaryoperator), which skips
+  a nullable type in a `set` hook's parameter.
 - **ControlStructures.RequireTernaryOperator**: Requires ternary operator when possible.
 - **ControlStructures.UselessIfConditionWithReturn**: Disallows useless if conditions returning true or false.
 - **Exceptions.DeadCatch**: Disallows unreachable catch blocks, e.g. a catch after `catch (Throwable)`.
@@ -214,6 +216,7 @@ gives the reason. The custom sniffs for PER Coding Style itself are in [PERCS31]
 | `Jumbo.Classes.PropertySpacing`                            | Blank lines after a property, safe on the last line             | Yes     |
 | `Jumbo.Classes.RequireSingleLineMethodSignature`           | A short signature on one line, skipping a promoted hook         | Yes     |
 | `Jumbo.ControlStructures.LanguageConstructWithParentheses` | No `echo('x')`, allowing `exit()` and `die()`                   | Yes     |
+| `Jumbo.ControlStructures.RequireShortTernaryOperator`      | `$a ?: $b`, skipping a nullable type in a `set` hook            | Yes     |
 | `Jumbo.ControlStructures.RequireSingleLineHeader`          | A multi-line loop, `switch` or `match` header fits on a line    | Yes     |
 | `Jumbo.ControlStructures.MatchArmWrapIndent`               | One line if it fits, else a wrapped `match` arm indented once   | Yes     |
 | `Jumbo.ControlStructures.StatementAfterClosingBrace`       | A control structure's `}` on its own line                       | Yes     |
@@ -357,6 +360,19 @@ replaces `SlevomatCodingStandard.ControlStructures.LanguageConstructWithParenthe
 **Why:** the Slevomat sniff reports `die()` and fixes it to `die`. [PER Coding Style 3.1, Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) says `exit()` and
 `die()` SHOULD have parentheses, which `Universal.PHP.RequireExitDieParentheses` checks, so the two sniffs would undo
 each other's fixes. This sniff skips `exit` and `die`, and leaves everything else to the parent.
+
+**Auto-fixable:** yes, as the parent.
+
+---
+
+### Jumbo.ControlStructures.RequireShortTernaryOperator
+
+Requires `$a ?: $b` instead of `$a ? $a : $b`. This replaces
+`SlevomatCodingStandard.ControlStructures.RequireShortTernaryOperator`.
+
+**Why:** PHP_CodeSniffer reads the `?` in `set(?int $value)` as a ternary's, as it doesn't know about hooks. The
+Slevomat sniff then looks for a `:` that isn't there, and the error stops the file being checked. This sniff skips that
+`?`, and leaves everything else to the parent.
 
 **Auto-fixable:** yes, as the parent.
 

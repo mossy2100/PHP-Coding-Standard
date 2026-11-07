@@ -107,3 +107,14 @@ $groupedIndented = (
     $a
         && $b
 );
+
+// A set hook's split parameter type isn't a wrapped operator.
+class HookParameterType
+{
+    public int|string $split {
+        set(
+            int
+            |string $value,
+        ) => $value;
+    }
+}

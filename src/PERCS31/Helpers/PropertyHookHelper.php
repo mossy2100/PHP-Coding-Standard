@@ -101,6 +101,14 @@ class PropertyHookHelper
     ];
 
     /**
+     * The tokens PHP_CodeSniffer gives the symbols of a type in a `set` hook's parameter list, as it reads them as
+     * operators: `|`, `&`, and the `?` of a nullable type.
+     *
+     * @var list<int|string>
+     */
+    private const array HOOK_TYPE_SYMBOLS = [T_BITWISE_OR, T_INLINE_THEN, ...self::AMPERSANDS];
+
+    /**
      * The file whose hook scopes are cached, for isInsidePropertyHook().
      *
      * @var ?WeakReference<File>
@@ -146,6 +154,45 @@ class PropertyHookHelper
 
         // Scanning for hook scopes is the expensive part, so it comes last.
         return self::isInsidePropertyHook($phpcsFile, $stackPtr);
+    }
+
+    /**
+     * Check whether a token is a symbol in a `set` hook's parameter type, e.g. the `|` in `set(int|string $value)`, not
+     * an operator.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the token.
+     * @return bool True if the token is a `|`, `&` or `?` in a `set` hook's parameter type.
+     */
+    public static function isHookParameterType(File $phpcsFile, int $stackPtr): bool
+    {
+        $code = $phpcsFile->getTokens()[$stackPtr]['code'];
+
+        return in_array($code, self::HOOK_TYPE_SYMBOLS, true) && self::isInHookParameterList($phpcsFile, $stackPtr);
+    }
+
+    /**
+     * Check whether a token is in a `set` hook's parameter list, but not in an attribute there, whose arguments are
+     * expressions.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the token.
+     * @return bool True if the token is inside the parentheses of a `set` hook's parameter list.
+     */
+    public static function isInHookParameterList(File $phpcsFile, int $stackPtr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        if (!isset($tokens[$stackPtr]['nested_parenthesis']) || isset($tokens[$stackPtr]['nested_attributes'])) {
+            return false;
+        }
+
+        foreach (array_keys($tokens[$stackPtr]['nested_parenthesis']) as $opener) {
+            if (is_int($opener) && self::isHookParameterList($phpcsFile, $opener)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -371,6 +418,36 @@ class PropertyHookHelper
         }
 
         return $phpcsFile->findPrevious(self::PROMOTION_MODIFIERS, ($varPtr - 1), $start) !== false;
+    }
+
+    /**
+     * Check whether a parenthesis opens a `set` hook's parameter list, not a call to a function named `set`.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the opening parenthesis.
+     * @return bool True if `set` is in a hook name's position, and a hook body follows the closing parenthesis.
+     */
+    private static function isHookParameterList(File $phpcsFile, int $opener): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $name = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($opener - 1), null, true);
+        if ($name === false || $tokens[$name]['code'] !== T_STRING || strtolower($tokens[$name]['content']) !== 'set') {
+            return false;
+        }
+
+        $closer = $tokens[$opener]['parenthesis_closer'] ?? null;
+        $after = is_int($closer) ? $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($closer + 1), null, true) : false;
+        if ($after === false || !in_array($tokens[$after]['code'], [T_OPEN_CURLY_BRACKET, T_DOUBLE_ARROW], true)) {
+            return false;
+        }
+
+        $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($name - 1), null, true);
+        if ($previous === false || !in_array($tokens[$previous]['code'], self::BEFORE_HOOK_NAME, true)) {
+            return false;
+        }
+
+        // Scanning for hook scopes is the expensive part, so it comes last.
+        return self::isInsidePropertyHook($phpcsFile, $name);
     }
 
     /**

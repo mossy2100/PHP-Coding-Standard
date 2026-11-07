@@ -27,6 +27,8 @@ class CompoundTypeLayoutUnitTest extends AbstractSniffTestCase
             40 => 1,
             // Two union segments on one line.
             44 => 1,
+            // Two types on one line in a set hook's parameter type.
+            61 => 1,
         ];
     }
 

@@ -68,3 +68,45 @@ function defaults(int $a = 1, int $b = 2, int $d  = 4, int $e  = 5)
 }
 
 declare(ticks=1);
+
+// A set hook's parameter types aren't operators, and neither is a nullable type's ?.
+class HookParameterTypes
+{
+    public int|string $union {
+        set(int|string $value) {
+            $this->union = $value;
+        }
+    }
+
+    public \Countable&\Stringable $intersection {
+        set(\Countable&\Stringable $value) => $value;
+    }
+
+    public (\Countable&\Stringable)|null $dnf {
+        set((\Countable&\Stringable)|null $value) => $value;
+    }
+
+    public ?int $nullable {
+        set(?int $value) => $value;
+    }
+
+    public int|string $split {
+        set(
+            int
+            |string $value,
+        ) => $value;
+    }
+
+    public function __construct(public int|string $promoted { set(int|string $value) => $value; }) {}
+
+    // A real operator in a hook is still checked.
+    public int $operators {
+        get => $this->operators | 1;
+        set(#[Foo(1 | 2)] int $value) {
+            $this->operators = 1 | 2;
+            foo($value | 1);
+            set($value | 1);
+            $this->set($value & 1);
+        }
+    }
+}

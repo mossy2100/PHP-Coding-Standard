@@ -352,6 +352,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
+- **A `set` hook's parameter type.** `set(int|string $value)` and `set(A&B $value)` were reported as missing the spaces
+  that PER Coding Style 3.1 forbids, and `phpcbf` added them. They now pass, and `set(int | string $value)` is reported
+  and fixed by `PERCS31.TypeHints.CompoundTypeOperatorSpacing`. A split type there is checked as it is elsewhere.
+  `set(?int $value)` no longer stops the file being checked, in either standard. In Jumbo, this adds
+  `Jumbo.ControlStructures.RequireShortTernaryOperator`, in place of Slevomat's sniff, so update any `phpcs:ignore`
+  comments or `<exclude>` rules that name the old code.
 - **`SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition` replaces our fork (breaking).** Slevomat 8.31.3
   fixes what the fork was for, so the minimum Slevomat version is now 8.31.3, and the fork
   `OceanMoon.PHP.DisallowMultiConstantDefinition` is gone. A comma inside parentheses isn't read as a second constant,

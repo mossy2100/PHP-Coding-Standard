@@ -32,3 +32,41 @@ function lineEnd(
     |\ReflectionClass $r,
 ): object {
 }
+
+// A set hook's parameter type.
+class HookParameterTypes
+{
+    public int|string $valid {
+        set(int|string $value) => $value;
+    }
+
+    public int|string $union {
+        set(int|string $value) => $value;
+    }
+
+    public \Countable&\Stringable $intersection {
+        set(\Countable&\Stringable $value) => $value;
+    }
+
+    public (\Countable&\Stringable)|null $dnf {
+        set((\Countable&\Stringable)|null $value) => $value;
+    }
+
+    public (\Countable&\Stringable)|null $parentheses {
+        set((\Countable&\Stringable)|null $value) => $value;
+    }
+
+    public int|string $lineEnd {
+        set(
+            int
+            |string $value,
+        ) => $value;
+    }
+
+    public int $operators {
+        set(int $value) {
+            foo($value | 1);
+            foo(($value | 1) + 2);
+        }
+    }
+}

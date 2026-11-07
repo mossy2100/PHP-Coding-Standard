@@ -475,7 +475,8 @@ class OperatorPlacementSniff implements Sniff
     }
 
     /**
-     * Check whether a `+`, `-` or `&` is unary, or a reference, not a binary operator.
+     * Check whether a `+`, `-` or `&` is unary or a reference, or a `|` or `&` is in a `set` hook's parameter type, not
+     * a binary operator.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the operator.
@@ -483,7 +484,10 @@ class OperatorPlacementSniff implements Sniff
      */
     private function isUnaryOrReference(File $phpcsFile, int $stackPtr): bool
     {
-        if (PropertyHookHelper::isHookReference($phpcsFile, $stackPtr)) {
+        if (
+            PropertyHookHelper::isHookReference($phpcsFile, $stackPtr)
+            || PropertyHookHelper::isHookParameterType($phpcsFile, $stackPtr)
+        ) {
             return true;
         }
 

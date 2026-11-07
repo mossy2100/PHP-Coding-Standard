@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\ControlStructures;
 
+use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -23,6 +24,9 @@ use SlevomatCodingStandard\Helpers\TernaryOperatorHelper;
  * this sniff after a Slevomat upgrade. It only stops at some tokens, such as `=` and `return`, so it can walk back past
  * the start of the ternary's statement or `match` arm to an earlier line. So `$a += $b ? 1 : 2;` or `1 => $a ? 2 : 3,`
  * would count as spanning lines. This sniff also stops at anything else that comes before a ternary's expression.
+ *
+ * PHP_CodeSniffer reads the `?` of a nullable type in a `set` hook's parameter, as in `set(?int $value)`, as a
+ * ternary's. The helper would crash on it, as it has no `:`, so it's skipped.
  */
 class MultiLineTernaryOperatorSniff implements Sniff
 {
@@ -46,6 +50,10 @@ class MultiLineTernaryOperatorSniff implements Sniff
      */
     public function process(File $phpcsFile, int $inlineThenPointer): void
     {
+        if (PropertyHookHelper::isHookParameterType($phpcsFile, $inlineThenPointer)) {
+            return;
+        }
+
         $tokens = $phpcsFile->getTokens();
 
         // A short ternary, which PER treats as a binary operator.

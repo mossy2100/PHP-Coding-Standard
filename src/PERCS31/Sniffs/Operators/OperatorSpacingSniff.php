@@ -25,7 +25,9 @@ use PHP_CodeSniffer\Util\Tokens;
  * The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operator. Section 2.5 says the union symbol
  * MUST NOT have a space either side, so this sniff reports one there instead.
  *
- * The `&` of a by-reference hook, e.g. `&get => $this->items;`, isn't an operator either, so it's skipped.
+ * The `&` of a by-reference hook, e.g. `&get => $this->items;`, isn't an operator either, so it's skipped. So are the
+ * `|`, `&` and `?` of a `set` hook's parameter type, e.g. `set(int|string $value)`, which PHP_CodeSniffer reads as
+ * operators. PERCS31.TypeHints.CompoundTypeOperatorSpacing checks them.
  *
  * The parent skips any `=` directly followed by `&`, so `$x=&$a` passes. This sniff checks it, and fixes it to
  * `$x = &$a`. It still skips `$x =& $a`, as that has a space either side if `=&` is read as one operator, and PER
@@ -82,8 +84,11 @@ class OperatorSpacingSniff extends SquizSniff
      */
     public function process(File $phpcsFile, int $stackPtr): ?int
     {
-        // The `&` of a by-reference hook, `&get`, isn't an operator.
-        if (PropertyHookHelper::isHookReference($phpcsFile, $stackPtr)) {
+        // The `&` of a by-reference hook, `&get`, and the symbols of a `set` hook's parameter type aren't operators.
+        if (
+            PropertyHookHelper::isHookReference($phpcsFile, $stackPtr)
+            || PropertyHookHelper::isHookParameterType($phpcsFile, $stackPtr)
+        ) {
             return null;
         }
 

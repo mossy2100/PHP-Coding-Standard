@@ -253,7 +253,9 @@
             <property name="lineLengthLimit" value="&lineLength;"/>
         </properties>
     </rule>
-    <rule ref="SlevomatCodingStandard.ControlStructures.RequireShortTernaryOperator"/>
+    <!-- The Jumbo version of RequireShortTernaryOperator, which skips the ? in set(?int $value), as the parent crashes on
+         it -->
+    <rule ref="Jumbo.ControlStructures.RequireShortTernaryOperator"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.RequireTernaryOperator"/>
 
     <!-- No whitespace after ! -->

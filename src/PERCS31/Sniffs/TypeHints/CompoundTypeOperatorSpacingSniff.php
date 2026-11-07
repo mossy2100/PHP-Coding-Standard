@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\TypeHints;
 
+use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
@@ -21,12 +22,18 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  *   to the start of the next line.
  *
  * Which types go on which line is checked by PERCS31.TypeHints.CompoundTypeLayout.
+ *
+ * It also covers a `set` hook's parameter type, e.g. `set(int|string $value)`. PHP_CodeSniffer doesn't know about
+ * hooks, so it gives those symbols operator tokens, and Slevomat's sniff doesn't see them. So this sniff also checks
+ * the parentheses of a DNF type there, which Slevomat's sniff checks everywhere else.
  */
 class CompoundTypeOperatorSpacingSniff implements Sniff
 {
     public const string CODE_SPACE_AROUND_OPERATOR = 'SpaceAroundOperator';
 
     public const string CODE_OPERATOR_AT_END_OF_LINE = 'OperatorAtEndOfLine';
+
+    public const string CODE_SPACE_INSIDE_PARENTHESES = 'SpaceInsideParentheses';
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -35,7 +42,7 @@ class CompoundTypeOperatorSpacingSniff implements Sniff
      */
     public function register(): array
     {
-        return [T_TYPE_UNION, T_TYPE_INTERSECTION];
+        return [T_TYPE_UNION, T_TYPE_INTERSECTION, T_BITWISE_OR, T_BITWISE_AND, T_OPEN_PARENTHESIS];
     }
 
     /**
@@ -47,6 +54,20 @@ class CompoundTypeOperatorSpacingSniff implements Sniff
     public function process(File $phpcsFile, int $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
+        $code = $tokens[$stackPtr]['code'];
+        if ($code === T_OPEN_PARENTHESIS) {
+            if (PropertyHookHelper::isInHookParameterList($phpcsFile, $stackPtr)) {
+                $this->checkHookTypeParentheses($phpcsFile, $stackPtr);
+            }
+
+            return;
+        }
+
+        $isType = $code === T_TYPE_UNION || $code === T_TYPE_INTERSECTION;
+        if (!$isType && !PropertyHookHelper::isHookParameterType($phpcsFile, $stackPtr)) {
+            return;
+        }
+
         $before = $tokens[($stackPtr - 1)];
         $after = $tokens[($stackPtr + 1)];
         // An indent before the symbol, at the start of its line, isn't a space before it.
@@ -82,6 +103,45 @@ class CompoundTypeOperatorSpacingSniff implements Sniff
 
         if ($hasSpaceAfter) {
             $phpcsFile->fixer->replaceToken(($stackPtr + 1), '');
+        }
+
+        $phpcsFile->fixer->endChangeset();
+    }
+
+    /**
+     * Report whitespace just inside the parentheses of a DNF type in a `set` hook's parameter, and fix it by removing
+     * it.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the opening parenthesis.
+     */
+    private function checkHookTypeParentheses(File $phpcsFile, int $opener): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $closer = $tokens[$opener]['parenthesis_closer'] ?? null;
+        if (
+            !is_int($closer)
+            || ($tokens[($opener + 1)]['code'] !== T_WHITESPACE && $tokens[($closer - 1)]['code'] !== T_WHITESPACE)
+        ) {
+            return;
+        }
+
+        $fix = $phpcsFile->addFixableError(
+            'There must be no space just inside the parentheses of a compound type',
+            $opener,
+            self::CODE_SPACE_INSIDE_PARENTHESES,
+        );
+        if (!$fix) {
+            return;
+        }
+
+        $phpcsFile->fixer->beginChangeset();
+        for ($i = ($opener + 1); $tokens[$i]['code'] === T_WHITESPACE; $i++) {
+            $phpcsFile->fixer->replaceToken($i, '');
+        }
+
+        for ($i = ($closer - 1); $tokens[$i]['code'] === T_WHITESPACE; $i--) {
+            $phpcsFile->fixer->replaceToken($i, '');
         }
 
         $phpcsFile->fixer->endChangeset();

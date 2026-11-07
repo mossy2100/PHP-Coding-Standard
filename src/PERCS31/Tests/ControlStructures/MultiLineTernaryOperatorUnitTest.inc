@@ -108,3 +108,14 @@ $a += $b
     : 2;
 $a += $b ? 1
     : 2;
+
+// A set hook's nullable type isn't a ternary, and checking carries on after it.
+class HookParameterType
+{
+    public ?int $nullable {
+        set(?int $value) => $value;
+    }
+}
+
+$a = $b ? 1
+    : 2;

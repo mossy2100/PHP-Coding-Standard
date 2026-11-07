@@ -63,6 +63,13 @@ class OperatorSpacingUnitTest extends AbstractSniffTestCase
             // A parameter's default value: none either side, none after, and in an arrow function.
             65 => 3,
             67 => 2,
+            // A real operator in a hook, including in an attribute on a set hook's parameter.
+            104 => 2,
+            105 => 2,
+            106 => 2,
+            107 => 2,
+            108 => 2,
+            109 => 2,
         ];
     }
 

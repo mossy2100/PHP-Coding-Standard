@@ -773,7 +773,8 @@ Requires a ternary that spans lines to take three, with `?` and `:` each startin
 **Why:** [PER Coding Style 3.1, Section 6.4](https://www.php-fig.org/per/coding-style/#64-operators-placement) says a multi-line ternary MUST occupy three lines, never two, with each
 operator at the start of its line. The Slevomat sniff only reports a `?` at the end of a line. No inherited sniff
 reports a ternary on two lines, a trailing `:`, or the wrong indentation. A short ternary (`?:`) is a binary operator in
-PER, so it isn't checked here.
+PER, so it isn't checked here. Nor is the `?` of a nullable type in a `set` hook's parameter, which PHP_CodeSniffer
+reads as a ternary's.
 
 **Auto-fixable:** yes, unless a comment is next to `?` or `:`.
 
@@ -1446,7 +1447,8 @@ The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operato
 [Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the union symbol MUST NOT have a space either side. The parent would require one.
 
 The `&` of a by-reference hook, e.g. `&get => $this->items;`, isn't an operator either, so it's skipped, here and by
-`PERCS31.Operators.OperatorPlacement`.
+`PERCS31.Operators.OperatorPlacement`. So are the `|`, `&` and `?` of a `set` hook's parameter type, e.g.
+`set(int|string $value)`, which `PERCS31.TypeHints.CompoundTypeOperatorSpacing` checks instead.
 
 **Auto-fixable:** yes, as the parent.
 
@@ -1567,7 +1569,7 @@ type's parentheses never can.
 
 **Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says each line of a split union or intersection MUST have a single type, and
 each line of a split DNF type MUST have a single union segment, with all of its intersections on that line. No inherited
-sniff checks it.
+sniff checks it. This includes a `set` hook's parameter type, e.g. `set(int|string $value)`.
 
 **Auto-fixable:** yes, unless a comment comes before a `&` that starts a line inside parentheses.
 
@@ -1614,6 +1616,9 @@ before one. This replaces the `DisallowedWhitespaceAroundOperator` check of
 space, and that a compound type MAY be split across lines, with the symbol at the start of each line. The Slevomat check
 counts the line break as a space, so it rejects every split type, including PER's own examples. Which types go on which
 line is checked by `PERCS31.TypeHints.CompoundTypeLayout`.
+
+It also checks a `set` hook's parameter type, e.g. `set(int|string $value)`, and the parentheses of a DNF type there, as
+PHP_CodeSniffer reads that type as an expression, and the Slevomat sniff doesn't see it.
 
 **Auto-fixable:** yes. A symbol at the end of a line is moved to the start of the next.
 
@@ -1816,6 +1821,10 @@ class User
 - **Whether a fall-through comment is clear (5.2).** Any comment just before the next `case` or `default` passes, as the
   spec doesn't set any wording.
 - **Avoiding abbreviations (2.7).** Whether a name could avoid an abbreviation can't be judged by a sniff.
+- **Most rules for a `set` hook's parameter type (2.5, 4.5).** PHP_CodeSniffer reads the type as an expression, so the
+  sniffs that check types elsewhere don't see it. That leaves `?T` over `T|null`, `null` last, keywords in lower case,
+  and no space after `?`. The spacing around `|` and `&`, the parentheses of a DNF type, and a split type's layout are
+  checked.
 - **A comment or statement after a control structure's closing brace (4).** Section 4 says "any closing brace", but it's
   in the section on classes, so this standard follows PHP_CodeSniffer in reading it as classes and functions. After a
   block `declare` in the file header, a statement is still reported, as section 3 wants a blank line after the block.
