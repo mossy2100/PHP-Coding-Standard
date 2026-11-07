@@ -590,6 +590,33 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that global constants must be in UPPER_CASE in Jumbo only, and that an acronym is only reported in a name
+     * with a lower-case letter.
+     */
+    public function testGlobalConstantCaseIsCheckedInJumboOnly(): void
+    {
+        $source = "<?php\n\nconst userId = 1;\n\ndefine('userId', 2);\n\nconst HTTP_OK = 3;\n\nconst userID = 4;\n";
+        $file = $this->copyToTempFile(null, $source);
+        $reports = [];
+
+        try {
+            foreach (['PERCS31', 'Jumbo'] as $standard) {
+                $args = ['-s', "--standard=$standard", '--report=emacs', $file];
+                $output = $this->runTool('phpcs', $args)['output'];
+                $pattern = '/:(\\d+):\\d+: \\w+ - .*\\.(ConstantNotUpperCase|AcronymNotLikeWord)\\)$/m';
+                preg_match_all($pattern, $output, $matches, PREG_SET_ORDER);
+                $reports[$standard] = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
+            }
+        } finally {
+            unlink($file);
+        }
+
+        $jumbo = ['3 ConstantNotUpperCase', '5 ConstantNotUpperCase', '9 ConstantNotUpperCase', '9 AcronymNotLikeWord'];
+        $this->assertSame(['9 AcronymNotLikeWord'], $reports['PERCS31']);
+        $this->assertEqualsCanonicalizing($jumbo, $reports['Jumbo']);
+    }
+
+    /**
      * The two standards.
      *
      * @return array<string, array{string}>

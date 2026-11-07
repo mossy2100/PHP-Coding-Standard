@@ -27,7 +27,9 @@ enum Suit: string
 
 // === INVALID ===
 
+// PSR-1 only requires class constants in UPPER_CASE, so a global constant isn't checked by default.
 const globalLimit = 1;
+define('definedLimit', 2);
 
 class LowerHolder
 {
@@ -47,3 +49,13 @@ enum LowerSuit: string
     // UPPER_CASE with no underscore, which gets the warning.
     public const string OK = 'o';
 }
+
+// === GLOBAL CONSTANTS, WHEN CHECKED ===
+
+// phpcs:set PERCS31.NamingConventions.UpperCaseConstantName checkGlobalConstants true
+const CHECKED_LIMIT = 1;
+define('CHECKED_DEFINED', 2);
+const checkedLimit = 1;
+define('checkedDefined', 2);
+\define('checkedQualified', 3);
+// phpcs:set PERCS31.NamingConventions.UpperCaseConstantName checkGlobalConstants false

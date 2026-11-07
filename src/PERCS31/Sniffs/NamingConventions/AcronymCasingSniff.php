@@ -8,6 +8,7 @@ use PERCS31\Helpers\NamingHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\TextStrings;
 use PHPCSUtils\Utils\UseStatements;
 
 /**
@@ -15,16 +16,17 @@ use PHPCSUtils\Utils\UseStatements;
  *
  * PER Coding Style 3.1, section 2.7, RECOMMENDS treating abbreviations, acronyms and initialisms like regular words, so
  * `getHttpClient`, not `getHTTPClient`. This sniff checks a namespace, function, method, property, parameter, variable,
- * import alias or trait alias. NamingHelper splits each name into words. A word of two or more capitals is reported,
- * and so is a single capital directly before another word, so `parseURL`, `getID`, `getIDs`, `getURLs` and `whenXIs`
- * are all reported. A single capital that ends the name, or that's followed by a digit, as in `getX` or `getX2Value`,
- * isn't.
+ * global constant, import alias or trait alias. NamingHelper splits each name into words. A word of two or more
+ * capitals is reported, and so is a single capital directly before another word, so `parseURL`, `getID`, `getIDs`,
+ * `getURLs` and `whenXIs` are all reported. A single capital that ends the name, or that's followed by a digit, as in
+ * `getX` or `getX2Value`, isn't.
  *
  * It doesn't check:
  * - A class, interface, trait, enum or enum case. PascalCase is required of these, and a run of capitals isn't
  *   PascalCase, so ValidClassName and ValidEnumCaseName report it as an error, with no exceptions.
  * - An enum constant, as PascalCase or UPPER_CASE is required, so UpperCaseConstantName reports it.
- * - A constant outside an enum, or an alias of one, as UPPER_CASE is required.
+ * - A class constant, as UPPER_CASE is required.
+ * - A global constant or an alias of one with no lower-case letters, as UPPER_CASE is allowed for it.
  * - PHP's reserved variables, such as `$_SERVER`, which aren't ours to name.
  * - A property where it's used, such as `$this->userID` or `self::$userID`, as it may belong to a class we don't
  *   control. It's checked where it's declared.
@@ -78,7 +80,7 @@ class AcronymCasingSniff implements Sniff
      */
     public function register(): array
     {
-        return [T_NAMESPACE, T_FUNCTION, T_VARIABLE, T_AS];
+        return [T_NAMESPACE, T_FUNCTION, T_VARIABLE, T_AS, T_CONST, T_STRING, T_NAME_FULLY_QUALIFIED];
     }
 
     /**
@@ -97,6 +99,16 @@ class AcronymCasingSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
         $name = $tokens[$namePtr]['content'];
         assert(is_string($name));
+        if ($tokens[$namePtr]['code'] === T_CONSTANT_ENCAPSED_STRING) {
+            // A name given to `define()` can have a namespace, which isn't part of the constant's name.
+            $parts = explode('\\', TextStrings::stripQuotes($name));
+            $name = end($parts);
+        }
+
+        if ($this->isConstant($phpcsFile, $stackPtr, $namePtr) && strtoupper($name) === $name) {
+            return;
+        }
+
         $parts = $tokens[$stackPtr]['code'] === T_NAMESPACE ? explode('\\', $name) : [$name];
         $hasAcronym = false;
         foreach ($parts as $part) {
@@ -169,6 +181,14 @@ class AcronymCasingSniff implements Sniff
             return $this->findAlias($phpcsFile, $stackPtr);
         }
 
+        if ($code === T_CONST) {
+            return $this->findGlobalConstantName($phpcsFile, $stackPtr);
+        }
+
+        if ($code === T_STRING || $code === T_NAME_FULLY_QUALIFIED) {
+            return $this->findDefinedConstantName($phpcsFile, $stackPtr);
+        }
+
         $namePtr = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
 
         // A function that returns by reference has a `&` before its name.
@@ -187,8 +207,8 @@ class AcronymCasingSniff implements Sniff
     }
 
     /**
-     * Find the alias after an `as` in an import or a trait's `use`, unless it's the alias of a constant, as UPPER_CASE
-     * is required. A trait's `as` might only change a method's visibility, and give no alias.
+     * Find the alias after an `as` in an import or a trait's `use`. A trait's `as` might only change a method's
+     * visibility, and give no alias.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of `as`.
@@ -209,13 +229,86 @@ class AcronymCasingSniff implements Sniff
             return false;
         }
 
+        return $namePtr;
+    }
+
+    /**
+     * Find the name in a global `const` statement.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of `const`.
+     * @return int|false The name's position, or false if there's nothing to check.
+     */
+    private function findGlobalConstantName(File $phpcsFile, int $stackPtr): int|false
+    {
+        $tokens = $phpcsFile->getTokens();
+        $conditions = $tokens[$stackPtr]['conditions'];
+        if ($conditions !== [] && isset(Tokens::OO_SCOPE_TOKENS[end($conditions)])) {
+            return false;
+        }
+
+        $equals = $phpcsFile->findNext(T_EQUAL, ($stackPtr + 1));
+
+        if ($equals === false) {
+            return false;
+        }
+
+        return $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($equals - 1), $stackPtr, true);
+    }
+
+    /**
+     * Find the name given to a call to `define()`, as Generic.NamingConventions.UpperCaseConstantName does.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of a name that could be `define`.
+     * @return int|false The name's position, which holds a quoted string, or false if there's nothing to check.
+     */
+    private function findDefinedConstantName(File $phpcsFile, int $stackPtr): int|false
+    {
+        $tokens = $phpcsFile->getTokens();
+        if (strtolower(ltrim($tokens[$stackPtr]['content'], '\\')) !== 'define') {
+            return false;
+        }
+
+        $notCalls = [T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR, T_DOUBLE_COLON, T_NEW, T_FUNCTION];
+        $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
+        if ($previous !== false && in_array($tokens[$previous]['code'], $notCalls, true)) {
+            return false;
+        }
+
+        $open = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
+        if ($open === false || $tokens[$open]['code'] !== T_OPEN_PARENTHESIS) {
+            return false;
+        }
+
+        $namePtr = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($open + 1), null, true);
+
+        return $namePtr !== false && $tokens[$namePtr]['code'] === T_CONSTANT_ENCAPSED_STRING ? $namePtr : false;
+    }
+
+    /**
+     * Check whether a name being checked is a global constant's, or the alias of one.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the token the sniff was called for.
+     * @param int $namePtr The position of the name.
+     * @return bool True if it is.
+     */
+    private function isConstant(File $phpcsFile, int $stackPtr, int $namePtr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $code = $tokens[$stackPtr]['code'];
+        if ($code !== T_AS) {
+            return $code === T_CONST || $code === T_STRING || $code === T_NAME_FULLY_QUALIFIED;
+        }
+
         $usePtr = $phpcsFile->findPrevious(T_USE, ($stackPtr - 1));
         if ($usePtr === false || !UseStatements::isImportUse($phpcsFile, $usePtr)) {
-            return $namePtr;
+            return false;
         }
 
         $imports = UseStatements::splitImportUseStatement($phpcsFile, $usePtr);
 
-        return isset($imports['const'][$tokens[$namePtr]['content']]) ? false : $namePtr;
+        return isset($imports['const'][$tokens[$namePtr]['content']]);
     }
 }

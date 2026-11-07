@@ -19,13 +19,15 @@ class UpperCaseConstantNameUnitTest extends AbstractSniffTestCase
     protected function getErrorList(): array
     {
         return [
-            // A global constant not in UPPER_CASE, left to the parent.
-            30 => 1,
             // A class constant not in UPPER_CASE, left to the parent.
-            34 => 1,
+            36 => 1,
             // An enum constant in neither PascalCase nor UPPER_CASE.
-            42 => 1,
-            45 => 1,
+            44 => 1,
+            47 => 1,
+            // Global constants not in UPPER_CASE, with checkGlobalConstants set.
+            58 => 1,
+            59 => 1,
+            60 => 1,
         ];
     }
 
@@ -39,7 +41,7 @@ class UpperCaseConstantNameUnitTest extends AbstractSniffTestCase
         return [
             // An enum constant in UPPER_CASE, as PascalCase is recommended.
             21 => 1,
-            48 => 1,
+            50 => 1,
         ];
     }
 }

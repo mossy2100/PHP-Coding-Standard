@@ -1214,8 +1214,8 @@ An arrow function has no braces, so the brace checks don't apply.
 
 ### PERCS31.NamingConventions.AcronymCasing
 
-Warns about an acronym in capitals in a name: a namespace, function, method, property, parameter, variable, import
-alias or trait alias.
+Warns about an acronym in capitals in a name: a namespace, function, method, property, parameter, variable, global
+constant, import alias or trait alias.
 
 **Why:** [PER Coding Style 3.1, Section 2.7](https://www.php-fig.org/per/coding-style/#27-naming) RECOMMENDS treating acronyms like regular words.
 
@@ -1237,7 +1237,8 @@ It doesn't report:
   [`ValidClassName`](#percs31namingconventionsvalidclassname) and
   [`ValidEnumCaseName`](#percs31namingconventionsvalidenumcasename) report a run of capitals as an error.
 - An enum constant, which [`UpperCaseConstantName`](#percs31namingconventionsuppercaseconstantname) reports.
-- A constant outside an enum, or an alias of one, as UPPER_CASE is required.
+- A class constant, as UPPER_CASE is required.
+- A global constant or an alias of one with no lower-case letters, as UPPER_CASE is allowed for it.
 - PHP's reserved variables, such as `$_SERVER`.
 - A property where it's used, such as `$this->userID` or `self::$userID`, as it may belong to a class you don't control.
   It's reported where it's declared.
@@ -1294,7 +1295,7 @@ class Client
 
 ### PERCS31.NamingConventions.UpperCaseConstantName
 
-Requires constant names in UPPER_CASE, except in an enum, where PascalCase is also allowed, and recommended. This
+Requires class constant names in UPPER_CASE, except in an enum, where PascalCase is also allowed, and recommended. This
 replaces `Generic.NamingConventions.UpperCaseConstantName`.
 
 **Why:** PSR-1, which PER Coding Style builds on, requires class constants in UPPER_CASE, and the Generic sniff applies
@@ -1306,8 +1307,18 @@ UPPER_CASE, and PascalCase is RECOMMENDED. So for an enum constant:
 - UPPER_CASE gets an `EnumConstantNotPascalCase` warning.
 - Anything else, such as camelCase or `HTTPStatus`, gets an `EnumConstantInvalidCase` error.
 
-Every other constant is left to the parent, except that a global `const` is reported as one made with `define()` is:
-"Constants must be uppercase", with the `ConstantNotUpperCase` code. The parent reports it as a class constant.
+A global constant, from `const` or `define()`, isn't checked by default, as neither PSR-1 nor PER has a rule for it. Set
+`checkGlobalConstants` to require UPPER_CASE, which reports both with the `ConstantNotUpperCase` code:
+
+```xml
+<rule ref="PERCS31.NamingConventions.UpperCaseConstantName">
+    <properties>
+        <property name="checkGlobalConstants" value="true"/>
+    </properties>
+</rule>
+```
+
+Other class, interface and trait constants are left to the parent.
 
 **Auto-fixable:** no.
 
@@ -1327,7 +1338,10 @@ enum Suit: string
 **Bad:**
 
 ```php
-const maxRetries = 3;
+class Retry
+{
+    public const int maxRetries = 3;
+}
 
 enum Suit: string
 {

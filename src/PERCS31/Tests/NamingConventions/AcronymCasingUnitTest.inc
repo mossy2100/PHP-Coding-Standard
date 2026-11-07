@@ -256,3 +256,29 @@ class TraitAliases
     }
     // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms
 }
+
+// === GLOBAL CONSTANTS ===
+
+const HTTP_LIMIT = 1;
+const URLID = 2;
+const userId = 3;
+define('HTTP_TIMEOUT', 4);
+define('userId', 5);
+\define('XML_LIMIT', 6);
+define('Foo\Bar\URL_LIMIT', 7);
+$object->define('userID', 8);
+Foo::define('userID', 9);
+define($userName, 10);
+use const Foo\Bar as bazId;
+
+class ClassConstant
+{
+    const userID = 11;
+}
+
+const userID = 12;
+const HTTP_id = 13;
+define('parseURL', 14);
+\define("getID", 15);
+define('Foo\Bar\userID', 16);
+use const Foo\Bar as otherID;
