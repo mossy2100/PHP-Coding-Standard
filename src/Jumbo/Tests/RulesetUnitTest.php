@@ -470,12 +470,12 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that an UPPER_CASE enum constant's warning is hidden by default, and shown at severity 4.
+     * Test that Jumbo hides an UPPER_CASE enum constant's warning by default, and shows it at severity 4.
      */
-    public function testEnumConstantCaseWarningNeedsWarningSeverity4(): void
+    public function testEnumConstantCaseWarningNeedsWarningSeverity4InJumbo(): void
     {
         $fixture = dirname(__DIR__, 2) . '/PERCS31/Tests/NamingConventions/UpperCaseConstantNameUnitTest.inc';
-        $args = ['-s', '--standard=PERCS31', '--sniffs=PERCS31.NamingConventions.UpperCaseConstantName', $fixture];
+        $args = ['-s', '--standard=Jumbo', '--sniffs=PERCS31.NamingConventions.UpperCaseConstantName', $fixture];
         $default = $this->runTool('phpcs', ['--report=emacs', ...$args]);
         $severity4 = $this->runTool('phpcs', ['--report=emacs', '--warning-severity=4', ...$args]);
 
@@ -484,62 +484,6 @@ class RulesetUnitTest extends TestCase
             '/:21:\\d+: warning - .*EnumConstantNotPascalCase/',
             $severity4['output'],
         );
-        $this->assertSame(1, substr_count($severity4['output'], 'EnumConstantNotPascalCase'), 'PascalCase passes.');
-    }
-
-    /**
-     * Test that an acronym's warning is hidden by default in PERCS31, and shown at severity 4, only on such names.
-     */
-    public function testAcronymWarningNeedsWarningSeverity4(): void
-    {
-        $fixture = dirname(__DIR__, 2) . '/PERCS31/Tests/NamingConventions/AcronymCasingUnitTest.inc';
-        $args = ['-s', '--standard=PERCS31', '--sniffs=PERCS31.NamingConventions.AcronymCasing', $fixture];
-        $default = $this->runTool('phpcs', ['--report=emacs', ...$args]);
-        $severity4 = $this->runTool('phpcs', ['--report=emacs', '--warning-severity=4', ...$args]);
-
-        $this->assertStringNotContainsString('AcronymNotLikeWord', $default['output']);
-        preg_match_all('/:(\\d+):\\d+: warning - .*AcronymNotLikeWord/', $severity4['output'], $matches);
-        $expected = [
-            '40',
-            '42',
-            '44',
-            '46',
-            '48',
-            '51',
-            '53',
-            '55',
-            '58',
-            '60',
-            '62',
-            '64',
-            '66',
-            '68',
-            '70',
-            '72',
-            '74',
-            '77',
-            '115',
-            '117',
-            '121',
-            '122',
-            '127',
-            '129',
-            '131',
-            '131',
-            '133',
-            '133',
-            '135',
-            '135',
-            '136',
-            '141',
-            '153',
-            '155',
-            '170',
-            '172',
-            '174',
-            '182',
-        ];
-        $this->assertSame($expected, $matches[1], $severity4['output']);
     }
 
     /**

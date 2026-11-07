@@ -83,7 +83,7 @@
     <rule ref="Universal.Constants.LowercaseClassResolutionKeyword"/>
     <rule ref="Universal.UseStatements.LowercaseFunctionConst"/>
 
-    <!-- A severity 4 warning for an acronym in capitals in a name, as it's RECOMMENDED to write it like a word (2.7) -->
+    <!-- A warning for an acronym in capitals in a name, as it's RECOMMENDED to write it like a word (2.7) -->
     <rule ref="PERCS31.NamingConventions.AcronymCasing"/>
 
     <!-- ====== TYPES (2.5) ====== -->
@@ -178,7 +178,7 @@
     <!-- No leading underscore on a constant (4.3) -->
     <rule ref="PERCS31.NamingConventions.ValidConstantName"/>
 
-    <!-- Constants in UPPER_CASE, except in an enum, where a severity 4 warning recommends PascalCase (9) -->
+    <!-- Constants in UPPER_CASE, except in an enum, where a warning recommends PascalCase (9) -->
     <rule ref="PERCS31.NamingConventions.UpperCaseConstantName"/>
 
     <!-- One property per statement (4.3) -->

@@ -30,17 +30,11 @@ use PHP_CodeSniffer\Util\Tokens;
  * a last capital that starts a word. So excluding `HTTP` allows `HTTPClient` and `HTTPs`, but not `HTTPSClient`, and
  * excluding `T` allows a prefix, as in `TType`. Listing several lets them combine, as in `XMLHTTPRequest`.
  *
- * The warning has a severity of 4, below phpcs's default --warning-severity of 5, as with other RECOMMENDED rules. It
- * isn't fixable, as references to the name elsewhere wouldn't change.
+ * The warning isn't fixable, as references to the name elsewhere wouldn't change.
  */
 class AcronymCasingSniff implements Sniff
 {
     public const string CODE_ACRONYM_NOT_LIKE_WORD = 'AcronymNotLikeWord';
-
-    /**
-     * The severity of the warning, below phpcs's default --warning-severity of 5.
-     */
-    public const int SEVERITY = 4;
 
     /**
      * Names to allow, as a comma-separated list, e.g. `PERCS31,legacyID`. Matching is case-sensitive, and a variable's
@@ -113,7 +107,6 @@ class AcronymCasingSniff implements Sniff
             $namePtr,
             self::CODE_ACRONYM_NOT_LIKE_WORD,
             [$name],
-            self::SEVERITY,
         );
     }
 

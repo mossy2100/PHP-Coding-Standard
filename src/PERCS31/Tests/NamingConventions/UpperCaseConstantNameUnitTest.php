@@ -35,8 +35,9 @@ class UpperCaseConstantNameUnitTest extends AbstractSniffTestCase
      */
     protected function getWarningList(): array
     {
-        // Line 21's warning has a severity of 4, so it's hidden at the default severity of 5, which these tests run
-        // at. RulesetUnitTest checks it with --warning-severity=4.
-        return [];
+        return [
+            // An enum constant in UPPER_CASE, as PascalCase is recommended.
+            21 => 1,
+        ];
     }
 }

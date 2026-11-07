@@ -183,7 +183,7 @@ section gives the reason.
 | `PERCS31.Functions.ArrowFunctionSemicolonSpacing`       | No space before the `;` that ends an arrow function                 | Yes     |
 | `PERCS31.Functions.MultiLineFunctionDeclaration`        | Function, closure and `fn` declarations, allowing `{}` bodies       | Yes     |
 | `PERCS31.Functions.NullableTypeDeclaration`             | No space after the `?` of a nullable type, in any position          | Yes     |
-| `PERCS31.NamingConventions.AcronymCasing`               | A severity 4 warning for an acronym in capitals in a name           | No      |
+| `PERCS31.NamingConventions.AcronymCasing`               | A warning for an acronym in capitals in a name                      | No      |
 | `PERCS31.NamingConventions.UpperCaseConstantName`       | Constants in UPPER_CASE, or PascalCase in an enum                   | No      |
 | `PERCS31.NamingConventions.ValidConstantName`           | No leading underscore on a constant                                 | No      |
 | `PERCS31.NamingConventions.ValidEnumCaseName`           | Enum cases in PascalCase                                            | No      |
@@ -1208,8 +1208,7 @@ An arrow function has no braces, so the brace checks don't apply.
 Warns about an acronym in capitals in a name: a namespace, class, interface, trait, enum, enum case, enum constant,
 function, method, property, parameter or variable. It reports two or more capitals in a row.
 
-**Why:** [PER Coding Style 3.1, Section 2.7](https://www.php-fig.org/per/coding-style/#27-naming) RECOMMENDS treating acronyms like regular words. The warning has a severity
-of 4, like other RECOMMENDED rules. That's below `phpcs`'s default of 5, so run `phpcs --warning-severity=4` to see it.
+**Why:** [PER Coding Style 3.1, Section 2.7](https://www.php-fig.org/per/coding-style/#27-naming) RECOMMENDS treating acronyms like regular words.
 
 One-letter words aren't allowed before a capital, as `parseURL` could otherwise be read as `parse`, `U`, `R` and `L`. So
 `getID`, `getIDs`, `AClass`, `TType`, `OAuthToken` and `whenXIs` are all reported.
@@ -1277,8 +1276,7 @@ that to every constant. [PER Coding Style 3.1, Section 9](https://www.php-fig.or
 UPPER_CASE, and PascalCase is RECOMMENDED. So for an enum constant:
 
 - PascalCase passes.
-- UPPER_CASE gets an `EnumConstantNotPascalCase` warning with a severity of 4. That's below `phpcs`'s default of 5, so
-  it's only shown with `--warning-severity=4`.
+- UPPER_CASE gets an `EnumConstantNotPascalCase` warning.
 - Anything else, such as camelCase, gets an `EnumConstantInvalidCase` error.
 
 Every other constant is left to the parent, except that a global `const` is reported as one made with `define()` is:

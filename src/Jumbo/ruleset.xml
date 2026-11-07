@@ -27,11 +27,6 @@
         </properties>
     </rule>
 
-    <!-- PERCS31 hides this at severity 4, as PER only recommends it. Jumbo shows it. -->
-    <rule ref="PERCS31.NamingConventions.AcronymCasing.AcronymNotLikeWord">
-        <severity>5</severity>
-    </rule>
-
     <rule ref="SlevomatCodingStandard.PHP.UselessSemicolon"/>
 
     <!-- ====== TYPES (2.5) ====== -->
@@ -148,6 +143,11 @@
             <property name="checkReferenceSpacing" value="true"/>
             <property name="checkHookBraceSpacing" value="true"/>
         </properties>
+    </rule>
+
+    <!-- UPPER_CASE is the house style for every constant, so hide the warning recommending PascalCase in enums (9) -->
+    <rule ref="PERCS31.NamingConventions.UpperCaseConstantName.EnumConstantNotPascalCase">
+        <severity>4</severity>
     </rule>
 
     <!-- ====== FUNCTIONS AND CALLS (4.7) ====== -->

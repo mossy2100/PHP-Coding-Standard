@@ -35,9 +35,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   and HTML.
 - **`PERCS31.NamingConventions.AcronymCasing`.** A warning for an acronym in capitals in a name, e.g. `HTTPClient`,
   `getID()` or `$userID`, as PER Coding Style 3.1 recommends writing acronyms like words. It covers namespaces, classes,
-  interfaces, traits, enums, enum cases, enum constants, functions, methods, properties, parameters and variables. In
-  PERCS31 it has a severity of 4, so it's hidden by default; run `phpcs --warning-severity=4` to see it. Jumbo shows it.
-  Set `excludedNames` or `excludedAcronyms`, as comma-separated lists, to allow exceptions.
+  interfaces, traits, enums, enum cases, enum constants, functions, methods, properties, parameters and variables. Set
+  `excludedNames` or `excludedAcronyms`, as comma-separated lists, to allow exceptions.
 - **`Jumbo.TypeHints.DeclareStrictTypes` writes `strict_types=1`.** Its fix wrote `strict_types = 1`, which PER Coding
   Style 3.1 forbids. For a file starting with a block `declare`, it adds a separate statement on the line above, as
   `strict_types` in one is a fatal error.
@@ -167,10 +166,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   that name `EmptyLine`.
 - **`PERCS31.NamingConventions.UpperCaseConstantName`.** Replaces `Generic.NamingConventions.UpperCaseConstantName`,
   which required an enum constant in UPPER_CASE. As PER Coding Style 3.1 allows, an enum constant can now be in
-  PascalCase, and an UPPER_CASE one gets a warning with a severity of 4, as PascalCase is recommended. It's hidden by
-  default; run `phpcs --warning-severity=4` to see it. Any other constant still must be in UPPER_CASE. A global `const`
-  is now reported as `Constants must be uppercase`, with the `ConstantNotUpperCase` code of a `define()` constant, not
-  as a class constant.
+  PascalCase, and an UPPER_CASE one gets a warning, as PascalCase is recommended. Jumbo hides that warning, at a
+  severity of 4, as UPPER_CASE is its house style. Any other constant still must be in UPPER_CASE. A global `const` is
+  now reported as `Constants must be uppercase`, with the `ConstantNotUpperCase` code of a `define()` constant, not as a
+  class constant.
 - **`PERCS31.Files.LineLength`.** Replaces `Generic.Files.LineLength`. A line over 120 characters still gets a `TooLong`
   warning, and a line over 80 now gets an `OverRecommended` warning with a severity of 4, as PER Coding Style 3.1 says
   lines SHOULD NOT be longer than 80. It's hidden by default; run `phpcs --warning-severity=4` to see it. Update any

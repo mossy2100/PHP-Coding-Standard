@@ -28,8 +28,42 @@ class AcronymCasingUnitTest extends AbstractSniffTestCase
      */
     protected function getWarningList(): array
     {
-        // The warnings have a severity of 4, so they're hidden at the default severity of 5 this test runs at.
-        // RulesetUnitTest checks them with --warning-severity=4.
-        return [];
+        return [
+            40 => 1,
+            42 => 1,
+            44 => 1,
+            46 => 1,
+            48 => 1,
+            51 => 1,
+            53 => 1,
+            55 => 1,
+            58 => 1,
+            60 => 1,
+            62 => 1,
+            64 => 1,
+            66 => 1,
+            68 => 1,
+            70 => 1,
+            72 => 1,
+            74 => 1,
+            77 => 1,
+            115 => 1,
+            117 => 1,
+            121 => 1,
+            122 => 1,
+            127 => 1,
+            129 => 1,
+            131 => 2,
+            133 => 2,
+            135 => 2,
+            136 => 1,
+            141 => 1,
+            153 => 1,
+            155 => 1,
+            170 => 1,
+            172 => 1,
+            174 => 1,
+            182 => 1,
+        ];
     }
 }

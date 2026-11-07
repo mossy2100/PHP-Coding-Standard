@@ -14,9 +14,8 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * Generic.NamingConventions.UpperCaseConstantName, from PSR-1, requires every constant name in UPPER_CASE. PER Coding
  * Style 3.1, section 9, says constants in an enum MAY use either PascalCase or UPPER_CASE, and PascalCase is
- * RECOMMENDED. So for an enum constant, this sniff allows PascalCase, reports UPPER_CASE with a warning with a
- * severity of 4, and anything else, such as camelCase, with an error. The warning's severity is below phpcs's default
- * --warning-severity of 5, so it's only shown with --warning-severity=4.
+ * RECOMMENDED. So for an enum constant, this sniff allows PascalCase, reports UPPER_CASE with a warning, and anything
+ * else, such as camelCase, with an error.
  *
  * The parent also reports a global `const`, outside a class, as a class constant, with the ClassConstantNotUpperCase
  * code. This sniff reports it as `define()` is reported, with ConstantNotUpperCase. Everything else is left to the
@@ -32,11 +31,6 @@ class UpperCaseConstantNameSniff extends GenericSniff
     public const string CODE_ENUM_CONSTANT_NOT_PASCAL_CASE = 'EnumConstantNotPascalCase';
 
     public const string CODE_ENUM_CONSTANT_INVALID_CASE = 'EnumConstantInvalidCase';
-
-    /**
-     * The severity of the EnumConstantNotPascalCase warning, below phpcs's default --warning-severity of 5.
-     */
-    public const int ENUM_CONSTANT_SEVERITY = 4;
 
     /**
      * Processes this test, when one of its tokens is encountered.
@@ -121,7 +115,6 @@ class UpperCaseConstantNameSniff extends GenericSniff
                 $namePtr,
                 self::CODE_ENUM_CONSTANT_NOT_PASCAL_CASE,
                 [$name],
-                self::ENUM_CONSTANT_SEVERITY,
             );
             return;
         }
