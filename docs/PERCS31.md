@@ -182,6 +182,7 @@ section gives the reason.
 | `PERCS31.Formatting.TrailingComma`                      | Trailing commas in `match`, group `use` and `new class (...)`       | Yes     |
 | `PERCS31.Functions.ArrowFunctionSemicolonSpacing`       | No space before the `;` that ends an arrow function                 | Yes     |
 | `PERCS31.Functions.MultiLineFunctionDeclaration`        | Function, closure and `fn` declarations, allowing `{}` bodies       | Yes     |
+| `PERCS31.Functions.NullableTypeDeclaration`             | No space after the `?` of a nullable type, in any position          | Yes     |
 | `PERCS31.NamingConventions.AcronymCasing`               | A severity 4 warning for an acronym in capitals in a name           | No      |
 | `PERCS31.NamingConventions.UpperCaseConstantName`       | Constants in UPPER_CASE, or PascalCase in an enum                   | No      |
 | `PERCS31.NamingConventions.ValidConstantName`           | No leading underscore on a constant                                 | No      |
@@ -1127,6 +1128,35 @@ $double = fn(int $x): int => $x * 2 ;
 
 ---
 
+### PERCS31.Functions.NullableTypeDeclaration
+
+Disallows a space between the `?` of a nullable type and the type, wherever a type can appear. This replaces
+`PSR12.Functions.NullableTypeDeclaration`.
+
+**Why:** [PER Coding Style 3.1, Section 4.5](https://www.php-fig.org/per/coding-style/#45-method-and-function-parameters)
+says there MUST NOT be a space between the question mark and the type. The PSR-12 sniff checks every position but one:
+PHP_CodeSniffer doesn't know about hooks, so the sniff doesn't see the `?` in a `set` hook's parameter.
+
+**Auto-fixable:** yes, unless a comment comes after the `?`.
+
+**Good:**
+
+```php
+public ?int $count {
+    set(?int $value) => $value;
+}
+```
+
+**Bad:**
+
+```php
+public ? int $count {
+    set(? int $value) => $value;
+}
+```
+
+---
+
 ### PERCS31.Functions.MultiLineFunctionDeclaration
 
 Checks the layout of function, closure and arrow function declarations, including the placement of the opening brace,
@@ -1821,10 +1851,9 @@ class User
 - **Whether a fall-through comment is clear (5.2).** Any comment just before the next `case` or `default` passes, as the
   spec doesn't set any wording.
 - **Avoiding abbreviations (2.7).** Whether a name could avoid an abbreviation can't be judged by a sniff.
-- **Most rules for a `set` hook's parameter type (2.5, 4.5).** PHP_CodeSniffer reads the type as an expression, so the
-  sniffs that check types elsewhere don't see it. That leaves `?T` over `T|null`, `null` last, keywords in lower case,
-  and no space after `?`. The spacing around `|` and `&`, the parentheses of a DNF type, and a split type's layout are
-  checked.
+- **Some rules for a `set` hook's parameter type (2.5).** PHP_CodeSniffer reads the type as an expression, so the sniffs
+  that check types elsewhere don't see it. That leaves `?T` over `T|null`, `null` last, and keywords in lower case. The
+  spacing around `|`, `&` and after `?`, the parentheses of a DNF type, and a split type's layout are checked.
 - **A comment or statement after a control structure's closing brace (4).** Section 4 says "any closing brace", but it's
   in the section on classes, so this standard follows PHP_CodeSniffer in reading it as classes and functions. After a
   block `declare` in the file header, a statement is still reported, as section 3 wants a blank line after the block.

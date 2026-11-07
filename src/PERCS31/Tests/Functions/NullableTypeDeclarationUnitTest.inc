@@ -1,0 +1,78 @@
+<?php
+
+// No space after the ? passes.
+class Valid
+{
+    public const ?int CONSTANT = 1;
+
+    public ?int $property = 1;
+
+    public ?int $hook {
+        set(?int $value) => $value;
+    }
+
+    public ?array $hookArray {
+        set(?array $value) => $value;
+    }
+
+    public ?callable $hookCallable {
+        set(?callable $value) => $value;
+    }
+
+    public ?self $hookSelf {
+        set(?self $value) => $value;
+    }
+
+    public function method(?int $a, ?array $b): ?int
+    {
+        return $a ? $a : null;
+    }
+}
+
+$closure = function (?int $a): ?int {
+    return $a;
+};
+$arrow = fn(?int $a): ?int => $a;
+$ternary = $a ? 1 : 2;
+
+// A space after the ?, in each kind of position.
+class Invalid
+{
+    public const ? int CONSTANT = 1;
+
+    public ? int $property = 1;
+
+    public ? int $hook {
+        set(? int $value) => $value;
+    }
+
+    public ?array $hookArray {
+        set(? array $value) {
+            $this->hookArray = $value;
+        }
+    }
+
+    public function method(? int $a): ? int
+    {
+        return $a;
+    }
+
+    public ?int $hookNewLine {
+        set(?
+            int $value,
+        ) => $value;
+    }
+
+    public ?int $hookComment {
+        set(? /* Comment. */ int $value) => $value;
+    }
+
+    public ?int $hookAttribute {
+        set(#[Foo(1 ? 2 : 3)] ?int $value) => $value;
+    }
+}
+
+$closure = function (? int $a): ? int {
+    return $a;
+};
+$arrow = fn(? int $a): ? int => $a;

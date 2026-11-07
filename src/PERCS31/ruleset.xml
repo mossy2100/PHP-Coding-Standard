@@ -30,6 +30,8 @@
         <exclude name="PSR12.Files.DeclareStatement"/>
         <!-- Replaced by a PERCS31 version without PSR-12's rules for a multi-line foreach (5.5) -->
         <exclude name="PSR12.ControlStructures.ControlStructureSpacing"/>
+        <!-- Replaced by a PERCS31 version that also covers a set hook's parameter (4.5) -->
+        <exclude name="PSR12.Functions.NullableTypeDeclaration"/>
         <!-- A default value's = is a binary operator, so it needs at least one space, not exactly one (6.2). Checked by
              PERCS31.Operators.OperatorSpacing -->
         <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpaceBeforeEquals"/>
@@ -259,6 +261,9 @@
     <rule ref="PERCS31.Operators.OperatorPlacement"/>
 
     <!-- ====== CLOSURES AND ANONYMOUS CLASSES (7, 8) ====== -->
+
+    <!-- No space after the ? of a nullable type, wherever a type can appear (4.5) -->
+    <rule ref="PERCS31.Functions.NullableTypeDeclaration"/>
 
     <!-- No space after fn, and the expression may be on the next line (7.1) -->
     <rule ref="SlevomatCodingStandard.Functions.ArrowFunctionDeclaration">
