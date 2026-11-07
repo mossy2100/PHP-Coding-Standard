@@ -1738,7 +1738,9 @@ section 6.4's own example. It also missed `%`, `**`, `instanceof`, bitwise, comp
 arrow function's `=>`.
 
 It also skips the lines under a PHP opening tag that isn't at the start of its line, as in a template. The original
-measures from column 1, so it reported PHP indented to match the markup around it.
+measures from column 1, so it reported PHP indented to match the markup around it. So in a block, either 0 or 1 levels
+past the tags is allowed, as PER doesn't say, and its example in section 3 uses 1. `PERCS31.WhiteSpace.ScopeIndent`
+accepts both too, and the [Jumbo standard](Jumbo.md) requires 0.
 
 **Auto-fixable:** yes.
 

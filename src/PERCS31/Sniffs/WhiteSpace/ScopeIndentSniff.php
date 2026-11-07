@@ -159,6 +159,9 @@ class ScopeIndentSniff implements Sniff
         // PERCS31: the property hook scopes currently open, mapping each closer position to its opener position.
         $openPropertyHooks = [];
 
+        // PERCS31: the opening tag's indent, while its block's code is indented once past the tag.
+        $embeddedTagIndent = null;
+
         $tokens  = $phpcsFile->getTokens();
         $first   = $phpcsFile->findFirstOnLine(T_INLINE_HTML, $stackPtr);
         $trimmed = ltrim($tokens[$first]['content']);
@@ -166,6 +169,12 @@ class ScopeIndentSniff implements Sniff
             $currentIndent = ($tokens[$stackPtr]['column'] - 1);
         } else {
             $currentIndent = (strlen($tokens[$first]['content']) - strlen($trimmed));
+        }
+
+        // PERCS31: the code in a block may be indented once past its opening tag.
+        if ($this->isBlockIndentedPastTag($phpcsFile, $stackPtr, $currentIndent) === true) {
+            $embeddedTagIndent = $currentIndent;
+            $currentIndent    += $this->indent;
         }
 
         if ($this->debug === true) {
@@ -856,6 +865,11 @@ class ScopeIndentSniff implements Sniff
                 $exact       = true;
                 $checkIndent = $currentIndent;
                 $checkIndent = (int) (ceil($checkIndent / $this->indent) * $this->indent);
+
+                // PERCS31: the closing tag lines up with the opening tag, not the code between them.
+                if ($embeddedTagIndent !== null) {
+                    $checkIndent = $embeddedTagIndent;
+                }
             }
 
             // Special case for ELSE statements that are not on the same
@@ -1141,6 +1155,12 @@ class ScopeIndentSniff implements Sniff
                 $currentIndent  = (int) (ceil($currentIndent / $this->indent) * $this->indent);
                 $setIndents[$i] = $currentIndent;
 
+                // PERCS31: the code in a block may be indented once past its opening tag.
+                if ($this->isBlockIndentedPastTag($phpcsFile, $i, $currentIndent) === true) {
+                    $embeddedTagIndent = $currentIndent;
+                    $currentIndent    += $this->indent;
+                }
+
                 if ($this->debug === true) {
                     $type = $tokens[$i]['type'];
                     StatusWriter::write("=> indent set to $currentIndent by token $i ($type)", 1);
@@ -1156,6 +1176,9 @@ class ScopeIndentSniff implements Sniff
                     $line = $tokens[$i]['line'];
                     StatusWriter::write("Close PHP tag found on line $line");
                 }
+
+                // PERCS31: the block has ended.
+                $embeddedTagIndent = null;
 
                 if ($tokens[$lastOpenTag]['line'] !== $tokens[$i]['line']) {
                     $currentIndent = ($tokens[$i]['column'] - 1);
@@ -1520,6 +1543,35 @@ class ScopeIndentSniff implements Sniff
         }
 
         return true;
+    }
+
+
+    /**
+     * PERCS31: checks whether a block's code starts one level past its opening tag. PER Coding Style 3.1, section 3,
+     * does that in its own example, so a block may use either 0 or 1 levels. It must have a closing tag, so this doesn't
+     * apply to a PHP file's code, and not be inside a scope, where the scope sets the indent.
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $tagPtr    The position of the opening tag.
+     * @param int                         $tagIndent The opening tag's indent.
+     *
+     * @return bool
+     */
+    private function isBlockIndentedPastTag(File $phpcsFile, int $tagPtr, int $tagIndent)
+    {
+        $tokens = $phpcsFile->getTokens();
+        if ($tokens[$tagPtr]['conditions'] !== []) {
+            return false;
+        }
+
+        $first = $phpcsFile->findNext(T_WHITESPACE, ($tagPtr + 1), null, true);
+        $close = $phpcsFile->findNext(T_CLOSE_TAG, ($tagPtr + 1));
+        if ($first === false || $close === false || $first === $close) {
+            return false;
+        }
+
+        return $tokens[$first]['line'] !== $tokens[$tagPtr]['line']
+            && ($tokens[$first]['column'] - 1) === ($tagIndent + $this->indent);
     }
 
 

@@ -220,6 +220,7 @@ gives the reason. The custom sniffs for PER Coding Style itself are in [PERCS31]
 | `Jumbo.ControlStructures.RequireSingleLineHeader`          | A multi-line loop, `switch` or `match` header fits on a line    | Yes     |
 | `Jumbo.ControlStructures.MatchArmWrapIndent`               | One line if it fits, else a wrapped `match` arm indented once   | Yes     |
 | `Jumbo.ControlStructures.StatementAfterClosingBrace`       | A control structure's `}` on its own line                       | Yes     |
+| `Jumbo.PHP.EmbeddedPhp`                                    | A block's tags on their own lines, level with its code          | Mostly  |
 | `Jumbo.Functions.RequireSingleLineCall`                    | A call that fits is on one line, skipping a class or `match`    | Yes     |
 | `Jumbo.Namespaces.UnusedUses`                              | No unused `use` statements, safe with a miscased `use Function` | Yes     |
 | `Jumbo.NamingConventions.ValidVariableName`                | No leading underscore on a variable or parameter in a class     | No      |
@@ -606,6 +607,50 @@ $contents = @file_get_contents($path);
 ```php
 $flags = ~ $mask;
 $contents = @ file_get_contents($path);
+```
+
+---
+
+### Jumbo.PHP.EmbeddedPhp
+
+Requires a multi-line PHP block in a file with markup to have `<?php` and `?>` on their own lines, level with each other
+and with the code directly inside. A tag on one line is exempt, such as `<?php foo(); ?>` or
+`<?php declare(strict_types=1) ?>`, and so is a last block with no `?>`. A short echo tag must be on one line. A blank
+line just inside the tags is allowed. This is a fork of `Squiz.PHP.EmbeddedPhp`.
+
+**Why:** PER doesn't set this layout. The PERCS31 standard allows the code level with the tags, or one level past them.
+The Squiz sniff skips a file's first tag, so a file with one block wouldn't be checked, and it requires a semicolon that
+PER's own `<?php declare(strict_types=1) ?>` doesn't have.
+
+**Auto-fixable:** yes, except a short echo tag over several lines, as the right rewrite is a judgement call.
+
+**Good:**
+
+```php
+<div>
+    <?php
+    if ($a) {
+        foo();
+    }
+    ?>
+    <p><?= $b ?></p>
+</div>
+```
+
+**Bad:**
+
+```php
+<div>
+    <?php if ($a) {
+        foo();
+    } ?>
+    <?php
+        bar();
+    ?>
+    <p><?= foo(
+        $b,
+    ) ?></p>
+</div>
 ```
 
 ---

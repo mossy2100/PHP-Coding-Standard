@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`Jumbo.PHP.EmbeddedPhp` (breaking).** In the Jumbo standard, a multi-line PHP block in a file with markup must have
+  `<?php` and `?>` on their own lines, level with its code, and a short echo tag must be on one line. A tag on one line
+  is exempt. Auto-fixable, except a short echo tag. PERCS31 doesn't check this.
 - **`SlevomatCodingStandard.Variables.UnusedVariable` (breaking).** In the Jumbo standard, a variable that's assigned
   but never used is now an error. Not auto-fixable.
 - **`PERCS31.WhiteSpace.ConsistentIndent` (breaking).** Reports a line indented further than its scope after a complete
@@ -353,8 +356,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - **PHP indented inside markup.** `PERCS31.WhiteSpace.ConsistentIndent` and `PERCS31.WhiteSpace.ScopeIndent` no longer
-  report PHP indented to match the HTML around it. A body on the line after `<?php if ($a) {` is now measured from the
-  tag, so one indented too little is reported too.
+  report PHP indented to match the HTML around it, and a block's code may be level with its tags or one level past
+  them. A body on the line after `<?php if ($a) {` is now measured from the tag, so one indented too little is reported
+  too.
 - **A `set` hook's parameter type.** `set(int|string $value)` and `set(A&B $value)` were reported as missing the spaces
   that PER Coding Style 3.1 forbids, and `phpcbf` added them. They now pass, and `set(int | string $value)` is reported
   and fixed by `PERCS31.TypeHints.CompoundTypeOperatorSpacing`. A split type there is checked as it is elsewhere.

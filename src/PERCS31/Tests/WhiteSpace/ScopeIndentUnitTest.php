@@ -29,6 +29,12 @@ class ScopeIndentUnitTest extends AbstractSniffTestCase
                 38 => 1,
                 // A match arm indented too far past an indented PHP opening tag.
                 43 => 1,
+                // A block two levels past its tags.
+                78 => 1,
+                79 => 1,
+                80 => 1,
+                // A closing tag that doesn't line up with its opening tag.
+                86 => 1,
             ];
         }
 

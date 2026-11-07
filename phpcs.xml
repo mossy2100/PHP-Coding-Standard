@@ -20,4 +20,5 @@
     <exclude-pattern>*/Tests/*.inc.fixed</exclude-pattern>
     <exclude-pattern>*/ScopeIndentSniff.php</exclude-pattern>
     <exclude-pattern>*/Files/DeclareStatementSniff.php</exclude-pattern>
+    <exclude-pattern>*/PHP/EmbeddedPhpSniff.php</exclude-pattern>
 </ruleset>
