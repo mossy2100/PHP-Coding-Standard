@@ -228,6 +228,7 @@ gives the reason. The custom sniffs for PER Coding Style itself are in [PERCS31]
 | `Jumbo.TypeHints.DeclareStrictTypes`                       | `strict_types=1` required, allowing `<?php declare(...) ?>`     | Yes     |
 | `Jumbo.TypeHints.ParameterTypeHint`                        | Parameter type hints, skipping a promoted hook                  | Yes     |
 | `Jumbo.TypeHints.ParameterTypeHintSpacing`                 | Parameter type hint spacing, skipping a promoted hook           | Yes     |
+| `Jumbo.WhiteSpace.LanguageConstructSpacing`                | One space after `return`, `echo` and others, with no line break | Yes     |
 
 ### Jumbo.Arrays.ArrayDeclaration
 
@@ -711,6 +712,34 @@ function aren't checked either. [PER Coding Style 3.1, Section 4.9](https://www.
 a function with one, and leaves everything else to the parent. See [`PERCS31.Classes.PromotedPropertyHooks`](PERCS31.md#percs31classespromotedpropertyhooks).
 
 **Auto-fixable:** yes, as the parent.
+
+---
+
+### Jumbo.WhiteSpace.LanguageConstructSpacing
+
+Requires a single space after a language construct, with no line break: `echo`, `print`, `return`, `include`,
+`include_once`, `require`, `require_once`, `yield`, `yield from`, `throw`, `namespace`, `use` and `goto`. This replaces
+`Generic.WhiteSpace.LanguageConstructSpacing`.
+
+**Why:** PER has no such rule, so `return` then a line break is allowed in the [PERCS31](PERCS31.md) standard. The
+Generic sniff also checks `new`, which PER's section 8 puts on its own line before an anonymous class's attributes, and
+its fix turns `(yield)` into `(yield )`. This sniff skips both, and leaves everything else to the parent. A comment
+after a construct isn't reported, as the parent leaves it alone.
+
+**Auto-fixable:** yes, as the parent.
+
+**Good:**
+
+```php
+return $total;
+```
+
+**Bad:**
+
+```php
+return
+    $total;
+```
 
 ---
 

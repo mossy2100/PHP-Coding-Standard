@@ -1,0 +1,67 @@
+<?php
+
+function valid()
+{
+    $a = yield;
+    $b = (yield);
+    foo(yield);
+    $c = [yield, yield];
+    yield;
+    yield $a => $b;
+    yield from g();
+    return;
+    return $a;
+    return ($a);
+    return [
+        1,
+    ];
+    return <<<'X'
+        d
+        X;
+    return function () {
+        return 1;
+    };
+    echo $a;
+    print $a;
+    throw new E();
+    include 'a.php';
+    require_once 'a.php';
+    goto e;
+    e:
+    // A comment after a construct is left to a person.
+    return // Comment.
+        $a;
+    // PER Coding Style 3.1, section 8, puts new on its own line before an anonymous class's attributes.
+    $f = new
+        #[Attribute]
+        class {
+            public int $g;
+        };
+    $h = function () use ($a) {
+        return 1;
+    };
+}
+
+function invalid()
+{
+    return
+        $a;
+    return  $a;
+    return
+        <<<'X'
+            b
+            X;
+    echo
+        $a;
+    print
+        $a;
+    throw
+        new E();
+    yield
+        $a;
+    include
+        'a.php';
+    $c = function () use  ($a) {
+        return 1;
+    };
+}

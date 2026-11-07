@@ -206,6 +206,11 @@
 
     <rule ref="Generic.CodeAnalysis.AssignmentInCondition"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.DisallowContinueWithoutIntegerOperandInSwitch"/>
+    <!-- One space after a language construct such as return, echo or throw, with no line break. The Jumbo version of
+         Generic.WhiteSpace.LanguageConstructSpacing, which leaves out new, as PER puts it on its own line before an
+         anonymous class's attributes (8), and a yield with no value before ), ] or , -->
+    <rule ref="Jumbo.WhiteSpace.LanguageConstructSpacing"/>
+
     <!-- Replaced by Jumbo.ControlStructures.LanguageConstructWithParentheses, which leaves exit() and die() alone -->
     <rule ref="Jumbo.ControlStructures.LanguageConstructWithParentheses"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.RequireMultiLineCondition">

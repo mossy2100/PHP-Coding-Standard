@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`Jumbo.WhiteSpace.LanguageConstructSpacing` (breaking).** In the Jumbo standard, a language construct such as
+  `return`, `echo` or `throw` must be followed by a single space, so no line break. `new` and a `yield` with no value
+  are left out. Auto-fixable. PERCS31 doesn't check this.
 - **`Jumbo.PHP.EmbeddedPhp` (breaking).** In the Jumbo standard, a multi-line PHP block in a file with markup must have
   nothing after `<?php` on its line, and nothing before `?>` on its line, with `?>` level with the line `<?php` is on.
   The code is level with that line, or one level past it if markup comes before `<?php`. A short echo tag must be on
