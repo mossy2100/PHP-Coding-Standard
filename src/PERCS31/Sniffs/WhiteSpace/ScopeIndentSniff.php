@@ -159,9 +159,6 @@ class ScopeIndentSniff implements Sniff
         // PERCS31: the property hook scopes currently open, mapping each closer position to its opener position.
         $openPropertyHooks = [];
 
-        // PERCS31: the opening tag's indent, while its block's code is indented once past the tag.
-        $embeddedTagIndent = null;
-
         $tokens  = $phpcsFile->getTokens();
         $first   = $phpcsFile->findFirstOnLine(T_INLINE_HTML, $stackPtr);
         $trimmed = ltrim($tokens[$first]['content']);
@@ -173,8 +170,7 @@ class ScopeIndentSniff implements Sniff
 
         // PERCS31: the code in a block may be indented once past its opening tag.
         if ($this->isBlockIndentedPastTag($phpcsFile, $stackPtr, $currentIndent) === true) {
-            $embeddedTagIndent = $currentIndent;
-            $currentIndent    += $this->indent;
+            $currentIndent += $this->indent;
         }
 
         if ($this->debug === true) {
@@ -860,16 +856,10 @@ class ScopeIndentSniff implements Sniff
                 }
             }
 
-            // Close tags needs to be indented to exact column positions.
+            // PERCS31: a close tag's indent isn't checked, as PER Coding Style 3.1 has no rule on it. The original
+            // requires an exact indent. Jumbo.PHP.EmbeddedPhp requires one level with the open tag.
             if ($checkToken !== null && $tokens[$checkToken]['code'] === T_CLOSE_TAG) {
-                $exact       = true;
-                $checkIndent = $currentIndent;
-                $checkIndent = (int) (ceil($checkIndent / $this->indent) * $this->indent);
-
-                // PERCS31: the closing tag lines up with the opening tag, not the code between them.
-                if ($embeddedTagIndent !== null) {
-                    $checkIndent = $embeddedTagIndent;
-                }
+                $checkToken = null;
             }
 
             // Special case for ELSE statements that are not on the same
@@ -1157,8 +1147,7 @@ class ScopeIndentSniff implements Sniff
 
                 // PERCS31: the code in a block may be indented once past its opening tag.
                 if ($this->isBlockIndentedPastTag($phpcsFile, $i, $currentIndent) === true) {
-                    $embeddedTagIndent = $currentIndent;
-                    $currentIndent    += $this->indent;
+                    $currentIndent += $this->indent;
                 }
 
                 if ($this->debug === true) {
@@ -1176,9 +1165,6 @@ class ScopeIndentSniff implements Sniff
                     $line = $tokens[$i]['line'];
                     StatusWriter::write("Close PHP tag found on line $line");
                 }
-
-                // PERCS31: the block has ended.
-                $embeddedTagIndent = null;
 
                 if ($tokens[$lastOpenTag]['line'] !== $tokens[$i]['line']) {
                     $currentIndent = ($tokens[$i]['column'] - 1);

@@ -36,6 +36,9 @@ class EmbeddedPhpUnitTest extends AbstractSniffTestCase
                 // A short echo tag over several lines (not fixable).
                 59 => 1,
                 64 => 1,
+                // A closing tag not level with its opening tag.
+                72 => 1,
+                77 => 1,
             ],
             'EmbeddedPhpUnitTest.3.inc' => [
                 // The only block in the file, in markup, one level past its tags.

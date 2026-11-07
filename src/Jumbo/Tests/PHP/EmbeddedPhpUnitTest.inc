@@ -65,3 +65,14 @@ foo();
     foo()
     ?>
 </div>
+<!-- A closing tag not level with its opening tag. -->
+<div>
+    <?php
+    foo();
+?>
+</div>
+<div>
+    <?php
+    foo();
+        ?>
+</div>

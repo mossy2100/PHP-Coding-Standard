@@ -72,7 +72,7 @@
     ?>
 </div>
 
-<!-- Two levels past them, and a closing tag that doesn't line up with the opening tag. -->
+<!-- Two levels past them. -->
 <div>
     <?php
             if ($a) {
@@ -80,8 +80,15 @@
             }
     ?>
 </div>
+
+<!-- PER has no rule on a closing tag's indent. -->
 <div>
     <?php
         foo();
 ?>
+</div>
+<div>
+    <?php
+    foo();
+            ?>
 </div>

@@ -33,8 +33,6 @@ class ScopeIndentUnitTest extends AbstractSniffTestCase
                 78 => 1,
                 79 => 1,
                 80 => 1,
-                // A closing tag that doesn't line up with its opening tag.
-                86 => 1,
             ];
         }
 

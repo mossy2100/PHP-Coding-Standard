@@ -10,6 +10,7 @@
  * - A short echo tag over several lines is reported, with no fix.
  * - A blank line just inside the tags is allowed.
  * - Every statement directly in the block is checked for too much indent, not just the first.
+ * - A closing tag on its own line must be level with the opening tag. PERCS31.WhiteSpace.ScopeIndent doesn't check it.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2023 Squiz Pty Ltd (ABN 77 084 670 600)
@@ -219,6 +220,9 @@ class EmbeddedPhpSniff implements Sniff
             return;
         }
 
+        // Jumbo: a closing tag on its own line is level with the opening tag, unless it's in a scope the block opened.
+        $this->checkClosingTagIndent($phpcsFile, $stackPtr, $closingTag);
+
         $lastContent            = $phpcsFile->findPrevious(T_WHITESPACE, ($closingTag - 1), ($stackPtr + 1), true);
         $firstContentAfterBlock = $phpcsFile->findNext(T_WHITESPACE, ($closingTag + 1), null, true);
 
@@ -284,6 +288,40 @@ class EmbeddedPhpSniff implements Sniff
         }
 
         // Jumbo: the check for a blank line at the bottom is removed.
+    }
+
+
+    /**
+     * Jumbo: reports a closing tag on its own line that isn't level with the opening tag.
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile  The file being scanned.
+     * @param int                         $stackPtr   The position of the opening tag.
+     * @param int                         $closingTag The position of the closing tag.
+     *
+     * @return void
+     */
+    private function checkClosingTagIndent(File $phpcsFile, int $stackPtr, int $closingTag)
+    {
+        $tokens   = $phpcsFile->getTokens();
+        $expected = $this->calculateLineIndent($phpcsFile, $stackPtr);
+        $found    = ($tokens[$closingTag]['column'] - 1);
+        $previous = $phpcsFile->findPrevious(T_WHITESPACE, ($closingTag - 1), null, true);
+        if ($found === $expected
+            || $tokens[$previous]['line'] === $tokens[$closingTag]['line']
+            || $tokens[$closingTag]['conditions'] !== $tokens[$stackPtr]['conditions']
+        ) {
+            return;
+        }
+
+        $error = 'A closing PHP tag must be level with its opening tag; expected %s spaces, found %s';
+        $fix   = $phpcsFile->addFixableError($error, $closingTag, 'CloseTagIndent', [$expected, $found]);
+        if ($fix === true) {
+            if ($found === 0) {
+                $phpcsFile->fixer->addContentBefore($closingTag, str_repeat(' ', $expected));
+            } else {
+                $phpcsFile->fixer->replaceToken(($closingTag - 1), str_repeat(' ', $expected));
+            }
+        }
     }
 
 
