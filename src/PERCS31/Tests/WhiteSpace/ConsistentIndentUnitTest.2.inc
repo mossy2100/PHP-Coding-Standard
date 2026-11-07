@@ -1,0 +1,30 @@
+<div>
+    <?php
+        foo();
+    ?>
+</div>
+<div>
+    <?php
+    foo();
+    bar();
+    ?>
+</div>
+<ul>
+    <?php foreach ($a as $b) {
+        foo();
+        if ($b) {
+            bar();
+        }
+    } ?>
+</ul>
+<p><?php
+    foo();
+    bar();
+?></p>
+<?php
+
+// A tag at the start of its line is still checked.
+if ($a) {
+    foo();
+        bar();
+}

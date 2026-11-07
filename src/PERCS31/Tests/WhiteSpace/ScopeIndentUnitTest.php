@@ -17,10 +17,21 @@ class ScopeIndentUnitTest extends AbstractSniffTestCase
     /**
      * Returns the lines where errors should occur.
      *
+     * @param string $testFile The name of the test input file.
      * @return array<int, int> Line number => error count.
      */
-    protected function getErrorList(): array
+    protected function getErrorList(string $testFile = ''): array
     {
+        if ($testFile === 'ScopeIndentUnitTest.2.inc') {
+            return [
+                // A body indented too far, and too little, past an indented PHP opening tag.
+                33 => 1,
+                38 => 1,
+                // A match arm indented too far past an indented PHP opening tag.
+                43 => 1,
+            ];
+        }
+
         return [
             // Hook body under-indented.
             89 => 1,

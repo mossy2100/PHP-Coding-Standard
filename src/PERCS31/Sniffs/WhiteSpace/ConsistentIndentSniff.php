@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\WhiteSpace;
 
+use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
 use PhpCollective\Sniffs\WhiteSpace\ConsistentIndentSniff as PhpCollectiveSniff;
 
@@ -20,9 +21,47 @@ use PhpCollective\Sniffs\WhiteSpace\ConsistentIndentSniff as PhpCollectiveSniff;
  * operator section 6.4 allows a statement to be split at. The parent's list predates the pipe operator `|>`, so it
  * reported section 6.4's own example, and also missed `%`, `**`, `instanceof`, bitwise, comparison and assignment
  * operators, and an arrow function's `=>`.
+ *
+ * It also skips the lines under a PHP opening tag that isn't at the start of its line, as in a template. The parent
+ * measures from column 1, so it would report PHP indented to match the markup around it.
  */
 class ConsistentIndentSniff extends PhpCollectiveSniff
 {
+    /**
+     * Whether the last PHP opening tag was after the start of its line, as in a template.
+     */
+    private bool $isAfterIndentedTag = false;
+
+    /**
+     * Returns an array of tokens this test wants to listen for.
+     *
+     * @return array<int|string>
+     */
+    public function register(): array
+    {
+        return [...parent::register(), T_OPEN_TAG, T_OPEN_TAG_WITH_ECHO];
+    }
+
+    /**
+     * Processes this test, when one of its tokens is encountered.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the current token in the stack.
+     */
+    // phpcs:ignore Jumbo.TypeHints.ParameterTypeHint.MissingNativeTypeHint -- The parent has no type, so int is a fatal.
+    public function process(File $phpcsFile, $stackPtr): void
+    {
+        $token = $phpcsFile->getTokens()[$stackPtr];
+        if ($token['code'] !== T_WHITESPACE) {
+            $this->isAfterIndentedTag = $token['column'] > 1;
+            return;
+        }
+
+        if (!$this->isAfterIndentedTag) {
+            parent::process($phpcsFile, $stackPtr);
+        }
+    }
+
     /**
      * Check whether a line starts with an operator that continues the previous line.
      *

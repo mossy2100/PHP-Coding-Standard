@@ -940,7 +940,7 @@ class ScopeIndentSniff implements Sniff
             ) {
                 $conditions  = $tokens[$checkToken]['conditions'];
                 $opener      = $tokens[array_key_last($conditions)]['scope_opener'];
-                $first       = $phpcsFile->findFirstOnLine(T_WHITESPACE, $opener, true);
+                $first       = $this->findFirstCodeOnLine($phpcsFile, $opener);
                 $checkIndent = ($tokens[$first]['column'] - 1 + $this->indent);
                 if (isset($adjustments[$first]) === true) {
                     $checkIndent += $adjustments[$first];
@@ -961,7 +961,7 @@ class ScopeIndentSniff implements Sniff
                     $anchor = $tokens[$before]['parenthesis_opener'];
                 }
 
-                $first       = $phpcsFile->findFirstOnLine(T_WHITESPACE, $anchor, true);
+                $first       = $this->findFirstCodeOnLine($phpcsFile, $anchor);
                 $checkIndent = ($tokens[$first]['column'] - 1 + $this->indent);
                 if (isset($adjustments[$first]) === true) {
                     $checkIndent += $adjustments[$first];
@@ -1520,6 +1520,27 @@ class ScopeIndentSniff implements Sniff
         }
 
         return true;
+    }
+
+
+    /**
+     * PERCS31: finds the first token on a line, passing whitespace and any inline HTML that's only an indent, so a line
+     * starting with an indented PHP opening tag, as in a template, is measured from the tag, not column 1.
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of a token on the line.
+     *
+     * @return int
+     */
+    private function findFirstCodeOnLine(File $phpcsFile, int $stackPtr)
+    {
+        $tokens = $phpcsFile->getTokens();
+        $first  = $phpcsFile->findFirstOnLine(T_WHITESPACE, $stackPtr, true);
+        if ($tokens[$first]['code'] === T_INLINE_HTML && trim($tokens[$first]['content']) === '') {
+            return ($first + 1);
+        }
+
+        return $first;
     }
 
 

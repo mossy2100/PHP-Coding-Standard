@@ -1737,6 +1737,9 @@ section 6.4 allows a statement to be split at. The original's list predates the 
 section 6.4's own example. It also missed `%`, `**`, `instanceof`, bitwise, comparison and assignment operators, and an
 arrow function's `=>`.
 
+It also skips the lines under a PHP opening tag that isn't at the start of its line, as in a template. The original
+measures from column 1, so it reported PHP indented to match the markup around it.
+
 **Auto-fixable:** yes.
 
 **Good:**
