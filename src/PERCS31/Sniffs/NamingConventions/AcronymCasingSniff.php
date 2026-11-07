@@ -14,10 +14,11 @@ use PHPCSUtils\Utils\UseStatements;
  * Warns about an acronym in capitals in a name.
  *
  * PER Coding Style 3.1, section 2.7, RECOMMENDS treating abbreviations, acronyms and initialisms like regular words, so
- * `getHttpClient`, not `getHTTPClient`. This sniff checks a namespace, function, method, property, parameter, variable
- * or import alias. NamingHelper splits each name into words. A word of two or more capitals is reported, and so is a
- * single capital directly before another word, so `parseURL`, `getID`, `getIDs`, `getURLs` and `whenXIs` are all
- * reported. A single capital that ends the name, or that's followed by a digit, as in `getX` or `getX2Value`, isn't.
+ * `getHttpClient`, not `getHTTPClient`. This sniff checks a namespace, function, method, property, parameter, variable,
+ * import alias or trait alias. NamingHelper splits each name into words. A word of two or more capitals is reported,
+ * and so is a single capital directly before another word, so `parseURL`, `getID`, `getIDs`, `getURLs` and `whenXIs`
+ * are all reported. A single capital that ends the name, or that's followed by a digit, as in `getX` or `getX2Value`,
+ * isn't.
  *
  * It doesn't check:
  * - A class, interface, trait, enum or enum case. PascalCase is required of these, and a run of capitals isn't
@@ -165,7 +166,7 @@ class AcronymCasingSniff implements Sniff
         }
 
         if ($code === T_AS) {
-            return $this->findImportAlias($phpcsFile, $stackPtr);
+            return $this->findAlias($phpcsFile, $stackPtr);
         }
 
         $namePtr = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
@@ -186,28 +187,31 @@ class AcronymCasingSniff implements Sniff
     }
 
     /**
-     * Find the alias after an `as` in an import, unless it's the alias of a constant, as UPPER_CASE is required.
+     * Find the alias after an `as` in an import or a trait's `use`, unless it's the alias of a constant, as UPPER_CASE
+     * is required. A trait's `as` might only change a method's visibility, and give no alias.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of `as`.
      * @return int|false The alias's position, or false if there's nothing to check.
      */
-    private function findImportAlias(File $phpcsFile, int $stackPtr): int|false
+    private function findAlias(File $phpcsFile, int $stackPtr): int|false
     {
         $tokens = $phpcsFile->getTokens();
-        $usePtr = $phpcsFile->findPrevious(T_USE, ($stackPtr - 1));
-        if ($usePtr === false || $phpcsFile->findNext(T_SEMICOLON, $usePtr, $stackPtr) !== false) {
+
+        // A `foreach` is the only place an `as` is in parentheses.
+        if (isset($tokens[$stackPtr]['nested_parenthesis'])) {
             return false;
         }
 
-        // A trait's `use` can have an `as` too, which names a method.
-        if (!UseStatements::isImportUse($phpcsFile, $usePtr)) {
-            return false;
-        }
-
-        $namePtr = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
+        $skip = Tokens::EMPTY_TOKENS + Tokens::METHOD_MODIFIERS;
+        $namePtr = $phpcsFile->findNext($skip, ($stackPtr + 1), null, true);
         if ($namePtr === false || $tokens[$namePtr]['code'] !== T_STRING) {
             return false;
+        }
+
+        $usePtr = $phpcsFile->findPrevious(T_USE, ($stackPtr - 1));
+        if ($usePtr === false || !UseStatements::isImportUse($phpcsFile, $usePtr)) {
+            return $namePtr;
         }
 
         $imports = UseStatements::splitImportUseStatement($phpcsFile, $usePtr);

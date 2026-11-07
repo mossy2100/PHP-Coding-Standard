@@ -69,6 +69,10 @@ class AcronymCasingUnitTest extends AbstractSniffTestCase
             232 => 1,
             234 => 1,
             236 => 1,
+            247 => 1,
+            248 => 1,
+            249 => 1,
+            250 => 1,
         ];
     }
 }

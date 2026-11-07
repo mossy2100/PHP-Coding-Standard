@@ -1214,8 +1214,8 @@ An arrow function has no braces, so the brace checks don't apply.
 
 ### PERCS31.NamingConventions.AcronymCasing
 
-Warns about an acronym in capitals in a name: a namespace, function, method, property, parameter, variable or import
-alias.
+Warns about an acronym in capitals in a name: a namespace, function, method, property, parameter, variable, import
+alias or trait alias.
 
 **Why:** [PER Coding Style 3.1, Section 2.7](https://www.php-fig.org/per/coding-style/#27-naming) RECOMMENDS treating acronyms like regular words.
 

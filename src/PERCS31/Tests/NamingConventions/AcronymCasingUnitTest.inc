@@ -136,9 +136,9 @@ use Foo\{const BAZ as HTTP_BAZ};
 
 class UsesTrait
 {
-    // A trait's `as` names a method, which isn't an import alias.
+    // A trait's alias, which is checked further down too.
     use SomeTrait {
-        run as getURL;
+        run as getUrl;
     }
 }
 
@@ -234,3 +234,25 @@ function MP3Player(): void {}
 function user_ID(): void {}
 
 function HTTP_client(): void {}
+
+// === TRAIT ALIASES ===
+
+class TraitAliases
+{
+    use OneTrait, TwoTrait {
+        first as getId;
+        second as protected getName;
+        third as protected;
+        OneTrait::fourth insteadof TwoTrait;
+        fifth as getID;
+        sixth as protected getURL;
+        OneTrait::seventh as private parseXML;
+        eighth as final parseJSON;
+    }
+
+    // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms XML
+    use ThreeTrait {
+        ninth as parseXML;
+    }
+    // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms
+}

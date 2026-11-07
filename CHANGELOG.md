@@ -35,8 +35,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   and HTML.
 - **`PERCS31.NamingConventions.AcronymCasing`.** A warning for an acronym in capitals in a name, e.g. `getID()` or
   `$userID`, as PER Coding Style 3.1 recommends writing acronyms like words. It covers namespaces, functions, methods,
-  properties, parameters, variables and import aliases. Set `excludedNames` or `excludedAcronyms`, as comma-separated
-  lists, to allow exceptions.
+  properties, parameters, variables, import aliases and trait aliases. Set `excludedNames` or `excludedAcronyms`, as
+  comma-separated lists, to allow exceptions.
 - **`PERCS31.NamingConventions.ValidClassName` (breaking).** Replaces `Squiz.Classes.ValidClassName`. Class, interface,
   trait and enum names must be in PascalCase, which a run of capitals isn't, so `HTTPClient` and `AClass` are now
   errors. Not auto-fixable.
