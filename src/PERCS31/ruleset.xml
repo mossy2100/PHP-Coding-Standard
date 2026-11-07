@@ -115,6 +115,9 @@
     <!-- A compound type split across lines has one type, or one union segment, per line (2.5) -->
     <rule ref="PERCS31.TypeHints.CompoundTypeLayout"/>
 
+    <!-- No space after the ? of a nullable type, wherever a type can appear (4.5) -->
+    <rule ref="PERCS31.Functions.NullableTypeDeclaration"/>
+
     <!-- ====== TRAILING COMMAS (2.6) ====== -->
 
     <!-- Trailing commas: disallowed on single-line lists, required on multi-line ones (2.6) -->
@@ -159,10 +162,7 @@
     <rule ref="PERCS31.Files.FileHeader"/>
 
     <!-- No spaces inside a declare statement's parentheses, including one with several directives (3) -->
-    <rule ref="PERCS31.Files.DeclareStatement">
-        <!-- PERCS31.WhiteSpace.ScopeClosingBrace reports the same thing, and with both fixes, the result has a blank line -->
-        <exclude name="PERCS31.Files.DeclareStatement.CurlyBracketNotOnNewLine"/>
-    </rule>
+    <rule ref="PERCS31.Files.DeclareStatement"/>
 
     <!-- ====== CLASSES, PROPERTIES AND CONSTANTS (4) ====== -->
 
@@ -261,9 +261,6 @@
     <rule ref="PERCS31.Operators.OperatorPlacement"/>
 
     <!-- ====== CLOSURES AND ANONYMOUS CLASSES (7, 8) ====== -->
-
-    <!-- No space after the ? of a nullable type, wherever a type can appear (4.5) -->
-    <rule ref="PERCS31.Functions.NullableTypeDeclaration"/>
 
     <!-- No space after fn, and the expression may be on the next line (7.1) -->
     <rule ref="SlevomatCodingStandard.Functions.ArrowFunctionDeclaration">

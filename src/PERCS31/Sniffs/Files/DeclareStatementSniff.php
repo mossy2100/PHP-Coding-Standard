@@ -154,20 +154,9 @@ class DeclareStatementSniff implements Sniff
 
             $closeCurlyBracket = $tokens[$curlyBracket]['bracket_closer'];
 
-            $prevToken = $phpcsFile->findPrevious(T_WHITESPACE, ($closeCurlyBracket - 1), null, true);
-            $nextToken = $phpcsFile->findNext([T_WHITESPACE, T_COMMENT], ($closeCurlyBracket + 1), null, true);
-            $line      = $tokens[$closeCurlyBracket]['line'];
-
-            // The closing curly bracket must be on a new line.
-            if ($tokens[$prevToken]['line'] === $line || $tokens[$nextToken]['line'] === $line) {
-                if ($tokens[$prevToken]['line'] === $line) {
-                    $error = 'The closing curly bracket of a declare statement must be on a new line';
-                    $fix   = $phpcsFile->addFixableError($error, $prevToken, 'CurlyBracketNotOnNewLine');
-                    if ($fix === true) {
-                        $phpcsFile->fixer->addNewline($prevToken);
-                    }
-                }
-            }
+            // PERCS31: the check that the closing brace is on a new line is removed.
+            // PERCS31.WhiteSpace.ScopeClosingBrace reports the same thing, and with both fixes, the result has a blank
+            // line before the brace.
 
             // Closing curly bracket must align with the declare keyword.
             if ($tokens[$stackPtr]['column'] !== $tokens[$closeCurlyBracket]['column']) {
