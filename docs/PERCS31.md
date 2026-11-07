@@ -1211,19 +1211,30 @@ An arrow function has no braces, so the brace checks don't apply.
 
 ### PERCS31.NamingConventions.AcronymCasing
 
-Warns about an acronym in capitals in a name: a namespace, class, interface, trait, enum, enum case, enum constant,
-function, method, property, parameter or variable. It reports two or more capitals in a row.
+Warns about an acronym in capitals in a name: a namespace, class, interface, trait, enum, function, method, property,
+parameter or variable.
 
 **Why:** [PER Coding Style 3.1, Section 2.7](https://www.php-fig.org/per/coding-style/#27-naming) RECOMMENDS treating acronyms like regular words.
 
-One-letter words aren't allowed before a capital, as `parseURL` could otherwise be read as `parse`, `U`, `R` and `L`. So
-`getID`, `getIDs`, `AClass`, `TType`, `OAuthToken` and `whenXIs` are all reported.
+The sniff splits a name into words, working back from its last character:
+
+- Underscores separate parts, and each part is split on its own.
+- If the last letter is lower-case, the word goes back to the first capital, which is included.
+- If it's upper-case, the word goes back to the first character that isn't a capital, which isn't included.
+- A digit stays with the word on its left, and separates capitals, so `B2B` is `B2` and `B`.
+
+It reports an upper-case word of two or more capitals, and a single capital directly before another word. One-letter
+words aren't allowed there, as `parseURL` could otherwise be read as `parse`, `U`, `R` and `L`. So `getID`, `getIDs`,
+`getURLs`, `AClass`, `TType`, `OAuthToken` and `whenXIs` are all reported.
 
 Section 2.7 doesn't limit this to some names, so it applies to all of them. It doesn't report:
 
-- A single capital that isn't followed by another, as in `getX` or `X509Certificate`.
+- A single capital that ends the name, or that's followed by a digit, as in `getX`, `X509Certificate` or `B2B`.
 - PHP's reserved variables, such as `$_SERVER`.
-- A constant outside an enum, as UPPER_CASE is required, or one in UPPER_CASE in an enum, which has its own warning.
+- An enum case or enum constant.
+  [`ValidEnumCaseName`](#percs31namingconventionsvalidenumcasename) and
+  [`UpperCaseConstantName`](#percs31namingconventionsuppercaseconstantname) report those, using the lists below.
+- A constant outside an enum, as UPPER_CASE is required.
 - A property where it's used, such as `$this->userID` or `self::$userID`, as it may belong to a class you don't control.
   It's reported where it's declared.
 
@@ -1233,9 +1244,12 @@ Two properties allow exceptions, each a comma-separated list. Matching is case-s
 
 - `excludedNames` allows whole names. Each part of a namespace counts as a name of its own, so `PERCS31` allows
   `PERCS31\Sniffs`, but not `PERCS31\HTTP`.
-- `excludedAcronyms` allows acronyms in any name. An acronym must match a whole run of capitals, not counting a last
-  capital that starts a word. So `HTTP` allows `HTTPClient` and `HTTPs`, but not `HTTPSClient`, and `T` allows a prefix,
-  as in `TType`. Listing several lets them combine, as in `XMLHTTPRequest`.
+- `excludedAcronyms` allows acronyms in any name. An acronym must match a whole upper-case word. So `HTTP` allows
+  `HTTPClient` and `HTTPSecurity`, but not `HTTPSClient`. `T` allows a prefix, as in `TType`. Listing several lets them
+  combine, as in `XMLHTTPRequest`.
+
+There's no plural rule, as that would only suit some languages. `HTTPs` is `HTT` and `Ps`, and `getURLs` is `get`, `UR`
+and `Ls`, so `HTTP` and `URL` don't allow them. Use `excludedNames` for those.
 
 ```xml
 <rule ref="PERCS31.NamingConventions.AcronymCasing">
@@ -1281,9 +1295,9 @@ replaces `Generic.NamingConventions.UpperCaseConstantName`.
 that to every constant. [PER Coding Style 3.1, Section 9](https://www.php-fig.org/per/coding-style/#9-enumerations) says constants in an enum MAY use either PascalCase or
 UPPER_CASE, and PascalCase is RECOMMENDED. So for an enum constant:
 
-- PascalCase passes.
+- PascalCase, as [`ValidEnumCaseName`](#percs31namingconventionsvalidenumcasename) describes it, passes.
 - UPPER_CASE gets an `EnumConstantNotPascalCase` warning.
-- Anything else, such as camelCase, gets an `EnumConstantInvalidCase` error.
+- Anything else, such as camelCase or `HTTPStatus`, gets an `EnumConstantInvalidCase` error.
 
 Every other constant is left to the parent, except that a global `const` is reported as one made with `define()` is:
 "Constants must be uppercase", with the `ConstantNotUpperCase` code. The parent reports it as a class constant.
@@ -1349,12 +1363,20 @@ final class Config
 
 ### PERCS31.NamingConventions.ValidEnumCaseName
 
-Requires enum case names to be in PascalCase: a capital first letter, only letters and digits, and not all capitals,
-apart from a single letter.
+Requires enum case names to be in PascalCase: a capital first letter, only letters and digits, and no run of capitals
+unless it's an approved acronym.
 
 **Why:** [PER Coding Style 3.1, Section 9](https://www.php-fig.org/per/coding-style/#9-enumerations) says enum case declarations MUST use PascalCase. No inherited sniff checks it.
-A run of capitals inside a name, such as `HTTPStatus`, is allowed here, as PER section 2.7 only recommends treating
-acronyms as words. [`PERCS31.NamingConventions.AcronymCasing`](#percs31namingconventionsacronymcasing) warns about it.
+
+Section 2.1 says the first letter of every word is capitalized. If a word could be one letter, any name in capitals
+would qualify, so a run of capitals isn't PascalCase. The sniff splits names as
+[`AcronymCasing`](#percs31namingconventionsacronymcasing) does, and uses its `excludedAcronyms` and `excludedNames`:
+
+- **Passes:** `Hearts`, `C2`, `H1`, `Http2`, `B2B`, `H2O` and a lone `A`.
+- **Fails:** `FOO`, `OK`, `HTTPStatus`, `XMLParser`, `AClass`, `IDs`, `hearts` and `Foo_Bar`.
+- **With `HTTP` approved, also passes:** `HTTP`, `HTTP2` and `HTTPStatus`.
+
+If `AcronymCasing` isn't in the ruleset, nothing is approved.
 
 Based on `PhpCollective.Classes.EnumCaseCasing`, from php-collective/code-sniffer, which skips a name with no capitals,
 such as `hearts`.

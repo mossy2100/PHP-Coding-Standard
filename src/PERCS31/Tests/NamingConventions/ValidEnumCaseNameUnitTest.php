@@ -20,17 +20,25 @@ class ValidEnumCaseNameUnitTest extends AbstractSniffTestCase
     {
         return [
             // All lower case.
-            18 => 1,
+            25 => 1,
             // All upper case.
-            19 => 1,
+            26 => 1,
             // snake_case.
-            20 => 1,
+            27 => 1,
             // An underscore.
-            21 => 1,
+            28 => 1,
             // camelCase.
-            22 => 1,
+            29 => 1,
             // Two capitals.
-            23 => 1,
+            30 => 1,
+            // A run of capitals, with no approved acronyms, as this sniff runs alone here.
+            31 => 1,
+            32 => 1,
+            // A one-letter word before a capital.
+            33 => 1,
+            34 => 1,
+            // A run of capitals before a digit.
+            35 => 1,
         ];
     }
 

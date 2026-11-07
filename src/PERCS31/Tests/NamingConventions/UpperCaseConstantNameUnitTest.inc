@@ -19,6 +19,10 @@ enum Suit: string
 
     // UPPER_CASE, which PER allows: a severity 4 warning, hidden at the default severity, which these tests run at.
     public const string FALLBACK_COLOUR = 'black';
+
+    // PascalCase with a digit, or capitals separated by one.
+    public const string C2 = 'c';
+    public const string B2B = 'b';
 }
 
 // === INVALID ===
@@ -36,4 +40,10 @@ enum LowerSuit: string
 
     // Neither PascalCase nor UPPER_CASE.
     public const string defaultColour = 'red';
+
+    // A run of capitals, so not PascalCase, with no approved acronyms, as this sniff runs alone here.
+    public const string HTTPStatus = 's';
+
+    // UPPER_CASE with no underscore, which gets the warning.
+    public const string OK = 'o';
 }

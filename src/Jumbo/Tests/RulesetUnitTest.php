@@ -531,6 +531,58 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that the enum sniffs use AcronymCasing's lists, and that it leaves enum cases and constants to them.
+     */
+    public function testEnumNamesUseApprovedAcronyms(): void
+    {
+        $source = <<<'PHP'
+            <?php
+
+            // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms HTTP
+            // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedNames LegacyID
+            enum Example
+            {
+                case HTTP;
+                case HTTP2;
+                case HTTPStatus;
+                case LegacyID;
+                case HTTPS;
+                case HTTPs;
+                case XMLParser;
+                case OK;
+
+                const HTTPOk = 1;
+                const XMLType = 2;
+                const OK_VALUE = 3;
+            }
+
+            PHP;
+        $sniffs = 'PERCS31.NamingConventions.AcronymCasing,PERCS31.NamingConventions.UpperCaseConstantName,'
+            . 'PERCS31.NamingConventions.ValidEnumCaseName';
+        $args = ['-s', '--standard=PERCS31', "--sniffs=$sniffs", '--report=emacs'];
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $result = $this->runTool('phpcs', [...$args, $file]);
+        } finally {
+            unlink($file);
+        }
+
+        preg_match_all('/:(\d+):\d+: (\w+) - .*\.(\w+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
+        $reports = array_map(static fn(array $match): string => "$match[1] $match[2] $match[3]", $matches);
+        $expected = [
+            '11 error NotPascalCase',
+            '12 error NotPascalCase',
+            '13 error NotPascalCase',
+            '14 error NotPascalCase',
+            '17 error EnumConstantInvalidCase',
+            '18 warning EnumConstantNotPascalCase',
+        ];
+
+        $this->assertSame($expected, $reports, $result['output']);
+    }
+
+    /**
      * Test that PERCS31.Files.LineLength's warning over 80 characters is hidden by default, and shown at severity 4.
      */
     public function testLineLengthRecommendedLimitNeedsWarningSeverity4(): void

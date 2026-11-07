@@ -71,7 +71,7 @@ trait JSONable {}
 
 enum HTTPStatus
 {
-    case HTTPOk;
+    case HTTPOk; // Left to ValidEnumCaseName.
 }
 
 function parseJSON(): void {}
@@ -118,8 +118,8 @@ namespace HTTP;
 
 enum InvalidNames
 {
-    const HTTPOk = 1;
-    const string XMLType = 'xml';
+    const HTTPOk = 1; // Left to UpperCaseConstantName.
+    const string XMLType = 'xml'; // Left to UpperCaseConstantName.
 }
 
 class InvalidVariables
@@ -180,4 +180,39 @@ class TTypeTwo {}
 class OAuthTwo {}
 
 class ATypeTwo {}
+
+// phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms HTTP, HTTPS, ID, URL
+// The last capital before a lower-case letter starts a word, so these are `HTTP`, `HTTPS` and `HTTP`.
+class HTTPSecurity {}
+
+class HTTPSClient {}
+
+function getHTTPS(): void {}
+
+// These are `HTT` and `Ps`, `I` and `Ds`, `I` and `Dea`, and `UR` and `Ls`, none of which is approved.
+function loadHTTPz(): void {}
+
+function getIDs(): array {}
+
+class IDea {}
+
+function getURLs(): array {}
+
+// phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms HTTPS
+// This is `HTTP` and `Security`, and only `HTTPS` is approved.
+class OtherHTTPSecurity {}
+
+class HTTPSecure {}
+
 // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms
+
+// A digit separates capitals, and stays with the word on its left.
+class B2B {}
+
+class H2O {}
+
+class MP3Player {}
+
+function user_ID(): void {}
+
+function HTTP_client(): void {}

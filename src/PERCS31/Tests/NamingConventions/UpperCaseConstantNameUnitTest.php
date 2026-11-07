@@ -20,11 +20,12 @@ class UpperCaseConstantNameUnitTest extends AbstractSniffTestCase
     {
         return [
             // A global constant not in UPPER_CASE, left to the parent.
-            26 => 1,
-            // A class constant not in UPPER_CASE, left to the parent.
             30 => 1,
+            // A class constant not in UPPER_CASE, left to the parent.
+            34 => 1,
             // An enum constant in neither PascalCase nor UPPER_CASE.
-            38 => 1,
+            42 => 1,
+            45 => 1,
         ];
     }
 
@@ -38,6 +39,7 @@ class UpperCaseConstantNameUnitTest extends AbstractSniffTestCase
         return [
             // An enum constant in UPPER_CASE, as PascalCase is recommended.
             21 => 1,
+            48 => 1,
         ];
     }
 }

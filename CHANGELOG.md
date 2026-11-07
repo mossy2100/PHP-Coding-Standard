@@ -35,8 +35,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   and HTML.
 - **`PERCS31.NamingConventions.AcronymCasing`.** A warning for an acronym in capitals in a name, e.g. `HTTPClient`,
   `getID()` or `$userID`, as PER Coding Style 3.1 recommends writing acronyms like words. It covers namespaces, classes,
-  interfaces, traits, enums, enum cases, enum constants, functions, methods, properties, parameters and variables. Set
-  `excludedNames` or `excludedAcronyms`, as comma-separated lists, to allow exceptions.
+  interfaces, traits, enums, functions, methods, properties, parameters and variables. Set `excludedNames` or
+  `excludedAcronyms`, as comma-separated lists, to allow exceptions, which also apply to enum cases and enum constants.
 - **`Jumbo.TypeHints.DeclareStrictTypes` writes `strict_types=1`.** Its fix wrote `strict_types = 1`, which PER Coding
   Style 3.1 forbids. For a file starting with a block `declare`, it adds a separate statement on the line above, as
   `strict_types` in one is a fatal error.
@@ -211,7 +211,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`PERCS31.Classes.EnumMemberVisibility` (breaking).** Requires a non-public method or constant in an enum to be
   `private`, not `protected`, as PER Coding Style 3.1 requires. Auto-fixable.
 - **`PERCS31.NamingConventions.ValidEnumCaseName` (breaking).** Requires enum case names to be in PascalCase, as PER
-  Coding Style 3.1 requires, e.g. `case BigJoker;`, not `case BIG_JOKER;` or `case bigJoker;`. Not auto-fixable.
+  Coding Style 3.1 requires, e.g. `case BigJoker;`, not `case BIG_JOKER;` or `case bigJoker;`. A run of capitals, as in
+  `case HTTPStatus;`, is an error unless the acronym is in `AcronymCasing`'s `excludedAcronyms`. `case C2;` and
+  `case B2B;` are allowed. Enum constants follow the same rule. Not auto-fixable.
 - **No whitespace after a prefix unary operator (breaking).** A space or line break between a prefix operator and its
   operand is now an error for `!` (`Generic.Formatting.SpaceAfterNot`, with `spacing` set to 0), and for `+`, `~` and
   `@` (`Jumbo.Operators.UnaryOperatorSpacing`, a new sniff). `-`, `++`, `--`, `&` and `...` were already checked.
