@@ -1308,7 +1308,8 @@ UPPER_CASE, and PascalCase is RECOMMENDED. So for an enum constant:
 - Anything else, such as camelCase or `HTTPStatus`, gets an `EnumConstantInvalidCase` error.
 
 A global constant, from `const` or `define()`, isn't checked by default, as neither PSR-1 nor PER has a rule for it. Set
-`checkGlobalConstants` to require UPPER_CASE, which reports both with the `ConstantNotUpperCase` code:
+`checkGlobalConstants` to require UPPER_CASE of these, and of an alias of a constant, as in `use const Foo\BAR as BAZ;`.
+It reports them with the `ConstantNotUpperCase` code:
 
 ```xml
 <rule ref="PERCS31.NamingConventions.UpperCaseConstantName">

@@ -14,9 +14,9 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * Generic.NamingConventions.UpperCaseConstantName, from PSR-1, requires every constant name in UPPER_CASE, but PSR-1
  * only requires it of class constants. So this sniff changes two things:
- * - A global constant, from `const` or `define()`, isn't checked by default. Set checkGlobalConstants to check it. The
- *   parent reports a global `const` as a class constant, with the ClassConstantNotUpperCase code, and this sniff
- *   reports it as `define()` is reported, with ConstantNotUpperCase.
+ * - A global constant, from `const` or `define()`, isn't checked by default. Set checkGlobalConstants to check it, and
+ *   any alias of a constant. The parent reports a global `const` as a class constant, with the
+ *   ClassConstantNotUpperCase code, and this sniff reports it as `define()` is reported, with ConstantNotUpperCase.
  * - PER Coding Style 3.1, section 9, says constants in an enum MAY use either PascalCase or UPPER_CASE, and PascalCase
  *   is RECOMMENDED. So for an enum constant, this sniff allows PascalCase, reports UPPER_CASE with a warning, and
  *   anything else, such as camelCase or `HTTPStatus`, with an error, as a run of capitals isn't PascalCase.
@@ -33,9 +33,20 @@ class UpperCaseConstantNameSniff extends GenericSniff
     public const string CODE_ENUM_CONSTANT_INVALID_CASE = 'EnumConstantInvalidCase';
 
     /**
-     * Whether to require global constants, from `const` or `define()`, to be in UPPER_CASE. PER doesn't require it.
+     * Whether to require global constants, from `const` or `define()`, and aliases of constants, to be in UPPER_CASE.
+     * PER doesn't require it.
      */
     public bool $checkGlobalConstants = false;
+
+    /**
+     * Returns an array of tokens this test wants to listen for.
+     *
+     * @return array<int|string>
+     */
+    public function register(): array
+    {
+        return [...parent::register(), T_AS];
+    }
 
     /**
      * Processes this test, when one of its tokens is encountered.
@@ -47,6 +58,15 @@ class UpperCaseConstantNameSniff extends GenericSniff
     public function process(File $phpcsFile, int $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
+        if ($tokens[$stackPtr]['code'] === T_AS) {
+            $aliasPtr = $this->checkGlobalConstants ? NamingHelper::findConstantAlias($phpcsFile, $stackPtr) : false;
+            if ($aliasPtr !== false) {
+                $this->checkGlobalConstant($phpcsFile, $aliasPtr);
+            }
+
+            return;
+        }
+
         if ($tokens[$stackPtr]['code'] !== T_CONST) {
             // Anything else the parent checks is a call to `define()`.
             if ($this->checkGlobalConstants) {
@@ -73,11 +93,20 @@ class UpperCaseConstantNameSniff extends GenericSniff
             return;
         }
 
-        if (!$this->checkGlobalConstants) {
-            return;
+        if ($this->checkGlobalConstants) {
+            $this->checkGlobalConstant($phpcsFile, $namePtr);
         }
+    }
 
-        $name = $tokens[$namePtr]['content'];
+    /**
+     * Check that a global constant or an alias of one is in UPPER_CASE.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $namePtr The position of the name.
+     */
+    private function checkGlobalConstant(File $phpcsFile, int $namePtr): void
+    {
+        $name = $phpcsFile->getTokens()[$namePtr]['content'];
         if (strtoupper($name) !== $name) {
             $phpcsFile->addError(
                 'Constants must be uppercase; expected %s but found %s',

@@ -595,7 +595,8 @@ class RulesetUnitTest extends TestCase
      */
     public function testGlobalConstantCaseIsCheckedInJumboOnly(): void
     {
-        $source = "<?php\n\nconst userId = 1;\n\ndefine('userId', 2);\n\nconst HTTP_OK = 3;\n\nconst userID = 4;\n";
+        $source = "<?php\n\nconst userId = 1;\n\ndefine('userId', 2);\n\nconst HTTP_OK = 3;\n\n"
+            . "const userID = 4;\n\nuse const Foo\\BAR as userId;\n";
         $file = $this->copyToTempFile(null, $source);
         $reports = [];
 
@@ -611,7 +612,13 @@ class RulesetUnitTest extends TestCase
             unlink($file);
         }
 
-        $jumbo = ['3 ConstantNotUpperCase', '5 ConstantNotUpperCase', '9 ConstantNotUpperCase', '9 AcronymNotLikeWord'];
+        $jumbo = [
+            '3 ConstantNotUpperCase',
+            '5 ConstantNotUpperCase',
+            '9 ConstantNotUpperCase',
+            '9 AcronymNotLikeWord',
+            '11 ConstantNotUpperCase',
+        ];
         $this->assertSame(['9 AcronymNotLikeWord'], $reports['PERCS31']);
         $this->assertEqualsCanonicalizing($jumbo, $reports['Jumbo']);
     }

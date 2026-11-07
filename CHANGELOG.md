@@ -172,8 +172,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   PascalCase, and an UPPER_CASE one gets a warning, as PascalCase is recommended. Jumbo hides that warning, at a
   severity of 4, as UPPER_CASE is its house style. Any other class constant still must be in UPPER_CASE. PERCS31 no
   longer checks a global constant, from `const` or `define()`, as PER doesn't require UPPER_CASE for it. Jumbo still
-  does, by setting `checkGlobalConstants`, and a global `const` is reported as `Constants must be uppercase`, with the
-  `ConstantNotUpperCase` code of a `define()` constant, not as a class constant.
+  does, by setting `checkGlobalConstants`, and now requires it of an alias of a constant too. A global `const` is
+  reported as `Constants must be uppercase`, with the `ConstantNotUpperCase` code of a `define()` constant, not as a
+  class constant.
 - **`PERCS31.Files.LineLength`.** Replaces `Generic.Files.LineLength`. A line over 120 characters still gets a `TooLong`
   warning, and a line over 80 now gets an `OverRecommended` warning with a severity of 4, as PER Coding Style 3.1 says
   lines SHOULD NOT be longer than 80. It's hidden by default; run `phpcs --warning-severity=4` to see it. Update any

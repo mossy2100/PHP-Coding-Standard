@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace PERCS31\Helpers;
 
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\UseStatements;
+
 /**
  * Helper class for checking the case of names.
  */
@@ -91,6 +95,37 @@ class NamingHelper
         }
 
         return $words;
+    }
+
+    /**
+     * Find the alias of a constant after an `as`, as in `use const Foo\BAR as BAZ;`.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $asPtr The position of `as`.
+     * @return int|false The alias's position, or false if this `as` doesn't give a constant an alias.
+     */
+    public static function findConstantAlias(File $phpcsFile, int $asPtr): int|false
+    {
+        $tokens = $phpcsFile->getTokens();
+
+        // A `foreach` is the only place an `as` is in parentheses.
+        if (isset($tokens[$asPtr]['nested_parenthesis'])) {
+            return false;
+        }
+
+        $usePtr = $phpcsFile->findPrevious(T_USE, ($asPtr - 1));
+        if ($usePtr === false || !UseStatements::isImportUse($phpcsFile, $usePtr)) {
+            return false;
+        }
+
+        $namePtr = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($asPtr + 1), null, true);
+        if ($namePtr === false || $tokens[$namePtr]['code'] !== T_STRING) {
+            return false;
+        }
+
+        $imports = UseStatements::splitImportUseStatement($phpcsFile, $usePtr);
+
+        return isset($imports['const'][$tokens[$namePtr]['content']]) ? $namePtr : false;
     }
 
     /**

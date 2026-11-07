@@ -30,6 +30,7 @@ enum Suit: string
 // PSR-1 only requires class constants in UPPER_CASE, so a global constant isn't checked by default.
 const globalLimit = 1;
 define('definedLimit', 2);
+use const Foo\BAR as lowerAlias;
 
 class LowerHolder
 {
@@ -58,4 +59,21 @@ define('CHECKED_DEFINED', 2);
 const checkedLimit = 1;
 define('checkedDefined', 2);
 \define('checkedQualified', 3);
+use const Foo\BAR as CHECKED_ALIAS;
+use Foo\Bar as checkedClassAlias;
+use function Foo\bar as checkedFunctionAlias;
+
+foreach ($items as $checkedItem) {
+    echo $checkedItem;
+}
+
+class CheckedTrait
+{
+    use SomeTrait {
+        run as checkedMethod;
+    }
+}
+
+use const Foo\BAR as checkedAlias;
+use Foo\{const BAZ as checkedGroupAlias, Qux};
 // phpcs:set PERCS31.NamingConventions.UpperCaseConstantName checkGlobalConstants false

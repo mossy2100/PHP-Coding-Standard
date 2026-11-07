@@ -9,7 +9,6 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 use PHPCSUtils\Utils\TextStrings;
-use PHPCSUtils\Utils\UseStatements;
 
 /**
  * Warns about an acronym in capitals in a name.
@@ -105,7 +104,7 @@ class AcronymCasingSniff implements Sniff
             $name = end($parts);
         }
 
-        if ($this->isConstant($phpcsFile, $stackPtr, $namePtr) && strtoupper($name) === $name) {
+        if ($this->isConstant($phpcsFile, $stackPtr) && strtoupper($name) === $name) {
             return;
         }
 
@@ -291,24 +290,15 @@ class AcronymCasingSniff implements Sniff
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the token the sniff was called for.
-     * @param int $namePtr The position of the name.
      * @return bool True if it is.
      */
-    private function isConstant(File $phpcsFile, int $stackPtr, int $namePtr): bool
+    private function isConstant(File $phpcsFile, int $stackPtr): bool
     {
-        $tokens = $phpcsFile->getTokens();
-        $code = $tokens[$stackPtr]['code'];
-        if ($code !== T_AS) {
-            return $code === T_CONST || $code === T_STRING || $code === T_NAME_FULLY_QUALIFIED;
+        $code = $phpcsFile->getTokens()[$stackPtr]['code'];
+        if ($code === T_AS) {
+            return NamingHelper::findConstantAlias($phpcsFile, $stackPtr) !== false;
         }
 
-        $usePtr = $phpcsFile->findPrevious(T_USE, ($stackPtr - 1));
-        if ($usePtr === false || !UseStatements::isImportUse($phpcsFile, $usePtr)) {
-            return false;
-        }
-
-        $imports = UseStatements::splitImportUseStatement($phpcsFile, $usePtr);
-
-        return isset($imports['const'][$tokens[$namePtr]['content']]);
+        return $code === T_CONST || $code === T_STRING || $code === T_NAME_FULLY_QUALIFIED;
     }
 }
