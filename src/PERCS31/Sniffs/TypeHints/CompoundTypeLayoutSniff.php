@@ -103,7 +103,7 @@ class CompoundTypeLayoutSniff implements Sniff
         // Split the symbols into those outside parentheses, and those inside a DNF type's parentheses.
         $topLevel = [];
         $grouped = [];
-        $depth = 0;
+        $depth = $this->isInsideGroup($phpcsFile, $stackPtr, $isHook) ? 1 : 0;
         $last = $symbols[(count($symbols) - 1)];
         for ($i = $stackPtr; $i <= $last; $i++) {
             $code = $tokens[$i]['code'];
@@ -143,6 +143,33 @@ class CompoundTypeLayoutSniff implements Sniff
                 $this->reportMultipleTypesOnLine($phpcsFile, $symbol, $error);
             }
         }
+    }
+
+    /**
+     * Check whether a type's first symbol is inside a DNF type's parentheses, as in `(A&B)|C`.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the type's first symbol.
+     * @param bool $isHook Whether the symbol is in a `set` hook's parameter type.
+     * @return bool True if a group is open at the symbol.
+     */
+    private function isInsideGroup(File $phpcsFile, int $stackPtr, bool $isHook): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        for ($i = ($stackPtr - 1); $i >= 0 && $this->isTypeToken($tokens[$i]['code'], $isHook); $i--) {
+            if ($tokens[$i]['code'] === T_TYPE_OPEN_PARENTHESIS) {
+                return true;
+            }
+
+            if ($tokens[$i]['code'] === T_OPEN_PARENTHESIS) {
+                // In a hook's parameter, the list's own `(` follows the name `set`. A group's doesn't.
+                $before = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($i - 1), null, true);
+
+                return $before !== false && $tokens[$before]['code'] !== T_STRING;
+            }
+        }
+
+        return false;
     }
 
     /**

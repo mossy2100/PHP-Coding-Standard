@@ -72,3 +72,50 @@ class HookParameterTypes
         }
     }
 }
+
+// A type that starts with a DNF group, split with one union segment per line.
+function firstGroup(
+    (A&B)
+    |(C&D)
+    |null $x,
+    (A&B)
+    |C $y,
+    (A&B&E)
+    |C
+    |D $z,
+): (A&B)
+    |C {}
+
+class FirstGroup
+{
+    public const (B&C)
+        |D Z = 1;
+
+    public (B&C)
+        |D $x;
+
+    public (B&C)|null $d {
+        set(
+            (B&C)
+            |null $value,
+        ) => $value;
+    }
+}
+
+// Two union segments on one line, the first or a later one.
+function firstGroupTwoOnLine(
+    (A&B)|(C&D)
+    |null $x,
+    (A&B)
+    |(C&D)|null $y,
+): void {}
+
+// An intersection split inside the first group, or a later one.
+function firstGroupSplit(
+    (A
+    &B)
+    |C $x,
+    C
+    |(A
+    &B) $y,
+): void {}

@@ -29,6 +29,12 @@ class CompoundTypeLayoutUnitTest extends AbstractSniffTestCase
             44 => 1,
             // Two types on one line in a set hook's parameter type.
             61 => 1,
+            // Two union segments on one line, with a type that starts with a DNF group.
+            107 => 1,
+            110 => 1,
+            // An intersection split inside the first group, or a later one.
+            116 => 1,
+            120 => 1,
         ];
     }
 
