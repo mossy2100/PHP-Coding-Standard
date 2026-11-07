@@ -303,6 +303,9 @@ An enum case isn't in section 12.2's list either, so `#[Label] case Active;` pas
 before. Nor is a property hook, which isn't a method, so `#[Label] get => 'a';` passes too. A hook's parameter follows
 the parameter rule.
 
+PER doesn't set the spacing in these three cases, so `#[Label]  case Active;` passes. Set `checkSameLineSpacing` to
+require a single space when the attribute is on its target's line, as the Jumbo standard does. It's fixable.
+
 **Why:** `SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing` covers some of this, but its only option for an
 attribute on its target's line, `allowOnSameLine`, is all or nothing, and its fix for a blank line deletes a comment
 between the attribute and its target. So this sniff checks placement itself, and the PERCS31 ruleset doesn't use the
@@ -376,9 +379,10 @@ $handler = new #[Attribute] class {
 
 **Configuration:**
 
-| Property                 | Type | Default | Description                                                              |
-| ------------------------ | ---- | ------- | ------------------------------------------------------------------------ |
-| `checkParameterComments` | bool | false   | Report a comment on its own line between an attribute and its parameter. |
+| Property                 | Type | Default | Description                                                                  |
+| ------------------------ | ---- | ------- | ---------------------------------------------------------------------------- |
+| `checkParameterComments` | bool | false   | Report a comment on its own line between an attribute and its parameter.     |
+| `checkSameLineSpacing`   | bool | false   | Require a single space between an attribute and its target on the same line. |
 
 ---
 

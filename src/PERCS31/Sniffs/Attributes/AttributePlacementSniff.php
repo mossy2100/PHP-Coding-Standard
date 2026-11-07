@@ -30,6 +30,9 @@ use PHPCSUtils\Utils\PassedParameters;
  * An enum case isn't in section 12.2's list either, so its attribute may be on the case's line. Nor is a property hook,
  * which isn't a method, so its attribute may be on the hook's line. A hook's parameter follows the parameter rule.
  *
+ * PER doesn't set the spacing where it allows an attribute on its target's line, or says nothing: an enum case, a hook,
+ * or a closure outside a call. Set checkSameLineSpacing to require a single space there, as the Jumbo standard does.
+ *
  * It also reports a blank line or a comment between the last attribute and its target. That replaces
  * SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing, whose fix deletes a comment there, and whose only option
  * for an attribute on its target's line, allowOnSameLine, is all or nothing.
@@ -60,6 +63,8 @@ class AttributePlacementSniff implements Sniff
 
     public const string CODE_CLOSURE_INDENT = 'ClosureIndent';
 
+    public const string CODE_SAME_LINE_SPACING = 'SameLineSpacing';
+
     /**
      * The tokens that own a parameter list.
      *
@@ -72,6 +77,12 @@ class AttributePlacementSniff implements Sniff
      * "prior to the parameter", not "immediately prior", so it's off by default.
      */
     public bool $checkParameterComments = false;
+
+    /**
+     * Whether to require a single space between an attribute and its target on the same line, where PER doesn't set the
+     * spacing: an enum case, a property hook, or a closure outside a call. It's off by default.
+     */
+    public bool $checkSameLineSpacing = false;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -134,6 +145,7 @@ class AttributePlacementSniff implements Sniff
         }
 
         if ($tokens[$targetPtr]['code'] === T_ENUM_CASE || $this->isHook($phpcsFile, $targetPtr)) {
+            $this->checkSameLineSpacing($phpcsFile, $closerPtr, $targetPtr);
             return;
         }
 
@@ -414,7 +426,8 @@ class AttributePlacementSniff implements Sniff
      *
      * In a call's argument list that isn't split, the attribute is inline with the closure, after a single space. A
      * closure split over lines doesn't split the list, as section 4.7 says. In a split list, the attribute is on its
-     * own line before the closure, which is indented the same. Anywhere else, PER says nothing, so it isn't checked.
+     * own line before the closure, which is indented the same. Anywhere else, PER says nothing, so only the spacing is
+     * checked, if checkSameLineSpacing is set.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the last attribute block's opener.
@@ -426,6 +439,7 @@ class AttributePlacementSniff implements Sniff
         $firstPtr = $this->findFirstAttribute($phpcsFile, $stackPtr);
         $arguments = $this->findCallArguments($phpcsFile, $firstPtr);
         if ($arguments === null) {
+            $this->checkSameLineSpacing($phpcsFile, $closerPtr, $targetPtr);
             return;
         }
 
@@ -476,6 +490,22 @@ class AttributePlacementSniff implements Sniff
             $phpcsFile->fixer->addContentBefore($stackPtr, str_repeat(' ', $expected));
         } else {
             $phpcsFile->fixer->replaceToken(($stackPtr - 1), str_repeat(' ', $expected));
+        }
+    }
+
+    /**
+     * If checkSameLineSpacing is set, check that an attribute on its target's line is followed by a single space.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $closerPtr The position of the last attribute block's closer.
+     * @param int $targetPtr The position of the target's first token.
+     */
+    private function checkSameLineSpacing(File $phpcsFile, int $closerPtr, int $targetPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        if ($this->checkSameLineSpacing && $tokens[$targetPtr]['line'] === $tokens[$closerPtr]['line']) {
+            $error = 'Expected 1 space between an attribute and its target on the same line';
+            $this->checkInlineSpacing($phpcsFile, $closerPtr, $targetPtr, $error, self::CODE_SAME_LINE_SPACING);
         }
     }
 

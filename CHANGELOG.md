@@ -63,6 +63,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **An attribute can be on an enum case's or a property hook's line.** Section 12.2 of PER Coding Style 3.1 lists
   neither, and a hook isn't a method. An attribute on a hook's parameter now follows the parameter rule, instead of being
   reported.
+- **One space after an attribute on its target's line in Jumbo.** On an enum case, a property hook or a closure outside
+  a call, using the new `PERCS31.Attributes.AttributePlacement` property `checkSameLineSpacing`. Auto-fixable.
 - **A default value's `=` can be aligned in PERCS31.** It's a binary operator, so PER Coding Style 3.1 only requires at
   least one space. `PERCS31.Operators.OperatorSpacing` now checks it, with the new property `checkDefaultValues`, in
   place of `Squiz.Functions.FunctionDeclarationArgumentSpacing`. The Jumbo standard still requires exactly one space.

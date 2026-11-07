@@ -329,3 +329,58 @@ class Hooks
     #[C]
     public function get(): void {}
 }
+
+class SameLineSpacing
+{
+    public string $a {
+        #[C]  get => 'a';
+    }
+
+    // phpcs:set PERCS31.Attributes.AttributePlacement checkSameLineSpacing true
+    public string $b {
+        #[C] get => 'b';
+    }
+
+    public string $c {
+        #[C] &get => $this->c;
+    }
+
+    public string $d {
+        #[C] get => 'd';
+    }
+
+    public string $e {
+        #[C]
+        get => 'e';
+    }
+
+    public string $f {
+        #[C] /* A comment. */  get => 'f';
+    }
+}
+
+enum SameLineSpacingEnum
+{
+    #[C] case A;
+
+    #[C] case B;
+
+    #[C]
+    case D;
+}
+
+$twoSpaces = #[Pure] fn(int $x): int => $x;
+$inline = #[Pure] fn(int $x): int => $x;
+$ownLine = #[Pure]
+    fn(int $x): int => $x;
+$inArray = [
+    #[Pure] fn(int $x): int => $x,
+];
+// phpcs:set PERCS31.Attributes.AttributePlacement checkSameLineSpacing false
+
+enum SpacingNotCheckedEnum
+{
+    #[C]  case A;
+}
+
+$notChecked = #[Pure]  fn(int $x): int => $x;

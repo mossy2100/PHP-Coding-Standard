@@ -68,6 +68,12 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             309 => 1,
             // A method called get.
             316 => 1,
+            // Two spaces before a target on the same line, with checkSameLineSpacing set.
+            327 => 1,
+            331 => 1,
+            350 => 1,
+            358 => 1,
+            363 => 1,
         ];
     }
 
