@@ -8,29 +8,31 @@ use PERCS31\Helpers\NamingHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\UseStatements;
 
 /**
  * Warns about an acronym in capitals in a name.
  *
  * PER Coding Style 3.1, section 2.7, RECOMMENDS treating abbreviations, acronyms and initialisms like regular words, so
- * `HttpClient`, not `HTTPClient`. It doesn't limit that to some names, so this sniff checks a namespace, class,
- * interface, trait, enum, function, method, property, parameter or variable. NamingHelper splits each name into words.
- * A word of two or more capitals is reported, and so is a single capital directly before another word, so `parseURL`,
- * `getID`, `getIDs`, `getURLs`, `AClass` and `whenXIs` are all reported. A single capital that ends the name, or that's
- * followed by a digit, as in `getX` or `X509Certificate`, isn't.
+ * `getHttpClient`, not `getHTTPClient`. This sniff checks a namespace, function, method, property, parameter, variable
+ * or import alias. NamingHelper splits each name into words. A word of two or more capitals is reported, and so is a
+ * single capital directly before another word, so `parseURL`, `getID`, `getIDs`, `getURLs` and `whenXIs` are all
+ * reported. A single capital that ends the name, or that's followed by a digit, as in `getX` or `getX2Value`, isn't.
  *
  * It doesn't check:
+ * - A class, interface, trait, enum or enum case. PascalCase is required of these, and a run of capitals isn't
+ *   PascalCase, so ValidClassName and ValidEnumCaseName report it as an error, with no exceptions.
+ * - An enum constant, as PascalCase or UPPER_CASE is required, so UpperCaseConstantName reports it.
+ * - A constant outside an enum, or an alias of one, as UPPER_CASE is required.
  * - PHP's reserved variables, such as `$_SERVER`, which aren't ours to name.
- * - An enum case or enum constant. PascalCase is required of a case, and recommended for a constant, so
- *   ValidEnumCaseName and UpperCaseConstantName report them, using this sniff's lists.
- * - A constant outside an enum, as UPPER_CASE is required.
  * - A property where it's used, such as `$this->userID` or `self::$userID`, as it may belong to a class we don't
  *   control. It's checked where it's declared.
  *
- * Set excludedNames to allow whole names, and excludedAcronyms to allow acronyms in any name, as comma-separated lists.
- * Each part of a namespace is checked as a name of its own. An acronym must match a whole upper-case word. So excluding
- * `HTTP` allows `HTTPClient`, but not `HTTPSClient` or `HTTPs`, which is `HTT` and `Ps`. Excluding `T` allows a prefix,
- * as in `TType`. Listing several lets them combine, as in `XMLHTTPRequest`.
+ * Set excludedNames to allow whole names, and excludedAcronyms to allow acronyms in any name it checks, as
+ * comma-separated lists. Each part of a namespace is checked as a name of its own. An acronym must match a whole
+ * upper-case word. So excluding `HTTP` allows `getHTTPClient`, but not `getHTTPSClient` or `getHTTPs`, which ends in
+ * `HTT` and `Ps`. Excluding `T` allows a prefix, as in `getTType`. Listing several lets them combine, as in
+ * `getXMLHTTPRequest`.
  *
  * The warning isn't fixable, as references to the name elsewhere wouldn't change.
  */
@@ -75,7 +77,7 @@ class AcronymCasingSniff implements Sniff
      */
     public function register(): array
     {
-        return [T_NAMESPACE, T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM, T_FUNCTION, T_VARIABLE];
+        return [T_NAMESPACE, T_FUNCTION, T_VARIABLE, T_AS];
     }
 
     /**
@@ -118,7 +120,7 @@ class AcronymCasingSniff implements Sniff
      * @param string $name The name.
      * @return bool True if it has one.
      */
-    public function hasAcronym(string $name): bool
+    private function hasAcronym(string $name): bool
     {
         foreach ($this->splitList($this->excludedNames) as $excluded) {
             if (ltrim($excluded, '$') === ltrim($name, '$')) {
@@ -162,6 +164,10 @@ class AcronymCasingSniff implements Sniff
                 : $stackPtr;
         }
 
+        if ($code === T_AS) {
+            return $this->findImportAlias($phpcsFile, $stackPtr);
+        }
+
         $namePtr = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
 
         // A function that returns by reference has a `&` before its name.
@@ -177,5 +183,35 @@ class AcronymCasingSniff implements Sniff
         $isName = $nameCode === T_STRING || ($code === T_NAMESPACE && $nameCode === T_NAME_QUALIFIED);
 
         return $isName ? $namePtr : false;
+    }
+
+    /**
+     * Find the alias after an `as` in an import, unless it's the alias of a constant, as UPPER_CASE is required.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of `as`.
+     * @return int|false The alias's position, or false if there's nothing to check.
+     */
+    private function findImportAlias(File $phpcsFile, int $stackPtr): int|false
+    {
+        $tokens = $phpcsFile->getTokens();
+        $usePtr = $phpcsFile->findPrevious(T_USE, ($stackPtr - 1));
+        if ($usePtr === false || $phpcsFile->findNext(T_SEMICOLON, $usePtr, $stackPtr) !== false) {
+            return false;
+        }
+
+        // A trait's `use` can have an `as` too, which names a method.
+        if (!UseStatements::isImportUse($phpcsFile, $usePtr)) {
+            return false;
+        }
+
+        $namePtr = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
+        if ($namePtr === false || $tokens[$namePtr]['code'] !== T_STRING) {
+            return false;
+        }
+
+        $imports = UseStatements::splitImportUseStatement($phpcsFile, $usePtr);
+
+        return isset($imports['const'][$tokens[$namePtr]['content']]) ? false : $namePtr;
     }
 }

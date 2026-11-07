@@ -6,7 +6,7 @@ namespace PERCS31\Sniffs\Classes;
 
 use PERCS31\Helpers\EmptyBodyHelper;
 use PHP_CodeSniffer\Files\File;
-use PHP_CodeSniffer\Standards\PSR2\Sniffs\Classes\ClassDeclarationSniff as PSR2Sniff;
+use PHP_CodeSniffer\Standards\PSR2\Sniffs\Classes\ClassDeclarationSniff as Psr2Sniff;
 
 /**
  * Checks the declaration of a class, interface, trait or enum, allowing an empty body as `{}`.
@@ -16,7 +16,7 @@ use PHP_CodeSniffer\Standards\PSR2\Sniffs\Classes\ClassDeclarationSniff as PSR2S
  * one line, this sniff runs only the parent's checks on the declaration itself (`extends`, `implements` and their
  * spacing), and skips its brace checks. Everything else is left to the parent.
  */
-class ClassDeclarationSniff extends PSR2Sniff
+class ClassDeclarationSniff extends Psr2Sniff
 {
     /**
      * Processes this test, when one of its tokens is encountered.

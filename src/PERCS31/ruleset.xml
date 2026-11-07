@@ -23,6 +23,8 @@
         <exclude name="Generic.Files.LineLength"/>
         <!-- Replaced by a PERCS31 version that allows PascalCase for an enum constant, and recommends it (9) -->
         <exclude name="Generic.NamingConventions.UpperCaseConstantName"/>
+        <!-- Replaced, as a run of capitals isn't PascalCase (2.1) -->
+        <exclude name="Squiz.Classes.ValidClassName"/>
         <!-- Replaced by a PERCS31 version that allows <?php declare(strict_types=1) ?> on the first line of a file with
              markup (3) -->
         <exclude name="PSR12.Files.FileHeader"/>
@@ -85,6 +87,9 @@
 
     <!-- A warning for an acronym in capitals in a name, as it's RECOMMENDED to write it like a word (2.7) -->
     <rule ref="PERCS31.NamingConventions.AcronymCasing"/>
+
+    <!-- Classes, interfaces, traits and enums in PascalCase, with no run of capitals (PSR-1, 2.1, 4) -->
+    <rule ref="PERCS31.NamingConventions.ValidClassName"/>
 
     <!-- ====== TYPES (2.5) ====== -->
 

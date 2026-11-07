@@ -41,7 +41,7 @@ enum LowerSuit: string
     // Neither PascalCase nor UPPER_CASE.
     public const string defaultColour = 'red';
 
-    // A run of capitals, so not PascalCase, with no approved acronyms, as this sniff runs alone here.
+    // A run of capitals, so not PascalCase.
     public const string HTTPStatus = 's';
 
     // UPPER_CASE with no underscore, which gets the warning.

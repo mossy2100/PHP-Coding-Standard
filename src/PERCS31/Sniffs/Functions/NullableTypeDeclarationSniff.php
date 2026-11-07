@@ -6,7 +6,7 @@ namespace PERCS31\Sniffs\Functions;
 
 use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
-use PHP_CodeSniffer\Standards\PSR12\Sniffs\Functions\NullableTypeDeclarationSniff as PSR12Sniff;
+use PHP_CodeSniffer\Standards\PSR12\Sniffs\Functions\NullableTypeDeclarationSniff as Psr12Sniff;
 
 /**
  * Disallows a space between the `?` of a nullable type and the type, wherever a type can appear.
@@ -17,7 +17,7 @@ use PHP_CodeSniffer\Standards\PSR12\Sniffs\Functions\NullableTypeDeclarationSnif
  * `?`. There, `array` keeps its own token, which the parent doesn't accept as a type, so this sniff checks that case
  * itself. Everything else is left to the parent.
  */
-class NullableTypeDeclarationSniff extends PSR12Sniff
+class NullableTypeDeclarationSniff extends Psr12Sniff
 {
     /**
      * Returns an array of tokens this test wants to listen for.

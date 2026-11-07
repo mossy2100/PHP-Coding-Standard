@@ -14,8 +14,8 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * PER Coding Style 3.1, section 9, says enum case declarations MUST use PascalCase, and section 2.1 says the first
  * letter of every word is capitalized. If a word could be one letter, any name in capitals would qualify, so a run of
- * capitals isn't PascalCase, unless it's an acronym approved in PERCS31.NamingConventions.AcronymCasing. So `Hearts`,
- * `C2`, `B2B` and a lone `A` pass, and `FOO`, `XMLParser` and `AClass` don't.
+ * capitals isn't PascalCase, even if it's an acronym. So `Hearts`, `C2`, `B2B` and a lone `A` pass, and `FOO`,
+ * `HTTPStatus` and `AClass` don't.
  *
  * Based on PhpCollective.Classes.EnumCaseCasing (php-collective/code-sniffer), which skips a name with no capitals,
  * such as `hearts`. This sniff doesn't fix the name, as references to the case elsewhere wouldn't change with it.
@@ -50,7 +50,7 @@ class ValidEnumCaseNameSniff implements Sniff
 
         $name = $tokens[$namePtr]['content'];
         assert(is_string($name));
-        if (NamingHelper::isPascalCaseInFile($phpcsFile, $name)) {
+        if (NamingHelper::isPascalCase($name)) {
             return;
         }
 

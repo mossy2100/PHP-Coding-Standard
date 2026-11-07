@@ -31,7 +31,7 @@ class ValidEnumCaseNameUnitTest extends AbstractSniffTestCase
             29 => 1,
             // Two capitals.
             30 => 1,
-            // A run of capitals, with no approved acronyms, as this sniff runs alone here.
+            // A run of capitals.
             31 => 1,
             32 => 1,
             // A one-letter word before a capital.

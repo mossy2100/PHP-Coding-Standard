@@ -4,30 +4,23 @@ declare(strict_types=1);
 
 namespace PERCS31\Helpers;
 
-use PERCS31\Sniffs\NamingConventions\AcronymCasingSniff;
-use PHP_CodeSniffer\Files\File;
-
 /**
  * Helper class for checking the case of names.
  */
 class NamingHelper
 {
     /**
-     * Check whether a name is in PascalCase, using the acronyms and names approved in AcronymCasing, if it's loaded.
+     * Check whether a name is in PascalCase.
      *
-     * @param File $phpcsFile The file being scanned.
+     * Section 2.1 of PER Coding Style 3.1 says the first letter of every word is capitalized. If a word could be one
+     * letter, any name in capitals would qualify, so a run of capitals isn't PascalCase, even if it's an acronym.
+     *
      * @param string $name The name.
-     * @return bool True if it's in PascalCase.
+     * @return bool True if it starts with a capital, has only letters and digits, and has no run of capitals.
      */
-    public static function isPascalCaseInFile(File $phpcsFile, string $name): bool
+    public static function isPascalCase(string $name): bool
     {
-        if (preg_match('/^[A-Z][A-Za-z0-9]*$/', $name) !== 1) {
-            return false;
-        }
-
-        $sniff = $phpcsFile->ruleset->sniffs[AcronymCasingSniff::class] ?? null;
-
-        return $sniff instanceof AcronymCasingSniff ? !$sniff->hasAcronym($name) : !self::hasAcronym($name);
+        return preg_match('/^[A-Z][A-Za-z0-9]*$/', $name) === 1 && !self::hasAcronym($name);
     }
 
     /**

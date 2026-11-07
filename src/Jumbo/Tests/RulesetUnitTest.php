@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Jumbo\Tests;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
@@ -531,55 +532,71 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that the enum sniffs use AcronymCasing's lists, and that it leaves enum cases and constants to them.
+     * Test the naming rules, in both standards: approved acronyms only apply to the names AcronymCasing checks.
      */
-    public function testEnumNamesUseApprovedAcronyms(): void
+    #[DataProvider('standardProvider')]
+    public function testNamingRules(string $standard): void
     {
         $source = <<<'PHP'
             <?php
 
             // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms HTTP
-            // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedNames LegacyID
-            enum Example
+            class HTTPClient {}
+
+            enum foo {}
+
+            enum HTTPStatus {}
+
+            enum XMLStatus
             {
                 case HTTP;
-                case HTTP2;
-                case HTTPStatus;
-                case LegacyID;
-                case HTTPS;
-                case HTTPs;
-                case XMLParser;
-                case OK;
-
+                case Hearts;
                 const HTTPOk = 1;
-                const XMLType = 2;
-                const OK_VALUE = 3;
+                const OK = 2;
             }
 
+            use Foo\Bar as XMLBar;
+
+            function getHTTP(): void {}
+
+            function getXML(): void {}
+
             PHP;
-        $sniffs = 'PERCS31.NamingConventions.AcronymCasing,PERCS31.NamingConventions.UpperCaseConstantName,'
-            . 'PERCS31.NamingConventions.ValidEnumCaseName';
-        $args = ['-s', '--standard=PERCS31', "--sniffs=$sniffs", '--report=emacs'];
         $file = $this->copyToTempFile(null, $source);
 
         try {
-            $result = $this->runTool('phpcs', [...$args, $file]);
+            $args = ['-s', "--standard=$standard", '--warning-severity=4', '--report=emacs', $file];
+            $result = $this->runTool('phpcs', $args);
         } finally {
             unlink($file);
         }
 
-        preg_match_all('/:(\d+):\d+: (\w+) - .*\.(\w+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
+        $pattern = '/:(\d+):\d+: (\w+) - .*\.(NotPascalCase|AcronymNotLikeWord|EnumConstant\w+)\)$/m';
+        preg_match_all($pattern, $result['output'], $matches, PREG_SET_ORDER);
         $reports = array_map(static fn(array $match): string => "$match[1] $match[2] $match[3]", $matches);
         $expected = [
-            '11 error NotPascalCase',
+            '4 error NotPascalCase',
+            '6 error NotPascalCase',
+            '8 error NotPascalCase',
+            '10 error NotPascalCase',
             '12 error NotPascalCase',
-            '13 error NotPascalCase',
-            '14 error NotPascalCase',
-            '17 error EnumConstantInvalidCase',
-            '18 warning EnumConstantNotPascalCase',
+            '14 error EnumConstantInvalidCase',
+            '15 warning EnumConstantNotPascalCase',
+            '18 warning AcronymNotLikeWord',
+            '22 warning AcronymNotLikeWord',
         ];
 
         $this->assertSame($expected, $reports, $result['output']);
+    }
+
+    /**
+     * The two standards.
+     *
+     * @return array<string, array{string}>
+     */
+    public static function standardProvider(): array
+    {
+        return ['PERCS31' => ['PERCS31'], 'Jumbo' => ['Jumbo']];
     }
 
     /**

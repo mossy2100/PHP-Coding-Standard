@@ -9,24 +9,16 @@ class HttpClient
     // A single capital that isn't followed by another.
     public function getX(): void {}
 
+    public function getX2Value(): void {}
+
     public function __construct() {}
 
     public function &getId(): array {}
 }
 
-class A {}
+function HttpStatus(): void {}
 
-class X509Certificate {}
-
-interface JsonParser {}
-
-trait Jsonable {}
-
-enum HttpStatus
-{
-    case NotFound;
-    case A;
-}
+function A(): void {}
 
 function parseJson(): void {}
 
@@ -35,9 +27,35 @@ function parse_url2(): void {}
 $anonymous = new class {};
 $closure = function (): void {};
 
-// === INVALID ===
+// === NOT CHECKED HERE ===
 
-class HTTPClient
+// PascalCase is required of these and enums, so ValidClassName reports a run of capitals.
+class HTTPClientTwo {}
+
+interface XMLParser {}
+
+trait JSONable {}
+
+// As are enum cases and constants, which ValidEnumCaseName and UpperCaseConstantName report.
+enum HTTPReported
+{
+    case HTTPOk;
+    const HTTPCode = 1;
+    const string XMLType = 'xml';
+    const HTTP_OK = 200;
+    const OK = 2;
+}
+
+class Constants
+{
+    const HTTP_OK = 200;
+}
+
+const HTTP_OK = 200;
+
+// === FUNCTIONS AND METHODS, INVALID ===
+
+class Invalid
 {
     public function getHTTPResponse(): void {}
 
@@ -55,24 +73,11 @@ class HTTPClient
     public function whenXIs(): void {}
 }
 
-class ID {}
+function ID(): void {}
 
-class AClass {}
+function AStatus(): void {}
 
-class TType {}
-
-class OAuthToken {}
-
-class IOStream {}
-
-interface XMLParser {}
-
-trait JSONable {}
-
-enum HTTPStatus
-{
-    case HTTPOk; // Left to ValidEnumCaseName.
-}
+function HTTPStatus(): void {}
 
 function parseJSON(): void {}
 
@@ -80,25 +85,11 @@ function parseJSON(): void {}
 
 namespace App\Http;
 
-const HTTP_OK = 200;
-
-enum ValidNames
-{
-    const VALID_CONSTANT = 1;
-    // UPPER_CASE with no underscore, which isn't an acronym in a name. It has its own warning.
-    const HTTP = 3;
-    const string URL = 'url';
-    const NotFound = 2;
-    const string OkStatus = 'ok';
-}
-
 class ValidVariables
 {
     private int $userId = 0;
 
     private static int $count = 0;
-
-    const HTTP_OK = 200;
 
     public function __construct(public int $orderId, int $itemId)
     {
@@ -115,12 +106,6 @@ class ValidVariables
 namespace App\HTTP;
 
 namespace HTTP;
-
-enum InvalidNames
-{
-    const HTTPOk = 1; // Left to UpperCaseConstantName.
-    const string XMLType = 'xml'; // Left to UpperCaseConstantName.
-}
 
 class InvalidVariables
 {
@@ -140,78 +125,111 @@ class InvalidVariables
 
 $globalID = 1;
 
+// === IMPORT ALIASES, VALID ===
+
+use Foo\Bar;
+use Foo\Baz as HttpBaz;
+use function Foo\bar as getId;
+use const Foo\BAR as HTTP_OK_TWO;
+use Foo\{Qux as HttpQux, Quux};
+use Foo\{const BAZ as HTTP_BAZ};
+
+class UsesTrait
+{
+    // A trait's `as` names a method, which isn't an import alias.
+    use SomeTrait {
+        run as getURL;
+    }
+}
+
+function loop(array $items): void
+{
+    foreach ($items as $itemId) {
+        echo $itemId;
+    }
+}
+
+// === IMPORT ALIASES, INVALID ===
+
+use Foo\Bar as HTTPBar;
+use function Foo\bar as getID;
+use Foo\{Baz as XMLBaz, Qux as JSONQux};
+use Foo\One as OneID, Foo\Two as URLPath;
+
 // === EXCLUSIONS ===
 
 // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedNames PERCS31,LegacyID,$otherID
 namespace PERCS31\Sniffs\Arrays;
 
-class LegacyID {}
+function LegacyID(): void {}
 
 $otherID = 1;
 
 // A part of a namespace that isn't excluded, and a name that only nearly matches.
 namespace PERCS31\HTTP;
 
-class OtherLegacyID {}
+function OtherLegacyID(): void {}
 
 // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedNames
 // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms HTTP, XML
-class HTTPClient {}
+function HTTPCode(): void {}
 
 $xmlValue = parseXML();
 
 function getHTTPResponse(): void {}
 
+use Foo\Bar as HTTPBarTwo;
+
+function XMLHTTPRequest(): void {}
+
+// A plural isn't an acronym, a different acronym, a longer one, and a name with an excluded and another.
 function loadHTTPs(): void {}
 
-class XMLHTTPRequest {}
+function URLClient(): void {}
 
-// A different acronym, a longer one, and a name with an excluded and another.
-class URLClient {}
+function HTTPSClient(): void {}
 
-class HTTPSClient {}
-
-class HTTPClientForURL {}
+function HTTPClientForURL(): void {}
 
 // A single letter can be excluded too, such as a prefix.
 // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms T, O
-class TTypeTwo {}
+function TTypeTwo(): void {}
 
-class OAuthTwo {}
+function OAuthTwo(): void {}
 
-class ATypeTwo {}
+function ATypeTwo(): void {}
 
 // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms HTTP, HTTPS, ID, URL
-// The last capital before a lower-case letter starts a word, so these are `HTTP`, `HTTPS` and `HTTP`.
-class HTTPSecurity {}
+// The last capital before a lower-case letter starts a word, so these are `HTTP`, `HTTPS` and `HTTPS`.
+function HTTPSecurity(): void {}
 
-class HTTPSClient {}
+function HTTPSClientTwo(): void {}
 
 function getHTTPS(): void {}
 
-// These are `HTT` and `Ps`, `I` and `Ds`, `I` and `Dea`, and `UR` and `Ls`, none of which is approved.
+// These are `HTT` and `Pz`, `I` and `Ds`, `I` and `Dea`, and `UR` and `Ls`, none of which is approved.
 function loadHTTPz(): void {}
 
 function getIDs(): array {}
 
-class IDea {}
+function IDea(): void {}
 
 function getURLs(): array {}
 
 // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms HTTPS
 // This is `HTTP` and `Security`, and only `HTTPS` is approved.
-class OtherHTTPSecurity {}
+function OtherHTTPSecurity(): void {}
 
-class HTTPSecure {}
+function HTTPSecure(): void {}
 
 // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms
 
 // A digit separates capitals, and stays with the word on its left.
-class B2B {}
+function B2B(): void {}
 
-class H2O {}
+function H2O(): void {}
 
-class MP3Player {}
+function MP3Player(): void {}
 
 function user_ID(): void {}
 
