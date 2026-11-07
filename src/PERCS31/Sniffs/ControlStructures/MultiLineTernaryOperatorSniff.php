@@ -11,19 +11,23 @@ use PHP_CodeSniffer\Util\Tokens;
 use SlevomatCodingStandard\Helpers\TernaryOperatorHelper;
 
 /**
- * Requires a ternary that spans lines to take three, with `?` and `:` each starting a line, indented once.
+ * Requires a ternary split at `?` or `:` to take three lines, with `?` and `:` each starting a line, indented once.
  *
  * PER Coding Style 3.1, section 6.4, says a multi-line ternary MUST occupy 3 lines, never 2, with each operator at the
  * start of its line, indented once. SlevomatCodingStandard.ControlStructures.DisallowTrailingMultiLineTernaryOperator
  * only reports a `?` at the end of a line, so this sniff replaces it. It also reports a ternary on two lines, a
  * trailing `:`, and `?` or `:` indented wrongly, and fixes each to the three-line layout.
  *
+ * A ternary is split if there's a line break right before or after its `?` or `:`. A value or condition split over
+ * lines doesn't split it, as in `$a = $b ? [` over several lines to `] : [];`, so it's left alone, as other binary
+ * operators are.
+ *
  * A short ternary (`?:`) is a binary operator in PER, so it isn't checked here.
  *
  * Finding where a ternary starts and ends uses Slevomat's TernaryOperatorHelper, which is marked internal, so check
  * this sniff after a Slevomat upgrade. It only stops at some tokens, such as `=` and `return`, so it can walk back past
- * the start of the ternary's statement or `match` arm to an earlier line. So `$a += $b ? 1 : 2;` or `1 => $a ? 2 : 3,`
- * would count as spanning lines. This sniff also stops at anything else that comes before a ternary's expression.
+ * the start of the ternary's statement or `match` arm to an earlier line, which would give the wrong indent. This
+ * sniff also stops at anything else that comes before a ternary's expression.
  *
  * PHP_CodeSniffer reads the `?` of a nullable type in a `set` hook's parameter, as in `set(?int $value)`, as a
  * ternary's. The helper would crash on it, as it has no `:`, so it's skipped.
@@ -68,8 +72,10 @@ class MultiLineTernaryOperatorSniff implements Sniff
             $inlineThenPointer,
             TernaryOperatorHelper::getStartPointer($phpcsFile, $inlineThenPointer),
         );
-        $endPointer = TernaryOperatorHelper::getEndPointer($phpcsFile, $inlineThenPointer, $inlineElsePointer);
-        if ($tokens[$startPointer]['line'] === $tokens[$endPointer]['line']) {
+        if (
+            !$this->isSplitAtOperator($phpcsFile, $inlineThenPointer)
+            && !$this->isSplitAtOperator($phpcsFile, $inlineElsePointer)
+        ) {
             return;
         }
 
@@ -86,7 +92,7 @@ class MultiLineTernaryOperatorSniff implements Sniff
             return;
         }
 
-        $error = 'A ternary that spans lines must take three, with "?" and ":" each starting a line, indented once';
+        $error = 'A ternary split at "?" or ":" must take three lines, with each starting a line, indented once';
         $operators = [$inlineThenPointer, $inlineElsePointer];
         if ($this->hasCommentAround($phpcsFile, $operators)) {
             $phpcsFile->addError($error, $inlineThenPointer, self::CODE_INCORRECT_LAYOUT);
@@ -117,6 +123,23 @@ class MultiLineTernaryOperatorSniff implements Sniff
         }
 
         $phpcsFile->fixer->endChangeset();
+    }
+
+    /**
+     * Check whether there's a line break right before or after an operator, ignoring comments.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $operator The position of the `?` or `:`.
+     * @return bool True if the code before or after the operator is on another line.
+     */
+    private function isSplitAtOperator(File $phpcsFile, int $operator): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $before = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($operator - 1), null, true);
+        $after = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($operator + 1), null, true);
+
+        return ($before !== false && $tokens[$before]['line'] !== $tokens[$operator]['line'])
+            || ($after !== false && $tokens[$after]['line'] !== $tokens[$operator]['line']);
     }
 
     /**

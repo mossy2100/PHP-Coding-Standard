@@ -251,7 +251,7 @@
         <exclude name="PERCS31.Operators.OperatorSpacing.SpacingAfterAmp"/>
     </rule>
 
-    <!-- A ternary that spans lines takes three, with ? and : leading, indented once (6.4) -->
+    <!-- A ternary split at ? or : takes three lines, with ? and : leading, indented once (6.4) -->
     <rule ref="PERCS31.ControlStructures.MultiLineTernaryOperator"/>
 
     <!-- A wrapped . at the start of the line, not the end (6.4) -->

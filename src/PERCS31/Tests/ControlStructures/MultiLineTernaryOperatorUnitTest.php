@@ -40,6 +40,10 @@ class MultiLineTernaryOperatorUnitTest extends AbstractSniffTestCase
             109 => 1,
             // After a set hook's nullable type.
             120 => 1,
+            // A line break next to one operator: with a value split over lines, and after a comment (not fixable).
+            168 => 1,
+            173 => 1,
+            176 => 1,
         ];
     }
 

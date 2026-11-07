@@ -768,14 +768,17 @@ $label = match ($code) {
 
 ### PERCS31.ControlStructures.MultiLineTernaryOperator
 
-Requires a ternary that spans lines to take three, with `?` and `:` each starting a line, indented once. This replaces
-`SlevomatCodingStandard.ControlStructures.DisallowTrailingMultiLineTernaryOperator`.
+Requires a ternary split at `?` or `:` to take three lines, with `?` and `:` each starting a line, indented once. This
+replaces `SlevomatCodingStandard.ControlStructures.DisallowTrailingMultiLineTernaryOperator`.
 
 **Why:** [PER Coding Style 3.1, Section 6.4](https://www.php-fig.org/per/coding-style/#64-operators-placement) says a multi-line ternary MUST occupy three lines, never two, with each
 operator at the start of its line. The Slevomat sniff only reports a `?` at the end of a line. No inherited sniff
 reports a ternary on two lines, a trailing `:`, or the wrong indentation. A short ternary (`?:`) is a binary operator in
 PER, so it isn't checked here. Nor is the `?` of a nullable type in a `set` hook's parameter, which PHP_CodeSniffer
 reads as a ternary's.
+
+A ternary is split if there's a line break right before or after its `?` or `:`. A value or condition split over lines
+doesn't split it, so it's left alone, as other binary operators are.
 
 **Auto-fixable:** yes, unless a comment is next to `?` or `:`.
 
@@ -788,6 +791,10 @@ property of `PERCS31.WhiteSpace.ScopeIndent`.
 $label = $isActive
     ? 'Active'
     : 'Inactive';
+
+$options = $isActive ? [
+    'active' => true,
+] : [];
 ```
 
 **Bad:**
@@ -798,6 +805,11 @@ $label = $isActive
 
 $label = $isActive ? 'Active' :
     'Inactive';
+
+$options = $isActive ? [
+    'active' => true,
+]
+    : [];
 ```
 
 ---

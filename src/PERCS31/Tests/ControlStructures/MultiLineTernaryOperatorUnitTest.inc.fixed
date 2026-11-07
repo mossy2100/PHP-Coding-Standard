@@ -125,3 +125,61 @@ class HookParameterType
 $a = $b
     ? 1
     : 2;
+
+// A value or condition split over lines doesn't split the ternary, with no line break next to ? or :.
+$a = $b ? [
+    1,
+] : [];
+$a = $b ? foo(
+    1,
+) : 2;
+$a = $b ? function () {
+    return 1;
+} : null;
+$a = $b ? match ($c) {
+    1 => 2,
+    default => 3,
+} : 4;
+$a = foo(
+    1,
+) ? 1 : 2;
+$a = $b ? 1 : foo(
+    1,
+);
+$a = $b ? 1 : [
+    1,
+];
+$a = $b ? foo(
+    1,
+) : bar(
+    2,
+);
+$a = ($b
+    && $c) ? 1 : 2;
+foo($b ? [
+    1,
+] : []);
+$a = $b ? <<<'X'
+    c
+    X : 4;
+
+// The three-line form, with a value split over lines.
+$a = $b
+    ? [
+        1,
+    ]
+    : [];
+
+// A line break next to one operator splits the ternary.
+$a = $b
+    ? [
+    1,
+]
+    : [];
+$a = $b
+    ? [
+        1,
+    ]
+    : [];
+$a = $b ? 1 // Comment.
+    : 2;

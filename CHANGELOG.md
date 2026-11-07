@@ -356,6 +356,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
+- **A ternary with a multi-line value.** `PERCS31.ControlStructures.MultiLineTernaryOperator` no longer reports a
+  ternary whose value or condition is split over lines, with no line break next to `?` or `:`, such as `$a = $b ? [`
+  over several lines to `] : [];`. A ternary split at `?` or `:` must still take the three-line form.
 - **PHP indented inside markup.** `PERCS31.WhiteSpace.ConsistentIndent` and `PERCS31.WhiteSpace.ScopeIndent` no longer
   report PHP indented to match the HTML around it, and a block's code may be level with its tags or one level past
   them. The indent of `?>` isn't checked, as PER has no rule on it. A body on the line after `<?php if ($a) {` is now
