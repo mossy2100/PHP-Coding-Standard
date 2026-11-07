@@ -514,9 +514,23 @@ array, a method signature, a condition and a loop header.
 These are left alone:
 
 - A chain of two or more methods, each on its own line. A single wrapped `->` is collapsed.
-- A comment, a heredoc or nowdoc, a multi-line string, or a closure, `match` or anonymous class body. See
-  `Jumbo\Helpers\SingleLineHelper`.
+- A comment, a heredoc or nowdoc, or a multi-line string.
 - A line break only inside a call or array, whose own sniffs report it.
+
+A statement with a closure, `match` or anonymous class body, or a call or array too long for one line, can't be
+collapsed. So the lines around it are joined instead, and it moves left to match:
+
+```php
+$a = $b
+    ?? function () {
+        return 1;
+    };
+
+// Becomes:
+$a = $b ?? function () {
+    return 1;
+};
+```
 
 **Auto-fixable:** yes.
 

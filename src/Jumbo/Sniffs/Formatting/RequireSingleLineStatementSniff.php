@@ -17,10 +17,12 @@ use PHP_CodeSniffer\Util\Tokens;
  * rest of a statement, such as `$a = $b` then `+ $c;`, or grouping parentheses.
  *
  * It only reports a line break outside those constructs, so they keep their own messages. Once it does, the fix
- * collapses the whole statement. It's skipped for:
+ * collapses the whole statement. If it can't, as it holds a closure, or a call or array too long for one line, the fix
+ * joins the lines around it instead, so `$a = $b` then `?? function () {` becomes `$a = $b ?? function () {`. It's
+ * skipped for:
  * - A chain of two or more methods, each on its own line, which is the usual reason to write a chain that way.
  * - An import or a function declaration, which have their own rules.
- * - Whatever SingleLineHelper never collapses, such as a comment, a heredoc or a closure.
+ * - A heredoc or nowdoc, and any part of a statement with a comment or a multi-line string.
  */
 class RequireSingleLineStatementSniff implements Sniff
 {
@@ -104,10 +106,27 @@ class RequireSingleLineStatementSniff implements Sniff
         }
 
         $collapsed = SingleLineHelper::collapse($phpcsFile, $start, $end, $this->maxLineLength);
-        if ($collapsed === null) {
+        if ($collapsed !== null) {
+            $this->report($phpcsFile, $start, $end, $collapsed);
             return;
         }
 
+        if ($phpcsFile->findNext([T_START_HEREDOC, T_START_NOWDOC], $start, $end) === false) {
+            $this->joinLinesAroundBrackets($phpcsFile, $start, $end);
+        }
+    }
+
+    /**
+     * Report a statement or part of one that fits on one line, and fix it.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $start The position of the first token.
+     * @param int $end The position of the last token.
+     * @param string $collapsed The collapsed text, from SingleLineHelper::collapse().
+     * @return bool True if it's being fixed.
+     */
+    private function report(File $phpcsFile, int $start, int $end, string $collapsed): bool
+    {
         $fix = $phpcsFile->addFixableError(
             'A statement split across lines fits within %s characters, so it must be written on one line.',
             $start,
@@ -117,6 +136,109 @@ class RequireSingleLineStatementSniff implements Sniff
         if ($fix) {
             SingleLineHelper::replace($phpcsFile, $start, $end, $collapsed);
         }
+
+        return $fix;
+    }
+
+    /**
+     * Join the lines of each part of a statement between its multi-line brackets and bodies, leaving those alone.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $start The position of the statement's first token.
+     * @param int $end The position of the semicolon or `case` label's colon.
+     */
+    private function joinLinesAroundBrackets(File $phpcsFile, int $start, int $end): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $partStart = $start;
+        for ($i = $start; $i <= $end; $i++) {
+            // A body's part ends before its keyword, which SingleLineHelper won't collapse, and resumes at its closer.
+            if (in_array($tokens[$i]['code'], [T_CLOSURE, T_ANON_CLASS, T_MATCH], true)) {
+                $bodyCloser = $tokens[$i]['scope_closer'] ?? null;
+                $before = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($i - 1), $partStart, true);
+                if (is_int($bodyCloser) && $before !== false) {
+                    $this->joinPart($phpcsFile, $partStart, $before, $bodyCloser);
+                    $partStart = $bodyCloser;
+                    $i = $bodyCloser;
+                    continue;
+                }
+            }
+
+            $closer = $tokens[$i]['parenthesis_closer'] ?? $tokens[$i]['bracket_closer'] ?? null;
+            if (!is_int($closer) || $closer <= $i) {
+                continue;
+            }
+
+            if ($tokens[$closer]['line'] !== $tokens[$i]['line']) {
+                $this->joinPart($phpcsFile, $partStart, $i, $closer);
+                $partStart = $closer;
+            }
+
+            $i = $closer;
+        }
+
+        $this->joinPart($phpcsFile, $partStart, $end);
+    }
+
+    /**
+     * Join the lines of one part of a statement, if it spans lines and the resulting line fits.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $start The position of the part's first token.
+     * @param int $end The position of the part's last token.
+     * @param int|null $closer The closer of the multi-line brackets or body after the part, if any.
+     */
+    private function joinPart(File $phpcsFile, int $start, int $end, ?int $closer = null): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        if ($tokens[$start]['line'] === $tokens[$end]['line']) {
+            return;
+        }
+
+        $collapsed = SingleLineHelper::collapse($phpcsFile, $start, $end, $this->maxLineLength);
+        if ($collapsed !== null && $this->report($phpcsFile, $start, $end, $collapsed) && $closer !== null) {
+            $this->shiftLines($phpcsFile, $start, $end, $closer);
+        }
+    }
+
+    /**
+     * Move the lines after a joined part left, so its brackets or body stay indented from the part's first line.
+     *
+     * Nothing else would finish the job: PERCS31.WhiteSpace.ScopeIndent only checks a body's first line, and
+     * PERCS31.WhiteSpace.ConsistentIndent skips a closure.
+     *
+     * @param File $phpcsFile The file being fixed.
+     * @param int $start The position of the part's first token.
+     * @param int $end The position of the part's last token.
+     * @param int $closer The closer of the multi-line brackets or body after the part.
+     */
+    private function shiftLines(File $phpcsFile, int $start, int $end, int $closer): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $start, true);
+        $firstOnCloserLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $closer, true);
+        if ($firstOnLine === false || $firstOnCloserLine === false) {
+            return;
+        }
+
+        $closerColumn = $tokens[$firstOnCloserLine]['column'];
+        $column = $tokens[$firstOnLine]['column'];
+        if (!is_int($closerColumn) || !is_int($column) || $closerColumn <= $column) {
+            return;
+        }
+
+        $phpcsFile->fixer->beginChangeset();
+        for ($i = ($end + 1); $i < $firstOnCloserLine; $i++) {
+            $isIndent = $tokens[$i]['column'] === 1
+                && in_array($tokens[$i]['code'], [T_WHITESPACE, T_DOC_COMMENT_WHITESPACE], true)
+                && !str_contains($tokens[$i]['content'], "\n");
+            if ($isIndent) {
+                $indent = max(0, (strlen($tokens[$i]['content']) - ($closerColumn - $column)));
+                $phpcsFile->fixer->replaceToken($i, str_repeat(' ', $indent));
+            }
+        }
+
+        $phpcsFile->fixer->endChangeset();
     }
 
     /**
@@ -267,12 +389,11 @@ class RequireSingleLineStatementSniff implements Sniff
         }
 
         $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
-        $isCall = $previous !== false
-            && (
-                isset(Tokens::FUNCTION_NAME_TOKENS[$tokens[$previous]['code']])
-                || in_array($tokens[$previous]['code'], self::CALLABLE_ENDS, true)
-                || isset($tokens[$stackPtr]['parenthesis_owner'])
-            );
+        $isCall = $previous !== false && (
+            isset(Tokens::FUNCTION_NAME_TOKENS[$tokens[$previous]['code']])
+            || in_array($tokens[$previous]['code'], self::CALLABLE_ENDS, true)
+            || isset($tokens[$stackPtr]['parenthesis_owner'])
+        );
         $closer = $tokens[$stackPtr]['parenthesis_closer'] ?? null;
 
         return $isCall && is_int($closer) ? $closer : null;

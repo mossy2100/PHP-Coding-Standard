@@ -80,3 +80,42 @@ switch ($a) {
         break;
 }
 $a = foo(1) + 2;
+
+// Invalid: the lines around a body, or a call or array too long to collapse, are joined.
+$a = $b ?? function () {
+    return 1;
+};
+$a = $b ? function () {
+    return 1;
+} : null;
+$a = $b ?? new class {
+    public int $c;
+};
+$a = $b ?? match ($c) {
+    1 => 2,
+    default => 3,
+};
+$a = function () {
+    return 1;
+} ?? null;
+$a = $b ?? foo(function () {
+    return 1;
+});
+$a = $b
+    ?? ['abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz', 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz'];
+$a = $b ?? [
+    'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz',
+    'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz',
+    'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz',
+];
+
+// Valid: a comment in the part to join, or a chain of two or more with a body.
+$a = $b // Why.
+    ?? function () {
+        return 1;
+    };
+$a
+    ->b(function () {
+        return 1;
+    })
+    ->c();

@@ -38,6 +38,15 @@ class RequireSingleLineStatementUnitTest extends AbstractSniffTestCase
             94 => 1,
             98 => 1,
             103 => 1,
+            // The lines around a body, or a call or array too long to collapse.
+            109 => 1,
+            113 => 1,
+            116 => 1,
+            118 => 1,
+            122 => 1,
+            129 => 1,
+            131 => 1,
+            137 => 1,
         ];
     }
 
