@@ -25,6 +25,8 @@ class DisallowMultipleAttributesPerLineUnitTest extends AbstractSniffTestCase
             // Two blocks before a hook, which the parent sniff misses, and with a comment between (not fixable).
             35 => 1,
             40 => 1,
+            // Code before the blocks.
+            46 => 1,
         ];
     }
 

@@ -318,6 +318,15 @@ function f(
 [`PERCS31.Attributes.DisallowMultipleAttributesPerLine`](#percs31attributesdisallowmultipleattributesperline) then puts
 each block on its own line. One block holding several attributes, as in `#[A, B] case X;`, can stay inline.
 
+When code comes before the blocks on their line, the blocks after the first, and the target, are indented one level
+more, as a continuation of the statement:
+
+```php
+$pure = #[A]
+    #[B]
+    static fn($x) => $x;
+```
+
 PER doesn't set the spacing for one block in these three cases, so `#[Label]  case Active;` passes. Set
 `checkSameLineSpacing` to require a single space when the attribute is on its target's line, as the Jumbo standard does.
 It's fixable.
@@ -450,6 +459,8 @@ Slevomat sniff checks this, with two problems:
   split. This sniff skips that case, and [`AttributePlacement`](#percs31attributesattributeplacement) splits the whole
   list instead.
 - It misses blocks on a property hook, as PHP_CodeSniffer doesn't know about hooks. This sniff reports them.
+- When code comes before the blocks on their line, as in `$pure = #[A] #[B]`, its fix lines the next block up with the
+  line. This sniff indents it one level more, as a continuation of the statement.
 
 **Auto-fixable:** yes, unless there's a comment between the blocks.
 

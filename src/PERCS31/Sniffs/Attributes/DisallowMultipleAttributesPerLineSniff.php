@@ -19,6 +19,8 @@ use SlevomatCodingStandard\Sniffs\Attributes\DisallowMultipleAttributesPerLineSn
  *   start of a line and leave the list half split, so PERCS31.Attributes.AttributePlacement reports that case, and
  *   splits the whole list.
  * - It reports blocks on a property hook, which the parent misses, as PHP_CodeSniffer doesn't know about hooks.
+ * - When code comes before the blocks on their line, as in `$f = #[A] #[B] fn() => 1;`, the fix indents the next block
+ *   one level past that line, as a continuation of the statement. The parent's fix lines it up with the line.
  */
 class DisallowMultipleAttributesPerLineSniff extends SlevomatSniff
 {
@@ -40,7 +42,11 @@ class DisallowMultipleAttributesPerLineSniff extends SlevomatSniff
         $isNextOnLine = $nextPtr !== false
             && $tokens[$nextPtr]['code'] === T_ATTRIBUTE
             && $tokens[$nextPtr]['line'] === $tokens[$closerPtr]['line'];
-        if (!$isNextOnLine || !PropertyHookHelper::isInsidePropertyHook($phpcsFile, $attributeOpenerPointer)) {
+        $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $attributeOpenerPointer, true);
+        assert(is_int($firstOnLine));
+        $isContinued = $tokens[$firstOnLine]['code'] !== T_ATTRIBUTE;
+        $isHook = $isNextOnLine && PropertyHookHelper::isInsidePropertyHook($phpcsFile, $attributeOpenerPointer);
+        if (!$isNextOnLine || (!$isContinued && !$isHook)) {
             parent::process($phpcsFile, $attributeOpenerPointer);
             return;
         }
@@ -57,14 +63,12 @@ class DisallowMultipleAttributesPerLineSniff extends SlevomatSniff
             return;
         }
 
-        $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $attributeOpenerPointer, true);
-        assert(is_int($firstOnLine));
         $phpcsFile->fixer->beginChangeset();
         for ($i = ($closerPtr + 1); $i < $nextPtr; $i++) {
             $phpcsFile->fixer->replaceToken($i, '');
         }
 
-        $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1));
+        $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1 + ($isContinued ? 4 : 0)));
         $phpcsFile->fixer->addContent($closerPtr, $phpcsFile->eolChar . $indent);
         $phpcsFile->fixer->endChangeset();
     }

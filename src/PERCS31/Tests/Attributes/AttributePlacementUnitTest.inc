@@ -397,3 +397,7 @@ function multipleBlocks(#[A] #[B] int $c, int $d = 1): void {}
 usort($items, #[A] #[B] fn($x) => $x);
 
 function oneBlock(#[A, B] int $c): void {}
+
+// Code before the blocks, so the target is indented one level more.
+$pure = #[A]
+    #[B] fn($x) => $x;

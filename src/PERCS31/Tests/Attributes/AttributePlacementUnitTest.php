@@ -81,6 +81,8 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             391 => 1,
             395 => 1,
             397 => 1,
+            // Code before the blocks.
+            403 => 1,
         ];
     }
 

@@ -41,3 +41,6 @@ class Hooks
         get => 'b';
     }
 }
+
+// Code before the blocks, so the next block is indented one level more.
+$pure = #[A] #[B] fn($x) => $x;

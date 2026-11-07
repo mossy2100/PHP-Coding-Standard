@@ -646,6 +646,8 @@ class RulesetUnitTest extends TestCase
 
             usort($items, #[A] #[B] static fn($x) => $x);
 
+            $pure = #[A] #[B] static fn($x) => $x;
+
             PHP;
         $expected = <<<'PHP'
             <?php
@@ -673,6 +675,10 @@ class RulesetUnitTest extends TestCase
                 #[B]
                 static fn($x) => $x,
             );
+
+            $pure = #[A]
+                #[B]
+                static fn($x) => $x;
 
             PHP;
         $file = $this->copyToTempFile(null, $source);

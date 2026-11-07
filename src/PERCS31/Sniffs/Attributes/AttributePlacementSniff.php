@@ -250,7 +250,8 @@ class AttributePlacementSniff implements Sniff
     }
 
     /**
-     * Report a target that shares a line with two or more attribute blocks, and fix it onto the next line.
+     * Report a target that shares a line with two or more attribute blocks, and fix it onto the next line. It's
+     * indented as the line is, or one level more if code comes before the attributes, as in `$f = #[A]`.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the last attribute block's opener.
@@ -269,7 +270,8 @@ class AttributePlacementSniff implements Sniff
             $tokens = $phpcsFile->getTokens();
             $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $stackPtr, true);
             assert(is_int($firstOnLine));
-            $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1));
+            $extra = $tokens[$firstOnLine]['code'] === T_ATTRIBUTE ? 0 : 4;
+            $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1 + $extra));
             $this->setSpacing($phpcsFile, $closerPtr, $targetPtr, $phpcsFile->eolChar . $indent);
         }
     }
