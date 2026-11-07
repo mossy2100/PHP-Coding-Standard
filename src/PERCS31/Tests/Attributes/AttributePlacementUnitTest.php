@@ -54,21 +54,20 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             149 => 1,
             151 => 1,
             155 => 1,
-            // With checkClosureAttributesOutsideCalls: two spaces, on its own line, and on its own line in an array.
-            172 => 1,
-            173 => 1,
-            176 => 1,
             // A blank line, and a comment, between the last attribute and its target.
-            182 => 1,
-            186 => 1,
+            180 => 1,
+            184 => 1,
             // A blank line after an attribute with a comment at the end of its line.
-            201 => 1,
-            // An enum case when set, one not fixable, then a constant as always.
-            233 => 1,
-            238 => 1,
-            241 => 1,
+            199 => 1,
+            // A constant, unlike an enum case.
+            237 => 1,
             // A comment before a parameter, when set.
-            249 => 1,
+            245 => 1,
+            // A hook's parameter: two spaces, and inline in a split list.
+            293 => 1,
+            309 => 1,
+            // A method called get.
+            316 => 1,
         ];
     }
 

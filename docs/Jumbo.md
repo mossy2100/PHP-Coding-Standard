@@ -40,11 +40,8 @@ The line length limit is 120. To change it, see [Line Length](LineLength.md).
 
 The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-12. These are Jumbo's changes to it:
 
-- `PERCS31.Attributes.AttributePlacement` requires a closure's attribute inline, after a single space, outside a call's
-  argument list too, e.g. in an assignment or an array (`checkClosureAttributesOutsideCalls` set to `true`). It also
-  requires an enum case's attribute on the line before the case, as for a constant (`checkEnumCaseAttributes` set to
-  `true`), and reports a comment on its own line between an attribute and its parameter (`checkParameterComments` set to
-  `true`).
+- `PERCS31.Attributes.AttributePlacement` reports a comment on its own line between an attribute and its parameter
+  (`checkParameterComments` set to `true`).
 - `PERCS31.Classes.PropertyDeclaration` checks the hook order in every hook list, including ones with bodies
   (`orderHooksWithBodies` set to `true`).
 - `PERCS31.Classes.PropertyHookLayout` reports a space in a by-reference hook, `& get` (`checkReferenceSpacing` set to

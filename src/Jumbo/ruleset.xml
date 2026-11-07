@@ -403,11 +403,9 @@
 
     <!-- ====== ATTRIBUTES (12) ====== -->
 
-    <!-- A closure's attribute inline, after a single space, outside a call's arguments too, e.g. in an assignment -->
+    <!-- A comment on its own line between an attribute and its parameter is reported -->
     <rule ref="PERCS31.Attributes.AttributePlacement">
         <properties>
-            <property name="checkClosureAttributesOutsideCalls" value="true"/>
-            <property name="checkEnumCaseAttributes" value="true"/>
             <property name="checkParameterComments" value="true"/>
         </properties>
     </rule>

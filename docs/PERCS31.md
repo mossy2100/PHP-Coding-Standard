@@ -297,12 +297,11 @@ A named argument's closure keeps its attribute inline, even in a split list, as 
 Section 4.7 requires a single space between the colon and the value, and PHP doesn't allow the attribute before the
 name.
 
-Anywhere else, such as in an assignment or an array, PER says nothing, so it isn't checked. Set
-`checkClosureAttributesOutsideCalls` to require the attribute inline after a single space there too, as the Jumbo
-standard does.
+Anywhere else, such as in an assignment or an array, PER says nothing, so it isn't checked.
 
 An enum case isn't in section 12.2's list either, so `#[Label] case Active;` passes, as does the attribute on the line
-before. Set `checkEnumCaseAttributes` to require the line before, as for a constant, as the Jumbo standard does.
+before. Nor is a property hook, which isn't a method, so `#[Label] get => 'a';` passes too. A hook's parameter follows
+the parameter rule.
 
 **Why:** `SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing` covers some of this, but its only option for an
 attribute on its target's line, `allowOnSameLine`, is all or nothing, and its fix for a blank line deletes a comment
@@ -377,11 +376,9 @@ $handler = new #[Attribute] class {
 
 **Configuration:**
 
-| Property                             | Type | Default | Description                                                                 |
-| ------------------------------------ | ---- | ------- | --------------------------------------------------------------------------- |
-| `checkClosureAttributesOutsideCalls` | bool | false   | Require a closure's attribute inline, after a single space, outside a call. |
-| `checkEnumCaseAttributes`            | bool | false   | Require an enum case's attribute on the line before the case.               |
-| `checkParameterComments`             | bool | false   | Report a comment on its own line between an attribute and its parameter.    |
+| Property                 | Type | Default | Description                                                              |
+| ------------------------ | ---- | ------- | ------------------------------------------------------------------------ |
+| `checkParameterComments` | bool | false   | Report a comment on its own line between an attribute and its parameter. |
 
 ---
 

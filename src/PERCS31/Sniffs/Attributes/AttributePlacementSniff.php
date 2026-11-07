@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Attributes;
 
+use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -24,11 +25,10 @@ use PHPCSUtils\Utils\PassedParameters;
  * 4.7 says, so `usort($items, #[Pure] static function ($a, $b) {` keeps its attribute inline. A named argument's
  * closure keeps its attribute inline too, as `callback: #[Pure] function () {`, as section 4.7 requires a single space
  * between the colon and the value, and PHP doesn't allow the attribute before the name. Elsewhere, such as in an
- * assignment or an array, PER says nothing. Set checkClosureAttributesOutsideCalls to require the attribute inline
- * with a single space there too, as the Jumbo standard does.
+ * assignment or an array, PER says nothing, so it isn't checked.
  *
- * An enum case isn't in section 12.2's list either, so its attribute may be on the case's line. Set
- * checkEnumCaseAttributes to require it on the line before, as for a constant, as the Jumbo standard does.
+ * An enum case isn't in section 12.2's list either, so its attribute may be on the case's line. Nor is a property hook,
+ * which isn't a method, so its attribute may be on the hook's line. A hook's parameter follows the parameter rule.
  *
  * It also reports a blank line or a comment between the last attribute and its target. That replaces
  * SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing, whose fix deletes a comment there, and whose only option
@@ -66,18 +66,6 @@ class AttributePlacementSniff implements Sniff
      * @var list<int|string>
      */
     private const array FUNCTION_TOKENS = [T_FUNCTION, T_CLOSURE, T_FN];
-
-    /**
-     * Whether to check a closure's attribute anywhere other than a call's argument list, such as in an assignment or
-     * an array, as inline with a single space. PER says nothing about it, so it's off by default.
-     */
-    public bool $checkClosureAttributesOutsideCalls = false;
-
-    /**
-     * Whether to require an enum case's attribute on the line before the case. Section 12.2 doesn't list enum cases, so
-     * it's off by default.
-     */
-    public bool $checkEnumCaseAttributes = false;
 
     /**
      * Whether to report a comment on a line of its own between an attribute and its parameter. Section 12.2 only says
@@ -145,7 +133,7 @@ class AttributePlacementSniff implements Sniff
             return;
         }
 
-        if ($tokens[$targetPtr]['code'] === T_ENUM_CASE && !$this->checkEnumCaseAttributes) {
+        if ($tokens[$targetPtr]['code'] === T_ENUM_CASE || $this->isHook($phpcsFile, $targetPtr)) {
             return;
         }
 
@@ -180,6 +168,31 @@ class AttributePlacementSniff implements Sniff
         assert(is_int($firstOnLine));
         $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1));
         $phpcsFile->fixer->replaceToken($nextPtr, $phpcsFile->eolChar . $indent);
+    }
+
+    /**
+     * Check whether an attribute's target is a property hook.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $targetPtr The position of the first token after the attributes.
+     * @return bool True if it's a hook, with or without `final` or `&` before its name.
+     */
+    private function isHook(File $phpcsFile, int $targetPtr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $skip = Tokens::EMPTY_TOKENS + [
+            T_FINAL => T_FINAL,
+            T_BITWISE_AND => T_BITWISE_AND,
+            T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG => T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG,
+            T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG => T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG,
+        ];
+        $namePtr = $phpcsFile->findNext($skip, $targetPtr, null, true);
+        if ($namePtr === false || $tokens[$namePtr]['code'] !== T_STRING) {
+            return false;
+        }
+
+        return in_array(strtolower($tokens[$namePtr]['content']), ['get', 'set'], true)
+            && PropertyHookHelper::isInsidePropertyHook($phpcsFile, $namePtr);
     }
 
     /**
@@ -401,8 +414,7 @@ class AttributePlacementSniff implements Sniff
      *
      * In a call's argument list that isn't split, the attribute is inline with the closure, after a single space. A
      * closure split over lines doesn't split the list, as section 4.7 says. In a split list, the attribute is on its
-     * own line before the closure, which is indented the same. Anywhere else, PER says nothing, so the attribute is
-     * only checked, as inline with a single space, if checkClosureAttributesOutsideCalls is set.
+     * own line before the closure, which is indented the same. Anywhere else, PER says nothing, so it isn't checked.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the last attribute block's opener.
@@ -414,11 +426,6 @@ class AttributePlacementSniff implements Sniff
         $firstPtr = $this->findFirstAttribute($phpcsFile, $stackPtr);
         $arguments = $this->findCallArguments($phpcsFile, $firstPtr);
         if ($arguments === null) {
-            if ($this->checkClosureAttributesOutsideCalls) {
-                $this->checkInlineSpacing($phpcsFile, $closerPtr, $targetPtr, 'Expected 1 space between an attribute '
-                    . 'and its closure', self::CODE_CLOSURE_SPACING);
-            }
-
             return;
         }
 
@@ -652,10 +659,8 @@ class AttributePlacementSniff implements Sniff
 
         $opener = array_key_last($tokens[$attributePtr]['nested_parenthesis']);
         $owner = $tokens[$opener]['parenthesis_owner'] ?? null;
-        if ($owner === null || !in_array($tokens[$owner]['code'], self::FUNCTION_TOKENS, true)) {
-            return null;
-        }
+        $isFunction = $owner !== null && in_array($tokens[$owner]['code'], self::FUNCTION_TOKENS, true);
 
-        return $opener;
+        return $isFunction || PropertyHookHelper::isHookParameterList($phpcsFile, $opener) ? $opener : null;
     }
 }

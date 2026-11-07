@@ -170,24 +170,24 @@ $misIndented = array_map(
     $items,
 );
 
-// Elsewhere, PER says nothing, so nothing is checked by default.
+// Elsewhere, PER says nothing, so nothing is checked.
 $pure = #[Pure]  fn(int $x): int => $x;
 $plain = #[Pure]
     function (): int {
         return 1;
     };
 
-// phpcs:set PERCS31.Attributes.AttributePlacement checkClosureAttributesOutsideCalls true
 $inline = #[Pure] fn(int $x): int => $x;
 $handlers = [
     'save' => #[Pure] static fn(int $x): int => $x,
 ];
-$twoSpaces = #[Pure] fn(int $x): int => $x;
-$ownLine = #[Pure] fn(int $x): int => $x;
+$twoSpaces = #[Pure]  fn(int $x): int => $x;
+$ownLine = #[Pure]
+    fn(int $x): int => $x;
 $inArray = [
-    #[Pure] fn(int $x): int => $x,
+    #[Pure]
+    fn(int $x): int => $x,
 ];
-// phpcs:set PERCS31.Attributes.AttributePlacement checkClosureAttributesOutsideCalls false
 
 // Nothing between the last attribute and its target: no blank line, and no comment (not fixable).
 #[Attribute]
@@ -238,15 +238,12 @@ enum AttributesOnCases
 
     #[Label, Other] case Compound;
 
-    // phpcs:set PERCS31.Attributes.AttributePlacement checkEnumCaseAttributes true
-    #[Label]
-    case Reported;
+    #[Label] case Reported;
 
     #[Label]
     case Allowed;
 
     #[Label] /* A comment. */ case NotFixable;
-    // phpcs:set PERCS31.Attributes.AttributePlacement checkEnumCaseAttributes false
 
     #[Label]
     public const int LIMIT = 1;
@@ -268,4 +265,67 @@ function commentsBeforeParameters(
     int $d,
     // phpcs:set PERCS31.Attributes.AttributePlacement checkParameterComments false
 ): void {
+}
+
+class Hooks
+{
+    public string $a {
+        #[C] get => 'a';
+    }
+
+    public string $b {
+        #[C]
+        get => 'b';
+    }
+
+    public string $c {
+        #[C] set(string $value) {
+            $this->c = $value;
+        }
+    }
+
+    public array $d {
+        #[C] &get => $this->d;
+    }
+
+    public string $e {
+        #[C] final get => 'e';
+    }
+
+    public string $f { #[C] get => 'f'; }
+
+    // A hook's parameter follows the parameter rule.
+    public string $g {
+        set(#[C] string $value) {
+            $this->g = $value;
+        }
+    }
+
+    public string $h {
+        set(#[C] string $value) {
+            $this->h = $value;
+        }
+    }
+
+    public string $i {
+        set(
+            #[C]
+            string $value,
+        ) {
+            $this->i = $value;
+        }
+    }
+
+    public string $j {
+        set(
+            #[C]
+            string $value,
+        ) {
+            $this->j = $value;
+        }
+    }
+
+    // A method called get is still a method.
+    #[C]
+    public function get(): void {}
 }

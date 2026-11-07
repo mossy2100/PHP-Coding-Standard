@@ -60,9 +60,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   it.
 - **A comment between an attribute and its parameter is an error in Jumbo (breaking).** It uses the new
   `PERCS31.Attributes.AttributePlacement` property `checkParameterComments`. Not auto-fixable.
-- **An enum case's attribute can be on the case's line in PERCS31.** Section 12.2 of PER Coding Style 3.1 doesn't list
-  enum cases. The Jumbo standard still requires the line before, using the new `PERCS31.Attributes.AttributePlacement`
-  property `checkEnumCaseAttributes`.
+- **An attribute can be on an enum case's or a property hook's line.** Section 12.2 of PER Coding Style 3.1 lists
+  neither, and a hook isn't a method. An attribute on a hook's parameter now follows the parameter rule, instead of being
+  reported.
 - **A default value's `=` can be aligned in PERCS31.** It's a binary operator, so PER Coding Style 3.1 only requires at
   least one space. `PERCS31.Operators.OperatorSpacing` now checks it, with the new property `checkDefaultValues`, in
   place of `Squiz.Functions.FunctionDeclarationArgumentSpacing`. The Jumbo standard still requires exactly one space.
@@ -131,9 +131,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `PERCS31.Attributes.AttributePlacement` now reports a blank line between a docblock and the attributes after it, or
   between two attribute blocks, and anything but a single space between an attribute and its parameter on the same line.
   A closure that's a call's argument follows the parameter rule: its attribute is inline after a single space when the
-  argument list is on one line, and on its own line before it when the list is split. Jumbo also requires a closure's
-  attribute inline after a single space anywhere else (new property `checkClosureAttributesOutsideCalls`).
-  Auto-fixable.
+  argument list is on one line, and on its own line before it when the list is split. Auto-fixable.
 - **Spacing inside attribute blocks (breaking).** As PER Coding Style 3.1 requires, there's no space after `#[` or
   before `]`, and attributes in one block are separated by a comma with a space after it and none before, e.g.
   `#[Foo, Bar]`. Adds PHPCSExtra's `Universal.Attributes.BracketSpacing`, and the attribute block codes of

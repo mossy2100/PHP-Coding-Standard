@@ -427,7 +427,7 @@ class PropertyHookHelper
      * @param int $opener The position of the opening parenthesis.
      * @return bool True if `set` is in a hook name's position, and a hook body follows the closing parenthesis.
      */
-    private static function isHookParameterList(File $phpcsFile, int $opener): bool
+    public static function isHookParameterList(File $phpcsFile, int $opener): bool
     {
         $tokens = $phpcsFile->getTokens();
         $name = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($opener - 1), null, true);
