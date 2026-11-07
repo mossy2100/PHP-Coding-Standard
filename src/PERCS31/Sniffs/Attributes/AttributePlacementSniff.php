@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Attributes;
 
+use PERCS31\Helpers\AttributeHelper;
 use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
@@ -65,12 +66,7 @@ class AttributePlacementSniff implements Sniff
 
     public const string CODE_SAME_LINE_SPACING = 'SameLineSpacing';
 
-    /**
-     * The tokens that own a parameter list.
-     *
-     * @var list<int|string>
-     */
-    private const array FUNCTION_TOKENS = [T_FUNCTION, T_CLOSURE, T_FN];
+    public const string CODE_SINGLE_LINE_LIST = 'SingleLineList';
 
     /**
      * Whether to report a comment on a line of its own between an attribute and its parameter. Section 12.2 only says
@@ -135,6 +131,13 @@ class AttributePlacementSniff implements Sniff
             return;
         }
 
+        $isGroup = $this->findFirstAttribute($phpcsFile, $stackPtr) !== $stackPtr;
+        $listOpener = $isGroup ? AttributeHelper::findSingleLineListOpener($phpcsFile, $stackPtr) : null;
+        if ($listOpener !== null) {
+            $this->processSingleLineList($phpcsFile, $stackPtr, $listOpener);
+            return;
+        }
+
         if ($this->isClosure($phpcsFile, $targetPtr)) {
             $this->processClosure($phpcsFile, $stackPtr, $closerPtr, $targetPtr);
             return;
@@ -144,13 +147,20 @@ class AttributePlacementSniff implements Sniff
             return;
         }
 
-        if ($tokens[$targetPtr]['code'] === T_ENUM_CASE || $this->isHook($phpcsFile, $targetPtr)) {
+        // An enum case or a hook can share a line with one attribute block, but not with two or more.
+        $isInlineTarget = $tokens[$targetPtr]['code'] === T_ENUM_CASE || $this->isHook($phpcsFile, $targetPtr);
+        if ($isInlineTarget && !$isGroup) {
             $this->checkSameLineSpacing($phpcsFile, $closerPtr, $targetPtr);
             return;
         }
 
+        if ($isInlineTarget) {
+            $this->reportTargetOnSameLine($phpcsFile, $stackPtr, $closerPtr, $targetPtr);
+            return;
+        }
+
         // A parameter in a single-line parameter list must have its attribute inline.
-        $listOpener = $this->findParameterListOpener($phpcsFile, $stackPtr);
+        $listOpener = AttributeHelper::findParameterListOpener($phpcsFile, $stackPtr);
         if ($listOpener !== null) {
             $listCloser = $tokens[$listOpener]['parenthesis_closer'];
             if ($tokens[$listOpener]['line'] === $tokens[$listCloser]['line']) {
@@ -180,6 +190,88 @@ class AttributePlacementSniff implements Sniff
         assert(is_int($firstOnLine));
         $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1));
         $phpcsFile->fixer->replaceToken($nextPtr, $phpcsFile->eolChar . $indent);
+    }
+
+    /**
+     * Report two or more attribute blocks in a single-line parameter or argument list, as section 12.2 says separate
+     * blocks MUST be on separate lines. The fix splits the list, with each item on its own line and a trailing comma,
+     * and the blocks then go on lines of their own.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the last attribute block's opener.
+     * @param int $opener The position of the list's opening parenthesis.
+     */
+    private function processSingleLineList(File $phpcsFile, int $stackPtr, int $opener): void
+    {
+        $fix = $phpcsFile->addFixableError(
+            'Separate attribute blocks must be on separate lines, so the list they\'re in must be split',
+            $stackPtr,
+            self::CODE_SINGLE_LINE_LIST,
+        );
+        if (!$fix) {
+            return;
+        }
+
+        $tokens = $phpcsFile->getTokens();
+        $closer = $tokens[$opener]['parenthesis_closer'];
+        $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $opener, true);
+        assert(is_int($firstOnLine));
+        $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1));
+        $itemIndent = $phpcsFile->eolChar . $indent . '    ';
+
+        // The commas between items, skipping anything nested in brackets, braces or attributes.
+        $commas = [];
+        for ($i = ($opener + 1); $i < $closer; $i++) {
+            $i = $tokens[$i]['parenthesis_closer'] ?? $tokens[$i]['bracket_closer'] ?? $tokens[$i]['attribute_closer']
+                ?? $i;
+            if ($tokens[$i]['code'] === T_COMMA) {
+                $commas[] = $i;
+            }
+        }
+
+        $last = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($closer - 1), $opener, true);
+        $first = $phpcsFile->findNext(T_WHITESPACE, ($opener + 1), $closer, true);
+        if ($last === false || $first === false) {
+            return;
+        }
+
+        $phpcsFile->fixer->beginChangeset();
+        $this->setSpacing($phpcsFile, $opener, $first, $itemIndent);
+        foreach ($commas as $comma) {
+            $next = $phpcsFile->findNext(T_WHITESPACE, ($comma + 1), $closer, true);
+            if ($next !== false && $next !== $closer) {
+                $this->setSpacing($phpcsFile, $comma, $next, $itemIndent);
+            }
+        }
+
+        $comma = $tokens[$last]['code'] === T_COMMA ? '' : ',';
+        $this->setSpacing($phpcsFile, $last, $closer, $comma . $phpcsFile->eolChar . $indent);
+        $phpcsFile->fixer->endChangeset();
+    }
+
+    /**
+     * Report a target that shares a line with two or more attribute blocks, and fix it onto the next line.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the last attribute block's opener.
+     * @param int $closerPtr The position of the last attribute block's closer.
+     * @param int $targetPtr The position of the target's first token.
+     */
+    private function reportTargetOnSameLine(File $phpcsFile, int $stackPtr, int $closerPtr, int $targetPtr): void
+    {
+        $error = 'With two or more attribute blocks, the target must be on the line after them.';
+        if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($closerPtr + 1), $targetPtr) !== false) {
+            $phpcsFile->addError($error, $stackPtr, self::CODE_SAME_LINE);
+            return;
+        }
+
+        if ($phpcsFile->addFixableError($error, $stackPtr, self::CODE_SAME_LINE)) {
+            $tokens = $phpcsFile->getTokens();
+            $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $stackPtr, true);
+            assert(is_int($firstOnLine));
+            $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1));
+            $this->setSpacing($phpcsFile, $closerPtr, $targetPtr, $phpcsFile->eolChar . $indent);
+        }
     }
 
     /**
@@ -223,7 +315,7 @@ class AttributePlacementSniff implements Sniff
     private function checkBeforeTarget(File $phpcsFile, int $stackPtr, int $closerPtr, int $targetPtr): void
     {
         $tokens = $phpcsFile->getTokens();
-        $isParameter = $this->findParameterListOpener($phpcsFile, $stackPtr) !== null;
+        $isParameter = AttributeHelper::findParameterListOpener($phpcsFile, $stackPtr) !== null;
         if (
             $tokens[$targetPtr]['code'] === T_ATTRIBUTE
             || $tokens[$targetPtr]['line'] === $tokens[$closerPtr]['line']
@@ -436,8 +528,17 @@ class AttributePlacementSniff implements Sniff
      */
     private function processClosure(File $phpcsFile, int $stackPtr, int $closerPtr, int $targetPtr): void
     {
+        $tokens = $phpcsFile->getTokens();
         $firstPtr = $this->findFirstAttribute($phpcsFile, $stackPtr);
         $arguments = $this->findCallArguments($phpcsFile, $firstPtr);
+        if ($arguments === null && $firstPtr !== $stackPtr) {
+            if ($tokens[$targetPtr]['line'] === $tokens[$closerPtr]['line']) {
+                $this->reportTargetOnSameLine($phpcsFile, $stackPtr, $closerPtr, $targetPtr);
+            }
+
+            return;
+        }
+
         if ($arguments === null) {
             $this->checkSameLineSpacing($phpcsFile, $closerPtr, $targetPtr);
             return;
@@ -449,7 +550,6 @@ class AttributePlacementSniff implements Sniff
             return;
         }
 
-        $tokens = $phpcsFile->getTokens();
         $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $stackPtr, true);
         $startsLine = $firstOnLine === $stackPtr;
         $indent = $tokens[$stackPtr]['column'] - 1;
@@ -670,27 +770,5 @@ class AttributePlacementSniff implements Sniff
         }
 
         return $tokens[$next]['code'] === T_ANON_CLASS ? $next : null;
-    }
-
-    /**
-     * Find the opening parenthesis of the parameter list an attribute is in, if it is on a parameter.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $attributePtr The position of the attribute opener.
-     * @return int|null The position of the parameter list's opening parenthesis, or null if the attribute isn't on a
-     *     parameter.
-     */
-    private function findParameterListOpener(File $phpcsFile, int $attributePtr): ?int
-    {
-        $tokens = $phpcsFile->getTokens();
-        if (!isset($tokens[$attributePtr]['nested_parenthesis'])) {
-            return null;
-        }
-
-        $opener = array_key_last($tokens[$attributePtr]['nested_parenthesis']);
-        $owner = $tokens[$opener]['parenthesis_owner'] ?? null;
-        $isFunction = $owner !== null && in_array($tokens[$owner]['code'], self::FUNCTION_TOKENS, true);
-
-        return $isFunction || PropertyHookHelper::isHookParameterList($phpcsFile, $opener) ? $opener : null;
     }
 }

@@ -384,3 +384,40 @@ enum SpacingNotCheckedEnum
 }
 
 $notChecked = #[Pure]  fn(int $x): int => $x;
+
+// === TWO OR MORE ATTRIBUTE BLOCKS ===
+
+enum MultipleBlocks
+{
+    #[A] #[B]
+    case X;
+
+    #[A]
+    #[B]
+    case Y;
+
+    #[A, B] case Z;
+
+    #[A] #[B] /* A comment. */ case W;
+}
+
+class MultipleBlockHooks
+{
+    public string $a {
+        #[A] #[B]
+        get => 'a';
+    }
+}
+
+function multipleBlocks(
+    #[A] #[B]
+    int $c,
+    int $d = 1,
+): void {}
+
+usort(
+    $items,
+    #[A] #[B] fn($x) => $x,
+);
+
+function oneBlock(#[A, B] int $c): void {}

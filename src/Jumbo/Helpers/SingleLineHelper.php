@@ -17,6 +17,7 @@ use PHP_CodeSniffer\Files\File;
  * - A comment, which would be lost or would comment out the rest of the line.
  * - A heredoc, nowdoc, or multi-line string, whose line breaks are part of the value.
  * - A brace body, such as a closure, anonymous class or match expression, which is harder to read on one line.
+ * - Two or more attribute blocks in a row, which must be on separate lines.
  */
 class SingleLineHelper
 {
@@ -109,6 +110,13 @@ class SingleLineHelper
             if ($code === T_WHITESPACE) {
                 $pendingSpace = true;
                 continue;
+            }
+
+            if ($code === T_ATTRIBUTE_END) {
+                $nextPtr = $phpcsFile->findNext(T_WHITESPACE, ($i + 1), ($closePtr + 1), true);
+                if ($nextPtr !== false && $tokens[$nextPtr]['code'] === T_ATTRIBUTE) {
+                    return null;
+                }
             }
 
             // A line break inside any other token, such as a multi-line string, is part of the value.

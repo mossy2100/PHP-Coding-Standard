@@ -131,7 +131,6 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Arrays.MultiLineArrayEndBracketPlacement**: Requires the closing bracket of a multi-line array on its own line (11).
 - **Arrays.TrailingArrayComma**: Requires a trailing comma after the last element of a multi-line array or destructuring
   list, including after a heredoc's closing marker (2.6).
-- **Attributes.DisallowMultipleAttributesPerLine**: Requires separate attribute blocks on separate lines (12.3).
 - **Attributes.RequireAttributeAfterDocComment**: Requires a doc comment before the attributes, not after (12.2).
 - **Classes.BackedEnumTypeSpacing**: Requires no space before a backed enum's colon, and one after (9).
 - **Classes.ClassKeywordOrder**: Requires `abstract` or `final` before `readonly` on a class, e.g.
@@ -165,6 +164,7 @@ section gives the reason.
 | `PERCS31.Arrays.OpeningBracketPlacement`                | A multi-line array's `[` isn't on a line of its own                 | Yes     |
 | `PERCS31.Attributes.AttributePlacement`                 | An attribute is on its own line, except on a parameter              | Yes     |
 | `PERCS31.Attributes.DisallowMultiLineAttributesJoining` | One attribute per block when a block spans lines                    | Yes     |
+| `PERCS31.Attributes.DisallowMultipleAttributesPerLine` | Separate attribute blocks on separate lines                         | Yes     |
 | `PERCS31.Classes.ClassDeclaration`                      | Class declarations, allowing an empty body as `{}`                  | Yes     |
 | `PERCS31.Classes.ClassInstantiationNoBrackets`          | A warning for `(new Foo())->bar()`                                  | Yes     |
 | `PERCS31.Classes.EnumMemberVisibility`                  | `private`, not `protected`, for a method or constant in an enum     | Yes     |
@@ -303,8 +303,24 @@ An enum case isn't in section 12.2's list either, so `#[Label] case Active;` pas
 before. Nor is a property hook, which isn't a method, so `#[Label] get => 'a';` passes too. A hook's parameter follows
 the parameter rule.
 
-PER doesn't set the spacing in these three cases, so `#[Label]  case Active;` passes. Set `checkSameLineSpacing` to
-require a single space when the attribute is on its target's line, as the Jumbo standard does. It's fixable.
+With two or more attribute blocks, the target goes on the line after them, as each block must be on its own line. So
+`#[A] #[B] case X;` becomes three lines. In a single-line parameter or argument list, the fix splits the list, one item
+per line with a trailing comma, so `function f(#[A] #[B] int $c) {}` becomes:
+
+```php
+function f(
+    #[A]
+    #[B]
+    int $c,
+) {}
+```
+
+[`PERCS31.Attributes.DisallowMultipleAttributesPerLine`](#percs31attributesdisallowmultipleattributesperline) then puts
+each block on its own line. One block holding several attributes, as in `#[A, B] case X;`, can stay inline.
+
+PER doesn't set the spacing for one block in these three cases, so `#[Label]  case Active;` passes. Set
+`checkSameLineSpacing` to require a single space when the attribute is on its target's line, as the Jumbo standard does.
+It's fixable.
 
 **Why:** `SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing` covers some of this, but its only option for an
 attribute on its target's line, `allowOnSameLine`, is all or nothing, and its fix for a blank line deletes a comment
@@ -418,6 +434,38 @@ final class OldMarker {}
     Deprecated('Use Marker instead.'),
 ]
 final class OldMarker {}
+```
+
+---
+
+### PERCS31.Attributes.DisallowMultipleAttributesPerLine
+
+Requires separate attribute blocks on separate lines. This replaces
+`SlevomatCodingStandard.Attributes.DisallowMultipleAttributesPerLine`, which it extends.
+
+**Why:** [PER Coding Style 3.1, Section 12.2](https://www.php-fig.org/per/coding-style/#122-placement) says two separate attribute blocks MUST be on separate lines. The
+Slevomat sniff checks this, with two problems:
+
+- In a single-line parameter or argument list, its fix puts each block at the start of a line and leaves the list half
+  split. This sniff skips that case, and [`AttributePlacement`](#percs31attributesattributeplacement) splits the whole
+  list instead.
+- It misses blocks on a property hook, as PHP_CodeSniffer doesn't know about hooks. This sniff reports them.
+
+**Auto-fixable:** yes, unless there's a comment between the blocks.
+
+**Good:**
+
+```php
+#[A]
+#[B]
+final class Marker {}
+```
+
+**Bad:**
+
+```php
+#[A] #[B]
+final class Marker {}
 ```
 
 ---

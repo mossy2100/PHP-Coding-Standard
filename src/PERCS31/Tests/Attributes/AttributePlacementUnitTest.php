@@ -74,6 +74,13 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             350 => 1,
             358 => 1,
             363 => 1,
+            // Two or more attribute blocks: on an enum case, one not fixable, on a hook, and in single-line lists.
+            378 => 1,
+            381 => 1,
+            385 => 1,
+            391 => 1,
+            395 => 1,
+            397 => 1,
         ];
     }
 

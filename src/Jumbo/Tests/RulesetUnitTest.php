@@ -624,6 +624,68 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that two or more attribute blocks go on separate lines in both standards, splitting a single-line list,
+     * with the target on the next line, and that phpcbf gives the same result in each.
+     */
+    #[DataProvider('standardProvider')]
+    public function testSeparateAttributeBlocksAreSplit(string $standard): void
+    {
+        $source = <<<'PHP'
+            <?php
+
+            declare(strict_types=1);
+
+            enum E
+            {
+                #[A]  #[B] case X;
+
+                #[A, B] case Z;
+            }
+
+            function f(#[A] #[B] int $c): void {}
+
+            usort($items, #[A] #[B] static fn($x) => $x);
+
+            PHP;
+        $expected = <<<'PHP'
+            <?php
+
+            declare(strict_types=1);
+
+            enum E
+            {
+                #[A]
+                #[B]
+                case X;
+
+                #[A, B] case Z;
+            }
+
+            function f(
+                #[A]
+                #[B]
+                int $c,
+            ): void {}
+
+            usort(
+                $items,
+                #[A]
+                #[B]
+                static fn($x) => $x,
+            );
+
+            PHP;
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $this->runTool('phpcbf', ["--standard=$standard", $file]);
+            $this->assertSame($expected, file_get_contents($file));
+        } finally {
+            unlink($file);
+        }
+    }
+
+    /**
      * The two standards.
      *
      * @return array<string, array{string}>
