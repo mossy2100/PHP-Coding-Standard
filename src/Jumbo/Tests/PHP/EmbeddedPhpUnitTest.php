@@ -30,9 +30,8 @@ class EmbeddedPhpUnitTest extends AbstractSniffTestCase
                 43 => 1,
                 46 => 1,
                 51 => 1,
-                // Markup on a tag's line.
-                54 => 1,
-                56 => 1,
+                // Markup on a tag's line, with the code level with it.
+                55 => 1,
                 // A short echo tag over several lines (not fixable).
                 59 => 1,
                 64 => 1,
@@ -47,6 +46,22 @@ class EmbeddedPhpUnitTest extends AbstractSniffTestCase
             'EmbeddedPhpUnitTest.5.inc' => [
                 // A first tag with only an indent before it.
                 2 => 1,
+            ],
+            'EmbeddedPhpUnitTest.6.inc' => [
+                // Code on the opening tag's line.
+                33 => 1,
+                // The code level with the markup's line, or two levels past it.
+                36 => 1,
+                39 => 1,
+                // A later statement indented too far.
+                43 => 1,
+                // A closing tag indented past the markup's line.
+                48 => 1,
+                // Code on the closing tag's line.
+                51 => 1,
+                // Inside an element, code on the opening tag's line and on the closing tag's.
+                53 => 1,
+                55 => 1,
             ],
             default => [],
         };

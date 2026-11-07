@@ -50,7 +50,7 @@
     <?php
     foo(); ?>
 </div>
-<!-- Markup on a tag's line. -->
+<!-- Markup on a tag's line, with the code level with it. -->
 <p><?php
 foo();
 ?></p>

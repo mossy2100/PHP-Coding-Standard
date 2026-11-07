@@ -11,8 +11,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - **`Jumbo.PHP.EmbeddedPhp` (breaking).** In the Jumbo standard, a multi-line PHP block in a file with markup must have
-  `<?php` and `?>` on their own lines, level with its code, and a short echo tag must be on one line. A tag on one line
-  is exempt. Auto-fixable, except a short echo tag. PERCS31 doesn't check this.
+  nothing after `<?php` on its line, and nothing before `?>` on its line, with `?>` level with the line `<?php` is on.
+  The code is level with that line, or one level past it if markup comes before `<?php`. A short echo tag must be on
+  one line. A tag on one line is exempt. Auto-fixable, except a short echo tag. PERCS31 doesn't check this.
 - **`SlevomatCodingStandard.Variables.UnusedVariable` (breaking).** In the Jumbo standard, a variable that's assigned
   but never used is now an error. Not auto-fixable.
 - **`PERCS31.WhiteSpace.ConsistentIndent` (breaking).** Reports a line indented further than its scope after a complete

@@ -54,12 +54,10 @@
     foo();
     ?>
 </div>
-<!-- Markup on a tag's line. -->
-<p>
-<?php
-foo();
-?>
-</p>
+<!-- Markup on a tag's line, with the code level with it. -->
+<p><?php
+    foo();
+?></p>
 <!-- A short echo tag over several lines, in either layout. -->
 <div>
     <?= foo(

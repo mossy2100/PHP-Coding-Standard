@@ -1,0 +1,60 @@
+<p><?php
+    echo 'a';
+?></p>
+<div>
+    <p>Text for someone aged <span class="age"><?php
+        $age = AgeCalculator::computeAge($user);
+        echo $age;
+    ?></span></p>
+</div>
+<div>
+    <p><?php
+        if ($a) {
+            echo 1;
+        }
+    ?></p>
+</div>
+<p><?php echo 'b'; ?></p>
+<p><?php
+    echo 'c';
+?>
+</p>
+<div>
+    <?php
+    echo 'd';
+    ?></div>
+<ul>
+    <li>
+        <?php
+        echo 'e';
+        ?></li>
+</ul>
+<!-- Violations, one per block. -->
+<p><?php
+    echo 'f';
+?></p>
+<p><?php
+    echo 'g';
+?></p>
+<p><?php
+    echo 'h';
+?></p>
+<p><?php
+    echo 'i';
+    echo 'j';
+?></p>
+<div>
+    <p><?php
+        echo 'k';
+    ?></p>
+</div>
+<p><?php
+    echo 'l';
+?></p>
+<div>
+    <p><?php
+        if ($a) {
+        echo 'm';
+    }
+    ?></p>
+</div>

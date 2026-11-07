@@ -11,6 +11,9 @@
  * - A blank line just inside the tags is allowed.
  * - Every statement directly in the block is checked for too much indent, not just the first.
  * - A closing tag on its own line must be level with the opening tag. PERCS31.WhiteSpace.ScopeIndent doesn't check it.
+ * - Markup is allowed before the opening tag and after the closing tag, as moving it can change the HTML's whitespace.
+ *   With markup before the opening tag, the code is indented one level past that line, and the closing tag is level
+ *   with it.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2023 Squiz Pty Ltd (ABN 77 084 670 600)
@@ -119,7 +122,8 @@ class EmbeddedPhpSniff implements Sniff
             $error = 'Opening PHP tag must be on a line by itself';
             $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'ContentAfterOpen');
             if ($fix === true) {
-                $padding = $this->calculateLineIndent($phpcsFile, $stackPtr);
+                // Jumbo: the code's indent, which depends on whether there's markup before the tag.
+                $padding = $this->getCodeIndent($phpcsFile, $stackPtr);
 
                 $phpcsFile->fixer->beginChangeset();
                 $phpcsFile->fixer->replaceToken($stackPtr, rtrim($tokens[$stackPtr]['content']));
@@ -137,8 +141,9 @@ class EmbeddedPhpSniff implements Sniff
             if (isset($tokens[$firstContent]['scope_closer']) === false
                 || $tokens[$firstContent]['scope_closer'] !== $firstContent
             ) {
-                // Jumbo: the check for a blank line at the top is removed.
-                $indent        = $this->calculateLineIndent($phpcsFile, $stackPtr);
+                // Jumbo: the check for a blank line at the top is removed, and the indent depends on whether there's
+                // markup before the tag.
+                $indent        = $this->getCodeIndent($phpcsFile, $stackPtr);
                 $contentColumn = ($tokens[$firstContent]['column'] - 1);
                 if ($contentColumn !== $indent) {
                     $error = 'First line of embedded PHP code must be indented %s spaces; %s found';
@@ -163,32 +168,8 @@ class EmbeddedPhpSniff implements Sniff
         $this->checkStatementIndents($phpcsFile, $stackPtr, $firstContent, $closingTag);
 
         $lastContentBeforeBlock = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
-        if ($tokens[$lastContentBeforeBlock]['line'] === $tokens[$stackPtr]['line']
-            && (($tokens[$lastContentBeforeBlock]['code'] === T_INLINE_HTML
-            && trim($tokens[$lastContentBeforeBlock]['content']) !== '')
-            // Jumbo: a first tag can have only one token before it.
-            || ($lastContentBeforeBlock > 0
-            && $tokens[($lastContentBeforeBlock - 1)]['code'] !== T_INLINE_HTML
-            && $tokens[($lastContentBeforeBlock - 1)]['line'] === $tokens[$stackPtr]['line']))
-        ) {
-            $error = 'Opening PHP tag must be on a line by itself';
-            $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'ContentBeforeOpen');
-            if ($fix === true) {
-                $padding = $this->calculateLineIndent($phpcsFile, $lastContentBeforeBlock);
-
-                $phpcsFile->fixer->beginChangeset();
-                $phpcsFile->fixer->addContentBefore($stackPtr, $phpcsFile->eolChar . str_repeat(' ', $padding));
-
-                // Make sure we don't leave trailing whitespace behind.
-                if ($tokens[($stackPtr - 1)]['code'] === T_INLINE_HTML
-                    && trim($tokens[($stackPtr - 1)]['content']) === ''
-                ) {
-                    $phpcsFile->fixer->replaceToken(($stackPtr - 1), '');
-                }
-
-                $phpcsFile->fixer->endChangeset();
-            }
-        } else {
+        // Jumbo: markup before the opening tag is allowed, as moving it would change the HTML's whitespace.
+        if ($this->isInlineBlock($phpcsFile, $stackPtr) === false) {
             // Find the first token on the first non-empty line we find.
             // Jumbo: a first tag can have only one token before it.
             for ($first = max(0, ($lastContentBeforeBlock - 1)); $first > 0; $first--) {
@@ -224,20 +205,14 @@ class EmbeddedPhpSniff implements Sniff
         $this->checkClosingTagIndent($phpcsFile, $stackPtr, $closingTag);
 
         $lastContent            = $phpcsFile->findPrevious(T_WHITESPACE, ($closingTag - 1), ($stackPtr + 1), true);
-        $firstContentAfterBlock = $phpcsFile->findNext(T_WHITESPACE, ($closingTag + 1), null, true);
 
         if ($tokens[$lastContent]['line'] === $tokens[$closingTag]['line']) {
             $error = 'Closing PHP tag must be on a line by itself';
             $fix   = $phpcsFile->addFixableError($error, $closingTag, 'ContentBeforeEnd');
             if ($fix === true) {
-                // Calculate the indent for the close tag.
-                // If the close tag is on the same line as the first content, re-use the indent
-                // calculated for the first content line to prevent the indent being based on an
-                // "old" indent, not the _new_ (fixed) indent.
-                if ($tokens[$firstContent]['line'] === $tokens[$lastContent]['line']
-                    && isset($indent) === true
-                ) {
-                    $closerIndent = $indent;
+                // Jumbo: level with the opening tag's line, unless the block opened a scope that the tag is in.
+                if ($tokens[$closingTag]['conditions'] === $tokens[$stackPtr]['conditions']) {
+                    $closerIndent = $this->calculateLineIndent($phpcsFile, $stackPtr);
                 } else {
                     $closerIndent = $this->calculateLineIndent($phpcsFile, $closingTag);
                 }
@@ -252,42 +227,51 @@ class EmbeddedPhpSniff implements Sniff
                 $phpcsFile->fixer->addNewlineBefore($closingTag);
                 $phpcsFile->fixer->endChangeset();
             }
-        } elseif ($firstContentAfterBlock !== false
-            && $tokens[$firstContentAfterBlock]['line'] === $tokens[$closingTag]['line']
-        ) {
-            $error = 'Closing PHP tag must be on a line by itself';
-            $fix   = $phpcsFile->addFixableError($error, $closingTag, 'ContentAfterEnd');
-            if ($fix === true) {
-                $indent = $this->calculateLineIndent($phpcsFile, $closingTag);
-                $phpcsFile->fixer->beginChangeset();
-                $phpcsFile->fixer->addNewline($closingTag);
-                $phpcsFile->fixer->addContent($closingTag, str_repeat(' ', $indent));
-
-                if ($tokens[$firstContentAfterBlock]['code'] === T_INLINE_HTML) {
-                    $trimmedHtmlContent = ltrim($tokens[$firstContentAfterBlock]['content']);
-                    if ($trimmedHtmlContent === '') {
-                        // HTML token contains only whitespace and the next token after is PHP, not HTML, so remove the whitespace.
-                        $phpcsFile->fixer->replaceToken($firstContentAfterBlock, '');
-                    } else {
-                        // The HTML token has content, so remove leading whitespace in favour of the indent.
-                        $phpcsFile->fixer->replaceToken($firstContentAfterBlock, $trimmedHtmlContent);
-                    }
-                }
-
-                if ($tokens[$firstContentAfterBlock]['code'] === T_OPEN_TAG
-                    || $tokens[$firstContentAfterBlock]['code'] === T_OPEN_TAG_WITH_ECHO
-                ) {
-                    // Next token is a PHP open tag which will also have thrown an error.
-                    // Prevent both fixers running in the same loop by making sure the token is "touched" during this loop.
-                    // This prevents a stray new line being added between the close and open tags.
-                    $phpcsFile->fixer->replaceToken($firstContentAfterBlock, $tokens[$firstContentAfterBlock]['content']);
-                }
-
-                $phpcsFile->fixer->endChangeset();
-            }
         }
 
+        // Jumbo: markup after the closing tag is allowed. PHP swallows a line break there, but few people know that, so
+        // moving the markup looks like a change to the HTML's whitespace.
         // Jumbo: the check for a blank line at the bottom is removed.
+    }
+
+
+    /**
+     * Jumbo: checks whether there's markup or code before an opening tag on its line, not just an indent.
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the opening tag.
+     *
+     * @return bool
+     */
+    private function isInlineBlock(File $phpcsFile, int $stackPtr)
+    {
+        $tokens   = $phpcsFile->getTokens();
+        $previous = ($stackPtr - 1);
+        if ($previous >= 0
+            && $tokens[$previous]['code'] === T_INLINE_HTML
+            && trim($tokens[$previous]['content']) === ''
+        ) {
+            $previous--;
+        }
+
+        return $previous >= 0 && $tokens[$previous]['line'] === $tokens[$stackPtr]['line'];
+    }
+
+
+    /**
+     * Jumbo: finds the indent of the code in a block: level with the opening tag's line, or one level past it if
+     * there's markup before the tag.
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the opening tag.
+     *
+     * @return int
+     */
+    private function getCodeIndent(File $phpcsFile, int $stackPtr)
+    {
+        $indent = $this->calculateLineIndent($phpcsFile, $stackPtr);
+
+        return ($this->isInlineBlock($phpcsFile, $stackPtr) === true ? ($indent + 4) : $indent);
     }
 
 
@@ -326,7 +310,7 @@ class EmbeddedPhpSniff implements Sniff
 
 
     /**
-     * Jumbo: reports a statement directly in a block, on its own line, indented past the opening tag's line. Too little
+     * Jumbo: reports a statement directly in a block, on its own line, indented past the block's code. Too little
      * indent is left to PERCS31.WhiteSpace.ScopeIndent.
      *
      * @param \PHP_CodeSniffer\Files\File $phpcsFile    The file being scanned.
@@ -339,7 +323,7 @@ class EmbeddedPhpSniff implements Sniff
     private function checkStatementIndents(File $phpcsFile, int $stackPtr, int $firstContent, $closingTag)
     {
         $tokens = $phpcsFile->getTokens();
-        $indent = $this->calculateLineIndent($phpcsFile, $stackPtr);
+        $indent = $this->getCodeIndent($phpcsFile, $stackPtr);
         $end    = ($closingTag === false ? $phpcsFile->numTokens : $closingTag);
 
         for ($i = ($firstContent + 1); $i < $end; $i++) {
