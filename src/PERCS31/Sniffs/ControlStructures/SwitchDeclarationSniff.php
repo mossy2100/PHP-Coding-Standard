@@ -22,6 +22,12 @@ use PHP_CodeSniffer\Util\Tokens;
  *   indented at least once. The fix moves the first condition, or indents the line once past the `case`.
  * - A non-empty case that continues into the next one MUST have a comment saying so. The parent only checks a `case`,
  *   so this also checks a `default` that isn't last.
+ * - The `case` line MUST consist only of the keyword, the condition and a colon. So code or a comment there is
+ *   reported, and the fix moves it to the next line. A phpcs annotation is left alone, as it only works on that line.
+ *
+ * The parent also requires the body on the very next line (BodyOnNextLine). Section 2.3 says blank lines MAY be added
+ * except where explicitly forbidden, so the PERCS31 ruleset excludes those codes, and this sniff checks code on the
+ * line itself. Set checkBlankLineAfterLabel to report a blank line straight after a label, as the Jumbo standard does.
  *
  * Everything else is left to the parent.
  */
@@ -41,12 +47,24 @@ class SwitchDeclarationSniff extends Psr2Sniff
 
     public const string CODE_TERMINATING_COMMENT = 'TerminatingComment';
 
+    public const string CODE_BODY_ON_CASE_LINE = 'BodyOnCaseLine';
+
+    public const string CODE_COMMENT_ON_CASE_LINE = 'CommentOnCaseLine';
+
+    public const string CODE_BLANK_LINE_AFTER_LABEL = 'BlankLineAfterLabel';
+
     /**
      * Tokens that end a case, as the tokenizer and the parent define them.
      *
      * @var list<int|string>
      */
     private const array TERMINATORS = [T_BREAK, T_RETURN, T_CONTINUE, T_THROW, T_EXIT, T_GOTO];
+
+    /**
+     * Whether to report a blank line straight after a `case` or `default` label. PER Coding Style 3.1, section 2.3,
+     * allows it, so it's off by default.
+     */
+    public bool $checkBlankLineAfterLabel = false;
 
     /**
      * Processes this test, when one of its tokens is encountered.
@@ -67,6 +85,8 @@ class SwitchDeclarationSniff extends Psr2Sniff
 
         $cases = $this->findCases($phpcsFile, $stackPtr, $closer);
         foreach ($cases as $index => $case) {
+            $this->checkLabelLine($phpcsFile, $case);
+
             if ($tokens[$case]['code'] === T_CASE) {
                 $this->checkMultiLineCondition($phpcsFile, $case);
             } elseif (isset($cases[($index + 1)])) {
@@ -77,6 +97,92 @@ class SwitchDeclarationSniff extends Psr2Sniff
         if ($cases !== []) {
             $this->checkLastCase($phpcsFile, end($cases), $closer);
         }
+    }
+
+    /**
+     * Check the line a `case` or `default` label ends on, and the line after it.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $case The position of `case` or `default`.
+     */
+    private function checkLabelLine(File $phpcsFile, int $case): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $opener = $tokens[$case]['scope_opener'] ?? null;
+        $next = is_int($opener) ? $phpcsFile->findNext(T_WHITESPACE, ($opener + 1), null, true) : false;
+        if (!is_int($opener) || $next === false || $tokens[$next]['code'] === T_CLOSE_CURLY_BRACKET) {
+            return;
+        }
+
+        if ($tokens[$next]['line'] !== $tokens[$opener]['line']) {
+            if ($this->checkBlankLineAfterLabel && ($tokens[$next]['line'] - $tokens[$opener]['line']) > 1) {
+                $this->reportBlankLineAfterLabel($phpcsFile, $case, $opener, $next);
+            }
+
+            return;
+        }
+
+        if (isset(Tokens::PHPCS_ANNOTATION_TOKENS[$tokens[$next]['code']])) {
+            return;
+        }
+
+        $isComment = isset(Tokens::COMMENT_TOKENS[$tokens[$next]['code']]);
+        $error = $isComment
+            ? 'A %s line must consist only of the label; move the comment to the next line'
+            : 'The %s body must start on the line after the label';
+        $code = $isComment ? self::CODE_COMMENT_ON_CASE_LINE : self::CODE_BODY_ON_CASE_LINE;
+        $data = [strtoupper($tokens[$case]['content'])];
+
+        // Code after a comment on the line would end up on the comment's new line, so leave that to a person.
+        $afterComment = $isComment ? $phpcsFile->findNext(T_WHITESPACE, ($next + 1), null, true) : false;
+        if ($afterComment !== false && $tokens[$afterComment]['line'] === $tokens[$next]['line']) {
+            $phpcsFile->addError($error, $next, $code, $data);
+            return;
+        }
+
+        if (!$phpcsFile->addFixableError($error, $next, $code, $data)) {
+            return;
+        }
+
+        $padding = str_repeat(' ', ($tokens[$case]['column'] - 1 + $this->indent));
+        $phpcsFile->fixer->beginChangeset();
+        for ($i = ($opener + 1); $i < $next; $i++) {
+            $phpcsFile->fixer->replaceToken($i, '');
+        }
+
+        $phpcsFile->fixer->addContentBefore($next, $phpcsFile->eolChar . $padding);
+        $phpcsFile->fixer->endChangeset();
+    }
+
+    /**
+     * Report a blank line straight after a label, and fix it by removing it.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $case The position of `case` or `default`.
+     * @param int $opener The position of the label's colon.
+     * @param int $next The position of the first token on a later line.
+     */
+    private function reportBlankLineAfterLabel(File $phpcsFile, int $case, int $opener, int $next): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $fix = $phpcsFile->addFixableError(
+            'There must be no blank line after a %s label',
+            $case,
+            self::CODE_BLANK_LINE_AFTER_LABEL,
+            [strtoupper($tokens[$case]['content'])],
+        );
+        if (!$fix) {
+            return;
+        }
+
+        $phpcsFile->fixer->beginChangeset();
+        for ($i = ($opener + 1); $i < $next; $i++) {
+            if ($tokens[$i]['line'] > $tokens[$opener]['line'] && $tokens[$i]['line'] < $tokens[$next]['line']) {
+                $phpcsFile->fixer->replaceToken($i, '');
+            }
+        }
+
+        $phpcsFile->fixer->endChangeset();
     }
 
     /**

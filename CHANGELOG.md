@@ -364,6 +364,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
+- **`PERCS31.ControlStructures.SwitchDeclaration` and the `case` line (breaking).** A blank line after a `case` or
+  `default` label is allowed in PERCS31, as PER doesn't forbid it, and Jumbo still reports it, as `BlankLineAfterLabel`.
+  A comment on the label's line is now an error in both, as `CommentOnCaseLine`, as PER says the line consists only of
+  the label. Code there is now `BodyOnCaseLine`, replacing `BodyOnNextLineCASE` and `BodyOnNextLineDEFAULT`.
+  Auto-fixable.
 - **`PERCS31.WhiteSpace.ConsistentIndent` checks closures, anonymous classes and `switch` bodies.** A later line
   indented too far in one wasn't reported, in either standard. Auto-fixable.
 - **A ternary with a multi-line value.** `PERCS31.ControlStructures.MultiLineTernaryOperator` no longer reports a

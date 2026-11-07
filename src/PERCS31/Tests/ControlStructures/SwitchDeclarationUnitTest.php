@@ -14,10 +14,40 @@ class SwitchDeclarationUnitTest extends AbstractSniffTestCase
     /**
      * Returns the lines where errors should occur.
      *
+     * @param string $testFile The name of the test input file.
      * @return array<int, int> Line number => error count.
      */
-    protected function getErrorList(): array
+    protected function getErrorList(string $testFile = ''): array
     {
+        if ($testFile === 'SwitchDeclarationUnitTest.2.inc') {
+            return [
+                // Code on the label's line.
+                47 => 1,
+                // A comment on the label's line.
+                49 => 1,
+                52 => 1,
+                55 => 1,
+                // A comment then code (not fixable).
+                58 => 1,
+                // A comment on the line, and a blank line after it.
+                60 => 1,
+                // A default's.
+                66 => 1,
+            ];
+        }
+
+        if ($testFile === 'SwitchDeclarationUnitTest.3.inc') {
+            return [
+                // With checkBlankLineAfterLabel: one blank line, two, before a comment, and before another label.
+                8 => 1,
+                12 => 1,
+                17 => 1,
+                22 => 1,
+                // Before a break, on a default.
+                33 => 1,
+            ];
+        }
+
         return [
             // The first condition is on the ( line.
             42 => 1,

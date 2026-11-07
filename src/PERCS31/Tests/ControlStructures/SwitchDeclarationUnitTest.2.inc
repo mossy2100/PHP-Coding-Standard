@@ -1,0 +1,69 @@
+<?php
+
+// phpcs:disable PERCS31.ControlStructures.SwitchDeclaration.BodyOnNextLineCASE
+// phpcs:disable PERCS31.ControlStructures.SwitchDeclaration.BodyOnNextLineDEFAULT
+
+// A blank line after a label, as many as you like, is allowed by default.
+switch ($a) {
+    case 1:
+
+        foo();
+        break;
+
+    case 2:
+
+
+        foo();
+        break;
+    case 3:
+
+        // Comment.
+        foo();
+        break;
+    case 4:
+
+    case 5:
+        foo();
+
+        break;
+    case 6:
+        // Comment.
+
+        foo();
+        break;
+    case 7:
+        // Comment.
+    case 8:
+
+        break;
+    default:
+
+        foo();
+        break;
+}
+
+// Code or a comment on the label's line.
+switch ($a) {
+    case 1: foo();
+        break;
+    case 2: // Comment.
+        foo();
+        break;
+    case 3:// Comment.
+        foo();
+        break;
+    case 4: /* Comment. */
+        foo();
+        break;
+    case 5: /* Comment. */ foo();
+        break;
+    case 6: // Comment.
+
+        foo();
+        break;
+    case 7: // phpcs:ignore Foo.Bar
+        break;
+    default: // Comment.
+        foo();
+        break;
+}

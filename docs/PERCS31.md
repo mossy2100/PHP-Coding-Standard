@@ -816,11 +816,17 @@ $options = $isActive ? [
 
 ### PERCS31.ControlStructures.SwitchDeclaration
 
-Checks `switch` statements. This replaces `PSR2.ControlStructures.SwitchDeclaration`, and adds three rules:
+Checks `switch` statements. This replaces `PSR2.ControlStructures.SwitchDeclaration`, and adds these rules:
 
 - The last non-empty case MUST end with a terminating statement, such as `break`, `return` or `throw`.
 - A multi-line case condition MUST be wrapped in parentheses, with `):` on a line of their own.
 - A non-empty `default` that continues into the next case MUST have a comment saying so, as a `case` must.
+- A `case` or `default` line MUST consist only of the label, so code or a comment there is reported. A phpcs annotation
+  is left alone, as it only works on that line.
+
+The original also requires the body on the very next line. PER allows blank lines, except where explicitly forbidden, so
+a blank line after a label is allowed here. Set `checkBlankLineAfterLabel` to report one, as the [Jumbo standard](Jumbo.md)
+does.
 
 **Why:** [PER Coding Style 3.1, Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) adds both rules. The parent only checks a case that's followed by another,
 and doesn't check multi-line conditions.

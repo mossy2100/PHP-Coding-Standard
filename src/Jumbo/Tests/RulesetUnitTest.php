@@ -214,6 +214,31 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a blank line after a case label is only reported in Jumbo, and that a comment on its line is in both.
+     */
+    public function testLabelLineInBothStandards(): void
+    {
+        $blank = $this->copyToTempFile(null, "<?php\n\nswitch (\$a) {\n    case 1:\n\n        break;\n}\n");
+        $comment = $this->copyToTempFile(null, "<?php\n\nswitch (\$a) {\n    case 1: // Why.\n        break;\n}\n");
+        $sniff = '--sniffs=PERCS31.ControlStructures.SwitchDeclaration';
+
+        try {
+            $perBlank = $this->runTool('phpcs', ['--standard=PERCS31', $sniff, '-s', $blank])['output'];
+            $jumboBlank = $this->runTool('phpcs', ['--standard=Jumbo', $sniff, '-s', $blank])['output'];
+            $perComment = $this->runTool('phpcs', ['--standard=PERCS31', $sniff, '-s', $comment])['output'];
+            $jumboComment = $this->runTool('phpcs', ['--standard=Jumbo', $sniff, '-s', $comment])['output'];
+        } finally {
+            unlink($blank);
+            unlink($comment);
+        }
+
+        $this->assertStringNotContainsString('SwitchDeclaration', $perBlank);
+        $this->assertStringContainsString('SwitchDeclaration.BlankLineAfterLabel', $jumboBlank);
+        $this->assertStringContainsString('SwitchDeclaration.CommentOnCaseLine', $perComment);
+        $this->assertStringContainsString('SwitchDeclaration.CommentOnCaseLine', $jumboComment);
+    }
+
+    /**
      * Test that a one-line block declare is fixed with no stray blank line, which two fixes for its brace would add.
      */
     public function testOneLineBlockDeclareIsFixedWithNoBlankLine(): void
