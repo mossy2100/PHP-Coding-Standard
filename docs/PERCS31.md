@@ -99,7 +99,8 @@ Sniffs from PHP_CodeSniffer's other standards and the two base packages, each fo
   (2.6). Its other checks aren't PER rules, so they're excluded: alignment, spacing around `=>` and commas, the spacing
   in `[]`, mixing keyed and unkeyed values, and which line a comma goes on. Its check for a multi-line array's trailing
   comma is replaced by Slevomat's `Arrays.TrailingArrayComma`, as it missed a keyed last element, and wanted the comma
-  after a heredoc on the next line, as before PHP 7.3.
+  after a heredoc on the next line, as before PHP 7.3. Its `ValueNoNewline` check is replaced by
+  [`PERCS31.Arrays.ValuePerLine`](#percs31arraysvalueperline), as it read an attribute on a value as an earlier value.
 
 ### PHPCSExtra
 
@@ -162,6 +163,7 @@ section gives the reason.
 | ------------------------------------------------------- | ------------------------------------------------------------------- | ------- |
 | `PERCS31.Arrays.ArrayBracketSpacing`                    | No blank line before a multi-line array's `]`                       | Yes     |
 | `PERCS31.Arrays.OpeningBracketPlacement`                | A multi-line array's `[` isn't on a line of its own                 | Yes     |
+| `PERCS31.Arrays.ValuePerLine`                           | One value per line in a multi-line array, the first on the next     | Yes     |
 | `PERCS31.Attributes.AttributePlacement`                 | An attribute is on its own line, except on a parameter              | Yes     |
 | `PERCS31.Attributes.DisallowMultiLineAttributesJoining` | One attribute per block when a block spans lines                    | Yes     |
 | `PERCS31.Attributes.DisallowMultipleAttributesPerLine` | Separate attribute blocks on separate lines                         | Yes     |
@@ -276,6 +278,39 @@ $response = $client->post(
         'message' => 'Thanks for signing up. Your account is now active.',
     ],
 );
+```
+
+---
+
+### PERCS31.Arrays.ValuePerLine
+
+Requires each value of a multi-line array with no keys to start on a new line, including the first. This replaces
+`Squiz.Arrays.ArrayDeclaration`'s `ValueNoNewline` check, and checks the same arrays: ones with two or more values and
+no keys. A keyed array is left to the Squiz sniff's `IndexNoNewline` check.
+
+**Why:** [PER Coding Style 3.1, Section 11](https://www.php-fig.org/per/coding-style/#11-arrays) says that when an array is split across lines, the first value MUST be on the
+next line, and there MUST be only one value per line. The Squiz check reads an attribute on a value as an earlier value
+on the line, so it reports `#[Pure] static fn() => 1,` though it's on a line of its own. PER doesn't say where a
+closure's attribute goes, and the attribute is part of the value. A subclass can't fix this, as the check is in the
+middle of the Squiz sniff's `processMultiLineArray()`.
+
+**Auto-fixable:** yes. The fix starts the value on a new line, and `Generic.Arrays.ArrayIndent` indents it.
+
+**Good:**
+
+```php
+$handlers = [
+    #[Pure] static fn(int $x): int => $x,
+    #[Pure] static fn(int $x): int => $x * 2,
+];
+```
+
+**Bad:**
+
+```php
+$values = [1,
+    2, 3,
+];
 ```
 
 ---

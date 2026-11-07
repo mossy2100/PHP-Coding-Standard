@@ -335,7 +335,12 @@
         <exclude name="Squiz.Arrays.ArrayDeclaration.NoComma"/>
         <!-- A multi-line array's trailing comma is checked by SlevomatCodingStandard.Arrays.TrailingArrayComma -->
         <exclude name="Squiz.Arrays.ArrayDeclaration.NoCommaAfterLast"/>
+        <!-- Replaced by PERCS31.Arrays.ValuePerLine, as it reads an attribute on a value as an earlier value -->
+        <exclude name="Squiz.Arrays.ArrayDeclaration.ValueNoNewline"/>
     </rule>
+
+    <!-- One value per line in a multi-line array with no keys, the first on the next line (11) -->
+    <rule ref="PERCS31.Arrays.ValuePerLine"/>
 
     <!-- A multi-line array's [ not on a line of its own, except as an element of a multi-line array (11) -->
     <rule ref="PERCS31.Arrays.OpeningBracketPlacement"/>

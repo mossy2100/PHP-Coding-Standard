@@ -63,6 +63,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **An attribute can be on an enum case's or a property hook's line.** Section 12.2 of PER Coding Style 3.1 lists
   neither, and a hook isn't a method. An attribute on a hook's parameter now follows the parameter rule, instead of being
   reported.
+- **An attribute on a value in a multi-line array is allowed.** `#[Pure] static fn() => 1,` on a line of its own was
+  reported as two values on one line, as `Squiz.Arrays.ArrayDeclaration`'s `ValueNoNewline` check read the attribute as
+  an earlier value. The new `PERCS31.Arrays.ValuePerLine` replaces that check.
 - **Two or more attribute blocks put their target on the next line (breaking).** As each block must be on its own line,
   `#[A] #[B] case X;` is now an error in both standards, as is `#[A] #[B]` on a property hook, which was missed. In a
   single-line parameter or argument list, the fix splits the list, one item per line with a trailing comma. One block
