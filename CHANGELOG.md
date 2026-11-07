@@ -365,6 +365,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
+- **`PERCS31.WhiteSpace.ConsistentIndent` checks closures, anonymous classes and `switch` bodies.** A later line
+  indented too far in one wasn't reported, in either standard. Auto-fixable.
 - **A ternary with a multi-line value.** `PERCS31.ControlStructures.MultiLineTernaryOperator` no longer reports a
   ternary whose value or condition is split over lines, with no line break next to `?` or `:`, such as `$a = $b ? [`
   over several lines to `] : [];`. A ternary split at `?` or `:` must still take the three-line form.

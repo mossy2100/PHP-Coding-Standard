@@ -1742,9 +1742,11 @@ Reports a line indented further than its scope, when the line before it ends a s
 **Why:** [PER Coding Style 3.1, Section 2.4](https://www.php-fig.org/per/coding-style/#24-indenting) sets an indent of 4 spaces for each level, and section 5 says a structure's
 body is indented once. `PERCS31.WhiteSpace.ScopeIndent` reports too little indentation, and too much on a body's first
 line. The php-collective sniff reports a later line indented too far after a complete statement, including inside a
-property hook. It skips continuation lines, arrays, closures and `switch` cases, which it can't judge safely.
+property hook. It skips continuation lines and arrays, which it can't judge safely. It skips closures, anonymous classes
+and `switch` bodies too, as it counts levels from column 0, so this sniff checks those itself, measuring from the line
+each one opens on.
 
-This sniff only adds to the operators that may start a continuation line, which are skipped: every binary operator
+This sniff also adds to the operators that may start a continuation line, which are skipped: every binary operator
 section 6.4 allows a statement to be split at. The original's list predates the pipe operator `|>`, so it reported
 section 6.4's own example. It also missed `%`, `**`, `instanceof`, bitwise, comparison and assignment operators, and an
 arrow function's `=>`.

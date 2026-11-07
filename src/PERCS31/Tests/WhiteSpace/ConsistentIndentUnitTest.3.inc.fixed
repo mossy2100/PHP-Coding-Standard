@@ -1,0 +1,107 @@
+<?php
+
+$a = function () {
+    foo();
+    bar();
+};
+foo(function () {
+    foo();
+    bar();
+});
+foo(
+    1,
+    function () {
+        foo();
+        bar();
+        baz();
+    },
+);
+$c = new class {
+    public function d(): void
+    {
+        foo();
+        bar();
+    }
+
+    public int $e = 1;
+};
+$f = [
+    'a' => function () {
+        foo();
+        bar();
+    },
+];
+switch ($g) {
+    case 1:
+        foo();
+        bar();
+        break;
+    case 2:
+    case 3:
+        foo();
+        break;
+    default:
+        foo();
+        break;
+}
+$h = match ($i) {
+    1 => function () {
+        foo();
+        bar();
+    },
+    default => 2,
+};
+$j = function () {
+    if ($k) {
+        foo();
+        bar();
+    }
+    switch ($l) {
+        case 1:
+            foo();
+            bar();
+            break;
+    }
+};
+$m = fn() => function () {
+    foo();
+    bar();
+};
+$n = array_map(fn($o) => $o, [
+    1,
+]);
+// Dead code after a break, and a valid switch and closure, aren't reported.
+switch ($p) {
+    case 1:
+        foo();
+        break;
+
+        foo();
+    case 2:
+    case 3:
+        foo();
+        // No break
+    default:
+        foo();
+        break;
+}
+foo(
+    function () {
+        foo();
+        bar();
+    },
+    new class {
+        public int $q = 1;
+
+        public int $r {
+            get => 1;
+            set => $value;
+        }
+
+        public function s(): void
+        {
+            foo();
+            bar();
+        }
+    },
+);
