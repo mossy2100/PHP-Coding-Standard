@@ -42,18 +42,18 @@ class OperatorPlacementUnitTest extends AbstractSniffTestCase
 
         if ($testFile === 'OperatorPlacementUnitTest.5.inc') {
             return [
-                // With requireGroupingLineUp, not lined up with the group's first line.
-                78 => 1,
-                83 => 1,
+                // In grouping parentheses, lined up with the first line, and not indented.
+                60 => 1,
+                65 => 1,
                 // Not indented once past the ( line.
-                87 => 1,
-                90 => 1,
+                69 => 1,
+                72 => 1,
                 // Nested in a call argument, and an index.
-                95 => 1,
-                102 => 1,
+                77 => 1,
+                84 => 1,
                 // An arrow function's => and body not indented.
-                108 => 1,
-                113 => 1,
+                90 => 1,
+                95 => 1,
             ];
         }
 
@@ -65,24 +65,34 @@ class OperatorPlacementUnitTest extends AbstractSniffTestCase
                 75 => 1,
                 // An arrow function's => indented twice.
                 77 => 1,
-                // After a full ternary in an earlier item, neither lined up nor indented once.
-                150 => 1,
+                // Lined up with a call argument, a match arm's condition, and grouping parentheses' first line.
+                92 => 1,
+                96 => 1,
+                103 => 1,
+                // Lined up with a list item, after a full ternary in an earlier item.
+                126 => 1,
+                133 => 1,
+                136 => 1,
+                141 => 1,
+                // Indented twice.
+                149 => 1,
                 // In a ternary's branch, lined up with it.
-                157 => 1,
+                156 => 1,
             ];
         }
 
-        if ($testFile === 'OperatorPlacementUnitTest.4.inc') {
-            // With requireListItemIndent, lined up with a list item instead of indented once past it.
+        if ($testFile === 'OperatorPlacementUnitTest.6.inc') {
             return [
-                // A call argument.
-                20 => 1,
-                // An array element.
-                24 => 1,
-                // A match arm's condition.
-                28 => 1,
-                // After a full ternary in an earlier item.
-                36 => 1,
+                // In a condition, not indented at least once.
+                43 => 1,
+                49 => 1,
+                // Nested in a call in the condition, so the general rule.
+                57 => 1,
+                // With requireExactConditionIndent: a boolean operator indented twice, and others not indented once
+                // past their operand's line.
+                90 => 1,
+                96 => 1,
+                103 => 1,
             ];
         }
 

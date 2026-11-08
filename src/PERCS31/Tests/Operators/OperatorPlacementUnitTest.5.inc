@@ -1,13 +1,11 @@
 <?php
 
-// phpcs:set PERCS31.Operators.OperatorPlacement requireGroupingLineUp true
-
 // === VALID ===
 
 $total = (
     $price
-    + $tax
-    - $discount
+        + $tax
+        - $discount
 );
 
 // The first value is on the ( line, so the rest is indented once past that line.
@@ -18,7 +16,7 @@ $total = ($price
 foo(
     (
         $a
-        && $b
+            && $b
     ),
     $c,
 );
@@ -29,10 +27,10 @@ foo(
     $c,
 );
 
-// An index counts as a group.
+// An index.
 $value = $values[
     $a
-    + $b
+        + $b
 ];
 
 // An arrow function's => and body are indented once.
@@ -49,33 +47,17 @@ $callback = (
 $callback = (fn(int $y): int => $y
     + 1);
 
-// An arrow function that has ended doesn't count.
 $total = (
     array_map(fn($y) => $y, $z)
-    + $tax
+        + $tax
 );
-
-// Not a group, so these rules don't change.
-if (
-    $a
-    && $b
-) {
-    foo();
-}
-
-foo(
-    $first
-        . $second,
-);
-
-$total = $price
-    + $tax;
 
 // === INVALID ===
 
+// Lined up with the group's first line.
 $total = (
     $price
-        + $tax
+    + $tax
 );
 
 $total = (
@@ -92,14 +74,14 @@ $total = ($price
 foo(
     (
         $a
-            && $b
+        && $b
     ),
     $c,
 );
 
 $value = $values[
     $a
-        + $b
+    + $b
 ];
 
 // An arrow function's => and body not indented.
@@ -112,5 +94,3 @@ $callback = (
     fn(int $y): int => $y
     + 1
 );
-
-// phpcs:set PERCS31.Operators.OperatorPlacement requireGroupingLineUp false

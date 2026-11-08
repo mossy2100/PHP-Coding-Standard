@@ -50,9 +50,9 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
   `true`).
 - `PERCS31.WhiteSpace.ArrowSpacing` checks the spacing around `=>` in every array and `yield`, not just a `match` arm
   (`checkArray` and `checkYield` set to `true`). It replaces Squiz `ArrayDeclaration`'s arrow spacing checks.
-- `PERCS31.Operators.OperatorPlacement` requires a wrapped line in a list item, such as a call argument, to be indented
-  once past the item, not lined up with it (`requireListItemIndent` set to `true`). A wrapped line in grouping
-  parentheses must line up with the group's first line, with no extra indent (`requireGroupingLineUp` set to `true`).
+- `PERCS31.Operators.OperatorPlacement` requires a line in a control structure's condition to be indented exactly once
+  past the `(` line if it starts with `&&` or `||`, and exactly once past its operand's line if it starts with any other
+  operator. PERCS31 allows at least once (`requireExactConditionIndent` set to `true`).
 - `PERCS31.Formatting.TrailingComma` disallows a comma before a `match` arm's `=>` when its conditions are split over
   lines, which PERCS31 doesn't check (`disallowInSplitMatchConditions` set to `true`).
 - `PERCS31.Functions.MultiLineFunctionDeclaration` reports a blank line before a closing parenthesis or between a

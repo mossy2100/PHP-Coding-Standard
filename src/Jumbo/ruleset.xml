@@ -337,13 +337,11 @@
         <severity>5</severity>
     </rule>
 
-    <!-- A wrapped line in a list item, such as a call argument, indented once past the item, so each item stays
-         distinct; PERCS31 also allows it lined up with the item. A wrapped line in grouping parentheses lined up with
-         the group's first line, with no extra indent; PERCS31 doesn't check it. -->
+    <!-- A line in a control structure's condition indented exactly as needed: once past the ( line for a boolean
+         operator, and once past its operand's line for any other operator. PERCS31 allows at least once (5). -->
     <rule ref="PERCS31.Operators.OperatorPlacement">
         <properties>
-            <property name="requireListItemIndent" value="true"/>
-            <property name="requireGroupingLineUp" value="true"/>
+            <property name="requireExactConditionIndent" value="true"/>
         </properties>
     </rule>
 

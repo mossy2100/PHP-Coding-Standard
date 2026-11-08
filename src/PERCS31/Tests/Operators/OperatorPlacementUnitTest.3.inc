@@ -36,7 +36,7 @@ $multiLineArrow = fn(
 if (
     $a
     && ($b
-    || $c)
+        || $c)
 ) {
     $coalesce = $x
         ?? $y;
@@ -86,8 +86,7 @@ class ReferenceHooks
     public array $list = [] { &get => $this->list; }
 }
 
-// Valid by default: a wrapped line lined up with its list item, which PER doesn't rule out. With
-// requireListItemIndent set, as in OperatorPlacementUnitTest.4.inc, they're errors.
+// Lined up with a list item, instead of indented once past it.
 foo(
     'first'
     . 'second',
@@ -98,7 +97,7 @@ $match = match (true) {
     default => 2,
 };
 
-// Valid: grouping parentheses, which aren't a list, are left alone, like a condition.
+// In grouping parentheses, lined up with the first line, and indented once past it, which is valid.
 $grouped = (
     $a
     && $b
@@ -119,7 +118,7 @@ class HookParameterType
     }
 }
 
-// A full ternary in an earlier item doesn't stop a later item being a list item, so lined up or indented once passes.
+// A full ternary in an earlier item: lined up with the item is reported, and indented once past it passes.
 foo(
     $a ? 1 : 2,
     $b ? 3 : 4,
@@ -143,7 +142,7 @@ $h = match ($i) {
     default => 3,
 };
 
-// Neither lined up nor indented once.
+// Indented twice.
 foo(
     $a ? 1 : 2,
     $c
