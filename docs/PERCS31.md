@@ -96,10 +96,11 @@ Sniffs from PHP_CodeSniffer's other standards and the two base packages, each fo
 
 - **Squiz.Arrays.ArrayDeclaration**: Requires the first value of a multi-line array on the next line, one value per
   line, and the closing bracket on the next line after the last value (11), and no trailing comma on a single-line array
-  (2.6). Its other checks aren't PER rules, so they're excluded: alignment, spacing around `=>` and commas, the spacing
-  in `[]`, mixing keyed and unkeyed values, and which line a comma goes on. Its check for a multi-line array's trailing
-  comma is replaced by Slevomat's `Arrays.TrailingArrayComma`, as it missed a keyed last element, and wanted the comma
-  after a heredoc on the next line, as before PHP 7.3. Its `ValueNoNewline` check is replaced by
+  (2.6). Its other checks aren't PER rules, so they're excluded: alignment, spacing around `=>`, the spacing in `[]`,
+  mixing keyed and unkeyed values, and which line a comma goes on. Its comma spacing checks never run on a single-line
+  array, so Slevomat's `Arrays.SingleLineArrayWhitespace` checks that instead. Its check for a multi-line array's
+  trailing comma is replaced by Slevomat's `Arrays.TrailingArrayComma`, as it missed a keyed last element, and wanted
+  the comma after a heredoc on the next line, as before PHP 7.3. Its `ValueNoNewline` check is replaced by
   [`PERCS31.Arrays.ValuePerLine`](#percs31arraysvalueperline), as it read an attribute on a value as an earlier value.
 
 ### PHPCSExtra
@@ -130,6 +131,8 @@ Reference: [PHPCSExtra repository and documentation](https://github.com/PHPCSSta
 Reference: [Slevomat coding standard repository and documentation](https://github.com/slevomat/coding-standard)
 
 - **Arrays.MultiLineArrayEndBracketPlacement**: Requires the closing bracket of a multi-line array on its own line (11).
+- **Arrays.SingleLineArrayWhitespace**: Requires no space before a comma and one after in a single-line array or short
+  list, and no space inside its brackets, as section 11's example shows (11).
 - **Arrays.TrailingArrayComma**: Requires a trailing comma after the last element of a multi-line array or short
   destructuring list, as in `[$a, $b] = $c;`, including after a heredoc's closing marker (2.6). `list()` is covered by
   [`PERCS31.Formatting.TrailingComma`](#percs31formattingtrailingcomma).

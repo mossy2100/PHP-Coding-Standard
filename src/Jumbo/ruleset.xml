@@ -352,17 +352,8 @@
 
     <!-- ====== ARRAYS (11) ====== -->
 
-    <!-- Arrays: the checks PERCS31 leaves out. One space after a comma, none inside [], and no mix of keyed and
-         unkeyed values. The spacing around => is left to PERCS31.WhiteSpace.ArrowSpacing, which covers every array. -->
-    <rule ref="Squiz.Arrays.ArrayDeclaration.NoSpaceAfterComma">
-        <severity>5</severity>
-    </rule>
-    <rule ref="Squiz.Arrays.ArrayDeclaration.SpaceAfterComma">
-        <severity>5</severity>
-    </rule>
-    <rule ref="Squiz.Arrays.ArrayDeclaration.SpaceBeforeComma">
-        <severity>5</severity>
-    </rule>
+    <!-- Arrays: the checks PERCS31 leaves out. No space inside an empty [], and no mix of keyed and unkeyed values. The
+         spacing around => is left to PERCS31.WhiteSpace.ArrowSpacing, which covers every array. -->
     <rule ref="Squiz.Arrays.ArrayDeclaration.SpaceInEmptyArray">
         <severity>5</severity>
     </rule>
@@ -385,7 +376,6 @@
     <rule ref="SlevomatCodingStandard.Arrays.ArrayAccess"/>
     <rule ref="SlevomatCodingStandard.Arrays.DisallowImplicitArrayCreation"/>
     <rule ref="SlevomatCodingStandard.Arrays.DisallowPartiallyKeyed"/>
-    <rule ref="SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace"/>
     <rule ref="SlevomatCodingStandard.PHP.ShortList"/>
 
     <!-- Multi-line arrays that fit on one line must be written on one line -->

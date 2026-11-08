@@ -342,6 +342,10 @@
         <exclude name="Squiz.Arrays.ArrayDeclaration.ValueNoNewline"/>
     </rule>
 
+    <!-- In a single-line array, no space before a comma and one after, and none inside the brackets, as the example in
+         11 shows. Squiz.Arrays.ArrayDeclaration's comma checks never run on a single-line array, so they're excluded. -->
+    <rule ref="SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace"/>
+
     <!-- One value per line in a multi-line array with no keys, the first on the next line (11) -->
     <rule ref="PERCS31.Arrays.ValuePerLine"/>
 

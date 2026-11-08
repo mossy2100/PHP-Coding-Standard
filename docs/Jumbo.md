@@ -92,8 +92,8 @@ Sniffs from PHP_CodeSniffer and Slevomat that Jumbo adds on top of PERCS31. They
 
 ### Squiz
 
-- **Squiz.Arrays.ArrayDeclaration**: The checks PERCS31 leaves out: one space after a comma, no space inside an empty
-  array `[]`, and no mix of keyed and unkeyed values. Which line a comma goes on is left to
+- **Squiz.Arrays.ArrayDeclaration**: The checks PERCS31 leaves out: no space inside an empty array `[]`, and no mix of
+  keyed and unkeyed values. Which line a comma goes on is left to
   [`Jumbo.Arrays.ElementComma`](#jumboarrayselementcomma). The spacing around `=>` is left to
   [`PERCS31.WhiteSpace.ArrowSpacing`](PERCS31.md#percs31whitespacearrowspacing), as Squiz only checks it in a single-line array. Its alignment checks and
   `SingleLineNotAllowed` stay excluded, so keys, values and arrows are not aligned, and a single-line array with several
@@ -116,7 +116,6 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Arrays.ArrayAccess**: Disallows whitespace between array access operators.
 - **Arrays.DisallowImplicitArrayCreation**: Disallows implicit array creation.
 - **Arrays.DisallowPartiallyKeyed**: Requires arrays to have keys for all or none of the values.
-- **Arrays.SingleLineArrayWhitespace**: Checks whitespace in single-line array declarations.
 - **Attributes.AttributesOrder**: Requires attributes to be ordered alphabetically.
 - **Classes.ClassMemberSpacing**: Enforces spacing between class members.
 - **Classes.DisallowStringExpressionPropertyFetch**: Disallows string expressions for property access.
