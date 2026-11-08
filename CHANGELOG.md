@@ -52,13 +52,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   what continues the structure, such as `} else {`. Auto-fixable.
 - **`PERCS31.ControlStructures.MatchArmPlacement` (breaking).** Each `match` arm must start on a new line, as PER Coding
   Style 3.1, section 5.2, shows. Auto-fixable.
-- **Comma and bracket spacing in a single-line array (breaking).** In PERCS31, as in Jumbo, a comma in a single-line
-  array or short list must have no space before it and one after, and there's no space inside the brackets, as PER
-  Coding Style 3.1, section 11, shows. Uses `SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace`, now in PERCS31.
-  Auto-fixable.
-- **`PERCS31.ControlStructures.MatchConditionCommaSpacing` (breaking).** A comma between a `match` arm's conditions must
-  have no space before it and one after, as in `1, 2 => 'a'`, as PER Coding Style 3.1, section 5.2, shows. It uses
-  `Universal.WhiteSpace.CommaSpacing`'s checks. Auto-fixable.
+- **Comma spacing in every list (breaking).** As PER Coding Style 3.1's examples show, a comma has no space before it
+  and one after, in any list: an array, including one nested in a multi-line array, a short list, group `use`, `match`
+  conditions, `clone()` arguments, and others such as `echo 1, 2;`. Uses the general codes of
+  `Universal.WhiteSpace.CommaSpacing`. Auto-fixable.
+- **No space inside a single-line array's brackets (breaking).** In PERCS31, as in Jumbo, as section 11 shows. Uses
+  `SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace`, now in PERCS31. Auto-fixable.
 - **A one-line ternary is no longer read as spanning lines.** `PERCS31.ControlStructures.MultiLineTernaryOperator`
   reported and split one after `+=`, `.=`, `echo`, `print` or `yield`, as a statement, or in a `match` arm.
 - **A multi-line array can go in a `foreach` header.** `foreach ([` ... `] as $x) {` was reported, and `phpcbf` rewrote it

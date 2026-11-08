@@ -242,9 +242,6 @@
     <!-- Each match arm on a new line, as in the example in 5.2 -->
     <rule ref="PERCS31.ControlStructures.MatchArmPlacement"/>
 
-    <!-- No space before, and one after, a comma between a match arm's conditions, as in the example in 5.2 -->
-    <rule ref="PERCS31.ControlStructures.MatchConditionCommaSpacing"/>
-
     <!-- One space around => in match arms, as in the example in 5.2. The sniff's array and yield checks are off by
          default, as PER leaves them undefined. -->
     <rule ref="PERCS31.WhiteSpace.ArrowSpacing"/>
@@ -342,9 +339,12 @@
         <exclude name="Squiz.Arrays.ArrayDeclaration.ValueNoNewline"/>
     </rule>
 
-    <!-- In a single-line array, no space before a comma and one after, and none inside the brackets, as the example in
-         11 shows. Squiz.Arrays.ArrayDeclaration's comma checks never run on a single-line array, so they're excluded. -->
-    <rule ref="SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace"/>
+    <!-- No space inside a single-line array's brackets, as the example in 11 shows. Its comma checks are left to
+         Universal.WhiteSpace.CommaSpacing, which also covers an array nested in a multi-line one. -->
+    <rule ref="SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace">
+        <exclude name="SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace.SpaceBeforeComma"/>
+        <exclude name="SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace.SpaceAfterComma"/>
+    </rule>
 
     <!-- One value per line in a multi-line array with no keys, the first on the next line (11) -->
     <rule ref="PERCS31.Arrays.ValuePerLine"/>
@@ -379,10 +379,15 @@
     <!-- Several attributes may share a block on one line, but not one split over lines (12.3) -->
     <rule ref="PERCS31.Attributes.DisallowMultiLineAttributesJoining"/>
 
-    <!-- In an attribute block, a comma with no space before it and one after (12.3). Only the attribute block codes:
-         the sniff checks every comma otherwise. -->
+    <!-- A comma with no space before it and one after: in an attribute block (12.3), and in any other list, such as an
+         array, group use, match conditions or clone(), as the examples show (3, 5.2, 11). Parameter, argument, closure
+         use and declare lists have their own codes, which other sniffs already cover. -->
     <rule ref="Universal.WhiteSpace.CommaSpacing.SpaceBeforeInAttributeBlock"/>
     <rule ref="Universal.WhiteSpace.CommaSpacing.NoSpaceAfterInAttributeBlock"/>
     <rule ref="Universal.WhiteSpace.CommaSpacing.TooMuchSpaceAfterInAttributeBlock"/>
+    <rule ref="Universal.WhiteSpace.CommaSpacing.SpaceBefore"/>
+    <rule ref="Universal.WhiteSpace.CommaSpacing.NoSpaceAfter"/>
+    <rule ref="Universal.WhiteSpace.CommaSpacing.TooMuchSpaceAfter"/>
+    <rule ref="Universal.WhiteSpace.CommaSpacing.CommaAfterComment"/>
 
 </ruleset>

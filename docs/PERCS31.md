@@ -98,7 +98,7 @@ Sniffs from PHP_CodeSniffer's other standards and the two base packages, each fo
   line, and the closing bracket on the next line after the last value (11), and no trailing comma on a single-line array
   (2.6). Its other checks aren't PER rules, so they're excluded: alignment, spacing around `=>`, the spacing in `[]`,
   mixing keyed and unkeyed values, and which line a comma goes on. Its comma spacing checks never run on a single-line
-  array, so Slevomat's `Arrays.SingleLineArrayWhitespace` checks that instead. Its check for a multi-line array's
+  array, so `Universal.WhiteSpace.CommaSpacing` checks that instead. Its check for a multi-line array's
   trailing comma is replaced by Slevomat's `Arrays.TrailingArrayComma`, as it missed a keyed last element, and wanted
   the comma after a heredoc on the next line, as before PHP 7.3. Its `ValueNoNewline` check is replaced by
   [`PERCS31.Arrays.ValuePerLine`](#percs31arraysvalueperline), as it read an attribute on a value as an earlier value.
@@ -121,8 +121,10 @@ Reference: [PHPCSExtra repository and documentation](https://github.com/PHPCSSta
 - **Universal.Operators.ConcatPosition**: Requires a wrapped `.` at the start of the line, not the end (6.4).
 - **Universal.PHP.LowercasePHPTag**: Requires the `<?php` tag in lower case (3).
 - **Universal.PHP.RequireExitDieParentheses**: Warns about `exit` or `die` without parentheses, as a SHOULD (4.7).
-- **Universal.WhiteSpace.CommaSpacing**: In an attribute block, requires no space before a comma and one after, e.g.
-  `#[Foo, Bar]` (12.3). Only its attribute block codes are used, as other commas are checked elsewhere.
+- **Universal.WhiteSpace.CommaSpacing**: Requires no space before a comma and one after, in an attribute block, e.g.
+  `#[Foo, Bar]` (12.3), and in any other list, such as an array, group `use`, `match` conditions or `clone()`, as the
+  examples show (3, 5.2, 11). Its codes for parameter, argument, closure `use` and `declare` lists aren't used, as other
+  sniffs check those. It also covers lists with no example, such as `echo 1, 2;` and `global $a, $b;`.
 - **Universal.UseStatements.LowercaseFunctionConst**: Requires `function` and `const` in lower case in a `use` statement
   (2.5).
 
@@ -131,8 +133,9 @@ Reference: [PHPCSExtra repository and documentation](https://github.com/PHPCSSta
 Reference: [Slevomat coding standard repository and documentation](https://github.com/slevomat/coding-standard)
 
 - **Arrays.MultiLineArrayEndBracketPlacement**: Requires the closing bracket of a multi-line array on its own line (11).
-- **Arrays.SingleLineArrayWhitespace**: Requires no space before a comma and one after in a single-line array or short
-  list, and no space inside its brackets, as section 11's example shows (11).
+- **Arrays.SingleLineArrayWhitespace**: Requires no space inside a single-line array's brackets, as section 11's example
+  shows (11). Its comma checks are excluded, as `Universal.WhiteSpace.CommaSpacing` covers them, including in an array
+  nested in a multi-line one, which this sniff skips.
 - **Arrays.TrailingArrayComma**: Requires a trailing comma after the last element of a multi-line array or short
   destructuring list, as in `[$a, $b] = $c;`, including after a heredoc's closing marker (2.6). `list()` is covered by
   [`PERCS31.Formatting.TrailingComma`](#percs31formattingtrailingcomma).
@@ -179,7 +182,6 @@ section gives the reason.
 | `PERCS31.Classes.PropertyDeclaration`                   | No leading `_`, no `var`, a visibility, and `get` before `set`      | Partly  |
 | `PERCS31.ControlStructures.ControlStructureSpacing`     | A control structure's parentheses, with no split rule for `foreach` | Yes     |
 | `PERCS31.ControlStructures.MatchArmPlacement`           | Each `match` arm starts on a new line                               | Yes     |
-| `PERCS31.ControlStructures.MatchConditionCommaSpacing`  | No space before, one after, a comma between `match` arm conditions  | Yes     |
 | `PERCS31.ControlStructures.MultiLineTernaryOperator`    | A multi-line ternary takes three lines, `?` and `:` leading         | Yes     |
 | `PERCS31.ControlStructures.SwitchDeclaration`           | `switch` rules, with a `break` in the last case                     | Yes     |
 | `PERCS31.Files.DeclareStatement`                        | No spaces in `declare(...)`, with one directive or several          | Yes     |
@@ -868,38 +870,6 @@ $label = match ($code) {
 ```php
 $label = match ($code) {
     200, 201 => 'OK', default => 'Error',
-};
-```
-
----
-
-### PERCS31.ControlStructures.MatchConditionCommaSpacing
-
-Requires no space before, and one space after, a comma between a `match` arm's conditions, as in `1, 2 => 'a'`.
-
-**Why:** [PER Coding Style 3.1, Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) shows a `match` arm's conditions as `1, 2, 3 => multipleCases(),`, and its
-example sets the rules here. `Universal.WhiteSpace.CommaSpacing` checks this, but with the same codes as for arrays and
-other lists, so it can't be enabled for `match` conditions alone. It's final, so this sniff passes it only the commas
-between an arm's conditions. Its messages and fixes are unchanged. A comma in a nested list, such as a call in a
-condition, or after an arm, isn't checked here.
-
-**Auto-fixable:** yes.
-
-**Good:**
-
-```php
-$label = match ($code) {
-    1, 2, 3 => 'low',
-    default => 'high',
-};
-```
-
-**Bad:**
-
-```php
-$label = match ($code) {
-    1,2 , 3 => 'low',
-    default => 'high',
 };
 ```
 
