@@ -6,6 +6,7 @@ namespace PERCS31\Helpers;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\Operators;
 
 /**
  * Helper class for telling a unary `+`, `-` or `&` from a binary one.
@@ -36,10 +37,21 @@ class OperatorHelper
         T_COLON,
         T_CASE,
         T_SEMICOLON,
+        T_OPEN_CURLY_BRACKET,
+        T_OPEN_TAG,
+        T_OPEN_TAG_WITH_ECHO,
     ];
 
     /**
-     * Check whether a `+`, `-` or `&` is a prefix unary operator, judged by the token before it.
+     * Constructs whose closing brace ends an expression, so a `+` or `-` after it is binary.
+     *
+     * @var list<int|string>
+     */
+    private const array EXPRESSION_BODY_OWNERS = [T_MATCH, T_CLOSURE, T_ANON_CLASS];
+
+    /**
+     * Check whether a `+`, `-` or `&` is a prefix unary operator, judged by the token before it, such as an operator, a
+     * `(` or `,`, or the end of a statement or block.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the operator.
@@ -55,10 +67,21 @@ class OperatorHelper
 
         $previousCode = $tokens[$previous]['code'];
 
+        // A block's closing brace ends a statement, but one closing a closure, match or `${...}` ends an expression.
+        if ($previousCode === T_CLOSE_CURLY_BRACKET) {
+            $owner = $tokens[$previous]['scope_condition'] ?? null;
+
+            return $owner !== null && !in_array($tokens[$owner]['code'], self::EXPRESSION_BODY_OWNERS, true);
+        }
+
+        $isPlusMinus = in_array($tokens[$stackPtr]['code'], [T_PLUS, T_MINUS], true);
+
         return in_array($previousCode, self::BEFORE_UNARY, true)
             || isset(Tokens::ASSIGNMENT_TOKENS[$previousCode])
             || isset(Tokens::COMPARISON_TOKENS[$previousCode])
             || isset(Tokens::OPERATORS[$previousCode])
-            || isset(Tokens::BOOLEAN_OPERATORS[$previousCode]);
+            || isset(Tokens::BOOLEAN_OPERATORS[$previousCode])
+            || isset(Tokens::CAST_TOKENS[$previousCode])
+            || ($isPlusMinus && Operators::isUnaryPlusMinus($phpcsFile, $stackPtr));
     }
 }

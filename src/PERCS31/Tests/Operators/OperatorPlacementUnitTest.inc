@@ -57,3 +57,14 @@ $arrow = static fn(int $x): int =>
     $x * 2;
 $commented = $a + // Why.
     $b;
+
+// A unary operator at the start of a block or statement isn't a wrapped operator.
+function unary(): void
+{
+    -$x->y();
+}
+if ($a) {
+    -$k->d();
+} else {
+    +$k->e();
+}

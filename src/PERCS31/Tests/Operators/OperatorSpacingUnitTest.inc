@@ -110,3 +110,16 @@ class HookParameterTypes
         }
     }
 }
+
+// A unary operator starting a statement or block isn't spaced, and a binary one after an expression's } is.
+foo();
+-$k->b();
++$k->c();
+if ($a) {
+    -$k->d();
+}
+$e = (int) -$f;
+$m = match ($b) {
+    1 => 2,
+} -1;
+$n = ${'x'} -1;

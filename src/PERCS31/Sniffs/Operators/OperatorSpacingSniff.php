@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Operators;
 
+use PERCS31\Helpers\OperatorHelper;
 use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\OperatorSpacingSniff as SquizSniff;
@@ -120,6 +121,12 @@ class OperatorSpacingSniff extends SquizSniff
 
         if ($this->checkDefaultValues && $this->isDefaultValueEquals($phpcsFile, $stackPtr)) {
             return true;
+        }
+
+        // The parent reads a `+` or `-` that starts a statement, as in `foo();` then `-$a->b();`, as binary.
+        $isPlusMinus = in_array($tokens[$stackPtr]['code'], [T_PLUS, T_MINUS], true);
+        if ($isPlusMinus && OperatorHelper::isUnary($phpcsFile, $stackPtr)) {
+            return false;
         }
 
         return parent::isOperator($phpcsFile, $stackPtr);

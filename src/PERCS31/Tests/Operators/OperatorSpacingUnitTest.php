@@ -70,6 +70,9 @@ class OperatorSpacingUnitTest extends AbstractSniffTestCase
             107 => 2,
             108 => 2,
             109 => 2,
+            // No space after a binary - that follows a match's and a variable variable's closing brace.
+            124 => 1,
+            125 => 1,
         ];
     }
 
