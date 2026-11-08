@@ -44,6 +44,8 @@ class MultiLineTernaryOperatorUnitTest extends AbstractSniffTestCase
             168 => 1,
             173 => 1,
             176 => 1,
+            // A nested ternary not indented once past its own line.
+            195 => 1,
         ];
     }
 

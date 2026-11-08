@@ -175,3 +175,23 @@ $a = $b
     ] : [];
 $a = $b ? 1 // Comment.
     : 2;
+
+// A ternary nested in the middle operand, indented once past its own line, and a short ternary there.
+$a = $b
+    ? $c
+        ? 1
+        : 2
+    : 3;
+$a = $b
+    ? $c ?: $d
+    : 3;
+$a = $b
+    ? ($c ? 1 : 2)
+    : 3;
+
+// A nested ternary not indented once past its own line.
+$a = $b
+    ? $c
+    ? 1
+    : 2
+    : 3;

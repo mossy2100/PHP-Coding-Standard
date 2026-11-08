@@ -878,6 +878,17 @@ reads as a ternary's.
 A ternary is split if there's a line break right before or after its `?` or `:`. A value or condition split over lines
 doesn't split it, so it's left alone, as other binary operators are.
 
+A ternary nested in another's middle operand is checked as a ternary of its own, so it's indented once past the line it
+starts on:
+
+```php
+$label = $isActive
+    ? $isAdmin
+        ? 'Admin'
+        : 'User'
+    : 'Inactive';
+```
+
 **Auto-fixable:** yes, unless a comment is next to `?` or `:`.
 
 The indentation is always 4 spaces, as [PER Coding Style 3.1, Section 2.4](https://www.php-fig.org/per/coding-style/#24-indenting) requires. This sniff doesn't use the `indent`
@@ -1577,6 +1588,17 @@ reads as a ternary's.
 
 A ternary is split if there's a line break right before or after its `?` or `:`. A value or condition split over lines
 doesn't split it, so it's left alone, as other binary operators are.
+
+A ternary nested in another's middle operand is checked as a ternary of its own, so it's indented once past the line it
+starts on:
+
+```php
+$label = $isActive
+    ? $isAdmin
+        ? 'Admin'
+        : 'User'
+    : 'Inactive';
+```
 
 **Auto-fixable:** yes, unless a comment is next to `?` or `:`.
 

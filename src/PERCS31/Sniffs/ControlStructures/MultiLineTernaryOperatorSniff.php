@@ -24,10 +24,14 @@ use SlevomatCodingStandard\Helpers\TernaryOperatorHelper;
  *
  * A short ternary (`?:`) is a binary operator in PER, so it isn't checked here.
  *
- * Finding where a ternary starts and ends uses Slevomat's TernaryOperatorHelper, which is marked internal, so check
- * this sniff after a Slevomat upgrade. It only stops at some tokens, such as `=` and `return`, so it can walk back past
- * the start of the ternary's statement or `match` arm to an earlier line, which would give the wrong indent. This
- * sniff also stops at anything else that comes before a ternary's expression.
+ * Finding where a ternary starts uses Slevomat's TernaryOperatorHelper, which is marked internal, so check this sniff
+ * after a Slevomat upgrade. It only stops at some tokens, such as `=` and `return`, so it can walk back past the start
+ * of the ternary's statement or `match` arm to an earlier line, which would give the wrong indent. This sniff also
+ * stops at anything else that comes before a ternary's expression, including an enclosing ternary's `?` or `:`. It
+ * finds the `:` itself, as the helper takes the first one, which is a nested ternary's.
+ *
+ * A ternary nested in another's middle operand is checked as its own ternary, indented once past the line it starts
+ * on, as in `? $b` then `? 1` and `: 2` indented once more.
  *
  * PHP_CodeSniffer reads the `?` of a nullable type in a `set` hook's parameter, as in `set(?int $value)`, as a
  * ternary's. The helper would crash on it, as it has no `:`, so it's skipped.
@@ -66,7 +70,11 @@ class MultiLineTernaryOperatorSniff implements Sniff
             return;
         }
 
-        $inlineElsePointer = TernaryOperatorHelper::getElsePointer($phpcsFile, $inlineThenPointer);
+        $inlineElsePointer = $this->findElse($phpcsFile, $inlineThenPointer);
+        if ($inlineElsePointer === null) {
+            return;
+        }
+
         $startPointer = $this->findStart(
             $phpcsFile,
             $inlineThenPointer,
@@ -165,6 +173,9 @@ class MultiLineTernaryOperatorSniff implements Sniff
             T_YIELD,
             T_YIELD_FROM,
         ];
+
+        // A ternary nested in another's branch starts after the enclosing ternary's `?` or `:`.
+        $ternaryOperators = [T_INLINE_THEN, T_INLINE_ELSE];
         $closers = [T_CLOSE_PARENTHESIS, T_CLOSE_SQUARE_BRACKET, T_CLOSE_SHORT_ARRAY];
         for ($i = ($inlineThenPointer - 1); $i >= $startPointer; $i--) {
             // Brackets before the `?` are part of the condition, whatever's inside them.
@@ -178,7 +189,8 @@ class MultiLineTernaryOperatorSniff implements Sniff
                 }
             }
 
-            if (in_array($code, $boundaries, true)) {
+            $isEnclosingTernary = in_array($code, $ternaryOperators, true) && !$this->isShortTernary($phpcsFile, $i);
+            if ($isEnclosingTernary || in_array($code, $boundaries, true)) {
                 $first = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), $inlineThenPointer, true);
 
                 return $first === false ? $startPointer : $first;
@@ -186,6 +198,66 @@ class MultiLineTernaryOperatorSniff implements Sniff
         }
 
         return $startPointer;
+    }
+
+    /**
+     * Find a ternary's `:`, skipping any ternary nested in its middle operand, and anything in brackets or a body.
+     *
+     * Slevomat's TernaryOperatorHelper::getElsePointer() takes the first `:`, which is a nested ternary's.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $inlineThenPointer The position of the `?`.
+     * @return int|null The position of the `:`, or null if there isn't one.
+     */
+    private function findElse(File $phpcsFile, int $inlineThenPointer): ?int
+    {
+        $tokens = $phpcsFile->getTokens();
+        $depth = 0;
+        for ($i = ($inlineThenPointer + 1); $i < $phpcsFile->numTokens; $i++) {
+            $code = $tokens[$i]['code'];
+            if ($code === T_SEMICOLON || in_array($code, [T_CLOSE_PARENTHESIS, T_CLOSE_SQUARE_BRACKET], true)) {
+                return null;
+            }
+
+            $closer = $tokens[$i]['parenthesis_closer'] ?? $tokens[$i]['bracket_closer'] ?? null;
+            if (is_int($closer) && $closer > $i) {
+                $i = $closer;
+                continue;
+            }
+
+            if (($code !== T_INLINE_THEN && $code !== T_INLINE_ELSE) || $this->isShortTernary($phpcsFile, $i)) {
+                continue;
+            }
+
+            if ($code === T_INLINE_THEN) {
+                $depth++;
+                continue;
+            }
+
+            if ($depth === 0) {
+                return $i;
+            }
+
+            $depth--;
+        }
+
+        return null;
+    }
+
+    /**
+     * Check whether a `?` or `:` is part of a short ternary `?:`.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the token.
+     * @return bool True if it is.
+     */
+    private function isShortTernary(File $phpcsFile, int $stackPtr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $code = $tokens[$stackPtr]['code'];
+
+        return ($code === T_INLINE_THEN && $tokens[($stackPtr + 1)]['code'] === T_INLINE_ELSE)
+            || ($code === T_INLINE_ELSE && $tokens[($stackPtr - 1)]['code'] === T_INLINE_THEN);
     }
 
     /**
