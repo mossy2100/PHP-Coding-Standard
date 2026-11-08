@@ -48,6 +48,13 @@ class TrailingCommaUnitTest extends AbstractSniffTestCase
             112 => 1,
             115 => 1,
             117 => 1,
+            // clone() and exit() with a trailing comma on one line, and clone(), exit() and die() missing one on
+            // several.
+            137 => 1,
+            140 => 1,
+            142 => 1,
+            144 => 1,
+            147 => 1,
         ];
     }
 

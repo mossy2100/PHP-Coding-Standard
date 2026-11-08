@@ -115,3 +115,34 @@ list(
     $b
 ) = $c;
 list($a, list($b, $d,)) = $c;
+
+// === CLONE, EXIT AND DIE ===
+
+$b = clone($a);
+$b = clone(
+    $a,
+    ['c' => 1],
+);
+$b = clone $a;
+$b = clone ($a)->c;
+exit(1);
+die(
+    1,
+);
+exit;
+die(function () {
+    return 1;
+});
+
+$b = clone($a,);
+$b = clone(
+    $a,
+    ['c' => 1]
+);
+exit(1,);
+exit(
+    1
+);
+die(
+    1
+);

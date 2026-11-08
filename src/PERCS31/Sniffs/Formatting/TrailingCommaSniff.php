@@ -9,20 +9,23 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Requires a trailing comma in a multi-line `match`, group `use`, anonymous class's arguments or `list()`, and
- * disallows one on a single line, including in a `match` arm's conditions.
+ * Requires a trailing comma in a multi-line `match`, group `use`, `list()`, or the arguments of an anonymous class,
+ * `clone()`, `exit()` or `die()`, and disallows one on a single line, including in a `match` arm's conditions.
  *
  * PER Coding Style 3.1, section 2.6, says that for any comma-separated list, including `match` arms and group use
  * statements, the last item MUST have a trailing comma if the list is split across lines, and MUST NOT if it's on one.
- * Slevomat's trailing comma sniffs cover function calls, declarations and closure `use` lists, but skip `new class (`.
+ * Slevomat's trailing comma sniffs cover function calls, declarations and closure `use` lists, but skip `new class (`,
+ * and `clone`, `exit` and `die`, which PHP 8.4 and 8.5 made function-like.
  * Slevomat's array sniff covers arrays and short lists, as in `[$a, $b] = $c;`, but not `list()`, and
  * Universal.Attributes.TrailingComma covers attribute blocks. Nothing else covers these. A trailing comma in `list()`
  * is an empty slot at the end, which PHP ignores, so adding or removing one doesn't change the code.
  *
- * Like Slevomat's call sniffs, this doesn't require a comma in an anonymous class's arguments when the closing
- * parenthesis follows the last one on its line, as in `new class (function () {\n}) {`. A `match` arm's conditions are
- * only checked on one line, so a split list of conditions isn't required to have a comma before `=>`. Set
- * disallowInSplitMatchConditions to disallow one there too, as the Jumbo standard does.
+ * Like Slevomat's call sniffs, this doesn't require a comma in an anonymous class's arguments, or `clone()`'s,
+ * `exit()`'s or `die()`'s, when the closing parenthesis follows the last one on its line, as in
+ * `new class (function () {\n}) {`. Parentheses after `clone` followed by `->`, `?->`, `::` or `[` may only group an
+ * expression, so they're skipped. A `match` arm's conditions are only checked on one line, so a split list of
+ * conditions isn't required to have a comma before `=>`. Set disallowInSplitMatchConditions to disallow one there too,
+ * as the Jumbo standard does.
  */
 class TrailingCommaSniff implements Sniff
 {
@@ -43,7 +46,7 @@ class TrailingCommaSniff implements Sniff
      */
     public function register(): array
     {
-        return [T_MATCH, T_OPEN_USE_GROUP, T_ANON_CLASS, T_LIST];
+        return [T_MATCH, T_OPEN_USE_GROUP, T_ANON_CLASS, T_LIST, T_CLONE, T_EXIT];
     }
 
     /**
@@ -55,8 +58,10 @@ class TrailingCommaSniff implements Sniff
     public function process(File $phpcsFile, int $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
-        if ($tokens[$stackPtr]['code'] === T_ANON_CLASS) {
-            $this->processAnonymousClass($phpcsFile, $stackPtr);
+        $code = $tokens[$stackPtr]['code'];
+        if ($code === T_ANON_CLASS || $code === T_CLONE || $code === T_EXIT) {
+            $kind = $code === T_ANON_CLASS ? 'anonymous class' : strtolower($tokens[$stackPtr]['content']) . '()';
+            $this->processArguments($phpcsFile, $stackPtr, $kind . ' argument list');
             return;
         }
 
@@ -87,12 +92,13 @@ class TrailingCommaSniff implements Sniff
     }
 
     /**
-     * Checks the arguments of an anonymous class.
+     * Checks the arguments of an anonymous class, `clone`, `exit` or `die`, if there are parentheses after it.
      *
      * @param File $phpcsFile The file being scanned.
-     * @param int $stackPtr The position of the `class` keyword.
+     * @param int $stackPtr The position of the `class`, `clone`, `exit` or `die` keyword.
+     * @param string $kind The kind of list, for the error message.
      */
-    private function processAnonymousClass(File $phpcsFile, int $stackPtr): void
+    private function processArguments(File $phpcsFile, int $stackPtr, string $kind): void
     {
         $tokens = $phpcsFile->getTokens();
         $opener = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
@@ -102,6 +108,14 @@ class TrailingCommaSniff implements Sniff
 
         $closer = $tokens[$opener]['parenthesis_closer'] ?? null;
         if (!is_int($closer)) {
+            return;
+        }
+
+        // After clone, parentheses followed by an access may only group the object, as in `clone ($a)->b`.
+        $after = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($closer + 1), null, true);
+        $accesses = [T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR, T_DOUBLE_COLON, T_OPEN_SQUARE_BRACKET];
+        $isAccess = $after !== false && in_array($tokens[$after]['code'], $accesses, true);
+        if ($tokens[$stackPtr]['code'] === T_CLONE && $isAccess) {
             return;
         }
 
@@ -115,7 +129,7 @@ class TrailingCommaSniff implements Sniff
             return;
         }
 
-        $this->checkList($phpcsFile, $opener, $closer, 'anonymous class argument list');
+        $this->checkList($phpcsFile, $opener, $closer, $kind);
     }
 
     /**
