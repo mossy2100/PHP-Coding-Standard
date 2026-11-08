@@ -41,6 +41,10 @@ class PropertyDeclarationUnitTest extends AbstractSniffTestCase
             165 => 1,
             171 => 1,
             181 => 1,
+            // ScopeMissing: promoted constructor parameters with readonly or final, and no visibility.
+            196 => 1,
+            197 => 1,
+            198 => 1,
         ];
     }
 

@@ -737,6 +737,10 @@ underscore, and doesn't check promoted constructor properties, where [PER Coding
 This sniff also checks that `get` comes before `set` in an abstract or interface property's hooks, which no inherited
 sniff does.
 
+A promoted constructor parameter with no visibility, such as `readonly int $a` or PHP 8.5's `final int $a`, is a
+`ScopeMissing` error too, as section 4.3 says visibility MUST be declared on all properties. A set-visibility alone, as
+in `private(set) int $a`, is allowed, as the public get-visibility MAY then be left out.
+
 **Auto-fixable:** only `HookOrder`, unless there's a comment between the hooks.
 
 It reports:

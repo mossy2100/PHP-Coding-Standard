@@ -296,13 +296,45 @@ class PropertyDeclarationSniff extends AbstractVariableSniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        // A promoted constructor parameter is a property, so it gets the underscore check.
+        // A promoted constructor parameter is a property, so it gets the underscore and visibility checks.
         if (
             isset($tokens[$stackPtr]['nested_parenthesis'])
             && PropertyHookHelper::isPropertyVariable($phpcsFile, $stackPtr)
         ) {
             $this->checkUnderscore($phpcsFile, $stackPtr, $tokens);
+            $this->checkPromotedVisibility($phpcsFile, $stackPtr);
         }
+    }
+
+    /**
+     * Report a promoted constructor parameter with no visibility, such as `readonly int $a` or `final int $a`, which
+     * PHP makes public. Section 4.3 says visibility MUST be declared on all properties. A set-visibility alone, as in
+     * `private(set) int $a`, is allowed, as section 4.3 says the public get-visibility MAY then be left out.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the parameter's variable.
+     */
+    private function checkPromotedVisibility(File $phpcsFile, int $stackPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $visibilities = [T_PUBLIC, T_PROTECTED, T_PRIVATE, T_PUBLIC_SET, T_PROTECTED_SET, T_PRIVATE_SET];
+        for ($i = ($stackPtr - 1); $i > 0; $i--) {
+            $code = $tokens[$i]['code'];
+            if (in_array($code, [T_OPEN_PARENTHESIS, T_COMMA, T_ATTRIBUTE_END], true)) {
+                break;
+            }
+
+            if (in_array($code, $visibilities, true)) {
+                return;
+            }
+        }
+
+        $phpcsFile->addError(
+            'Visibility must be declared on property "%s"',
+            $stackPtr,
+            'ScopeMissing',
+            [$tokens[$stackPtr]['content']],
+        );
     }
 
     /**

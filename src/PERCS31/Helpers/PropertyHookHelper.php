@@ -62,7 +62,7 @@ class PropertyHookHelper
     ];
 
     /**
-     * Modifiers that make a constructor parameter a promoted property.
+     * Modifiers that make a constructor parameter a promoted property. PHP 8.5 promotes a `final` parameter too.
      *
      * @var list<int|string>
      */
@@ -71,6 +71,7 @@ class PropertyHookHelper
         T_PROTECTED,
         T_PRIVATE,
         T_READONLY,
+        T_FINAL,
         T_PUBLIC_SET,
         T_PROTECTED_SET,
         T_PRIVATE_SET,

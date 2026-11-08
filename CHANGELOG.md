@@ -352,7 +352,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   rules that name an old code, such as `ListShouldBeSingleLine`.
 - **`PERCS31.Classes.PropertyDeclaration.Underscore` is an error, not a warning, and covers promoted constructor
   parameters (breaking).** A property named like `$_name` was a warning, and a promoted one wasn't reported at all. PER
-  Coding Style 3.1 says property names must not start with an underscore.
+  Coding Style 3.1 says property names must not start with an underscore. A promoted parameter with no visibility, such
+  as `readonly int $a`, is now a `ScopeMissing` error too, as PER requires visibility on all properties.
 - **Requires `slevomat/coding-standard` 8.27 or later** (was 8.25). Earlier versions report
   `SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification` on `#[Override]` methods
   that inherit their array shape from the parent's docblock, and 8.25.0 also misreports hooked properties as multiple

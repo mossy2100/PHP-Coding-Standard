@@ -188,3 +188,17 @@ abstract class HookOrderWithBodies
         set => $value;
     }
 }
+
+// ScopeMissing: promoted constructor parameters with no visibility. A set-visibility alone is allowed.
+class PromotedVisibility
+{
+    public function __construct(
+        readonly int $missing,
+        final int $alsoMissing,
+        #[Attr] readonly int $missingAfterAttribute,
+        public readonly int $public,
+        private(set) int $setOnly,
+        protected readonly int $protected,
+        int $notPromoted,
+    ) {}
+}
