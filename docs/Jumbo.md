@@ -770,8 +770,9 @@ one block with no blank line in it, where the parent always wants a blank line a
 none if another declare statement follows.
 
 **Auto-fixable:** yes, as the parent. PHP doesn't allow `strict_types` in a block `declare`, so for a file starting with
-one, the fix adds `declare(strict_types=1);` on the line above. It's not fixable with markup before the file's first
-`<?php`, as it must be the first statement. A shebang line is fine.
+one, the fix adds `declare(strict_types=1);` on the line above. In a file with markup, the fix adds
+`<?php declare(strict_types=1) ?>` as the first line, as PER requires. A file starting with a shebang line can't have
+that form, so with markup before its first `<?php`, it's not fixable.
 
 ---
 

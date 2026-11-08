@@ -21,8 +21,9 @@ use SlevomatCodingStandard\Sniffs\TypeHints\DeclareStrictTypesSniff as SlevomatS
  * is no spaces around the `=`, not the parent's one.
  *
  * The parent's fix adds `strict_types` to an existing declare statement, but in a block `declare`, that's a fatal
- * error, so this sniff adds a separate statement on the line above. Adding it after markup is a fatal error too, as it
- * must be the first statement, so that's reported with no fix.
+ * error, so this sniff adds a separate statement on the line above. In a file with markup, the fix adds the first-line
+ * form at the top instead, as PER requires. A file that starts with a shebang line can't have that form, so if there's
+ * markup before its first opening tag, it's reported with no fix, as adding the declare after markup is a fatal error.
  *
  * Section 3 lists "One or more declare statements" as one block, with no blank line in it. The parent always wants a
  * blank line after `strict_types`, so this sniff wants none if another declare statement follows. It leaves everything
@@ -54,6 +55,23 @@ class DeclareStrictTypesSniff extends SlevomatSniff
         // The parent only checks the file's first opening tag.
         $isFirstOpenTag = $phpcsFile->findPrevious(T_OPEN_TAG, ($openTagPointer - 1)) === false;
         if ($isFirstOpenTag && !$this->declaresStrictTypes($phpcsFile)) {
+            // A declare with strict_types set to another value is left to the parent, which fixes the value.
+            $hasShebang = str_starts_with($phpcsFile->getTokens()[0]['content'], '#!');
+            $isAbsent = !$this->hasStrictTypesDirective($phpcsFile);
+            if (!$hasShebang && $isAbsent && FileHeaderHelper::hasMarkup($phpcsFile)) {
+                $fix = $phpcsFile->addFixableError(
+                    'Missing declare(strict_types=1), which in a file with markup goes on the first line, as in '
+                        . '<?php declare(strict_types=1) ?>',
+                    $openTagPointer,
+                    self::CODE_DECLARE_STRICT_TYPES_MISSING,
+                );
+                if ($fix) {
+                    $phpcsFile->fixer->addContentBefore(0, '<?php declare(strict_types=1) ?>' . $phpcsFile->eolChar);
+                }
+
+                return;
+            }
+
             if ($this->hasMarkupBefore($phpcsFile, $openTagPointer)) {
                 $phpcsFile->addError(
                     'Missing declare(strict_types=1), which can\'t be added here, as it must come before any markup',
@@ -155,15 +173,29 @@ class DeclareStrictTypesSniff extends SlevomatSniff
      */
     private function declaresStrictTypes(File $phpcsFile): bool
     {
+        return FileHeaderHelper::findStrictTypesDeclare($phpcsFile) !== null;
+    }
+
+    /**
+     * Check whether any declare statement in the file has a strict_types directive, whatever its value.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @return bool True if one does.
+     */
+    private function hasStrictTypesDirective(File $phpcsFile): bool
+    {
         $tokens = $phpcsFile->getTokens();
         $declare = $phpcsFile->findNext(T_DECLARE, 0);
-        $closer = $declare === false ? null : ($tokens[$declare]['parenthesis_closer'] ?? null);
-        if (!is_int($declare) || !is_int($closer)) {
-            return false;
+        while ($declare !== false) {
+            $closer = $tokens[$declare]['parenthesis_closer'] ?? null;
+            $directives = is_int($closer) ? $phpcsFile->getTokensAsString($declare, ($closer - $declare + 1)) : '';
+            if (str_contains($directives, 'strict_types')) {
+                return true;
+            }
+
+            $declare = $phpcsFile->findNext(T_DECLARE, ($declare + 1));
         }
 
-        $content = $phpcsFile->getTokensAsString($declare, ($closer - $declare + 1));
-
-        return preg_match('/strict_types\s*=\s*1\b/', $content) === 1;
+        return false;
     }
 }

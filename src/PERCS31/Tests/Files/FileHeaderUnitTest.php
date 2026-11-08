@@ -24,6 +24,11 @@ class FileHeaderUnitTest extends AbstractSniffTestCase
             return [6 => 1];
         }
 
+        if ($testFile === 'FileHeaderUnitTest.8.inc' || $testFile === 'FileHeaderUnitTest.9.inc') {
+            // A file with markup, declaring strict types below the first line.
+            return [3 => 1];
+        }
+
         if ($testFile === 'FileHeaderUnitTest.7.inc') {
             // No blank line after a use statement with several imports.
             return [7 => 1];
@@ -35,8 +40,8 @@ class FileHeaderUnitTest extends AbstractSniffTestCase
         }
 
         if ($testFile !== 'FileHeaderUnitTest.1.inc') {
-            // The other files use a declare statement between PHP tags on the first line, which is allowed, or several
-            // imports in one use statement.
+            // The other files use a declare statement between PHP tags on the first line, which is allowed, several
+            // imports in one use statement, or markup with no declare statement.
             return [];
         }
 

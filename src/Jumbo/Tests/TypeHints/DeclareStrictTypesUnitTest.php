@@ -24,15 +24,21 @@ class DeclareStrictTypesUnitTest extends AbstractSniffTestCase
             return [1 => 1];
         }
 
-        // A block declare after a shebang line, then markup before the opening tag, where it's not fixable.
-        $notFixable = [
+        // A block declare after a shebang line, which isn't fixable, then a file with markup before its opening tag,
+        // where the fix adds the declare between its own PHP tags on the first line.
+        $markupBefore = [
             'DeclareStrictTypesUnitTest.7.inc',
             'DeclareStrictTypesUnitTest.8.inc',
             'DeclareStrictTypesUnitTest.9.inc',
             'DeclareStrictTypesUnitTest.10.inc',
         ];
-        if (in_array($testFile, $notFixable, true)) {
+        if (in_array($testFile, $markupBefore, true)) {
             return [2 => 1];
+        }
+
+        if ($testFile === 'DeclareStrictTypesUnitTest.14.inc') {
+            // A file with markup after its PHP: the fix adds the declare on the first line too.
+            return [1 => 1];
         }
 
         if ($testFile === 'DeclareStrictTypesUnitTest.13.inc') {

@@ -1018,6 +1018,11 @@ header, and requires a blank line after the tag and after the declaration, so it
 skips such a file, as the parent skips other files that mix PHP and markup. The `;` before the `?>` may be included or
 left out.
 
+In a file with markup, a `strict_types` declaration anywhere else is reported, as `StrictTypesNotOnFirstLine`. If it's
+all that's in its PHP block, the fix collapses the block onto the first line. Otherwise, it adds
+`<?php declare(strict_types=1) ?>` as the first line, and removes the declaration and the blank line after it. A file
+starting with a shebang line can't have the first-line form, so it isn't checked.
+
 Section 3 also lists "One or more declare statements" as one block, with no blank line in it. The parent ends the header
 at a block declare, and wants a blank line before one. This sniff counts one as a declare statement, so there's no blank
 line between it and a declare statement before it.

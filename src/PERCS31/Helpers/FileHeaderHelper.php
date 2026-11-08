@@ -44,4 +44,48 @@ class FileHeaderHelper
 
         return $next !== false && $tokens[$next]['code'] === T_CLOSE_TAG && $tokens[$next]['line'] === 1;
     }
+
+    /**
+     * Check whether a file has markup: anything other than whitespace outside PHP tags, apart from a shebang line.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @return bool True if it has.
+     */
+    public static function hasMarkup(File $phpcsFile): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        for ($i = 0; $i < $phpcsFile->numTokens; $i++) {
+            if ($tokens[$i]['code'] !== T_INLINE_HTML || trim($tokens[$i]['content']) === '') {
+                continue;
+            }
+
+            if ($i === 0 && str_starts_with($tokens[$i]['content'], '#!')) {
+                continue;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Find the file's first declare statement, if it sets strict_types to 1.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @return int|null The position of `declare`, or null if the first declare statement doesn't set strict_types to 1.
+     */
+    public static function findStrictTypesDeclare(File $phpcsFile): ?int
+    {
+        $tokens = $phpcsFile->getTokens();
+        $declare = $phpcsFile->findNext(T_DECLARE, 0);
+        $closer = $declare === false ? null : ($tokens[$declare]['parenthesis_closer'] ?? null);
+        if ($declare === false || !is_int($closer)) {
+            return null;
+        }
+
+        $content = $phpcsFile->getTokensAsString($declare, ($closer - $declare + 1));
+
+        return preg_match('/strict_types\s*=\s*1\b/', $content) === 1 ? $declare : null;
+    }
 }
