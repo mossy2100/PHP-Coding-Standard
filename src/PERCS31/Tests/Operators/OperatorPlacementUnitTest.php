@@ -117,6 +117,12 @@ class OperatorPlacementUnitTest extends AbstractSniffTestCase
             56 => 1,
             // A comment after the operator (not fixable).
             58 => 1,
+            // A short ternary split between ? and :.
+            73 => 1,
+            74 => 1,
+            77 => 1,
+            78 => 1,
+            79 => 1,
         ];
     }
 

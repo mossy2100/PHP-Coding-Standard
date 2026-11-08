@@ -8,6 +8,7 @@ use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\Operators;
 use SlevomatCodingStandard\Helpers\TernaryOperatorHelper;
 
 /**
@@ -189,7 +190,8 @@ class MultiLineTernaryOperatorSniff implements Sniff
                 }
             }
 
-            $isEnclosingTernary = in_array($code, $ternaryOperators, true) && !$this->isShortTernary($phpcsFile, $i);
+            $isTernary = in_array($code, $ternaryOperators, true);
+            $isEnclosingTernary = $isTernary && !Operators::isShortTernary($phpcsFile, $i);
             if ($isEnclosingTernary || in_array($code, $boundaries, true)) {
                 $first = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), $inlineThenPointer, true);
 
@@ -225,7 +227,7 @@ class MultiLineTernaryOperatorSniff implements Sniff
                 continue;
             }
 
-            if (($code !== T_INLINE_THEN && $code !== T_INLINE_ELSE) || $this->isShortTernary($phpcsFile, $i)) {
+            if (($code !== T_INLINE_THEN && $code !== T_INLINE_ELSE) || Operators::isShortTernary($phpcsFile, $i)) {
                 continue;
             }
 
@@ -242,22 +244,6 @@ class MultiLineTernaryOperatorSniff implements Sniff
         }
 
         return null;
-    }
-
-    /**
-     * Check whether a `?` or `:` is part of a short ternary `?:`.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $stackPtr The position of the token.
-     * @return bool True if it is.
-     */
-    private function isShortTernary(File $phpcsFile, int $stackPtr): bool
-    {
-        $tokens = $phpcsFile->getTokens();
-        $code = $tokens[$stackPtr]['code'];
-
-        return ($code === T_INLINE_THEN && $tokens[($stackPtr + 1)]['code'] === T_INLINE_ELSE)
-            || ($code === T_INLINE_ELSE && $tokens[($stackPtr - 1)]['code'] === T_INLINE_THEN);
     }
 
     /**

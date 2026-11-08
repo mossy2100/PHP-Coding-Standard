@@ -1614,7 +1614,12 @@ ternary `?:`, the arrow function's `=>`, and the pipe operator `|>` (PHP 8.5). I
 including `.`. A full ternary is checked by `PERCS31.ControlStructures.MultiLineTernaryOperator`, and section 6.2
 doesn't list `=>`, so one in an array or `match` arm isn't checked.
 
-**Auto-fixable:** yes, unless a comment follows an operator at the end of a line.
+A short ternary is written `?:`, with nothing between the `?` and the `:`, as section 6.3 says it follows the rules of a
+comparison operator, and its example writes it that way. So `$a ? : $b` is reported as `SplitShortTernary`, and so is
+one split across lines, as in `$a ?` then `: $b`. The fix joins them where the `:` is, at the start of the line.
+
+**Auto-fixable:** yes, unless a comment follows an operator at the end of a line, or is between a short ternary's `?`
+and `:`.
 
 **Good:**
 

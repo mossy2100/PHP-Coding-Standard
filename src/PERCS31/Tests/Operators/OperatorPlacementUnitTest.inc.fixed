@@ -68,3 +68,12 @@ if ($a) {
 } else {
     +$k->e();
 }
+
+// A short ternary split between ? and :, on one line, across lines either way, and with a comment (not fixable).
+$g = $h ?: $i;
+$g = $h
+    ?: $i;
+$g = $h
+    ?: $i;
+$g = $h ? /* c */ : $i;
+$g = $a ? $b ?: $c : $d;

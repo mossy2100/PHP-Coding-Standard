@@ -130,6 +130,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   for `&&` and `||`, and once past the operand's line for any other operator (new property
   `requireExactConditionIndent`). A `case` condition isn't checked. New code
   `PERCS31.Operators.OperatorPlacement.Indent`. Auto-fixable.
+- **A short ternary must be written `?:` (breaking).** A space, line break or comment between its `?` and `:`, as in
+  `$a ? : $b`, is an error, as PER Coding Style 3.1 says it follows the rules of a comparison operator. New code
+  `PERCS31.Operators.OperatorPlacement.SplitShortTernary`. Auto-fixable, unless there's a comment between them.
 - **`PERCS31.Functions.ArrowFunctionSemicolonSpacing` (breaking).** No space before the semicolon that ends an arrow
   function, as PER Coding Style 3.1 requires. Auto-fixable.
 - **Arrow function parameter lists (breaking).** `PERCS31.Functions.MultiLineFunctionDeclaration` now checks an arrow

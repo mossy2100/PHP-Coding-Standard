@@ -9,6 +9,7 @@ use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\Operators;
 
 /**
  * Disallows a binary operator at the end of a line, when a statement wraps at it, and requires one at the start of a
@@ -46,6 +47,8 @@ class OperatorPlacementSniff implements Sniff
     public const string CODE_AT_END_OF_LINE = 'AtEndOfLine';
 
     public const string CODE_INDENT = 'Indent';
+
+    public const string CODE_SPLIT_SHORT_TERNARY = 'SplitShortTernary';
 
     /**
      * Whether a line in a control structure's condition must be indented exactly as described, rather than at least
@@ -130,11 +133,16 @@ class OperatorPlacementSniff implements Sniff
         // The operator's last token: `?:` is two tokens, and only the short ternary is checked here.
         $lastPtr = $stackPtr;
         if ($code === T_INLINE_THEN) {
-            if ($tokens[($stackPtr + 1)]['code'] !== T_INLINE_ELSE) {
+            if (!Operators::isShortTernary($phpcsFile, $stackPtr)) {
                 return;
             }
 
-            $lastPtr = $stackPtr + 1;
+            $lastPtr = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
+            assert(is_int($lastPtr));
+            if ($lastPtr !== ($stackPtr + 1)) {
+                $this->reportSplitShortTernary($phpcsFile, $stackPtr, $lastPtr);
+                return;
+            }
         }
 
         if ($this->isUnaryOrReference($phpcsFile, $stackPtr)) {
@@ -182,6 +190,50 @@ class OperatorPlacementSniff implements Sniff
         }
 
         $phpcsFile->fixer->addContentBefore($next, $operator . ' ');
+        $phpcsFile->fixer->endChangeset();
+    }
+
+    /**
+     * Report a short ternary with a space, line break or comment between its `?` and `:`, as section 6.3 says it
+     * follows the rules of a comparison operator, which can't be split, and its example writes it `?:`. The fix joins
+     * them where the `:` is, so a `?` at the end of a line moves to the start of the next, as section 6.4 requires.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $thenPtr The position of the `?`.
+     * @param int $elsePtr The position of the `:`.
+     */
+    private function reportSplitShortTernary(File $phpcsFile, int $thenPtr, int $elsePtr): void
+    {
+        $error = 'The short ternary operator must be written "?:", with nothing between "?" and ":"';
+        if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($thenPtr + 1), $elsePtr) !== false) {
+            $phpcsFile->addError($error, $thenPtr, self::CODE_SPLIT_SHORT_TERNARY);
+            return;
+        }
+
+        if (!$phpcsFile->addFixableError($error, $thenPtr, self::CODE_SPLIT_SHORT_TERNARY)) {
+            return;
+        }
+
+        $tokens = $phpcsFile->getTokens();
+        $before = $phpcsFile->findPrevious(T_WHITESPACE, ($thenPtr - 1), null, true);
+        $endsLine = $before !== false
+            && $tokens[$before]['line'] === $tokens[$thenPtr]['line']
+            && $tokens[$elsePtr]['line'] !== $tokens[$thenPtr]['line'];
+
+        $phpcsFile->fixer->beginChangeset();
+        if ($endsLine) {
+            // `$a ?` then `: $b` on the next line: the `?` moves down to join the `:`.
+            for ($i = ($before + 1); $i <= $thenPtr; $i++) {
+                $phpcsFile->fixer->replaceToken($i, '');
+            }
+
+            $phpcsFile->fixer->replaceToken($elsePtr, '?:');
+        } else {
+            for ($i = ($thenPtr + 1); $i < $elsePtr; $i++) {
+                $phpcsFile->fixer->replaceToken($i, '');
+            }
+        }
+
         $phpcsFile->fixer->endChangeset();
     }
 
@@ -389,27 +441,12 @@ class OperatorPlacementSniff implements Sniff
                 break;
             }
 
-            if (in_array($code, self::EXPRESSION_BOUNDARIES, true) && !$this->isShortTernary($phpcsFile, $i)) {
+            if (in_array($code, self::EXPRESSION_BOUNDARIES, true) && !Operators::isShortTernary($phpcsFile, $i)) {
                 break;
             }
         }
 
         return max($i, -1);
-    }
-
-    /**
-     * Check whether a token is part of a short ternary `?:`, which, unlike a full ternary, doesn't start an expression.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $stackPtr The position of the token.
-     */
-    private function isShortTernary(File $phpcsFile, int $stackPtr): bool
-    {
-        $tokens = $phpcsFile->getTokens();
-        $code = $tokens[$stackPtr]['code'];
-
-        return ($code === T_INLINE_THEN && $tokens[($stackPtr + 1)]['code'] === T_INLINE_ELSE)
-            || ($code === T_INLINE_ELSE && $tokens[($stackPtr - 1)]['code'] === T_INLINE_THEN);
     }
 
     /**
