@@ -242,6 +242,9 @@
     <!-- Each match arm on a new line, as in the example in 5.2 -->
     <rule ref="PERCS31.ControlStructures.MatchArmPlacement"/>
 
+    <!-- No space before, and one after, a comma between a match arm's conditions, as in the example in 5.2 -->
+    <rule ref="PERCS31.ControlStructures.MatchConditionCommaSpacing"/>
+
     <!-- One space around => in match arms, as in the example in 5.2. The sniff's array and yield checks are off by
          default, as PER leaves them undefined. -->
     <rule ref="PERCS31.WhiteSpace.ArrowSpacing"/>

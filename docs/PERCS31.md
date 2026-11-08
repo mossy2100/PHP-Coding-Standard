@@ -176,6 +176,7 @@ section gives the reason.
 | `PERCS31.Classes.PropertyDeclaration`                   | No leading `_`, no `var`, a visibility, and `get` before `set`      | Partly  |
 | `PERCS31.ControlStructures.ControlStructureSpacing`     | A control structure's parentheses, with no split rule for `foreach` | Yes     |
 | `PERCS31.ControlStructures.MatchArmPlacement`           | Each `match` arm starts on a new line                               | Yes     |
+| `PERCS31.ControlStructures.MatchConditionCommaSpacing`  | No space before, one after, a comma between `match` arm conditions  | Yes     |
 | `PERCS31.ControlStructures.MultiLineTernaryOperator`    | A multi-line ternary takes three lines, `?` and `:` leading         | Yes     |
 | `PERCS31.ControlStructures.SwitchDeclaration`           | `switch` rules, with a `break` in the last case                     | Yes     |
 | `PERCS31.Files.DeclareStatement`                        | No spaces in `declare(...)`, with one directive or several          | Yes     |
@@ -864,6 +865,38 @@ $label = match ($code) {
 ```php
 $label = match ($code) {
     200, 201 => 'OK', default => 'Error',
+};
+```
+
+---
+
+### PERCS31.ControlStructures.MatchConditionCommaSpacing
+
+Requires no space before, and one space after, a comma between a `match` arm's conditions, as in `1, 2 => 'a'`.
+
+**Why:** [PER Coding Style 3.1, Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) shows a `match` arm's conditions as `1, 2, 3 => multipleCases(),`, and its
+example sets the rules here. `Universal.WhiteSpace.CommaSpacing` checks this, but with the same codes as for arrays and
+other lists, so it can't be enabled for `match` conditions alone. It's final, so this sniff passes it only the commas
+between an arm's conditions. Its messages and fixes are unchanged. A comma in a nested list, such as a call in a
+condition, or after an arm, isn't checked here.
+
+**Auto-fixable:** yes.
+
+**Good:**
+
+```php
+$label = match ($code) {
+    1, 2, 3 => 'low',
+    default => 'high',
+};
+```
+
+**Bad:**
+
+```php
+$label = match ($code) {
+    1,2 , 3 => 'low',
+    default => 'high',
 };
 ```
 

@@ -52,6 +52,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   what continues the structure, such as `} else {`. Auto-fixable.
 - **`PERCS31.ControlStructures.MatchArmPlacement` (breaking).** Each `match` arm must start on a new line, as PER Coding
   Style 3.1, section 5.2, shows. Auto-fixable.
+- **`PERCS31.ControlStructures.MatchConditionCommaSpacing` (breaking).** A comma between a `match` arm's conditions must
+  have no space before it and one after, as in `1, 2 => 'a'`, as PER Coding Style 3.1, section 5.2, shows. It uses
+  `Universal.WhiteSpace.CommaSpacing`'s checks. Auto-fixable.
 - **A one-line ternary is no longer read as spanning lines.** `PERCS31.ControlStructures.MultiLineTernaryOperator`
   reported and split one after `+=`, `.=`, `echo`, `print` or `yield`, as a statement, or in a `match` arm.
 - **A multi-line array can go in a `foreach` header.** `foreach ([` ... `] as $x) {` was reported, and `phpcbf` rewrote it

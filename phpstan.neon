@@ -10,3 +10,4 @@ parameters:
     treatPhpDocTypesAsCertain: false
     scanDirectories:
         - vendor/squizlabs/php_codesniffer
+        - vendor/phpcsstandards/phpcsextra/Universal
