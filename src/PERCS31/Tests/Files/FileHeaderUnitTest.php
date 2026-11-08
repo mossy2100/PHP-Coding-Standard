@@ -24,13 +24,19 @@ class FileHeaderUnitTest extends AbstractSniffTestCase
             return [6 => 1];
         }
 
+        if ($testFile === 'FileHeaderUnitTest.7.inc') {
+            // No blank line after a use statement with several imports.
+            return [7 => 1];
+        }
+
         if ($testFile === 'FileHeaderUnitTest.2.inc') {
             // A blank line between a declare statement and a block declare.
             return [3 => 1];
         }
 
         if ($testFile !== 'FileHeaderUnitTest.1.inc') {
-            // The other files use a declare statement between PHP tags on the first line, which is allowed.
+            // The other files use a declare statement between PHP tags on the first line, which is allowed, or several
+            // imports in one use statement.
             return [];
         }
 

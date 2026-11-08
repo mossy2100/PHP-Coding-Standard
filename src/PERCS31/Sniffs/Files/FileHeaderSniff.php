@@ -7,6 +7,7 @@ namespace PERCS31\Sniffs\Files;
 use PERCS31\Helpers\FileHeaderHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\PSR12\Sniffs\Files\FileHeaderSniff as Psr12Sniff;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Checks the file header, allowing a declare statement between PHP tags on the first line of a file with markup.
@@ -20,6 +21,10 @@ use PHP_CodeSniffer\Standards\PSR12\Sniffs\Files\FileHeaderSniff as Psr12Sniff;
  * Section 3 also lists "One or more declare statements" as one block, with no blank line in it. The parent ends the
  * header at a block declare, so it wants a blank line before one. This sniff counts one as a declare statement, so
  * there's no blank line between it and the declare statements before it.
+ *
+ * The parent ends a `use` statement at its first comma, so it reads `use A, B;` as the end of the header, and reports
+ * the missing blank line before `B`. Section 3 doesn't forbid several imports in one statement, so this sniff extends
+ * that line to its semicolon, and adds any `use` statements after it.
  */
 class FileHeaderSniff extends Psr12Sniff
 {
@@ -51,18 +56,66 @@ class FileHeaderSniff extends Psr12Sniff
     public function getHeaderLines(File $phpcsFile, int $stackPtr): array
     {
         $tokens = $phpcsFile->getTokens();
-        $lines = parent::getHeaderLines($phpcsFile, $stackPtr);
+        $lines = $this->completeUseLines($phpcsFile, parent::getHeaderLines($phpcsFile, $stackPtr));
         $last = end($lines);
         if ($last === false || !in_array($last['type'], ['tag', 'docblock', 'declare'], true)) {
             return $lines;
         }
 
-        $next = $phpcsFile->findNext(T_WHITESPACE, ($last['end'] + 1), null, true);
+        $lastEnd = $last['end'];
+        assert(is_int($lastEnd));
+        $next = $phpcsFile->findNext(T_WHITESPACE, ($lastEnd + 1), null, true);
         if ($next === false || $tokens[$next]['code'] !== T_DECLARE || !isset($tokens[$next]['scope_closer'])) {
             return $lines;
         }
 
         $lines[] = ['type' => 'declare', 'start' => $next, 'end' => $tokens[$next]['scope_closer']];
+
+        return $lines;
+    }
+
+    /**
+     * Extend the last `use` line to its semicolon, where the parent stopped at a comma, and add the `use` statements
+     * after it, which the parent took for the start of the code.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param array<int, array<string, mixed>> $lines The header's lines, from the parent.
+     * @return array<int, array<string, mixed>> The header's lines.
+     */
+    private function completeUseLines(File $phpcsFile, array $lines): array
+    {
+        $tokens = $phpcsFile->getTokens();
+        $index = array_key_last($lines);
+        if ($index === null || !is_string($lines[$index]['type']) || !str_starts_with($lines[$index]['type'], 'use')) {
+            return $lines;
+        }
+
+        $start = $lines[$index]['start'];
+        $end = $lines[$index]['end'];
+        assert(is_int($start) && is_int($end));
+        $semicolon = $phpcsFile->findNext(T_SEMICOLON, $start);
+        if ($semicolon === false || $semicolon <= $end) {
+            return $lines;
+        }
+
+        $lines[$index]['end'] = $semicolon;
+        $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($semicolon + 1), null, true);
+        while ($next !== false && $tokens[$next]['code'] === T_USE) {
+            $semicolon = $phpcsFile->findNext(T_SEMICOLON, $next);
+            if ($semicolon === false) {
+                break;
+            }
+
+            $type = 'use';
+            $useType = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($next + 1), null, true);
+            $content = $useType === false ? '' : strtolower($tokens[$useType]['content']);
+            if ($content === 'function' || $content === 'const') {
+                $type .= ' ' . $content;
+            }
+
+            $lines[] = ['type' => $type, 'start' => $next, 'end' => $semicolon];
+            $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($semicolon + 1), null, true);
+        }
 
         return $lines;
     }

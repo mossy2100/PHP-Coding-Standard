@@ -1,0 +1,8 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App;
+
+use App\Models\User, App\Models\Team;
+class Example {}
