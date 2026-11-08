@@ -97,3 +97,21 @@ $t = match ($x) {
     2, 3 /* A comment. */ => 'b',
     default => 'c',
 };
+
+// === LIST ===
+
+list($a, $b) = $c;
+list(
+    $a,
+    $b,
+) = $c;
+list($a, , $d) = $c;
+foreach ($rows as list($a, $b)) {
+}
+
+list($a, $b) = $c;
+list(
+    $a,
+    $b,
+) = $c;
+list($a, list($b, $d)) = $c;

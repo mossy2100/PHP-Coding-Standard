@@ -9,14 +9,15 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Requires a trailing comma in a multi-line `match`, group `use` or anonymous class's arguments, and disallows one on a
- * single line, including in a `match` arm's conditions.
+ * Requires a trailing comma in a multi-line `match`, group `use`, anonymous class's arguments or `list()`, and
+ * disallows one on a single line, including in a `match` arm's conditions.
  *
  * PER Coding Style 3.1, section 2.6, says that for any comma-separated list, including `match` arms and group use
  * statements, the last item MUST have a trailing comma if the list is split across lines, and MUST NOT if it's on one.
  * Slevomat's trailing comma sniffs cover function calls, declarations and closure `use` lists, but skip `new class (`.
- * Slevomat's array sniff covers arrays, and Universal.Attributes.TrailingComma covers attribute blocks. Nothing else
- * covers these.
+ * Slevomat's array sniff covers arrays and short lists, as in `[$a, $b] = $c;`, but not `list()`, and
+ * Universal.Attributes.TrailingComma covers attribute blocks. Nothing else covers these. A trailing comma in `list()`
+ * is an empty slot at the end, which PHP ignores, so adding or removing one doesn't change the code.
  *
  * Like Slevomat's call sniffs, this doesn't require a comma in an anonymous class's arguments when the closing
  * parenthesis follows the last one on its line, as in `new class (function () {\n}) {`. A `match` arm's conditions are
@@ -42,7 +43,7 @@ class TrailingCommaSniff implements Sniff
      */
     public function register(): array
     {
-        return [T_MATCH, T_OPEN_USE_GROUP, T_ANON_CLASS];
+        return [T_MATCH, T_OPEN_USE_GROUP, T_ANON_CLASS, T_LIST];
     }
 
     /**
@@ -63,6 +64,10 @@ class TrailingCommaSniff implements Sniff
             $opener = $tokens[$stackPtr]['scope_opener'] ?? null;
             $closer = $tokens[$stackPtr]['scope_closer'] ?? null;
             $kind = 'match';
+        } elseif ($tokens[$stackPtr]['code'] === T_LIST) {
+            $opener = $tokens[$stackPtr]['parenthesis_opener'] ?? null;
+            $closer = $tokens[$stackPtr]['parenthesis_closer'] ?? null;
+            $kind = 'list()';
         } else {
             $opener = $stackPtr;
             $found = $phpcsFile->findNext(T_CLOSE_USE_GROUP, ($stackPtr + 1));

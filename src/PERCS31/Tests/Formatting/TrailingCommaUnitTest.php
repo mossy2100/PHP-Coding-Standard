@@ -44,6 +44,10 @@ class TrailingCommaUnitTest extends AbstractSniffTestCase
             94 => 1,
             97 => 1,
             98 => 1,
+            // list(): a trailing comma on one line, a missing one on several, and one in a nested list.
+            112 => 1,
+            115 => 1,
+            117 => 1,
         ];
     }
 

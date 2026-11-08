@@ -130,8 +130,9 @@ Reference: [PHPCSExtra repository and documentation](https://github.com/PHPCSSta
 Reference: [Slevomat coding standard repository and documentation](https://github.com/slevomat/coding-standard)
 
 - **Arrays.MultiLineArrayEndBracketPlacement**: Requires the closing bracket of a multi-line array on its own line (11).
-- **Arrays.TrailingArrayComma**: Requires a trailing comma after the last element of a multi-line array or destructuring
-  list, including after a heredoc's closing marker (2.6).
+- **Arrays.TrailingArrayComma**: Requires a trailing comma after the last element of a multi-line array or short
+  destructuring list, as in `[$a, $b] = $c;`, including after a heredoc's closing marker (2.6). `list()` is covered by
+  [`PERCS31.Formatting.TrailingComma`](#percs31formattingtrailingcomma).
 - **Attributes.RequireAttributeAfterDocComment**: Requires a doc comment before the attributes, not after (12.2).
 - **Classes.BackedEnumTypeSpacing**: Requires no space before a backed enum's colon, and one after (9).
 - **Classes.ClassKeywordOrder**: Requires `abstract` or `final` before `readonly` on a class, e.g.
@@ -1179,13 +1180,15 @@ $someInstance->create()
 
 ### PERCS31.Formatting.TrailingComma
 
-Requires a trailing comma after the last arm of a multi-line `match`, the last name in a multi-line group `use`, or the
-last argument in an anonymous class's multi-line arguments, and disallows one when the list is on a single line. It also
-disallows one in a `match` arm's conditions on a single line, e.g. `1, 2, => 'a'`.
+Requires a trailing comma after the last arm of a multi-line `match`, the last name in a multi-line group `use`, the
+last argument in an anonymous class's multi-line arguments, or the last item in a multi-line `list()`, and disallows one
+when the list is on a single line. It also disallows one in a `match` arm's conditions on a single line, e.g.
+`1, 2, => 'a'`.
 
 **Why:** [PER Coding Style 3.1, Section 2.6](https://www.php-fig.org/per/coding-style/#26-trailing-commas) says the last item of a list split across lines MUST have a trailing comma,
 and the last item of a list on one line MUST NOT. Slevomat's trailing comma sniffs cover calls, declarations and closure
-`use` lists, and the Squiz array sniff covers arrays, but none covers `match`, group `use` or `new class (`. Like
+`use` lists, and Slevomat's array sniff covers arrays and short lists, but none covers `match`, group `use`,
+`new class (` or `list()`. Like
 Slevomat's call sniffs, it doesn't require a comma when the closing parenthesis follows the last argument on its line.
 
 **Auto-fixable:** yes. A missing comma goes after the last item, before any comment.

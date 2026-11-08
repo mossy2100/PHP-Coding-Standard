@@ -133,9 +133,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   or `?->` must start its line, indented once, and the first method must be on the next line, not the object's line.
   Adds `PEAR.WhiteSpace.ObjectOperatorIndent` and the new `PERCS31.Formatting.MethodChaining`. Auto-fixable.
 - **`PERCS31.Formatting.TrailingComma` (breaking).** As PER Coding Style 3.1 requires, the last arm of a multi-line
-  `match`, the last name in a multi-line group `use` and the last argument in an anonymous class's multi-line arguments
-  must have a trailing comma, and one on a single line is an error, including in a `match` arm's conditions.
-  Auto-fixable.
+  `match`, the last name in a multi-line group `use`, the last argument in an anonymous class's multi-line arguments
+  and the last item in a multi-line `list()` must have a trailing comma, and one on a single line is an error, including
+  in a `match` arm's conditions. Auto-fixable.
 - **`Universal.Attributes.TrailingComma` (breaking).** A trailing comma in an attribute block on one line is an error,
   and so is a missing one in a split block of several attributes, as PER Coding Style 3.1 requires. Auto-fixable.
 - **Blank lines and spacing around attributes (breaking).** As PER Coding Style 3.1 requires,
