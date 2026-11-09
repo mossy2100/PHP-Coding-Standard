@@ -63,10 +63,12 @@ class OperatorSpacingSniff extends SquizSniff
      */
     public function register(): array
     {
-        $targets = [...parent::register(), ...array_values(Tokens::BOOLEAN_OPERATORS), T_STRING_CONCAT];
-        if (defined('T_PIPE')) {
-            $targets[] = T_PIPE;
-        }
+        $targets = [
+            ...parent::register(),
+            ...array_values(Tokens::BOOLEAN_OPERATORS),
+            T_STRING_CONCAT,
+            ...OperatorHelper::pipeOperator(),
+        ];
 
         // The parent registers PHP_CodeSniffer's assignment tokens, which include `=>`. Section 6.2 doesn't list it,
         // so section 6 leaves it undefined, and its uses are checked by their own sniffs.

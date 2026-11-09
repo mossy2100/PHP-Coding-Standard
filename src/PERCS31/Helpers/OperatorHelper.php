@@ -84,4 +84,29 @@ class OperatorHelper
             || isset(Tokens::CAST_TOKENS[$previousCode])
             || ($isPlusMinus && Operators::isUnaryPlusMinus($phpcsFile, $stackPtr));
     }
+
+    /**
+     * Get the binary operators the custom sniffs share: arithmetic, bitwise, comparison and boolean operators, `??`,
+     * `.`, `instanceof`, and the pipe operator `|>` when PHP defines it. Each sniff adds any others it needs, such as
+     * assignment operators.
+     *
+     * @return list<int|string> The token codes.
+     */
+    public static function binaryOperators(): array
+    {
+        $operators = Tokens::OPERATORS + Tokens::COMPARISON_TOKENS + Tokens::BOOLEAN_OPERATORS;
+
+        return [...array_values($operators), T_STRING_CONCAT, T_INSTANCEOF, ...self::pipeOperator()];
+    }
+
+    /**
+     * Get the pipe operator `|>`, if PHP defines it. PHP_CodeSniffer 4.0 doesn't define T_PIPE itself, but passes PHP's
+     * own token through on PHP 8.5.
+     *
+     * @return list<int|string> The token code, or nothing before PHP 8.5.
+     */
+    public static function pipeOperator(): array
+    {
+        return defined('T_PIPE') ? [T_PIPE] : [];
+    }
 }

@@ -6,6 +6,7 @@ namespace PERCS31\Sniffs\Strings;
 
 use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\LayoutHelper;
+use PERCS31\Helpers\OperatorHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -190,11 +191,7 @@ class HeredocIndentationSniff implements Sniff
             return false;
         }
 
-        return isset(Tokens::OPERATORS[$code])
-            || isset(Tokens::COMPARISON_TOKENS[$code])
-            || isset(Tokens::BOOLEAN_OPERATORS[$code])
-            || in_array($code, [T_STRING_CONCAT, T_INLINE_THEN, T_INLINE_ELSE, T_INSTANCEOF], true)
-            || (defined('T_PIPE') && $code === T_PIPE);
+        return in_array($code, [...OperatorHelper::binaryOperators(), T_INLINE_THEN, T_INLINE_ELSE], true);
     }
 
     /**

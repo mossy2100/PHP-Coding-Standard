@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\WhiteSpace;
 
 use PERCS31\Helpers\LayoutHelper;
+use PERCS31\Helpers\OperatorHelper;
 use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
@@ -277,12 +278,9 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
             return false;
         }
 
-        $operators = Tokens::OPERATORS + Tokens::COMPARISON_TOKENS + Tokens::ASSIGNMENT_TOKENS
-            + Tokens::BOOLEAN_OPERATORS;
+        $operators = [...OperatorHelper::binaryOperators(), ...array_values(Tokens::ASSIGNMENT_TOKENS), T_FN_ARROW];
 
-        return isset($operators[$code])
-            || in_array($code, [T_INSTANCEOF, T_FN_ARROW, T_COALESCE, T_STRING_CONCAT], true)
-            || (defined('T_PIPE') && $code === T_PIPE);
+        return in_array($code, $operators, true);
     }
 
     /**
