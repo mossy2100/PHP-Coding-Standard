@@ -350,7 +350,6 @@
 
     <!-- ====== CLOSURES (7) ====== -->
 
-    <rule ref="SlevomatCodingStandard.Functions.RequireArrowFunction"/>
     <rule ref="SlevomatCodingStandard.Functions.StaticClosure"/>
 
     <!-- ====== ARRAYS (11) ====== -->

@@ -392,7 +392,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - `Multiple`, now reported by `SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition`.
   - `SpacingAfterType`, `AvizKeywordOrder`, `StaticBeforeVisibility`, `ReadonlyBeforeVisibility`, `FinalAfterVisibility`
     and `AbstractAfterVisibility`, now reported by `SlevomatCodingStandard.Classes.PropertyDeclaration`.
-
+- **`SlevomatCodingStandard.Functions.RequireArrowFunction` from Jumbo.** Its fix rewrote a closure in a constant
+  expression, such as `const A = static function () { return 1; };`, as an arrow function, which PHP 8.5 doesn't allow
+  there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
 - **`PERCS31.ControlStructures.SwitchDeclaration` and the `case` line (breaking).** A blank line after a `case` or

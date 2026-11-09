@@ -151,7 +151,6 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Exceptions.DeadCatch**: Disallows unreachable catch blocks, e.g. a catch after `catch (Throwable)`.
 - **Exceptions.RequireNonCapturingCatch**: Requires catch without variable when exception is not used.
 - **Functions.FunctionLength**: Enforces maximum function length of 100 lines.
-- **Functions.RequireArrowFunction**: Requires arrow functions for simple closures.
 - **Functions.RequireMultiLineCall**: Requires multi-line format for long function calls.
 - **Functions.StaticClosure**: Requires the `static` keyword for closures that don't use `$this`.
 - **Functions.StrictCall**: Requires the strict argument in `in_array()`, `array_search()`, `array_keys()` and
