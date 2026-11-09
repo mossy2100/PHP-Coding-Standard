@@ -67,7 +67,7 @@ class MethodChainingSniff implements Sniff
                 continue;
             }
 
-            if (!$this->startsLine($phpcsFile, $operator)) {
+            if (!LayoutHelper::startsLine($phpcsFile, $operator)) {
                 $this->report($phpcsFile, $operator);
             }
 
@@ -113,26 +113,12 @@ class MethodChainingSniff implements Sniff
     private function isSplit(File $phpcsFile, array $chain): bool
     {
         foreach ($chain as $operator) {
-            if ($this->startsLine($phpcsFile, $operator)) {
+            if (LayoutHelper::startsLine($phpcsFile, $operator)) {
                 return true;
             }
         }
 
         return false;
-    }
-
-    /**
-     * Check if a token is the first non-whitespace token on its line.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $stackPtr The position of the token.
-     */
-    private function startsLine(File $phpcsFile, int $stackPtr): bool
-    {
-        $tokens = $phpcsFile->getTokens();
-        $prev = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
-
-        return $prev === false || $tokens[$prev]['line'] !== $tokens[$stackPtr]['line'];
     }
 
     /**

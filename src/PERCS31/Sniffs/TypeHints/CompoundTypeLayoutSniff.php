@@ -122,14 +122,14 @@ class CompoundTypeLayoutSniff implements Sniff
         }
 
         foreach ($grouped as $symbol) {
-            if ($this->startsLine($phpcsFile, $symbol)) {
+            if (LayoutHelper::startsLine($phpcsFile, $symbol)) {
                 $this->reportSplitIntersection($phpcsFile, $symbol);
             }
         }
 
         $isSplit = false;
         foreach ($topLevel as $symbol) {
-            $isSplit = $isSplit || $this->startsLine($phpcsFile, $symbol);
+            $isSplit = $isSplit || LayoutHelper::startsLine($phpcsFile, $symbol);
         }
 
         if (!$isSplit) {
@@ -140,7 +140,7 @@ class CompoundTypeLayoutSniff implements Sniff
             ? 'A compound type split across lines must have a single type on each line'
             : 'A compound type split across lines must have a single union segment on each line';
         foreach ($topLevel as $symbol) {
-            if (!$this->startsLine($phpcsFile, $symbol)) {
+            if (!LayoutHelper::startsLine($phpcsFile, $symbol)) {
                 $this->reportMultipleTypesOnLine($phpcsFile, $symbol, $error);
             }
         }
@@ -221,20 +221,6 @@ class CompoundTypeLayoutSniff implements Sniff
     private function isSymbol(int|string $code): bool
     {
         return in_array($code, [T_TYPE_UNION, T_TYPE_INTERSECTION, T_BITWISE_OR, T_BITWISE_AND], true);
-    }
-
-    /**
-     * Check whether a token is the first non-whitespace token on its line.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $stackPtr The position of the token.
-     */
-    private function startsLine(File $phpcsFile, int $stackPtr): bool
-    {
-        $tokens = $phpcsFile->getTokens();
-        $prev = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
-
-        return $prev === false || $tokens[$prev]['line'] !== $tokens[$stackPtr]['line'];
     }
 
     /**

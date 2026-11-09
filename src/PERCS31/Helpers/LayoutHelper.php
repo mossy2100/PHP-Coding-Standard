@@ -29,4 +29,19 @@ class LayoutHelper
 
         return ($firstOnLine === false ? 1 : $phpcsFile->getTokens()[$firstOnLine]['column']) - 1;
     }
+
+    /**
+     * Check whether a token is the first code on its line, with only whitespace before it.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $ptr The position of the token.
+     * @return bool True if it is.
+     */
+    public static function startsLine(File $phpcsFile, int $ptr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $previous = $phpcsFile->findPrevious(T_WHITESPACE, ($ptr - 1), null, true);
+
+        return $previous === false || $tokens[$previous]['line'] !== $tokens[$ptr]['line'];
+    }
 }
