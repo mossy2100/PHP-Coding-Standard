@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\TypeHints;
 
+use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\LayoutHelper;
 use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
@@ -246,9 +247,7 @@ class CompoundTypeLayoutSniff implements Sniff
         }
 
         $phpcsFile->fixer->beginChangeset();
-        for ($i = ($prev + 1); $i < $symbol; $i++) {
-            $phpcsFile->fixer->replaceToken($i, '');
-        }
+        FixerHelper::blankBetween($phpcsFile, $prev, $symbol);
 
         $phpcsFile->fixer->endChangeset();
     }

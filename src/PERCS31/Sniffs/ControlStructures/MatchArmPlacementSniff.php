@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\ControlStructures;
 
+use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\LayoutHelper;
 use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
@@ -93,9 +94,7 @@ class MatchArmPlacementSniff implements Sniff
 
         $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $comma));
         $phpcsFile->fixer->beginChangeset();
-        for ($i = ($comma + 1); $i < $next; $i++) {
-            $phpcsFile->fixer->replaceToken($i, '');
-        }
+        FixerHelper::blankBetween($phpcsFile, $comma, $next);
 
         $phpcsFile->fixer->addContent($comma, $phpcsFile->eolChar . $indent);
         $phpcsFile->fixer->endChangeset();

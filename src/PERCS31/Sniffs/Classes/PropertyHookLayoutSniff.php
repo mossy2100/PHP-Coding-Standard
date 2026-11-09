@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Classes;
 
+use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\LayoutHelper;
 use PERCS31\Helpers\PropertyHookHelper;
 use PERCS31\Helpers\TokenHelper;
@@ -164,7 +165,7 @@ class PropertyHookLayoutSniff implements Sniff
                 self::CODE_SPACE_AFTER_REFERENCE,
             );
             if ($fix) {
-                $this->setSpacing($phpcsFile, $i, $name, '');
+                FixerHelper::replaceBetween($phpcsFile, $i, $name, '');
             }
         }
     }
@@ -192,7 +193,7 @@ class PropertyHookLayoutSniff implements Sniff
             }
 
             if ($phpcsFile->addFixableError($error, $opener, self::CODE_OPENER_NOT_ON_SAME_LINE)) {
-                $this->setSpacing($phpcsFile, $previous, $opener, ' ');
+                FixerHelper::replaceBetween($phpcsFile, $previous, $opener, ' ');
             }
 
             return;
@@ -208,7 +209,7 @@ class PropertyHookLayoutSniff implements Sniff
             self::CODE_SPACE_BEFORE_OPENER,
         );
         if ($fix) {
-            $this->setSpacing($phpcsFile, $previous, $opener, ' ');
+            FixerHelper::replaceBetween($phpcsFile, $previous, $opener, ' ');
         }
     }
 
@@ -233,7 +234,7 @@ class PropertyHookLayoutSniff implements Sniff
             if ($hasComment) {
                 $phpcsFile->addError($error, $arrow, self::CODE_BODY_NOT_ON_SAME_LINE);
             } elseif ($phpcsFile->addFixableError($error, $arrow, self::CODE_BODY_NOT_ON_SAME_LINE)) {
-                $this->setSpacing($phpcsFile, $arrow, $body, ' ');
+                FixerHelper::replaceBetween($phpcsFile, $arrow, $body, ' ');
             }
 
             return;
@@ -252,8 +253,8 @@ class PropertyHookLayoutSniff implements Sniff
         );
         if ($fix) {
             $phpcsFile->fixer->beginChangeset();
-            $this->setSpacing($phpcsFile, $name, $arrow, ' ');
-            $this->setSpacing($phpcsFile, $arrow, $body, ' ');
+            FixerHelper::replaceBetween($phpcsFile, $name, $arrow, ' ');
+            FixerHelper::replaceBetween($phpcsFile, $arrow, $body, ' ');
             $phpcsFile->fixer->endChangeset();
         }
     }
@@ -275,7 +276,7 @@ class PropertyHookLayoutSniff implements Sniff
                 $phpcsFile->addError($error, $closer, self::CODE_CLOSER_NOT_ON_OWN_LINE);
             } elseif ($phpcsFile->addFixableError($error, $closer, self::CODE_CLOSER_NOT_ON_OWN_LINE)) {
                 $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $opener));
-                $this->setSpacing($phpcsFile, $previous, $closer, $phpcsFile->eolChar . $indent);
+                FixerHelper::replaceBetween($phpcsFile, $previous, $closer, $phpcsFile->eolChar . $indent);
             }
         }
 
@@ -321,8 +322,8 @@ class PropertyHookLayoutSniff implements Sniff
         );
         if ($fix) {
             $phpcsFile->fixer->beginChangeset();
-            $this->setSpacing($phpcsFile, $opener, $first, ' ');
-            $this->setSpacing($phpcsFile, $last, $closer, ' ');
+            FixerHelper::replaceBetween($phpcsFile, $opener, $first, ' ');
+            FixerHelper::replaceBetween($phpcsFile, $last, $closer, ' ');
             $phpcsFile->fixer->endChangeset();
         }
     }
@@ -361,9 +362,7 @@ class PropertyHookLayoutSniff implements Sniff
 
         if ($phpcsFile->addFixableError($error, $opener, self::CODE_BODILESS_LAYOUT)) {
             $phpcsFile->fixer->beginChangeset();
-            for ($i = ($opener + 1); $i < $closer; $i++) {
-                $phpcsFile->fixer->replaceToken($i, '');
-            }
+            FixerHelper::blankBetween($phpcsFile, $opener, $closer);
 
             $phpcsFile->fixer->addContent($opener, $expected);
             $phpcsFile->fixer->endChangeset();
@@ -403,7 +402,7 @@ class PropertyHookLayoutSniff implements Sniff
                 self::CODE_SPACE_BEFORE_SEMICOLON,
             );
             if ($fix) {
-                $this->setSpacing($phpcsFile, $name, $i, '');
+                FixerHelper::replaceBetween($phpcsFile, $name, $i, '');
             }
         }
     }
@@ -466,7 +465,12 @@ class PropertyHookLayoutSniff implements Sniff
         if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($boundary + 1), $next) !== false) {
             $phpcsFile->addError($error, $next, self::CODE_HOOK_NOT_ON_OWN_LINE);
         } elseif ($phpcsFile->addFixableError($error, $next, self::CODE_HOOK_NOT_ON_OWN_LINE)) {
-            $this->setSpacing($phpcsFile, $boundary, $next, $phpcsFile->eolChar . str_repeat(' ', $hookIndent));
+            FixerHelper::replaceBetween(
+                $phpcsFile,
+                $boundary,
+                $next,
+                $phpcsFile->eolChar . str_repeat(' ', $hookIndent),
+            );
         }
     }
 
@@ -493,7 +497,7 @@ class PropertyHookLayoutSniff implements Sniff
         if (isset(Tokens::COMMENT_TOKENS[$tokens[$previous]['code']])) {
             $phpcsFile->addError($error, $bodyOpener, self::CODE_SPACE_BEFORE_HOOK_BRACE);
         } elseif ($phpcsFile->addFixableError($error, $bodyOpener, self::CODE_SPACE_BEFORE_HOOK_BRACE)) {
-            $this->setSpacing($phpcsFile, $previous, $bodyOpener, ' ');
+            FixerHelper::replaceBetween($phpcsFile, $previous, $bodyOpener, ' ');
         }
     }
 
@@ -525,7 +529,7 @@ class PropertyHookLayoutSniff implements Sniff
                 $phpcsFile->addError($error, $first, self::CODE_HOOK_BODY_NOT_ON_NEW_LINE);
             } elseif ($phpcsFile->addFixableError($error, $first, self::CODE_HOOK_BODY_NOT_ON_NEW_LINE)) {
                 $indent = str_repeat(' ', ($hookIndent + LayoutHelper::INDENT));
-                $this->setSpacing($phpcsFile, $bodyOpener, $first, $phpcsFile->eolChar . $indent);
+                FixerHelper::replaceBetween($phpcsFile, $bodyOpener, $first, $phpcsFile->eolChar . $indent);
             }
         }
 
@@ -539,7 +543,12 @@ class PropertyHookLayoutSniff implements Sniff
             self::CODE_HOOK_CLOSER_NOT_ON_OWN_LINE,
         );
         if ($fix) {
-            $this->setSpacing($phpcsFile, $last, $bodyCloser, $phpcsFile->eolChar . str_repeat(' ', $hookIndent));
+            FixerHelper::replaceBetween(
+                $phpcsFile,
+                $last,
+                $bodyCloser,
+                $phpcsFile->eolChar . str_repeat(' ', $hookIndent),
+            );
         }
     }
 
@@ -556,24 +565,5 @@ class PropertyHookLayoutSniff implements Sniff
         $hooks = PropertyHookHelper::parseHooks($phpcsFile, $opener, $closer) ?? [];
 
         return array_values(array_filter(array_column($hooks, 'arrowPtr'), is_int(...)));
-    }
-
-    /**
-     * Replace whatever is between two tokens with the given whitespace.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $from The token before the gap.
-     * @param int $to The token after the gap.
-     * @param string $spacing The whitespace to put in the gap.
-     */
-    private function setSpacing(File $phpcsFile, int $from, int $to, string $spacing): void
-    {
-        $phpcsFile->fixer->beginChangeset();
-        for ($i = ($from + 1); $i < $to; $i++) {
-            $phpcsFile->fixer->replaceToken($i, '');
-        }
-
-        $phpcsFile->fixer->addContent($from, $spacing);
-        $phpcsFile->fixer->endChangeset();
     }
 }

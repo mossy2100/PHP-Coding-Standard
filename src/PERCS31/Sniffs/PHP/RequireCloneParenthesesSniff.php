@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\PHP;
 
+use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
@@ -110,9 +111,7 @@ class RequireCloneParenthesesSniff implements Sniff
         }
 
         $phpcsFile->fixer->beginChangeset();
-        for ($i = ($stackPtr + 1); $i < $next; $i++) {
-            $phpcsFile->fixer->replaceToken($i, '');
-        }
+        FixerHelper::blankBetween($phpcsFile, $stackPtr, $next);
 
         $phpcsFile->fixer->addContentBefore($next, '(');
         $phpcsFile->fixer->addContent($end, ')');
@@ -145,9 +144,7 @@ class RequireCloneParenthesesSniff implements Sniff
         }
 
         $phpcsFile->fixer->beginChangeset();
-        for ($i = ($stackPtr + 1); $i < $opener; $i++) {
-            $phpcsFile->fixer->replaceToken($i, '');
-        }
+        FixerHelper::blankBetween($phpcsFile, $stackPtr, $opener);
 
         $phpcsFile->fixer->endChangeset();
     }

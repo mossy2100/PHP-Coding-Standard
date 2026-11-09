@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Strings;
 
+use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\LayoutHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
@@ -159,9 +160,7 @@ class HeredocIndentationSniff implements Sniff
         }
 
         $phpcsFile->fixer->beginChangeset();
-        for ($i = ($from + 1); $i < $to; $i++) {
-            $phpcsFile->fixer->replaceToken($i, '');
-        }
+        FixerHelper::blankBetween($phpcsFile, $from, $to);
 
         $phpcsFile->fixer->addContent($from, ' ');
         $phpcsFile->fixer->endChangeset();

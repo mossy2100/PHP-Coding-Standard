@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\ControlStructures;
 
+use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\LayoutHelper;
 use PERCS31\Helpers\PropertyHookHelper;
 use PERCS31\Helpers\TokenHelper;
@@ -116,13 +117,9 @@ class MultiLineTernaryOperatorSniff implements Sniff
             $before = $phpcsFile->findPrevious(T_WHITESPACE, ($operator - 1), null, true);
             $after = $phpcsFile->findNext(T_WHITESPACE, ($operator + 1), null, true);
             assert(is_int($before) && is_int($after));
-            for ($i = ($before + 1); $i < $operator; $i++) {
-                $phpcsFile->fixer->replaceToken($i, '');
-            }
+            FixerHelper::blankBetween($phpcsFile, $before, $operator);
 
-            for ($i = ($operator + 1); $i < $after; $i++) {
-                $phpcsFile->fixer->replaceToken($i, '');
-            }
+            FixerHelper::blankBetween($phpcsFile, $operator, $after);
 
             $phpcsFile->fixer->addContentBefore($operator, $phpcsFile->eolChar . $indentation);
             $phpcsFile->fixer->addContent($operator, ' ');

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Functions;
 
+use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\PSR12\Sniffs\Functions\NullableTypeDeclarationSniff as Psr12Sniff;
@@ -76,9 +77,7 @@ class NullableTypeDeclarationSniff extends Psr12Sniff
         }
 
         $phpcsFile->fixer->beginChangeset();
-        for ($i = ($stackPtr + 1); $i < $next; $i++) {
-            $phpcsFile->fixer->replaceToken($i, '');
-        }
+        FixerHelper::blankBetween($phpcsFile, $stackPtr, $next);
 
         $phpcsFile->fixer->endChangeset();
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\Attributes;
 
 use PERCS31\Helpers\AttributeHelper;
+use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\LayoutHelper;
 use PERCS31\Helpers\PropertyHookHelper;
 use PERCS31\Helpers\TokenHelper;
@@ -232,17 +233,17 @@ class AttributePlacementSniff implements Sniff
             return;
         }
 
-        $phpcsFile->fixer->beginChangeset();
-        $this->setSpacing($phpcsFile, $opener, $first, $itemIndent);
+        // Each call is a changeset of its own.
+        FixerHelper::replaceBetween($phpcsFile, $opener, $first, $itemIndent);
         foreach ($commas as $comma) {
             $next = $phpcsFile->findNext(T_WHITESPACE, ($comma + 1), $closer, true);
             if ($next !== false && $next !== $closer) {
-                $this->setSpacing($phpcsFile, $comma, $next, $itemIndent);
+                FixerHelper::replaceBetween($phpcsFile, $comma, $next, $itemIndent);
             }
         }
 
         $comma = $tokens[$last]['code'] === T_COMMA ? '' : ',';
-        $this->setSpacing($phpcsFile, $last, $closer, $comma . $phpcsFile->eolChar . $indent);
+        FixerHelper::replaceBetween($phpcsFile, $last, $closer, $comma . $phpcsFile->eolChar . $indent);
         $phpcsFile->fixer->endChangeset();
     }
 
@@ -269,7 +270,7 @@ class AttributePlacementSniff implements Sniff
             assert(is_int($firstOnLine));
             $extra = $tokens[$firstOnLine]['code'] === T_ATTRIBUTE ? 0 : LayoutHelper::INDENT;
             $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1 + $extra));
-            $this->setSpacing($phpcsFile, $closerPtr, $targetPtr, $phpcsFile->eolChar . $indent);
+            FixerHelper::replaceBetween($phpcsFile, $closerPtr, $targetPtr, $phpcsFile->eolChar . $indent);
         }
     }
 
@@ -392,9 +393,7 @@ class AttributePlacementSniff implements Sniff
 
         $indent = str_repeat(' ', ($tokens[$stackPtr]['column'] - 1));
         $phpcsFile->fixer->beginChangeset();
-        for ($i = ($previous + 1); $i < $stackPtr; $i++) {
-            $phpcsFile->fixer->replaceToken($i, '');
-        }
+        FixerHelper::blankBetween($phpcsFile, $previous, $stackPtr);
 
         $phpcsFile->fixer->addContent($previous, $phpcsFile->eolChar . $indent);
         $phpcsFile->fixer->endChangeset();
@@ -425,9 +424,7 @@ class AttributePlacementSniff implements Sniff
         }
 
         $phpcsFile->fixer->beginChangeset();
-        for ($i = ($closerPtr + 1); $i < $targetPtr; $i++) {
-            $phpcsFile->fixer->replaceToken($i, '');
-        }
+        FixerHelper::blankBetween($phpcsFile, $closerPtr, $targetPtr);
 
         $phpcsFile->fixer->addContent($closerPtr, ' ');
         $phpcsFile->fixer->endChangeset();
@@ -481,9 +478,7 @@ class AttributePlacementSniff implements Sniff
         }
 
         $phpcsFile->fixer->beginChangeset();
-        for ($i = ($newPtr + 1); $i < $anonClassPtr; $i++) {
-            $phpcsFile->fixer->replaceToken($i, '');
-        }
+        FixerHelper::blankBetween($phpcsFile, $newPtr, $anonClassPtr);
 
         $layout = '';
         foreach ($blocks as $block) {
@@ -560,7 +555,12 @@ class AttributePlacementSniff implements Sniff
             }
 
             if ($phpcsFile->addFixableError($error, $stackPtr, self::CODE_SAME_LINE)) {
-                $this->setSpacing($phpcsFile, $closerPtr, $targetPtr, $phpcsFile->eolChar . str_repeat(' ', $indent));
+                FixerHelper::replaceBetween(
+                    $phpcsFile,
+                    $closerPtr,
+                    $targetPtr,
+                    $phpcsFile->eolChar . str_repeat(' ', $indent),
+                );
             }
 
             return;
@@ -629,27 +629,8 @@ class AttributePlacementSniff implements Sniff
         }
 
         if ($phpcsFile->addFixableError($error, $closerPtr, $code)) {
-            $this->setSpacing($phpcsFile, $closerPtr, $targetPtr, ' ');
+            FixerHelper::replaceBetween($phpcsFile, $closerPtr, $targetPtr, ' ');
         }
-    }
-
-    /**
-     * Replace everything between two tokens with the given spacing.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $from The position of the token before the spacing.
-     * @param int $to The position of the token after the spacing.
-     * @param string $spacing The new spacing.
-     */
-    private function setSpacing(File $phpcsFile, int $from, int $to, string $spacing): void
-    {
-        $phpcsFile->fixer->beginChangeset();
-        for ($i = ($from + 1); $i < $to; $i++) {
-            $phpcsFile->fixer->replaceToken($i, '');
-        }
-
-        $phpcsFile->fixer->addContent($from, $spacing);
-        $phpcsFile->fixer->endChangeset();
     }
 
     /**

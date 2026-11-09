@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jumbo\Sniffs\ControlStructures;
 
+use PERCS31\Helpers\FixerHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -110,9 +111,7 @@ class StatementAfterClosingBraceSniff implements Sniff
         $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $stackPtr, true);
         assert(is_int($firstOnLine));
         $phpcsFile->fixer->beginChangeset();
-        for ($i = ($stackPtr + 1); $i < $next; $i++) {
-            $phpcsFile->fixer->replaceToken($i, '');
-        }
+        FixerHelper::blankBetween($phpcsFile, $stackPtr, $next);
 
         $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1));
         $phpcsFile->fixer->addContent($stackPtr, $phpcsFile->eolChar . $indent);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Operators;
 
+use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\LayoutHelper;
 use PERCS31\Helpers\OperatorHelper;
 use PERCS31\Helpers\PropertyHookHelper;
@@ -227,9 +228,7 @@ class OperatorPlacementSniff implements Sniff
 
             $phpcsFile->fixer->replaceToken($elsePtr, '?:');
         } else {
-            for ($i = ($thenPtr + 1); $i < $elsePtr; $i++) {
-                $phpcsFile->fixer->replaceToken($i, '');
-            }
+            FixerHelper::blankBetween($phpcsFile, $thenPtr, $elsePtr);
         }
 
         $phpcsFile->fixer->endChangeset();

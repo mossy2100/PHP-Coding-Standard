@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\ControlStructures;
 
 use Closure;
+use PERCS31\Helpers\FixerHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\PSR2\Sniffs\ControlStructures\SwitchDeclarationSniff as Psr2Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -146,9 +147,7 @@ class SwitchDeclarationSniff extends Psr2Sniff
 
         $padding = str_repeat(' ', ($tokens[$case]['column'] - 1 + $this->indent));
         $phpcsFile->fixer->beginChangeset();
-        for ($i = ($opener + 1); $i < $next; $i++) {
-            $phpcsFile->fixer->replaceToken($i, '');
-        }
+        FixerHelper::blankBetween($phpcsFile, $opener, $next);
 
         $phpcsFile->fixer->addContentBefore($next, $phpcsFile->eolChar . $padding);
         $phpcsFile->fixer->endChangeset();
@@ -384,9 +383,7 @@ class SwitchDeclarationSniff extends Psr2Sniff
         }
 
         $phpcsFile->fixer->beginChangeset();
-        for ($i = ($beforeCloser + 1); $i < $last; $i++) {
-            $phpcsFile->fixer->replaceToken($i, '');
-        }
+        FixerHelper::blankBetween($phpcsFile, $beforeCloser, $last);
 
         $phpcsFile->fixer->addContentBefore($last, $phpcsFile->eolChar . $indent);
         $phpcsFile->fixer->endChangeset();
@@ -421,9 +418,7 @@ class SwitchDeclarationSniff extends Psr2Sniff
         }
 
         $phpcsFile->fixer->beginChangeset();
-        for ($i = ($opener + 1); $i < $condition; $i++) {
-            $phpcsFile->fixer->replaceToken($i, '');
-        }
+        FixerHelper::blankBetween($phpcsFile, $opener, $condition);
 
         $phpcsFile->fixer->addContent($opener, $phpcsFile->eolChar . $indent . str_repeat(' ', self::CONDITION_INDENT));
         $phpcsFile->fixer->endChangeset();

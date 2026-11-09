@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jumbo\Sniffs\Operators;
 
+use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\OperatorHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
@@ -63,9 +64,7 @@ class UnaryOperatorSpacingSniff implements Sniff
         }
 
         $phpcsFile->fixer->beginChangeset();
-        for ($i = ($stackPtr + 1); $i < $operand; $i++) {
-            $phpcsFile->fixer->replaceToken($i, '');
-        }
+        FixerHelper::blankBetween($phpcsFile, $stackPtr, $operand);
 
         $phpcsFile->fixer->endChangeset();
     }

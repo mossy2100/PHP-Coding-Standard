@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Arrays;
 
+use PERCS31\Helpers\FixerHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -87,13 +88,11 @@ class OpeningBracketPlacementSniff implements Sniff
         }
 
         $phpcsFile->fixer->beginChangeset();
-        for ($i = ($previous + 1); $i < $stackPtr; $i++) {
-            $phpcsFile->fixer->replaceToken($i, '');
-        }
+        FixerHelper::blankBetween($phpcsFile, $previous, $stackPtr);
 
         if ($code === T_OPEN_PARENTHESIS) {
-            for ($i = ($closer + 1); $i < $onlyArgumentCloser; $i++) {
-                $phpcsFile->fixer->replaceToken($i, '');
+            if (is_int($onlyArgumentCloser)) {
+                FixerHelper::blankBetween($phpcsFile, $closer, $onlyArgumentCloser);
             }
         } else {
             $phpcsFile->fixer->addContent($previous, ' ');
