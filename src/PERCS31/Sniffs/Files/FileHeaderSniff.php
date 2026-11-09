@@ -22,6 +22,10 @@ use PHP_CodeSniffer\Util\Tokens;
  * header at a block declare, so it wants a blank line before one. This sniff counts one as a declare statement, so
  * there's no blank line between it and the declare statements before it.
  *
+ * A file with markup before its first PHP opening tag, such as a template, has no file header, so it isn't checked.
+ * The parent skips a file that mixes PHP and markup when it has several opening tags, but with only one, it reports
+ * a declare after the markup as a misplaced header, and its spacing fixes then fight other sniffs.
+ *
  * In a file with markup, a strict_types declare anywhere else is reported, as StrictTypesNotOnFirstLine. If the declare
  * is all that's in its PHP block, the fix collapses the block onto the first line. Otherwise, it adds the first-line
  * form at the top, and removes the declare statement and the blank line after it. A file starting with a shebang line
@@ -44,7 +48,7 @@ class FileHeaderSniff extends Psr12Sniff
      */
     public function process(File $phpcsFile, int $stackPtr): ?int
     {
-        if (FileHeaderHelper::hasInlineDeclare($phpcsFile)) {
+        if (FileHeaderHelper::hasInlineDeclare($phpcsFile) || FileHeaderHelper::hasMarkupBeforeFirstTag($phpcsFile)) {
             return $phpcsFile->numTokens;
         }
 

@@ -88,4 +88,26 @@ class FileHeaderHelper
 
         return preg_match('/strict_types\s*=\s*1\b/', $content) === 1 ? $declare : null;
     }
+
+    /**
+     * Check whether a file starts with markup before its first PHP opening tag, apart from a shebang line.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @return bool True if it does.
+     */
+    public static function hasMarkupBeforeFirstTag(File $phpcsFile): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        if ($phpcsFile->numTokens === 0 || $tokens[0]['code'] !== T_INLINE_HTML) {
+            return false;
+        }
+
+        $content = $tokens[0]['content'];
+        if (str_starts_with($content, '#!')) {
+            $newline = strpos($content, "\n");
+            $content = $newline === false ? '' : substr($content, ($newline + 1));
+        }
+
+        return trim($content) !== '';
+    }
 }

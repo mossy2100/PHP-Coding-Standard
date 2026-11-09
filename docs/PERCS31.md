@@ -1037,6 +1037,10 @@ Section 3 also lists "One or more declare statements" as one block, with no blan
 at a block declare, and wants a blank line before one. This sniff counts one as a declare statement, so there's no blank
 line between it and a declare statement before it.
 
+A file with markup before its first `<?php`, such as a template, has no file header, so it isn't checked. The parent
+already skips a file that mixes PHP and markup when it has several PHP tags, but with only one, it reported a
+`declare` after the markup as a misplaced header, and its fixes looped.
+
 The parent ends a `use` statement at its first comma, so it reports `use A, B;` as missing a blank line before `B`.
 Section 3 doesn't forbid several imports in one statement, so this sniff reads the statement to its semicolon.
 
