@@ -21,3 +21,8 @@ $m = new $class()->bar();
 $n = new class {
     public int $x = 1;
 }->x;
+
+// A comment between the parentheses and the expression (not fixable).
+$o = (/* c1 */ new Foo() /* c2 */)->bar();
+$p = (new Foo() // Why.
+)->bar();

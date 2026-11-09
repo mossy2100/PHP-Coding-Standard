@@ -115,12 +115,17 @@ class ClassInstantiationNoBracketsSniff implements Sniff
             return;
         }
 
-        $fix = $phpcsFile->addFixableWarning(
-            'Unnecessary parentheses around a class instantiation; use "new Foo()->bar()", not "(new Foo())->bar()"',
-            $stackPtr,
-            self::CODE_UNNECESSARY,
-        );
-        if (!$fix) {
+        // A comment between the parentheses and the expression would be lost, so leave that to a person.
+        $warning = 'Unnecessary parentheses around a class instantiation; use "new Foo()->bar()", '
+            . 'not "(new Foo())->bar()"';
+        $hasComment = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($stackPtr + 1), $newPtr) !== false
+            || $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($end + 1), $closer) !== false;
+        if ($hasComment) {
+            $phpcsFile->addWarning($warning, $stackPtr, self::CODE_UNNECESSARY);
+            return;
+        }
+
+        if (!$phpcsFile->addFixableWarning($warning, $stackPtr, self::CODE_UNNECESSARY)) {
             return;
         }
 

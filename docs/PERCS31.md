@@ -547,7 +547,7 @@ check, but it misses `::`, and removes the parentheses from `(new Foo() ?: new B
 This sniff only reports parentheses holding exactly one `new` expression. A `new` without an argument list, such as
 `(new Foo)->bar()`, is left until `PSR12.Classes.ClassInstantiation` has added the `()`, as PHP needs them.
 
-**Auto-fixable:** yes.
+**Auto-fixable:** yes, unless a comment is between the parentheses and the expression.
 
 **Good:**
 

@@ -41,6 +41,9 @@ class ClassInstantiationNoBracketsUnitTest extends AbstractSniffTestCase
             20 => 1,
             // An anonymous class.
             21 => 1,
+            // A comment between the parentheses and the expression (not fixable).
+            26 => 1,
+            27 => 1,
         ];
     }
 }
