@@ -94,10 +94,7 @@
     <!-- ====== TYPES (2.5) ====== -->
 
     <!-- Union and intersection types: no spaces around | and &, or inside the parentheses, and null last (2.5). ?T is
-         a SHOULD, so a warning. Known Slevomat bug, not worked around: a variable after a case body wrapped in braces
-         crashes this sniff ("Undefined array key bracket_closer"), aborting the rest of the file. PER 5.2 disallows
-         braces around a case body, and PERCS31.ControlStructures.SwitchDeclaration still reports them, so removing
-         the braces fixes both. -->
+         a SHOULD, so a warning. -->
     <rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat">
         <!-- Replaced by PERCS31.TypeHints.CompoundTypeOperatorSpacing, which allows a compound type split before | or &
              (2.5) -->
@@ -146,7 +143,8 @@
     <!-- A trailing comma after the last element of a multi-line array, keyed or not, including after a heredoc (2.6) -->
     <rule ref="SlevomatCodingStandard.Arrays.TrailingArrayComma"/>
 
-    <!-- A trailing comma in a multi-line match or group use, and none on a single line (2.6) -->
+    <!-- A trailing comma in a multi-line match, group use, list(), or the arguments of an anonymous class, clone(),
+         exit() or die(), and none on a single line (2.6) -->
     <rule ref="PERCS31.Formatting.TrailingComma"/>
 
     <!-- A trailing comma in an attribute block: none on one line, and one in a split block of several attributes (2.6).

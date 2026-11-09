@@ -308,7 +308,7 @@
     <!-- No whitespace after a prefix unary +, ~ or @ -->
     <rule ref="Jumbo.Operators.UnaryOperatorSpacing"/>
 
-    <!-- Exactly one space around operators, including before assignments and double arrows (no alignment): the codes
+    <!-- Exactly one space around operators, including before assignments (no alignment): the codes
          PERCS31.Operators.OperatorSpacing reports more than one space with, which PERCS31 excludes -->
     <rule ref="PERCS31.Operators.OperatorSpacing">
         <properties>
