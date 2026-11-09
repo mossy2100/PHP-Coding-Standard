@@ -29,6 +29,9 @@ class UnaryOperatorSpacingUnitTest extends AbstractSniffTestCase
             18 => 1,
             // A comment between + and its operand (not fixable).
             19 => 1,
+            // A space after + following a cast, and following a concatenation.
+            20 => 1,
+            21 => 1,
         ];
     }
 

@@ -17,3 +17,5 @@ $plusLine = +
 $bitwiseNot = ~ $a;
 $silenced = @ file_get_contents($s);
 $commented = + /* Why. */ $a;
+$afterCast = (int) + $a;
+$afterConcat = 'a' . + $a;
