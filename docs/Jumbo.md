@@ -444,7 +444,7 @@ starting with an operator. A comment among the arm's parts is left to a person.
 ```php
 $label = match ($code) {
     200, 201 => 'OK',
-    $thisIsAVeryLongConditionThatTakesUpMostOfTheLineByItself,
+    $thisIsAnExtremelyLongConditionThatTakesUpMostOfTheLineByItself,
         $andThisIsAnotherOneThatWillNotFitOnTheSameLineAsThatOne => 'Long',
     default => 'Error',
 };
@@ -545,6 +545,9 @@ $query
     ->select()
     ->where();
 
+/**
+ * @param list<int> $items
+ */
 function total(array $items): int
 {
     return 0;
@@ -565,6 +568,9 @@ $a = $b ? (
     $c
 ) : 2;
 
+/**
+ * @param list<int> $items
+ */
 function total(
     array $items,
 ): int {
@@ -640,6 +646,9 @@ This sniff fills only that gap. It doesn't report:
 ```php
 class Order
 {
+    /**
+     * @param list<int> $items
+     */
     public function total(array $items): int
     {
         $sum = 0;
