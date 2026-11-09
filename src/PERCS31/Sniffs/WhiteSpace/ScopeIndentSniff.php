@@ -2,13 +2,21 @@
 /**
  * Checks that control structures are defined and indented correctly.
  *
- * This is a fork of Generic.WhiteSpace.ScopeIndent from PHP_CodeSniffer 4.0.4, with PHP 8.4 property hook support.
- * PHP_CodeSniffer's tokenizer doesn't recognise property hook braces as scope openers, so the hook list braces and
- * hook body braces are tracked separately, using PropertyHookHelper::findHookScopes().
+ * This is a fork of Generic.WhiteSpace.ScopeIndent from PHP_CodeSniffer 4.0.4. It isn't a subclass, as every change is
+ * inside process(), which is one long method with no smaller one to override. The changes:
+ * - Property hooks (PHP 8.4): PHP_CodeSniffer's tokenizer doesn't recognise property hook braces as scope openers, so
+ *   the hook list braces and hook body braces are tracked separately, using PropertyHookHelper::findHookScopes().
+ * - Markup: the code in a PHP block may be indented once past its opening tag, and a closing tag's indent isn't
+ *   checked, as PER Coding Style 3.1 has no rule on either.
+ * - An anonymous class with attributes, after `new` on an earlier line, is indented once from that line (section 8).
+ * - A line starting a `match` arm is indented exactly once past the line of the match's opening brace (section 5.2).
+ * - A body's first line is indented exactly once past the line of its opening brace, or of the `)` that brace
+ *   follows (sections 2.4 and 5).
+ * - A `phpcs:set` for this sniff's own code sets its `exact` property, as one for the original's code does.
  *
  * Apart from the namespace, every change from upstream is marked with a "PERCS31:" comment, so a diff against the
- * upstream file shows only the property hook patch. To update the fork to a new PHP_CodeSniffer release, copy the new
- * upstream file, re-apply the marked changes, and run the tests.
+ * upstream file shows only these. To update the fork to a new PHP_CodeSniffer release, copy the new upstream file,
+ * re-apply the marked changes, and run the tests.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2023 Squiz Pty Ltd (ABN 77 084 670 600)

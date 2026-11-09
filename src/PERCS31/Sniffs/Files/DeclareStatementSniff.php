@@ -9,8 +9,15 @@
  * any spaces inside the parentheses. This fork checks each directive in turn, with any value, so every check works for
  * every declare statement.
  *
+ * It isn't a subclass, as the changes are inside process(), which has no smaller method to override. The changes:
+ * - Each directive is checked in turn, with any value.
+ * - The fix for the space before a block declare's `{` removes whatever is between them, then adds one. The original's
+ *   loop never ended on `){`, with no space at all.
+ * - The check that the closing brace is on a new line is removed, as PERCS31.WhiteSpace.ScopeClosingBrace makes it,
+ *   and with both fixes, the result had a blank line before the brace.
+ *
  * Apart from the namespace, every change from upstream is marked with a "PERCS31:" comment, so a diff against the
- * upstream file shows only the fix. To update the fork to a new PHP_CodeSniffer release, copy the new upstream file,
+ * upstream file shows only these. To update the fork to a new PHP_CodeSniffer release, copy the new upstream file,
  * re-apply the marked changes, and run the tests. Remove the fork once upstream handles several directives.
  *
  * @author    Sertan Danis <sdanis@squiz.net>
