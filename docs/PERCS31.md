@@ -576,14 +576,17 @@ $total = (new Calculator())->add(1, 2);
 
 ### PERCS31.Classes.ClosingBrace
 
-Disallows a comment or statement after the closing brace of a class or method, including an anonymous class. This
-replaces `PSR12.Classes.ClosingBrace`.
+Disallows a comment or statement after the closing brace of a class or method, including an anonymous class, and after a
+property's hook list or hook body. This replaces `PSR12.Classes.ClosingBrace`.
 
 **Why:** [PER Coding Style 3.1, Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says any closing brace MUST NOT be followed by any comment or statement on the
 same line, and that "class" refers to all classes. The PSR-12 sniff doesn't check an anonymous class. An anonymous
 class's `}` is part of an expression, so what completes it may follow, as in `};` or `});`. Only a comment after it is
 reported, as a statement after the `;` is left to [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements). A phpcs annotation is
 allowed, as it only works on that line.
+
+A property hook's `}` is checked the same way, for its hook list and each hook body, as section 4 covers properties.
+This includes a promoted property's hook list, so `{ set => trim($value); }, // Comment` is reported.
 
 Section 4 covers classes, properties and methods, so a function outside a class isn't checked. The PSR-12 sniff checks
 every function. Set `checkFunctions` to check it too, as the [Jumbo standard](Jumbo.md) does.

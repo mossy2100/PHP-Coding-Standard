@@ -18,7 +18,21 @@ class ClosingBraceUnitTest extends AbstractSniffTestCase
      */
     protected function getErrorList(): array
     {
-        return [31 => 1, 35 => 1, 40 => 1, 46 => 1, 48 => 1, 53 => 1, 60 => 1, 78 => 1, 83 => 1];
+        return [
+            31 => 1,
+            35 => 1,
+            40 => 1,
+            46 => 1,
+            48 => 1,
+            53 => 1,
+            60 => 1,
+            78 => 1,
+            83 => 1,
+            92 => 1,
+            96 => 1,
+            98 => 1,
+            111 => 1,
+        ];
     }
 
     /**

@@ -82,3 +82,33 @@ function checkedComment(): void
     $m = 1;
 } // Comment.
 // phpcs:set PERCS31.Classes.ClosingBrace checkFunctions false
+
+// A property hook body or hook list.
+class B
+{
+    public int $a {
+        get {
+            return 1;
+        } // Body comment.
+        set {
+            $this->a = $value;
+        }
+    } // List comment.
+
+    public int $b { get => 1; } // Short list comment.
+
+    public int $c {
+        get => 1; // Fine: after a semicolon, not a brace.
+    }
+
+    public int $d {
+        get {
+            return 1;
+        } // phpcs:ignore Generic.Foo
+    }
+
+    public function __construct(
+        public string $e { set => trim($value); }, // Promoted comment.
+        public string $f { set => trim($value); },
+    ) {}
+}
