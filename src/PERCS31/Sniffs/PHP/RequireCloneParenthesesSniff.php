@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\PHP;
 
+use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -177,7 +178,7 @@ class RequireCloneParenthesesSniff implements Sniff
 
             $code = $tokens[$next]['code'];
             if ($code === T_OPEN_SQUARE_BRACKET || $code === T_OPEN_PARENTHESIS) {
-                $closer = $tokens[$next]['bracket_closer'] ?? $tokens[$next]['parenthesis_closer'] ?? null;
+                $closer = TokenHelper::findCloser($tokens[$next]);
                 $end = is_int($closer) ? $closer : null;
                 continue;
             }

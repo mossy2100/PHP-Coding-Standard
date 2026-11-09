@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\Classes;
 
 use PERCS31\Helpers\PropertyHookHelper;
+use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
@@ -100,8 +101,7 @@ class PromotedPropertyHooksSniff implements Sniff
             }
 
             // Skip over parameter lists, attributes, and brackets inside an expression.
-            $jumpTo = $tokens[$i]['parenthesis_closer'] ?? $tokens[$i]['attribute_closer']
-                ?? $tokens[$i]['bracket_closer'] ?? null;
+            $jumpTo = TokenHelper::findCloser($tokens[$i]);
             if (is_int($jumpTo) && $jumpTo > $i && $jumpTo < $closer) {
                 $i = $jumpTo;
             }

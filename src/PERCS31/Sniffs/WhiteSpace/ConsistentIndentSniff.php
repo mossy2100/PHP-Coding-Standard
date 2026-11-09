@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\WhiteSpace;
 
+use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
 use PhpCollective\Sniffs\WhiteSpace\ConsistentIndentSniff as PhpCollectiveSniff;
@@ -322,7 +323,7 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
             }
 
             // Skip back over anything in brackets, such as a call's arguments split over lines.
-            $i = $tokens[$i]['parenthesis_opener'] ?? $tokens[$i]['bracket_opener'] ?? $i;
+            $i = TokenHelper::findOpener($tokens[$i]) ?? $i;
         }
 
         $start = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), $endPtr, true);
@@ -386,7 +387,7 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
             }
 
             // Skip back over anything nested in the key, such as a call's arguments.
-            $i = $tokens[$i]['parenthesis_opener'] ?? $tokens[$i]['bracket_opener'] ?? $i;
+            $i = TokenHelper::findOpener($tokens[$i]) ?? $i;
         }
 
         return false;

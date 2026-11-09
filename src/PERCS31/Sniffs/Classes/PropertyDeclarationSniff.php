@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\Classes;
 
 use PERCS31\Helpers\PropertyHookHelper;
+use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\PSR2\Sniffs\Classes\PropertyDeclarationSniff as Psr2Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -168,8 +169,7 @@ class PropertyDeclarationSniff extends Psr2Sniff
             $end = null;
             while ($i < $closer) {
                 $code = $tokens[$i]['code'];
-                $jumpTo = $tokens[$i]['attribute_closer'] ?? $tokens[$i]['parenthesis_closer']
-                    ?? $tokens[$i]['bracket_closer'] ?? null;
+                $jumpTo = TokenHelper::findCloser($tokens[$i]);
                 if ($code === T_STRING && $name === null) {
                     $content = $tokens[$i]['content'];
                     assert(is_string($content));

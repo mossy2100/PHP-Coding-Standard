@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Jumbo\Sniffs\Formatting;
 
 use Jumbo\Helpers\SingleLineHelper;
+use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -164,7 +165,7 @@ class RequireSingleLineStatementSniff implements Sniff
                 }
             }
 
-            $closer = $tokens[$i]['parenthesis_closer'] ?? $tokens[$i]['bracket_closer'] ?? null;
+            $closer = TokenHelper::findCloser($tokens[$i]);
             if (!is_int($closer) || $closer <= $i) {
                 continue;
             }

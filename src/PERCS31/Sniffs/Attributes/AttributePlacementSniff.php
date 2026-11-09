@@ -6,6 +6,7 @@ namespace PERCS31\Sniffs\Attributes;
 
 use PERCS31\Helpers\AttributeHelper;
 use PERCS31\Helpers\PropertyHookHelper;
+use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -222,8 +223,7 @@ class AttributePlacementSniff implements Sniff
         // The commas between items, skipping anything nested in brackets, braces or attributes.
         $commas = [];
         for ($i = ($opener + 1); $i < $closer; $i++) {
-            $i = $tokens[$i]['parenthesis_closer'] ?? $tokens[$i]['bracket_closer'] ?? $tokens[$i]['attribute_closer']
-                ?? $i;
+            $i = TokenHelper::findCloser($tokens[$i]) ?? $i;
             if ($tokens[$i]['code'] === T_COMMA) {
                 $commas[] = $i;
             }

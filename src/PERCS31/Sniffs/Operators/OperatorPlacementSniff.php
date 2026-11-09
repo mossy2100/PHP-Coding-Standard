@@ -6,6 +6,7 @@ namespace PERCS31\Sniffs\Operators;
 
 use PERCS31\Helpers\OperatorHelper;
 use PERCS31\Helpers\PropertyHookHelper;
+use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -347,7 +348,7 @@ class OperatorPlacementSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
         $i = $stackPtr - 1;
         while ($i > $opener && !isset(Tokens::BOOLEAN_OPERATORS[$tokens[$i]['code']])) {
-            $i = ($tokens[$i]['parenthesis_opener'] ?? $tokens[$i]['bracket_opener'] ?? $i) - 1;
+            $i = (TokenHelper::findOpener($tokens[$i]) ?? $i) - 1;
         }
 
         $start = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), $stackPtr, true);

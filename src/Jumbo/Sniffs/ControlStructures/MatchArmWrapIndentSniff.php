@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jumbo\Sniffs\ControlStructures;
 
+use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -83,8 +84,7 @@ class MatchArmWrapIndentSniff implements Sniff
                 }
             }
 
-            $jumpTo = $tokens[$i]['parenthesis_closer'] ?? $tokens[$i]['bracket_closer']
-                ?? $tokens[$i]['attribute_closer'] ?? null;
+            $jumpTo = TokenHelper::findCloser($tokens[$i]);
             if (is_int($jumpTo) && $jumpTo > $i && $jumpTo < $closer) {
                 $i = $jumpTo;
             }
@@ -179,8 +179,7 @@ class MatchArmWrapIndentSniff implements Sniff
                 }
             }
 
-            $jumpTo = $tokens[$i]['parenthesis_closer'] ?? $tokens[$i]['bracket_closer']
-                ?? $tokens[$i]['attribute_closer'] ?? null;
+            $jumpTo = TokenHelper::findCloser($tokens[$i]);
             if (is_int($jumpTo) && $jumpTo > $i && $jumpTo < $arrow) {
                 $i = $jumpTo;
             }

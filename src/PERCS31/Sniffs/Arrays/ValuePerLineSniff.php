@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Arrays;
 
+use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -55,7 +56,7 @@ class ValuePerLineSniff implements Sniff
             }
         }
 
-        $closer = $tokens[$opener]['parenthesis_closer'] ?? $tokens[$opener]['bracket_closer'] ?? null;
+        $closer = TokenHelper::findCloser($tokens[$opener]);
         if ($closer === null || $tokens[$opener]['line'] === $tokens[$closer]['line']) {
             return;
         }
@@ -115,8 +116,7 @@ class ValuePerLineSniff implements Sniff
             }
 
             // Skip anything nested, so only this array's commas and arrows count.
-            $i = $tokens[$i]['parenthesis_closer'] ?? $tokens[$i]['bracket_closer'] ?? $tokens[$i]['attribute_closer']
-                ?? $tokens[$i]['scope_closer'] ?? $i;
+            $i = TokenHelper::findCloser($tokens[$i]) ?? $tokens[$i]['scope_closer'] ?? $i;
         }
 
         return $values;

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\ControlStructures;
 
 use PERCS31\Helpers\PropertyHookHelper;
+use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -182,7 +183,7 @@ class MultiLineTernaryOperatorSniff implements Sniff
             $code = $tokens[$i]['code'];
             $isDynamicName = $code === T_CLOSE_CURLY_BRACKET && !isset($tokens[$i]['scope_condition']);
             if ($isDynamicName || in_array($code, $closers, true)) {
-                $jumpTo = $tokens[$i]['parenthesis_opener'] ?? $tokens[$i]['bracket_opener'] ?? null;
+                $jumpTo = TokenHelper::findOpener($tokens[$i]);
                 if (is_int($jumpTo)) {
                     $i = $jumpTo;
                     continue;
@@ -220,7 +221,7 @@ class MultiLineTernaryOperatorSniff implements Sniff
                 return null;
             }
 
-            $closer = $tokens[$i]['parenthesis_closer'] ?? $tokens[$i]['bracket_closer'] ?? null;
+            $closer = TokenHelper::findCloser($tokens[$i]);
             if (is_int($closer) && $closer > $i) {
                 $i = $closer;
                 continue;

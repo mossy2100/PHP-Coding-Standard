@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\Classes;
 
 use PERCS31\Helpers\PropertyHookHelper;
+use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -386,7 +387,7 @@ class PropertyHookLayoutSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
         for ($i = ($opener + 1); $i < $closer; $i++) {
-            $jumpTo = $tokens[$i]['parenthesis_closer'] ?? $tokens[$i]['bracket_closer'] ?? null;
+            $jumpTo = TokenHelper::findCloser($tokens[$i]);
             if (is_int($jumpTo) && $jumpTo > $i && $jumpTo < $closer) {
                 $i = $jumpTo;
                 continue;
@@ -440,8 +441,7 @@ class PropertyHookLayoutSniff implements Sniff
                 $bodies[] = $i;
             }
 
-            $jumpTo = $tokens[$i]['parenthesis_closer'] ?? $tokens[$i]['bracket_closer']
-                ?? $tokens[$i]['attribute_closer'] ?? null;
+            $jumpTo = TokenHelper::findCloser($tokens[$i]);
             if (is_int($jumpTo) && $jumpTo > $i && $jumpTo < $closer) {
                 $i = $jumpTo;
                 if ($code === T_OPEN_CURLY_BRACKET && !$inShortBody) {
@@ -593,8 +593,7 @@ class PropertyHookLayoutSniff implements Sniff
                 $inShortBody = false;
             }
 
-            $jumpTo = $tokens[$i]['parenthesis_closer'] ?? $tokens[$i]['bracket_closer']
-                ?? $tokens[$i]['attribute_closer'] ?? null;
+            $jumpTo = TokenHelper::findCloser($tokens[$i]);
             if (is_int($jumpTo) && $jumpTo > $i && $jumpTo < $closer) {
                 $i = $jumpTo;
             }

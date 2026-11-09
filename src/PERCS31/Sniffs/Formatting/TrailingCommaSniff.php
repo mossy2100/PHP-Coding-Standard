@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Formatting;
 
+use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -170,8 +171,7 @@ class TrailingCommaSniff implements Sniff
             }
 
             // Commas and arrows inside brackets aren't this match's.
-            $jumpTo = $tokens[$i]['parenthesis_closer'] ?? $tokens[$i]['bracket_closer']
-                ?? $tokens[$i]['attribute_closer'] ?? null;
+            $jumpTo = TokenHelper::findCloser($tokens[$i]);
             if (is_int($jumpTo) && $jumpTo > $i && $jumpTo < $closer) {
                 $i = $jumpTo;
             }
