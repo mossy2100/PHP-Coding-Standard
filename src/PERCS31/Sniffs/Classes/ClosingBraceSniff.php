@@ -7,13 +7,16 @@ namespace PERCS31\Sniffs\Classes;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\PSR12\Sniffs\Classes\ClosingBraceSniff as Psr12Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\Scopes;
 
 /**
- * Disallows a comment or statement after the closing brace of a class or function, including an anonymous class.
+ * Disallows a comment or statement after the closing brace of a class or method, including an anonymous class.
  *
  * PER Coding Style 3.1, section 4, says any closing brace MUST NOT be followed by any comment or statement on the same
- * line, and that the term "class" refers to all classes. PSR12.Classes.ClosingBrace checks classes, interfaces,
- * traits, enums and functions, but not an anonymous class, and has no property to add one. So this sniff extends it.
+ * line, and that the term "class" refers to all classes. Section 4 covers classes, properties and methods, so a
+ * function outside a class isn't checked by default. Set checkFunctions to check it too, as the Jumbo standard does.
+ * PSR12.Classes.ClosingBrace checks classes, interfaces, traits, enums and every function, but not an anonymous class,
+ * and has no property to add one or leave functions out. So this sniff extends it.
  *
  * An anonymous class's `}` is part of an expression, so what completes it may follow, as in `};`, `});` or `})->x;`.
  * Only a comment after it on the same line is reported, as in `}; // Comment` or `}, // Comment`. A statement after
@@ -23,6 +26,12 @@ use PHP_CodeSniffer\Util\Tokens;
 class ClosingBraceSniff extends Psr12Sniff
 {
     public const string CODE_STATEMENT_AFTER = 'StatementAfter';
+
+    /**
+     * Whether to check a function outside a class, interface, trait or enum. Section 4 is about classes, properties
+     * and methods, so it's off by default.
+     */
+    public bool $checkFunctions = false;
 
     /**
      * Returns an array of tokens this test wants to listen for: the parent's, and an anonymous class.
@@ -43,6 +52,14 @@ class ClosingBraceSniff extends Psr12Sniff
     public function process(File $phpcsFile, int $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
+        if (
+            $tokens[$stackPtr]['code'] === T_FUNCTION
+            && !$this->checkFunctions
+            && !Scopes::isOOMethod($phpcsFile, $stackPtr)
+        ) {
+            return;
+        }
+
         if ($tokens[$stackPtr]['code'] !== T_ANON_CLASS) {
             parent::process($phpcsFile, $stackPtr);
             return;

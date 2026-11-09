@@ -576,7 +576,7 @@ $total = (new Calculator())->add(1, 2);
 
 ### PERCS31.Classes.ClosingBrace
 
-Disallows a comment or statement after the closing brace of a class or function, including an anonymous class. This
+Disallows a comment or statement after the closing brace of a class or method, including an anonymous class. This
 replaces `PSR12.Classes.ClosingBrace`.
 
 **Why:** [PER Coding Style 3.1, Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says any closing brace MUST NOT be followed by any comment or statement on the
@@ -584,6 +584,9 @@ same line, and that "class" refers to all classes. The PSR-12 sniff doesn't chec
 class's `}` is part of an expression, so what completes it may follow, as in `};` or `});`. Only a comment after it is
 reported, as a statement after the `;` is left to [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements). A phpcs annotation is
 allowed, as it only works on that line.
+
+Section 4 covers classes, properties and methods, so a function outside a class isn't checked. The PSR-12 sniff checks
+every function. Set `checkFunctions` to check it too, as the [Jumbo standard](Jumbo.md) does.
 
 **Auto-fixable:** no.
 
@@ -602,6 +605,12 @@ $handler = new class {
     public int $count = 0;
 }; // Counts calls.
 ```
+
+**Configuration:**
+
+| Property         | Type | Default | Description                            |
+| ---------------- | ---- | ------- | -------------------------------------- |
+| `checkFunctions` | bool | false   | Also check a function outside a class. |
 
 ---
 
@@ -2174,9 +2183,10 @@ class User
 - **Some rules for a `set` hook's parameter type (2.5).** PHP_CodeSniffer reads the type as an expression, so the sniffs
   that check types elsewhere don't see it. That leaves `?T` over `T|null`, `null` last, and keywords in lower case. The
   spacing around `|`, `&` and after `?`, the parentheses of a DNF type, and a split type's layout are checked.
-- **A comment or statement after a control structure's closing brace (4).** Section 4 says "any closing brace", but it's
-  in the section on classes, so this standard follows PHP_CodeSniffer in reading it as classes and functions. After a
+- **A comment or statement after a function's or control structure's closing brace (4).** Section 4 says "any closing
+  brace", but it's in the section on classes, properties and methods, so this standard reads it as those only. After a
   block `declare` in the file header, a statement is still reported, as section 3 wants a blank line after the block.
-  The [Jumbo standard](Jumbo.md) reports a statement after any control structure's closing brace.
+  The [Jumbo standard](Jumbo.md) reports a comment or statement after a function's closing brace, and a statement after a control
+  structure's.
 - **The pipe operator `|>` on PHP 8.4.** It's only checked when PHP_CodeSniffer runs on PHP 8.5. On PHP 8.4, where `|>`
   is a parse error, PHP_CodeSniffer reads it as `|` and `>`, and reports them.
