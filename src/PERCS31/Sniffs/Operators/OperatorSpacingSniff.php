@@ -9,6 +9,7 @@ use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\OperatorSpacingSniff as SquizSniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\Parentheses;
 
 /**
  * Checks the spacing around binary operators, including the pipe operator `|>`.
@@ -138,15 +139,8 @@ class OperatorSpacingSniff extends SquizSniff
      */
     private function isDefaultValueEquals(File $phpcsFile, int $stackPtr): bool
     {
-        $tokens = $phpcsFile->getTokens();
-        if ($tokens[$stackPtr]['code'] !== T_EQUAL || !isset($tokens[$stackPtr]['nested_parenthesis'])) {
-            return false;
-        }
-
-        $opener = array_key_last($tokens[$stackPtr]['nested_parenthesis']);
-        $owner = $tokens[$opener]['parenthesis_owner'] ?? null;
-
-        return is_int($owner) && in_array($tokens[$owner]['code'], [T_FUNCTION, T_CLOSURE, T_FN], true);
+        return $phpcsFile->getTokens()[$stackPtr]['code'] === T_EQUAL
+            && Parentheses::lastOwnerIn($phpcsFile, $stackPtr, [T_FUNCTION, T_CLOSURE, T_FN]) !== false;
     }
 
     /**
@@ -158,14 +152,7 @@ class OperatorSpacingSniff extends SquizSniff
      */
     private function isCatchUnion(File $phpcsFile, int $stackPtr): bool
     {
-        $tokens = $phpcsFile->getTokens();
-        if ($tokens[$stackPtr]['code'] !== T_BITWISE_OR || !isset($tokens[$stackPtr]['nested_parenthesis'])) {
-            return false;
-        }
-
-        $opener = array_key_last($tokens[$stackPtr]['nested_parenthesis']);
-        $owner = $tokens[$opener]['parenthesis_owner'] ?? null;
-
-        return is_int($owner) && $tokens[$owner]['code'] === T_CATCH;
+        return $phpcsFile->getTokens()[$stackPtr]['code'] === T_BITWISE_OR
+            && Parentheses::lastOwnerIn($phpcsFile, $stackPtr, [T_CATCH]) !== false;
     }
 }

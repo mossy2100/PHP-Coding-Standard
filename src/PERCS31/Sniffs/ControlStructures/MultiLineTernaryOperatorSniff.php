@@ -63,13 +63,12 @@ class MultiLineTernaryOperatorSniff implements Sniff
             return;
         }
 
-        $tokens = $phpcsFile->getTokens();
-
         // A short ternary, which PER treats as a binary operator.
-        $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($inlineThenPointer + 1), null, true);
-        if ($next === false || $tokens[$next]['code'] === T_INLINE_ELSE) {
+        if (Operators::isShortTernary($phpcsFile, $inlineThenPointer)) {
             return;
         }
+
+        $tokens = $phpcsFile->getTokens();
 
         $inlineElsePointer = $this->findElse($phpcsFile, $inlineThenPointer);
         if ($inlineElsePointer === null) {

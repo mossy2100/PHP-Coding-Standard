@@ -7,6 +7,7 @@ namespace PERCS31\Sniffs\Attributes;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\AttributeBlock;
 
 /**
  * Disallows several attributes in one attribute block when the block spans more than one line.
@@ -45,7 +46,14 @@ class DisallowMultiLineAttributesJoiningSniff implements Sniff
             return;
         }
 
-        $attributes = $this->splitAttributes($phpcsFile, $stackPtr, $closer);
+        $attributes = [];
+        foreach (AttributeBlock::getAttributes($phpcsFile, $stackPtr) as $attribute) {
+            $start = $attribute['start'];
+            $end = $attribute['end'];
+            if (is_int($start) && is_int($end)) {
+                $attributes[] = trim($phpcsFile->getTokensAsString($start, ($end - $start + 1)));
+            }
+        }
         if (count($attributes) < 2) {
             return;
         }
@@ -74,40 +82,5 @@ class DisallowMultiLineAttributesJoiningSniff implements Sniff
         }
 
         $phpcsFile->fixer->endChangeset();
-    }
-
-    /**
-     * Split an attribute block into its attributes, at the commas that aren't inside an argument list.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $opener The position of the `#[`.
-     * @param int $closer The position of the `]`.
-     * @return list<string> Each attribute's text, trimmed.
-     */
-    private function splitAttributes(File $phpcsFile, int $opener, int $closer): array
-    {
-        $tokens = $phpcsFile->getTokens();
-        $attributes = [];
-        $start = $opener + 1;
-        for ($i = $start; $i <= $closer; $i++) {
-            $jumpTo = $tokens[$i]['parenthesis_closer'] ?? $tokens[$i]['bracket_closer'] ?? null;
-            if (is_int($jumpTo) && $jumpTo > $i && $jumpTo < $closer) {
-                $i = $jumpTo;
-                continue;
-            }
-
-            if ($i !== $closer && $tokens[$i]['code'] !== T_COMMA) {
-                continue;
-            }
-
-            $first = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, $start, $i, true);
-            if ($first !== false) {
-                $attributes[] = trim($phpcsFile->getTokensAsString($first, ($i - $first)));
-            }
-
-            $start = $i + 1;
-        }
-
-        return $attributes;
     }
 }

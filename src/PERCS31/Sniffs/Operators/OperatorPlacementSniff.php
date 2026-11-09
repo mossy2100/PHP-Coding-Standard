@@ -10,6 +10,7 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 use PHPCSUtils\Utils\Operators;
+use PHPCSUtils\Utils\Parentheses;
 
 /**
  * Disallows a binary operator at the end of a line, when a statement wraps at it, and requires one at the start of a
@@ -463,14 +464,7 @@ class OperatorPlacementSniff implements Sniff
             return false;
         }
 
-        foreach (array_keys($tokens[$stackPtr]['nested_parenthesis'] ?? []) as $opener) {
-            $owner = $tokens[$opener]['parenthesis_owner'] ?? null;
-            if ($owner !== null && in_array($tokens[$owner]['code'], self::CONDITION_OWNERS, true)) {
-                return true;
-            }
-        }
-
-        return false;
+        return Parentheses::getFirstOwner($phpcsFile, $stackPtr, self::CONDITION_OWNERS) !== false;
     }
 
     /**

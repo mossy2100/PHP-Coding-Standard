@@ -36,9 +36,7 @@ class AttributeHelper
             return null;
         }
 
-        $tokens = $phpcsFile->getTokens();
-        $owner = $tokens[$opener]['parenthesis_owner'] ?? null;
-        $isFunction = $owner !== null && in_array($tokens[$owner]['code'], self::FUNCTION_TOKENS, true);
+        $isFunction = Parentheses::isOwnerIn($phpcsFile, $opener, self::FUNCTION_TOKENS);
 
         return $isFunction || PropertyHookHelper::isHookParameterList($phpcsFile, $opener) ? $opener : null;
     }
