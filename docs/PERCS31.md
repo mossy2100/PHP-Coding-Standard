@@ -43,8 +43,8 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 
 - **PSR2.Classes.PropertyDeclaration** and **Generic.WhiteSpace.ScopeIndent**, by [`PERCS31.Classes.PropertyDeclaration`](#percs31classespropertydeclaration)
   and [`PERCS31.WhiteSpace.ScopeIndent`](#percs31whitespacescopeindent), which support property hooks (PHP 8.4).
-- **PSR12.ControlStructures.ControlStructureSpacing**, by
-  [`PERCS31.ControlStructures.ControlStructureSpacing`](#percs31controlstructurescontrolstructurespacing), which drops its rules for a multi-line `foreach`.
+- **PSR12.ControlStructures.ControlStructureSpacing**, by [`PERCS31.ControlStructures.ControlStructureSpacing`](#percs31controlstructurescontrolstructurespacing), which
+  drops its rules for a multi-line `foreach`.
 - **Generic.Formatting.DisallowMultipleStatements**, by [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements), which allows
   `{ get; set; }` on an abstract or interface property.
 - **PSR2.Classes.ClassDeclaration**, **Squiz.Functions.MultiLineFunctionDeclaration** and
@@ -54,8 +54,8 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   80 characters.
 - **Generic.NamingConventions.UpperCaseConstantName**, from PSR-1, by [`PERCS31.NamingConventions.UpperCaseConstantName`](#percs31namingconventionsuppercaseconstantname),
   which allows PascalCase for an enum constant.
-- **Squiz.Classes.ValidClassName**, from PSR-1, by [`PERCS31.NamingConventions.ValidClassName`](#percs31namingconventionsvalidclassname), which
-  also reports a run of capitals.
+- **Squiz.Classes.ValidClassName**, from PSR-1, by [`PERCS31.NamingConventions.ValidClassName`](#percs31namingconventionsvalidclassname), which also reports a run
+  of capitals.
 - **PSR12.Files.FileHeader**, by [`PERCS31.Files.FileHeader`](#percs31filesfileheader), which allows `<?php declare(strict_types=1) ?>` on the
   first line of a file with markup.
 - **PSR12.Files.DeclareStatement**, by [`PERCS31.Files.DeclareStatement`](#percs31filesdeclarestatement), which accepts a declare statement with several
@@ -98,10 +98,10 @@ Sniffs from PHP_CodeSniffer's other standards and the two base packages, each fo
   line, and the closing bracket on the next line after the last value (11), and no trailing comma on a single-line array
   (2.6). Its other checks aren't PER rules, so they're excluded: alignment, spacing around `=>`, the spacing in `[]`,
   mixing keyed and unkeyed values, and which line a comma goes on. Its comma spacing checks never run on a single-line
-  array, so `Universal.WhiteSpace.CommaSpacing` checks that instead. Its check for a multi-line array's
-  trailing comma is replaced by Slevomat's `Arrays.TrailingArrayComma`, as it missed a keyed last element, and wanted
-  the comma after a heredoc on the next line, as before PHP 7.3. Its `ValueNoNewline` check is replaced by
-  [`PERCS31.Arrays.ValuePerLine`](#percs31arraysvalueperline), as it read an attribute on a value as an earlier value.
+  array, so `Universal.WhiteSpace.CommaSpacing` checks that instead. Its check for a multi-line array's trailing comma
+  is replaced by Slevomat's `Arrays.TrailingArrayComma`, as it missed a keyed last element, and wanted the comma after a
+  heredoc on the next line, as before PHP 7.3. Its `ValueNoNewline` check is replaced by [`PERCS31.Arrays.ValuePerLine`](#percs31arraysvalueperline),
+  as it read an attribute on a value as an earlier value.
 
 ### PHPCSExtra
 
@@ -364,8 +364,8 @@ function f(
 ) {}
 ```
 
-[`PERCS31.Attributes.DisallowMultipleAttributesPerLine`](#percs31attributesdisallowmultipleattributesperline) then puts
-each block on its own line. One block holding several attributes, as in `#[A, B] case X;`, can stay inline.
+[`PERCS31.Attributes.DisallowMultipleAttributesPerLine`](#percs31attributesdisallowmultipleattributesperline) then puts each block on its own line. One block holding several
+attributes, as in `#[A, B] case X;`, can stay inline.
 
 When code comes before the blocks on their line, the blocks after the first, and the target, are indented one level
 more, as a continuation of the statement:
@@ -501,12 +501,11 @@ final class OldMarker {}
 Requires separate attribute blocks on separate lines. This replaces
 `SlevomatCodingStandard.Attributes.DisallowMultipleAttributesPerLine`, which it extends.
 
-**Why:** [PER Coding Style 3.1, Section 12.2](https://www.php-fig.org/per/coding-style/#122-placement) says two separate attribute blocks MUST be on separate lines. The
-Slevomat sniff checks this, with two problems:
+**Why:** [PER Coding Style 3.1, Section 12.2](https://www.php-fig.org/per/coding-style/#122-placement) says two separate attribute blocks MUST be on separate lines. The Slevomat
+sniff checks this, with two problems:
 
 - In a single-line parameter or argument list, its fix puts each block at the start of a line and leaves the list half
-  split. This sniff skips that case, and [`AttributePlacement`](#percs31attributesattributeplacement) splits the whole
-  list instead.
+  split. This sniff skips that case, and [`AttributePlacement`](#percs31attributesattributeplacement) splits the whole list instead.
 - It misses blocks on a property hook, as PHP_CodeSniffer doesn't know about hooks. This sniff reports them.
 - When code comes before the blocks on their line, as in `$pure = #[A] #[B]`, its fix lines the next block up with the
   line. This sniff indents it one level more, as a continuation of the statement.
@@ -535,9 +534,10 @@ final class Marker {}
 Checks the declaration of a class, interface, trait or enum, and the placement of its braces, except in an empty body
 written as `{}` on one line, e.g. `class Foo {}`. This replaces `PSR2.Classes.ClassDeclaration`.
 
-**Why:** `PSR2.Classes.ClassDeclaration` rejects an empty body written as `{}` on one line, which
-[PER Coding Style 3.1, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the
-parent. For an empty body, the checks on `extends` and `implements` still run. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
+**Why:** `PSR2.Classes.ClassDeclaration` rejects an empty body written as `{}` on one line, which [PER Coding Style 3.1,
+Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff
+skips that case, and leaves everything else to the parent. For an empty body, the checks on `extends` and `implements`
+still run. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
 
 **Auto-fixable:** yes, as the parent.
 
@@ -589,7 +589,7 @@ enum Suit
 {
     case Hearts;
 
-    private const string RED = 'red';
+    private const string Red = 'red';
 
     private function symbol(): string
     {
@@ -748,9 +748,8 @@ Verifies that properties are declared correctly. This replaces `PSR2.Classes.Pro
 `$value` and `$this`, as property declarations, and reports false errors on them, so this sniff skips them. The ruleset
 makes the parent's `Underscore` warning an error, and excludes its checks of modifier order, the spacing after the type,
 and several properties in one statement, which Slevomat sniffs make. The parent doesn't check a promoted constructor
-property either, which [PER Coding Style 3.1, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants)'s rules on underscores and visibility cover.
-This sniff also checks that `get` comes before `set` in an abstract or interface property's hooks, which no inherited
-sniff does.
+property either, which [PER Coding Style 3.1, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants)'s rules on underscores and visibility cover. This sniff also
+checks that `get` comes before `set` in an abstract or interface property's hooks, which no inherited sniff does.
 
 A promoted constructor parameter with no visibility, such as `readonly int $a` or PHP 8.5's `final int $a`, is a
 `ScopeMissing` error too, as section 4.3 says visibility MUST be declared on all properties. A set-visibility alone, as
@@ -954,8 +953,7 @@ Checks `switch` statements. This replaces `PSR2.ControlStructures.SwitchDeclarat
   is left alone, as it only works on that line.
 
 The original also requires the body on the very next line. PER allows blank lines, except where explicitly forbidden, so
-a blank line after a label is allowed here. Set `checkBlankLineAfterLabel` to report one, as the [Jumbo standard](Jumbo.md)
-does.
+a blank line after a label is allowed here. Set `checkBlankLineAfterLabel` to report one, as the [Jumbo standard](Jumbo.md) does.
 
 **Why:** [PER Coding Style 3.1, Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) sets these rules. The parent only checks a case that's followed by another,
 and doesn't check multi-line conditions.
@@ -995,6 +993,12 @@ switch (true) {
         chargeFullPrice();
 }
 ```
+
+**Configuration:**
+
+| Property                   | Type | Default | Description                                            |
+| -------------------------- | ---- | ------- | ------------------------------------------------------ |
+| `checkBlankLineAfterLabel` | bool | false   | Report a blank line after a `case` or `default` label. |
 
 ---
 
@@ -1047,8 +1051,8 @@ at a block declare, and wants a blank line before one. This sniff counts one as 
 line between it and a declare statement before it.
 
 A file with markup before its first `<?php`, such as a template, has no file header, so it isn't checked. The parent
-already skips a file that mixes PHP and markup when it has several PHP tags, but with only one, it reported a
-`declare` after the markup as a misplaced header, and its fixes looped.
+already skips a file that mixes PHP and markup when it has several PHP tags, but with only one, it reported a `declare`
+after the markup as a misplaced header, and its fixes looped.
 
 The parent ends a `use` statement at its first comma, so it reports `use A, B;` as missing a blank line before `B`.
 Section 3 doesn't forbid several imports in one statement, so this sniff reads the statement to its semicolon.
@@ -1140,7 +1144,7 @@ final class NotFoundException extends Exception {}
 
 final class Point
 {
-    public function __construct(public readonly int $x, public readonly int $y) {}
+    public function __construct(public int $x, public int $y) {}
 
     public function reset(): void {}
 }
@@ -1157,7 +1161,7 @@ final class NotFoundException extends Exception
 
 final class Point
 {
-    public function __construct(public readonly int $x, public readonly int $y)
+    public function __construct(public int $x, public int $y)
     {
     }
 
@@ -1216,8 +1220,8 @@ conditions on a single line, e.g. `1, 2, => 'a'`.
 **Why:** [PER Coding Style 3.1, Section 2.6](https://www.php-fig.org/per/coding-style/#26-trailing-commas) says the last item of a list split across lines MUST have a trailing comma,
 and the last item of a list on one line MUST NOT. Slevomat's trailing comma sniffs cover calls, declarations and closure
 `use` lists, and Slevomat's array sniff covers arrays and short lists, but none covers `match`, group `use`,
-`new class (`, `list()`, `clone()`, `exit()` or `die()`. Like
-Slevomat's call sniffs, it doesn't require a comma when the closing parenthesis follows the last argument on its line.
+`new class (`, `list()`, `clone()`, `exit()` or `die()`. Like Slevomat's call sniffs, it doesn't require a comma when
+the closing parenthesis follows the last argument on its line.
 
 **Auto-fixable:** yes. A missing comma goes after the last item, before any comment.
 
@@ -1263,6 +1267,12 @@ $second = new class (
 ) {};
 ```
 
+**Configuration:**
+
+| Property                         | Type | Default | Description                                                                 |
+| -------------------------------- | ---- | ------- | --------------------------------------------------------------------------- |
+| `disallowInSplitMatchConditions` | bool | false   | Disallow a comma before `=>` when an arm's conditions are split over lines. |
+
 ---
 
 ### PERCS31.Functions.ArrowFunctionSemicolonSpacing
@@ -1294,17 +1304,20 @@ $double = fn(int $x): int => $x * 2 ;
 Disallows a space between the `?` of a nullable type and the type, wherever a type can appear. This replaces
 `PSR12.Functions.NullableTypeDeclaration`.
 
-**Why:** [PER Coding Style 3.1, Section 4.5](https://www.php-fig.org/per/coding-style/#45-method-and-function-parameters)
-says there MUST NOT be a space between the question mark and the type. The PSR-12 sniff checks every position but one:
-PHP_CodeSniffer doesn't know about hooks, so the sniff doesn't see the `?` in a `set` hook's parameter.
+**Why:** [PER Coding Style 3.1, Section 4.5](https://www.php-fig.org/per/coding-style/#45-method-and-function-parameters) says there MUST NOT be a space between the question mark and the type. The
+PSR-12 sniff checks every position but one: PHP_CodeSniffer doesn't know about hooks, so the sniff doesn't see the `?`
+in a `set` hook's parameter.
 
 **Auto-fixable:** yes, unless a comment comes after the `?`.
 
 **Good:**
 
 ```php
-public ?int $count {
-    set(?int $value) => $value;
+class Counter
+{
+    public ?int $count {
+        set(?int $value) => $value;
+    }
 }
 ```
 
@@ -1324,10 +1337,11 @@ Checks the layout of function, closure and arrow function declarations, includin
 except in an empty body written as `{}` on one line, e.g. `function reset(): void {}`. This replaces
 `Squiz.Functions.MultiLineFunctionDeclaration`.
 
-**Why:** `Squiz.Functions.MultiLineFunctionDeclaration` rejects an empty body written as `{}` on one line, which
-[PER Coding Style 3.1, Sections 4.4 and 7](https://www.php-fig.org/per/coding-style/#7-closures) requires for a closure and recommends for a function. This sniff skips that
-case, and leaves everything else to the parent. For an empty body after a single-line signature, the parent's
-`CloseBracketNewLine` check is skipped too, as it can't be run on its own. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
+**Why:** `Squiz.Functions.MultiLineFunctionDeclaration` rejects an empty body written as `{}` on one line, which [PER
+Coding Style 3.1, Sections 4.4 and 7](https://www.php-fig.org/per/coding-style/#7-closures) requires for a closure and
+recommends for a function. This sniff skips that case, and leaves everything else to the parent. For an empty body after
+a single-line signature, the parent's `CloseBracketNewLine` check is skipped too, as it can't be run on its own. See
+[PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
 
 The parent also reports every blank line in a multi-line parameter or `use` list. [Section 2.3](https://www.php-fig.org/per/coding-style/#23-lines) allows blank lines
 wherever they aren't forbidden, and [section 12.4](https://www.php-fig.org/per/coding-style/#124-example)'s example has one between two parameters, both before an attribute and
@@ -1349,6 +1363,12 @@ this sniff checks its split parameter list too:
 An arrow function has no braces, so the brace checks don't apply.
 
 **Auto-fixable:** yes, as the parent.
+
+**Configuration:**
+
+| Property                  | Type | Default | Description                                                 |
+| ------------------------- | ---- | ------- | ----------------------------------------------------------- |
+| `checkOptionalBlankLines` | bool | false   | Report a blank line PER doesn't forbid, as described above. |
 
 ---
 
@@ -1373,8 +1393,7 @@ words aren't allowed there, as `parseURL` could otherwise be read as `parse`, `U
 It doesn't report:
 
 - A single capital that ends the name, or that's followed by a digit, as in `getX` or `getX2Value`.
-- A class, interface, trait, enum or enum case. PascalCase is required of these, so
-  [`ValidClassName`](#percs31namingconventionsvalidclassname) and
+- A class, interface, trait, enum or enum case. PascalCase is required of these, so [`ValidClassName`](#percs31namingconventionsvalidclassname) and
   [`ValidEnumCaseName`](#percs31namingconventionsvalidenumcasename) report a run of capitals as an error.
 - An enum constant, which [`UpperCaseConstantName`](#percs31namingconventionsuppercaseconstantname) reports.
 - A class constant, as UPPER_CASE is required.
@@ -1442,8 +1461,7 @@ replaces `Generic.NamingConventions.UpperCaseConstantName`.
 that to every constant. [PER Coding Style 3.1, Section 9](https://www.php-fig.org/per/coding-style/#9-enumerations) says constants in an enum MAY use either PascalCase or
 UPPER_CASE, and PascalCase is RECOMMENDED. So for an enum constant:
 
-- PascalCase passes. A run of capitals isn't PascalCase, as [`ValidClassName`](#percs31namingconventionsvalidclassname)
-  explains.
+- PascalCase passes. A run of capitals isn't PascalCase, as [`ValidClassName`](#percs31namingconventionsvalidclassname) explains.
 - UPPER_CASE gets an `EnumConstantNotPascalCase` warning.
 - Anything else, such as camelCase or `HTTPStatus`, gets an `EnumConstantInvalidCase` error.
 
@@ -1492,6 +1510,12 @@ enum Suit: string
 }
 ```
 
+**Configuration:**
+
+| Property               | Type | Default | Description                                                           |
+| ---------------------- | ---- | ------- | --------------------------------------------------------------------- |
+| `checkGlobalConstants` | bool | false   | Require UPPER_CASE for a global constant, and an alias of a constant. |
+
 ---
 
 ### PERCS31.NamingConventions.ValidClassName
@@ -1499,10 +1523,10 @@ enum Suit: string
 Requires class, interface, trait and enum names to be in PascalCase: a capital first letter, only letters and digits,
 and no run of capitals. This replaces `Squiz.Classes.ValidClassName`.
 
-**Why:** PSR-1 says class names MUST be in `StudlyCaps`, and [PER Coding Style 3.1, Section 2.1](https://www.php-fig.org/per/coding-style/#21-basic-coding-standard) reads that as
-PascalCase, with the first letter of every word capitalized. [Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says "class" covers classes, interfaces,
-traits and enums. If a word could be one letter, any name in capitals would qualify, so a run of capitals isn't
-PascalCase, even if it's an acronym. The Squiz sniff allows one, and this sniff extends it to report one.
+**Why:** PSR-1 says class names MUST be in `StudlyCaps`, and [PER Coding Style 3.1, Section 2.1](https://www.php-fig.org/per/coding-style/#21-basic-coding-standard) reads that as PascalCase,
+with the first letter of every word capitalized. [Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says "class" covers classes, interfaces, traits and enums. If
+a word could be one letter, any name in capitals would qualify, so a run of capitals isn't PascalCase, even if it's an
+acronym. The Squiz sniff allows one, and this sniff extends it to report one.
 
 - **Passes:** `Client`, `HttpClient`, `C2`, `Http2`, `B2B`, `H2O`, `X509Certificate` and a lone `A`.
 - **Fails:** `HTTPClient`, `XMLParser`, `AClass`, `IDs`, `FOO`, `HTTP2`, `client` and `Foo_Bar`.
@@ -1604,21 +1628,20 @@ indented once past the line its expression starts on. Operators within a line ar
 The expression starts after the nearest `;`, `,`, opening bracket, or full ternary `?` or `:`. Where it is decides the
 indent:
 
-- **A statement, a list item or grouping parentheses:** exactly once past the line the expression starts on. A list
-  item is a call argument, an array element or a `match` arm, and grouping parentheses are as in `$x = (`.
+- **A statement, a list item or grouping parentheses:** exactly once past the line the expression starts on. A list item
+  is a call argument, an array element or a `match` arm, and grouping parentheses are as in `$x = (`.
 - **An arrow function's `=>`:** exactly once past the line `fn` starts on.
 - **A control structure's condition:** at least once past the line with the `(`. Set `requireExactConditionIndent` to
   require exactly once for a line starting with a boolean operator, and exactly once past its operand's line for any
   other operator, as the Jumbo standard does. An expression nested in the condition, such as a call's argument, follows
   the rule above.
-- **A multi-line `case` condition:** not checked here. See
-  [`PERCS31.ControlStructures.SwitchDeclaration`](#percs31controlstructuresswitchdeclaration).
+- **A multi-line `case` condition:** not checked here. See [`PERCS31.ControlStructures.SwitchDeclaration`](#percs31controlstructuresswitchdeclaration).
 
 **Why:** [PER Coding Style 3.1, Section 6.4](https://www.php-fig.org/per/coding-style/#64-operators-placement) says that when a statement is split at an operator, the operator MUST be at
 the start of the new line, and each subsequent line is indented once. Section 7.1 says the same of an arrow function's
-`=>`. That's read as applying wherever an expression is split, including a list item or grouping parentheses. Section
-5 says a split condition is indented "at least once", which, being in section 5, applies to a control structure's
-parentheses only. Section 5.2's `case` example lines the operators up with the first condition.
+`=>`. That's read as applying wherever an expression is split, including a list item or grouping parentheses. Sections
+5.1 to 5.4 say a split condition is indented "at least once", which, being in section 5, applies to a control
+structure's parentheses only. Section 5.2's `case` example lines the operators up with the first condition.
 
 Only two inherited sniffs check the placement, each for one case: `Universal.Operators.ConcatPosition` for `.`, and
 `PSR12.ControlStructures.BooleanOperatorPlacement` for `&&` and `||` in a condition. This sniff covers every other
@@ -1693,8 +1716,8 @@ Requires at least one space around binary operators, including `&&`, `||`, `and`
 **Why:** [PER Coding Style 3.1, Section 6.2](https://www.php-fig.org/per/coding-style/#62-binary-operators) says all binary operators MUST be preceded and followed by at least one
 space, and section 6 allows more for readability. PSR-12's sniff checks that, but doesn't know `|>` (PHP 8.5).
 PHP_CodeSniffer 4.0 doesn't define `T_PIPE` itself, but passes PHP's own token through on PHP 8.5, so this sniff
-registers it when it's defined. On PHP 8.4, where `|>` is a parse error, PHP_CodeSniffer reads it as `|` and `>`,
-and reports them.
+registers it when it's defined. On PHP 8.4, where `|>` is a parse error, PHP_CodeSniffer reads it as `|` and `>`, and
+reports them.
 
 The parent skips an `=` directly followed by `&`, so this sniff checks it: `$x=&$a` and `$x =&$a` are reported, and
 fixed to `$x = &$a`. `$x =& $a` passes, as it has a space either side if `=&` is read as one operator, and PER doesn't
@@ -1709,9 +1732,9 @@ The `=` of a parameter's default value is a binary operator too, so `int $a    =
 `SpaceBeforeEquals` and `SpaceAfterEquals` codes, and this sniff checks the `=` instead. Set `checkDefaultValues` to
 `false` to leave it to that sniff, as the Jumbo standard does.
 
-The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operator, so it's skipped.
-[Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the union symbol MUST NOT have a space either side, which
-`PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing` checks. The parent would require one.
+The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operator, so it's skipped. [Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the
+union symbol MUST NOT have a space either side, which `PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing` checks. The
+parent would require one.
 
 The `&` of a by-reference hook, e.g. `&get => $this->items;`, isn't an operator either, so it's skipped, here and by
 `PERCS31.Operators.OperatorPlacement`. So are the `|`, `&` and `?` of a `set` hook's parameter type, e.g.
@@ -1730,6 +1753,12 @@ $slug = $title |> trim(...) |> strtolower(...);
 ```php
 $slug = $title|>trim(...)|>strtolower(...);
 ```
+
+**Configuration:**
+
+| Property             | Type | Default | Description                                   |
+| -------------------- | ---- | ------- | --------------------------------------------- |
+| `checkDefaultValues` | bool | true    | Check the `=` of a parameter's default value. |
 
 ---
 
@@ -1979,8 +2008,8 @@ arrow function's `=>`.
 It also skips the lines under a PHP opening tag that isn't at the start of its line, as in a template. The original
 measures from column 1, so it reported PHP indented to match the markup around it. So in a block, either 0 or 1 levels
 past the tags is allowed, as PER doesn't say, and its example in section 3 uses 1. `PERCS31.WhiteSpace.ScopeIndent`
-accepts both too, and doesn't check the indent of `?>`, as PER has no rule on it. The [Jumbo standard](Jumbo.md) requires
-0 levels, and `?>` level with `<?php`.
+accepts both too, and doesn't check the indent of `?>`, as PER has no rule on it. The [Jumbo standard](Jumbo.md) requires 0 levels,
+and `?>` level with `<?php`.
 
 Three more lines are checked, each indented exactly, as section 2.4 sets:
 
@@ -2019,9 +2048,10 @@ function total(array $items): int
 Checks that a scope's closing brace is on a line by itself, and indented to match, except in an empty body written as
 `{}` on one line, e.g. `class Foo {}` or `function () {}`. This replaces `Squiz.WhiteSpace.ScopeClosingBrace`.
 
-**Why:** `Squiz.WhiteSpace.ScopeClosingBrace` rejects an empty body written as `{}` on one line, which
-[PER Coding Style 3.1, Sections 4.4 and 7](https://www.php-fig.org/per/coding-style/#7-closures) requires for a closure and recommends for a class or function. This sniff skips
-that case, and leaves everything else to the parent. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
+**Why:** `Squiz.WhiteSpace.ScopeClosingBrace` rejects an empty body written as `{}` on one line, which [PER Coding Style
+3.1, Sections 4.4 and 7](https://www.php-fig.org/per/coding-style/#7-closures) requires for a closure and recommends for
+a class or function. This sniff skips that case, and leaves everything else to the parent. See
+[PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
 
 **Auto-fixable:** yes, as the parent.
 
@@ -2104,9 +2134,8 @@ class User
 - **Whether a fall-through comment is clear (5.2).** Any comment just before the next `case` or `default` passes, as the
   spec doesn't set any wording.
 - **Avoiding abbreviations (2.7).** Whether a name could avoid an abbreviation can't be judged by a sniff.
-- **A `(double)` cast (2.5).** Section 2.5's short form rule is checked for the long forms PSR-12 knows, `(boolean)`
-  and `(integer)`. `(double)` is left to the [Jumbo standard](Jumbo.md), whose `SlevomatCodingStandard.PHP.TypeCast`
-  requires `(float)`.
+- **A `(double)` cast (2.5).** Section 2.5's short form rule is checked for the long forms PSR-12 knows, `(boolean)` and
+  `(integer)`. `(double)` is left to the [Jumbo standard](Jumbo.md), whose `SlevomatCodingStandard.PHP.TypeCast` requires `(float)`.
 - **Some rules for a `set` hook's parameter type (2.5).** PHP_CodeSniffer reads the type as an expression, so the sniffs
   that check types elsewhere don't see it. That leaves `?T` over `T|null`, `null` last, and keywords in lower case. The
   spacing around `|`, `&` and after `?`, the parentheses of a DNF type, and a split type's layout are checked.

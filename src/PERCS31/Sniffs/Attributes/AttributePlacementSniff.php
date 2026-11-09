@@ -37,7 +37,8 @@ use PHPCSUtils\Utils\PassedParameters;
  * PER doesn't set the spacing where it allows an attribute on its target's line, or says nothing: an enum case, a hook,
  * or a closure outside a call. Set checkSameLineSpacing to require a single space there, as the Jumbo standard does.
  *
- * It also reports a blank line or a comment between the last attribute and its target. That replaces
+ * It also reports a blank line or a comment between the last attribute and its target, except a comment on its own
+ * line before a parameter, which section 12.2 allows. Set checkParameterComments to report that too. That replaces
  * SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing, whose fix deletes a comment there, and whose only option
  * for an attribute on its target's line, allowOnSameLine, is all or nothing.
  *

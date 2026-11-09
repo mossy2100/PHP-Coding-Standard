@@ -25,8 +25,8 @@ In the [PERCS31](PERCS31.md) standard, only `PERCS31.Files.LineLength` uses the 
 of this section is about the Jumbo standard.
 
 Fourteen sniffs check or wrap long lines, and each has its own line-length property. The Jumbo ruleset sets all fourteen
-from two XML entities, `lineLength` and `lineLengthPlusOne`, at the top of its `ruleset.xml`. An entity only applies within the file that defines
-it, so you can't override it from `phpcs.xml`. Set all fourteen properties instead:
+from two XML entities, `lineLength` and `lineLengthPlusOne`, at the top of its `ruleset.xml`. An entity only applies
+within the file that defines it, so you can't override it from `phpcs.xml`. Set all fourteen properties instead:
 
 | Sniff                                                                      | Property          | Value      |
 | -------------------------------------------------------------------------- | ----------------- | ---------- |

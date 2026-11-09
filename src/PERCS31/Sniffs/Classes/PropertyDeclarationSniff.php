@@ -17,7 +17,7 @@ use PHP_CodeSniffer\Util\Tokens;
  * - It skips a variable in a PHP 8.4 property hook's body, such as `$value`, which the parent reads as a property.
  * - It checks a promoted constructor parameter for a leading underscore and a visibility, which the parent doesn't.
  * - It checks that `get` comes before `set` in an abstract or interface property's hooks, as PER Coding Style 3.1,
- *   section 4.10, requires.
+ *   section 4.10, requires. Set orderHooksWithBodies to check every hook list, as the Jumbo standard does.
  *
  * The ruleset excludes the parent's checks that Slevomat sniffs make: modifier order, and the spacing after the type,
  * by SlevomatCodingStandard.Classes.PropertyDeclaration, and several properties in one statement, by

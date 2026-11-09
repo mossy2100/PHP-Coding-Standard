@@ -32,8 +32,8 @@ Squiz allows a leading underscore inside a class, because the Squiz convention p
 `Jumbo.NamingConventions.ValidVariableName` and `PERCS31.Classes.PropertyDeclaration` fill that gap.
 
 For properties, `PERCS31.Classes.PropertyDeclaration` replaces PSR-12's `PSR2.Classes.PropertyDeclaration`, which only
-issues a warning for a leading underscore, and doesn't check promoted constructor properties. It reports
-both as errors, since [PER Coding Style 3.1, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says property names MUST NOT start with an underscore.
+issues a warning for a leading underscore, and doesn't check promoted constructor properties. It reports both as errors,
+since [PER Coding Style 3.1, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says property names MUST NOT start with an underscore.
 
 ---
 
@@ -59,8 +59,8 @@ $UserName = 'John';    // UpperCamelCase not allowed
 
 ## Why camelCase
 
-PSR-1, PSR-12 and PER Coding Style 3.1 don't set a naming convention for variables or properties.
-[PSR-1, Section 4.2 "Properties"](https://www.php-fig.org/psr/psr-1/#42-properties) only asks for consistency:
+PSR-1, PSR-12 and PER Coding Style 3.1 don't set a naming convention for variables or properties. [PSR-1, Section 4.2
+"Properties"](https://www.php-fig.org/psr/psr-1/#42-properties) only asks for consistency:
 
 > This guide intentionally avoids any recommendation regarding the use of \$StudlyCaps, \$camelCase, or \$under_score
 > property names. Whatever naming convention is used SHOULD be applied consistently within a reasonable scope. That

@@ -26,9 +26,9 @@ The Jumbo Coding Standard has two rulesets, each usable as a PHP_CodeSniffer sta
 
 ### Why the name "Jumbo"?
 
-* Refers to a famous elephant, the elephant being PHP's spirit animal.
-* It sounds good.
-* Pairs nicely with `Dumbo`, another famous elephant. `Dumbo` will be the `Jumbo` variant for Drupal.
+- Refers to a famous elephant, the elephant being PHP's spirit animal.
+- It sounds good.
+- Pairs nicely with `Dumbo`, another famous elephant. `Dumbo` will be the `Jumbo` variant for Drupal.
 
 ---
 
@@ -106,10 +106,10 @@ The default maximum line length is 120. To change it, see [Line Length](docs/Lin
 Each standard has its own page, listing the sniffs it uses, inherited and custom, with the reason for each. PSR-12's own
 sniffs are listed only where PERCS31 changes or replaces them.
 
-- [PERCS31](docs/PERCS31.md): PSR-12, sniffs from Generic, PEAR, Squiz, Slevomat, PHPCSExtra (`Universal`) and
-  PhpCollective, and custom sniffs, for PER Coding Style 3.1.
-- [Jumbo](docs/Jumbo.md): what Jumbo changes in PERCS31, and the Generic, Squiz, Slevomat and Zend sniffs and custom
-  sniffs it adds as extra rules.
+- [PERCS31](docs/PERCS31.md): PSR-12, sniffs from Generic, PEAR, Squiz, Slevomat, PHPCSExtra (`Universal`) and PhpCollective, and custom
+  sniffs, for PER Coding Style 3.1.
+- [Jumbo](docs/Jumbo.md): what Jumbo changes in PERCS31, and the Generic, Squiz, Slevomat and Zend sniffs and custom sniffs it adds as
+  extra rules.
 
 ---
 

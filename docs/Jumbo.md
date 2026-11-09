@@ -1,11 +1,11 @@
 # Jumbo Coding Standard
 
 A PHP_CodeSniffer standard for PHP 8.4 and later: [PERCS31](PERCS31.md), for PER Coding Style 3.1, plus extra rules reflecting my
-preferences and common practices. These add consistent naming, modern PHP, and stricter choices where PER allows
-more than one layout.
+preferences and common practices. These add consistent naming, modern PHP, and stricter choices where PER allows more
+than one layout.
 
-Everything PERCS31 checks, Jumbo checks too, apart from the changes listed under [PERCS31](#percs31). This page documents
-what Jumbo adds. For the PER rules, see [PERCS31](PERCS31.md).
+Everything PERCS31 checks, Jumbo checks too, apart from the changes listed under [PERCS31](#percs31). This page documents what Jumbo
+adds. For the PER rules, see [PERCS31](PERCS31.md).
 
 **Contents:**
 
@@ -68,8 +68,7 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
   `checkDefaultValues` set to `false`).
 - `PSR12.Keywords.ShortFormTypeKeywords` is excluded, as `SlevomatCodingStandard.PHP.TypeCast` reports the same casts.
   See [Slevomat](#slevomat).
-- `PSR2.Files.ClosingTag` is excluded, as `Zend.Files.ClosingTag` reports the same closing tags, and more. See
-  [Zend](#zend).
+- `PSR2.Files.ClosingTag` is excluded, as `Zend.Files.ClosingTag` reports the same closing tags, and more. See [Zend](#zend).
 - `PERCS31.NamingConventions.UpperCaseConstantName` has `checkGlobalConstants` set to `true`, so a global constant, from
   `const` or `define()`, and an alias of a constant, must be in UPPER_CASE. PERCS31 doesn't check this, as PER doesn't
   require it.
@@ -93,20 +92,19 @@ Sniffs from PHP_CodeSniffer and Slevomat that Jumbo adds on top of PERCS31. They
 ### Squiz
 
 - **Squiz.Arrays.ArrayDeclaration**: The checks PERCS31 leaves out: no space inside an empty array `[]`, and no mix of
-  keyed and unkeyed values. Which line a comma goes on is left to
-  [`Jumbo.Arrays.ElementComma`](#jumboarrayselementcomma). The spacing around `=>` is left to
-  [`PERCS31.WhiteSpace.ArrowSpacing`](PERCS31.md#percs31whitespacearrowspacing), as Squiz only checks it in a single-line array. Its alignment checks and
+  keyed and unkeyed values. Which line a comma goes on is left to [`Jumbo.Arrays.ElementComma`](#jumboarrayselementcomma). The spacing around `=>`
+  is left to [`PERCS31.WhiteSpace.ArrowSpacing`](PERCS31.md#percs31whitespacearrowspacing), as Squiz only checks it in a single-line array. Its alignment checks and
   `SingleLineNotAllowed` stay excluded, so keys, values and arrows are not aligned, and a single-line array with several
   values is allowed. `Jumbo.Arrays.ArrayDeclaration` requires single-line where it fits.
 - **Squiz.PHP.NonExecutableCode**: A warning for code that can never run, such as code after a `return` or `break`.
 - **Squiz.NamingConventions.ValidVariableName**: Enforces `$camelCase` for variables, parameters, and properties. Its
-  checks for an underscore on properties are excluded, as one requires it on private properties. See
-  [Variable and Property Names](VariableAndPropertyNames.md).
+  checks for an underscore on properties are excluded, as one requires it on private properties. See [Variable and
+  Property Names](VariableAndPropertyNames.md).
 - **Squiz.Strings.DoubleQuoteUsage.NotRequired**: Ensures strings use single quotes unless double quotes are necessary.
 - **Squiz.WhiteSpace.OperatorSpacing**: Requires exactly one space around operators, including before `=`, so
-  assignments are not aligned. Used through [`PERCS31.Operators.OperatorSpacing`](PERCS31.md#percs31operatorsoperatorspacing), which extends it to
-  `&&`, `||`, `and`, `or`, `xor`, `.` and `|>`. PERCS31 excludes its codes for more than one space, and Jumbo turns them
-  back on. `=>` is covered by [`PERCS31.WhiteSpace.ArrowSpacing`](PERCS31.md#percs31whitespacearrowspacing).
+  assignments are not aligned. Used through [`PERCS31.Operators.OperatorSpacing`](PERCS31.md#percs31operatorsoperatorspacing), which extends it to `&&`, `||`, `and`,
+  `or`, `xor`, `.` and `|>`. PERCS31 excludes its codes for more than one space, and Jumbo turns them back on. `=>` is
+  covered by [`PERCS31.WhiteSpace.ArrowSpacing`](PERCS31.md#percs31whitespacearrowspacing).
 - **Squiz.WhiteSpace.ObjectOperatorSpacing**: Disallows spaces around `->`, `?->` and `::`, e.g. `$a -> b()`. A line
   break before one, in a wrapped method chain, is allowed.
 
@@ -119,10 +117,18 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Arrays.DisallowPartiallyKeyed**: Requires arrays to have keys for all or none of the values.
 - **Attributes.AttributesOrder**: Requires attributes to be ordered alphabetically.
 - **Classes.ClassMemberSpacing**: Enforces spacing between class members.
+- **Classes.ConstantSpacing**: Enforces the blank lines after a constant. Used through [`Jumbo.Classes.ConstantSpacing`](#jumboclassesconstantspacing-enumcasespacing-and-propertyspacing),
+  which skips a constant on the file's last line, as the parent crashes on one.
 - **Classes.DisallowStringExpressionPropertyFetch**: Disallows string expressions for property access.
+- **Classes.EmptyLinesAroundClassBraces**: Enforces the blank lines inside a class's braces. Used through
+  [`Jumbo.Classes.EmptyLinesAroundClassBraces`](#jumboclassesemptylinesaroundclassbraces), which allows an empty body as `{}`.
+- **Classes.EnumCaseSpacing**: Enforces the blank lines after an enum case. Used through
+  [`Jumbo.Classes.EnumCaseSpacing`](#jumboclassesconstantspacing-enumcasespacing-and-propertyspacing), which skips a case on the file's last line, as the parent crashes on one.
 - **Classes.MethodSpacing**: Enforces spacing between methods.
 - **Classes.ModernClassNameReference**: Requires `::class` instead of `get_class()`, `get_parent_class()` and
   `get_called_class()`.
+- **Classes.PropertySpacing**: Enforces the blank lines after a property. Used through [`Jumbo.Classes.PropertySpacing`](#jumboclassesconstantspacing-enumcasespacing-and-propertyspacing),
+  which skips a property on the file's last line, as the parent crashes on one.
 - **Classes.RequireMultiLineMethodSignature**: Requires multi-line format for long method signatures.
 - **Classes.RequireSelfReference**: Requires `self::` instead of `ClassName::` for self-references.
 - **Classes.RequireSingleLineMethodSignature**: Requires single-line format for short method signatures. Used through
@@ -136,6 +142,8 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Commenting.UselessInheritDocComment**: Disallows useless `@inheritDoc` comments.
 - **ControlStructures.DisallowContinueWithoutIntegerOperandInSwitch**: Disallows `continue` without an operand in
   `switch`.
+- **ControlStructures.LanguageConstructWithParentheses**: Disallows parentheses around a language construct's argument.
+  Used through [`Jumbo.ControlStructures.LanguageConstructWithParentheses`](#jumbocontrolstructureslanguageconstructwithparentheses), which skips `exit` and `die`.
 - **ControlStructures.RequireMultiLineCondition**: Requires multi-line format for long conditions with boolean
   operators.
 - **ControlStructures.RequireMultiLineTernaryOperator**: Requires multi-line format for long ternary operators.
@@ -144,14 +152,15 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **ControlStructures.RequireNullSafeObjectOperator**: Requires `?->` when possible.
 - **ControlStructures.RequireSingleLineCondition**: Requires single-line format for short conditions.
 - **ControlStructures.RequireShortTernaryOperator**: Requires the short ternary `?:` when possible. Used through
-  [`Jumbo.ControlStructures.RequireShortTernaryOperator`](#jumbocontrolstructuresrequireshortternaryoperator), which skips
-  a nullable type in a `set` hook's parameter.
+  [`Jumbo.ControlStructures.RequireShortTernaryOperator`](#jumbocontrolstructuresrequireshortternaryoperator), which skips a nullable type in a `set` hook's parameter.
 - **ControlStructures.RequireTernaryOperator**: Requires ternary operator when possible.
 - **ControlStructures.UselessIfConditionWithReturn**: Disallows useless if conditions returning true or false.
 - **Exceptions.DeadCatch**: Disallows unreachable catch blocks, e.g. a catch after `catch (Throwable)`.
 - **Exceptions.RequireNonCapturingCatch**: Requires catch without variable when exception is not used.
 - **Functions.FunctionLength**: Enforces maximum function length of 100 lines.
 - **Functions.RequireMultiLineCall**: Requires multi-line format for long function calls.
+- **Functions.RequireSingleLineCall**: Requires a call that fits on one line to be on one line. Used through
+  [`Jumbo.Functions.RequireSingleLineCall`](#jumbofunctionsrequiresinglelinecall), which skips a call with an anonymous class or `match` argument.
 - **Functions.StaticClosure**: Requires the `static` keyword for closures that don't use `$this`.
 - **Functions.StrictCall**: Requires the strict argument in `in_array()`, `array_search()`, `array_keys()` and
   `base64_decode()`.
@@ -162,6 +171,8 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Namespaces.NamespaceDeclaration**: Enforces proper namespace declaration format.
 - **Namespaces.ReferenceUsedNamesOnly**: Requires use statements for all referenced names.
 - **Namespaces.RequireOneNamespaceInFile**: Requires exactly one namespace per file.
+- **Namespaces.UnusedUses**: Disallows unused use statements. Used through [`Jumbo.Namespaces.UnusedUses`](#jumbonamespacesunuseduses), which skips a
+  file with an upper-case `function` or `const` keyword in a use statement.
 - **Namespaces.UseFromSameNamespace**: Disallows use statements from the same namespace.
 - **Namespaces.UselessAlias**: Disallows useless use statement aliases.
 - **Operators.NegationOperatorSpacing**: Enforces the spacing after a unary `-`, including a line break. Its
@@ -239,8 +250,8 @@ gives the reason. The custom sniffs for PER Coding Style itself are in [PERCS31]
 
 Requires a multi-line array to be written on one line if it fits.
 
-**Why:** no inherited sniff collapses a multi-line array that fits on one line. The stock array sniffs (see
-[Inherited Sniffs](#inherited-sniffs)) only check the layout of an array that's already multi-line.
+**Why:** no inherited sniff collapses a multi-line array that fits on one line. The stock array sniffs (see [Inherited
+Sniffs](#inherited-sniffs)) only check the layout of an array that's already multi-line.
 
 **Auto-fixable:** yes.
 
@@ -289,8 +300,8 @@ Requires the comma after an element of a multi-line array or destructuring list 
 the next one.
 
 **Why:** PER Coding Style says nothing about where an array element's comma goes. Squiz `ArrayDeclaration`'s `NoComma`
-check covers it, but only for a keyed element, and it expects the comma on the line after a heredoc's closing marker,
-as before PHP 7.3. So it reports `EOT,`, and its fix puts the comma on a line of its own. PERCS31 excludes it, and this
+check covers it, but only for a keyed element, and it expects the comma on the line after a heredoc's closing marker, as
+before PHP 7.3. So it reports `EOT,`, and its fix puts the comma on a line of its own. PERCS31 excludes it, and this
 sniff replaces it in Jumbo, for keyed and unkeyed elements, in arrays and in destructuring lists such as
 `[$a, $b] = $pair;`. A heredoc's or nowdoc's closing marker counts as the element's last line.
 
@@ -460,6 +471,13 @@ $label = match ($code) {
 };
 ```
 
+**Configuration:**
+
+| Property        | Type | Default | Description                                  |
+| --------------- | ---- | ------- | -------------------------------------------- |
+| `indent`        | int  | 4       | The number of spaces in one indent level.    |
+| `maxLineLength` | int  | 120     | Maximum line length for an arm's first line. |
+
 ---
 
 ### Jumbo.ControlStructures.StatementAfterClosingBrace
@@ -510,8 +528,8 @@ Require code split across lines to be written on one line, if the whole resultin
 | `Jumbo.Functions.RequireSingleLineSignature`  | A function or closure's signature, and a `use` list    |
 | `Jumbo.Classes.RequireSingleLineClassHeader`  | A class, interface or enum's `extends`, `implements`   |
 
-**Why:** PER allows these splits, so this is an extra rule, in Jumbo only. Other sniffs already do the same for a call, an
-array, a method signature, a condition and a loop header.
+**Why:** PER allows these splits, so this is an extra rule, in Jumbo only. Other sniffs already do the same for a call,
+an array, a method signature, a condition and a loop header.
 
 These are left alone:
 
@@ -615,11 +633,12 @@ sniffs expand again, until `phpcbf` gives up.
 Disallows unused `use` statements, including in annotations. This replaces
 `SlevomatCodingStandard.Namespaces.UnusedUses`.
 
-**Why:** the Slevomat sniff reads the type of a `use` statement with a case-sensitive check, so `use Function
-Vendor\helper;` is treated as a class import. It then reports the import as unused, and `phpcbf` deletes it, which can
-break the code. This sniff skips the whole file while a `function` or `const` keyword after `use` isn't in lower case.
-`Universal.UseStatements.LowercaseFunctionConst` reports that as an error and fixes it, and on `phpcbf`'s next pass the
-import is read correctly. Everything else is left to the parent. It can be removed once Slevomat fixes the check.
+**Why:** the Slevomat sniff reads the type of a `use` statement with a case-sensitive check, so
+`use Function Vendor\helper;` is treated as a class import. It then reports the import as unused, and `phpcbf` deletes
+it, which can break the code. This sniff skips the whole file while a `function` or `const` keyword after `use` isn't in
+lower case. `Universal.UseStatements.LowercaseFunctionConst` reports that as an error and fixes it, and on `phpcbf`'s
+next pass the import is read correctly. Everything else is left to the parent. It can be removed once Slevomat fixes the
+check.
 
 **Auto-fixable:** yes, as the parent.
 
@@ -771,11 +790,10 @@ line of a file with markup.
 
 **Why:** [PER Coding Style 3.1, Section 3](https://www.php-fig.org/per/coding-style/#3-declare-statements-namespace-and-import-statements) says that in a file containing markup outside PHP tags, the declaration MUST be
 on the first line, e.g. `<?php declare(strict_types=1) ?>`. The parent requires a blank line before and after it. This
-sniff accepts that form, with or without the `;`, if it sets `strict_types` to 1. See
-[`PERCS31.Files.FileHeader`](PERCS31.md#percs31filesfileheader). Section 3 also forbids spaces inside the parentheses,
-so it requires `strict_types=1`, where the parent's default is `strict_types = 1`. And it lists declare statements as
-one block with no blank line in it, where the parent always wants a blank line after `strict_types`, so this sniff wants
-none if another declare statement follows.
+sniff accepts that form, with or without the `;`, if it sets `strict_types` to 1. See [`PERCS31.Files.FileHeader`](PERCS31.md#percs31filesfileheader).
+Section 3 also forbids spaces inside the parentheses, so it requires `strict_types=1`, where the parent's default is
+`strict_types = 1`. And it lists declare statements as one block with no blank line in it, where the parent always wants
+a blank line after `strict_types`, so this sniff wants none if another declare statement follows.
 
 **Auto-fixable:** yes, as the parent. PHP doesn't allow `strict_types` in a block `declare`, so for a file starting with
 one, the fix adds `declare(strict_types=1);` on the line above. In a file with markup, the fix adds
@@ -818,10 +836,10 @@ Requires a single space after a language construct, with no line break: `echo`, 
 `include_once`, `require`, `require_once`, `yield`, `yield from`, `throw`, `namespace`, `use` and `goto`. This replaces
 `Generic.WhiteSpace.LanguageConstructSpacing`.
 
-**Why:** PER has no such rule, so `return` then a line break is allowed in the [PERCS31](PERCS31.md) standard. The
-Generic sniff also checks `new`, which PER's section 8 puts on its own line before an anonymous class's attributes, and
-its fix turns `(yield)` into `(yield )`. This sniff skips both, and leaves everything else to the parent. A comment
-after a construct isn't reported, as the parent leaves it alone.
+**Why:** PER has no such rule, so `return` then a line break is allowed in the [PERCS31](PERCS31.md) standard. The Generic sniff also
+checks `new`, which PER's section 8 puts on its own line before an anonymous class's attributes, and its fix turns
+`(yield)` into `(yield )`. This sniff skips both, and leaves everything else to the parent. A comment after a construct
+isn't reported, as the parent leaves it alone.
 
 **Auto-fixable:** yes, as the parent.
 
