@@ -310,24 +310,8 @@ class PropertyHookHelper
     public static function hasMultiLinePromotedPropertyHook(File $phpcsFile, int $functionPtr): bool
     {
         $tokens = $phpcsFile->getTokens();
-        $opener = $tokens[$functionPtr]['parenthesis_opener'] ?? null;
-        $closer = $tokens[$functionPtr]['parenthesis_closer'] ?? null;
-        if (!is_int($opener) || !is_int($closer)) {
-            return false;
-        }
-
-        for ($i = ($opener + 1); $i < $closer; $i++) {
-            if ($tokens[$i]['code'] !== T_VARIABLE || !self::isPropertyVariable($phpcsFile, $i)) {
-                continue;
-            }
-
-            $hookOpener = self::findHookListOpener($phpcsFile, $i);
-            $hookCloser = $hookOpener === false ? null : ($tokens[$hookOpener]['bracket_closer'] ?? null);
-            if (!is_int($hookOpener) || !is_int($hookCloser)) {
-                continue;
-            }
-
-            if ($tokens[$hookOpener]['line'] !== $tokens[$hookCloser]['line']) {
+        foreach (self::findPromotedHookLists($phpcsFile, $functionPtr) as [$opener, $closer]) {
+            if (is_int($closer) && $tokens[$opener]['line'] !== $tokens[$closer]['line']) {
                 return true;
             }
         }
@@ -344,24 +328,39 @@ class PropertyHookHelper
      */
     public static function hasPromotedPropertyHook(File $phpcsFile, int $functionPtr): bool
     {
+        return self::findPromotedHookLists($phpcsFile, $functionPtr) !== [];
+    }
+
+    /**
+     * Find the hook lists of the promoted constructor parameters in a function's parameter list.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $functionPtr The position of the function keyword.
+     * @return list<array{int, int|null}> Each hook list's opening brace, and its closing brace if it has one.
+     */
+    private static function findPromotedHookLists(File $phpcsFile, int $functionPtr): array
+    {
         $tokens = $phpcsFile->getTokens();
         $opener = $tokens[$functionPtr]['parenthesis_opener'] ?? null;
         $closer = $tokens[$functionPtr]['parenthesis_closer'] ?? null;
         if (!is_int($opener) || !is_int($closer)) {
-            return false;
+            return [];
         }
 
+        $lists = [];
         for ($i = ($opener + 1); $i < $closer; $i++) {
-            if (
-                $tokens[$i]['code'] === T_VARIABLE
-                && self::isPropertyVariable($phpcsFile, $i)
-                && self::findHookListOpener($phpcsFile, $i) !== false
-            ) {
-                return true;
+            if ($tokens[$i]['code'] !== T_VARIABLE || !self::isPropertyVariable($phpcsFile, $i)) {
+                continue;
+            }
+
+            $hookOpener = self::findHookListOpener($phpcsFile, $i);
+            if ($hookOpener !== false) {
+                $hookCloser = $tokens[$hookOpener]['bracket_closer'] ?? null;
+                $lists[] = [$hookOpener, is_int($hookCloser) ? $hookCloser : null];
             }
         }
 
-        return false;
+        return $lists;
     }
 
     /**
