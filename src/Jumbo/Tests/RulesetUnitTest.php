@@ -330,6 +330,34 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that commas between a match arm's conditions are spaced as in section 5.2's example, in both standards.
+     */
+    public function testMatchConditionCommaSpacing(): void
+    {
+        $header = "<?php\n\ndeclare(strict_types=1);\n\nnamespace A;\n\n\$a = match (\$x) {\n";
+        $footer = "    default => 9,\n};\n";
+        $arms = "    1,2 => 3,\n    4 , 5 => 6,\n";
+        foreach (['PERCS31', 'Jumbo'] as $standard) {
+            $file = $this->copyToTempFile(null, $header . $arms . $footer);
+
+            try {
+                $result = $this->runTool('phpcs', ['-s', "--standard=$standard", '--report=emacs', $file]);
+                $fixer = $this->runTool('phpcbf', ["--standard=$standard", $file]);
+                $fixed = (string) file_get_contents($file);
+            } finally {
+                unlink($file);
+            }
+
+            $pattern = '/:(\\d+):\\d+: error - .*Universal\\.WhiteSpace\\.CommaSpacing\\.(\\w+)\\)/';
+            preg_match_all($pattern, $result['output'], $matches, PREG_SET_ORDER);
+            $found = array_map(static fn(array $match): string => $match[1] . ':' . $match[2], $matches);
+            $this->assertSame(['8:NoSpaceAfter', '9:SpaceBefore'], $found, $result['output']);
+            $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
+            $this->assertSame($header . "    1, 2 => 3,\n    4, 5 => 6,\n" . $footer, $fixed);
+        }
+    }
+
+    /**
      * Test that a default value's `=` can be aligned in PERCS31, which only requires a space, and not in Jumbo.
      */
     public function testDefaultParameterSpacing(): void
