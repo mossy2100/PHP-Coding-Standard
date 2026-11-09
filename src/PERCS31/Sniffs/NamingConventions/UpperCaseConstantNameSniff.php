@@ -138,8 +138,7 @@ class UpperCaseConstantNameSniff extends GenericSniff
     }
 
     /**
-     * Check an enum constant's name: PascalCase passes, UPPER_CASE gets a low-severity warning, and anything else an
-     * error.
+     * Check an enum constant's name: PascalCase passes, UPPER_CASE gets a warning, and anything else an error.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $namePtr The position of the constant's name.
