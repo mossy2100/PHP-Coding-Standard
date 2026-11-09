@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Formatting;
 
-use PERCS31\Helpers\TokenHelper;
+use PERCS31\Helpers\MatchHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -143,37 +143,24 @@ class TrailingCommaSniff implements Sniff
     private function checkMatchConditions(File $phpcsFile, int $opener, int $closer): void
     {
         $tokens = $phpcsFile->getTokens();
-        $armStart = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($opener + 1), $closer, true);
-        for ($i = ($opener + 1); $i < $closer; $i++) {
-            $code = $tokens[$i]['code'];
-            if ($code === T_MATCH_ARROW && $armStart !== false) {
-                $last = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($i - 1), $armStart, true);
-                if (
-                    $last !== false
-                    && $tokens[$last]['code'] === T_COMMA
-                    && ($this->disallowInSplitMatchConditions || $tokens[$last]['line'] === $tokens[$armStart]['line'])
-                ) {
-                    $fix = $phpcsFile->addFixableError(
-                        'The last item in a %s must not have a trailing comma',
-                        $last,
-                        self::CODE_DISALLOWED,
-                        ['match condition list'],
-                    );
-                    if ($fix) {
-                        $phpcsFile->fixer->replaceToken($last, '');
-                    }
-                }
-
-                $armStart = false;
-            } elseif ($code === T_COMMA && $armStart === false) {
-                // The comma that ends an arm's body.
-                $armStart = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), $closer, true);
+        foreach (MatchHelper::findArms($phpcsFile, $opener, $closer) as $arm) {
+            $last = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($arm['arrow'] - 1), $arm['start'], true);
+            if (
+                $last === false
+                || $tokens[$last]['code'] !== T_COMMA
+                || (!$this->disallowInSplitMatchConditions && $tokens[$last]['line'] !== $tokens[$arm['start']]['line'])
+            ) {
+                continue;
             }
 
-            // Commas and arrows inside brackets aren't this match's.
-            $jumpTo = TokenHelper::findCloser($tokens[$i]);
-            if (is_int($jumpTo) && $jumpTo > $i && $jumpTo < $closer) {
-                $i = $jumpTo;
+            $fix = $phpcsFile->addFixableError(
+                'The last item in a %s must not have a trailing comma',
+                $last,
+                self::CODE_DISALLOWED,
+                ['match condition list'],
+            );
+            if ($fix) {
+                $phpcsFile->fixer->replaceToken($last, '');
             }
         }
     }

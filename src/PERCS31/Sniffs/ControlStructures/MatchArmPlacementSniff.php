@@ -6,7 +6,7 @@ namespace PERCS31\Sniffs\ControlStructures;
 
 use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\LayoutHelper;
-use PERCS31\Helpers\TokenHelper;
+use PERCS31\Helpers\MatchHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -48,21 +48,9 @@ class MatchArmPlacementSniff implements Sniff
             return;
         }
 
-        $inBody = false;
-        for ($i = ($opener + 1); $i < $closer; $i++) {
-            $code = $tokens[$i]['code'];
-            if ($code === T_MATCH_ARROW) {
-                $inBody = true;
-            } elseif ($code === T_COMMA && $inBody) {
-                // The comma that ends an arm's body.
-                $inBody = false;
-                $this->checkNextArm($phpcsFile, $i, $closer);
-            }
-
-            // Commas and arrows inside brackets aren't this match's.
-            $jumpTo = TokenHelper::findCloser($tokens[$i]);
-            if (is_int($jumpTo) && $jumpTo > $i && $jumpTo < $closer) {
-                $i = $jumpTo;
+        foreach (MatchHelper::findArms($phpcsFile, $opener, $closer) as $arm) {
+            if ($arm['end'] !== null) {
+                $this->checkNextArm($phpcsFile, $arm['end'], $closer);
             }
         }
     }

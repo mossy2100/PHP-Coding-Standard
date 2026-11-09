@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jumbo\Sniffs\ControlStructures;
 
+use PERCS31\Helpers\MatchHelper;
 use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
@@ -61,32 +62,14 @@ class MatchArmWrapIndentSniff implements Sniff
             return;
         }
 
-        $armStart = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($opener + 1), $closer, true);
-        $inBody = false;
-        for ($i = ($opener + 1); $i < $closer; $i++) {
-            $code = $tokens[$i]['code'];
-            if ($code === T_MATCH_ARROW) {
-                $inBody = true;
-                $value = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), $closer, true);
-                if ($armStart === false || $value === false) {
-                    continue;
-                }
-
-                if (!$this->checkFitsOnOneLine($phpcsFile, $armStart, $value)) {
-                    $this->checkLines($phpcsFile, $armStart, $i, $value);
-                }
-            } elseif ($code === T_COMMA) {
-                $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), $closer, true);
-                if ($inBody) {
-                    // The comma that ends an arm.
-                    $armStart = $next;
-                    $inBody = false;
-                }
+        foreach (MatchHelper::findArms($phpcsFile, $opener, $closer) as $arm) {
+            $value = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($arm['arrow'] + 1), $closer, true);
+            if ($value === false) {
+                continue;
             }
 
-            $jumpTo = TokenHelper::findCloser($tokens[$i]);
-            if (is_int($jumpTo) && $jumpTo > $i && $jumpTo < $closer) {
-                $i = $jumpTo;
+            if (!$this->checkFitsOnOneLine($phpcsFile, $arm['start'], $value)) {
+                $this->checkLines($phpcsFile, $arm['start'], $arm['arrow'], $value);
             }
         }
     }
