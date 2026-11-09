@@ -16,8 +16,7 @@ The Jumbo Coding Standard has two rulesets, each usable as a PHP_CodeSniffer sta
   Coding Style existed. See [PERCS31](docs/PERCS31.md).
 - **Jumbo**: PERCS31 plus extra rules for consistent naming and modern PHP 8.4+ code. See [Jumbo](docs/Jumbo.md).
 
-Use PERCS31 to follow PER Coding Style 3.1 exactly, or Jumbo to add the extra rules. [Usage](#usage) shows how to set
-either.
+Use PERCS31 to follow PER Coding Style 3.1 exactly, or Jumbo to add the extra rules. [Usage](#usage) shows how to set either.
 
 ### Key features of Jumbo
 
@@ -111,8 +110,8 @@ sniffs are listed only where PERCS31 changes or replaces them.
 
 - [PERCS31](docs/PERCS31.md): PSR-12, sniffs from Generic, PEAR, Squiz, Slevomat, PHPCSExtra (`Universal`) and PhpCollective, and custom
   sniffs, for PER Coding Style 3.1.
-- [Jumbo](docs/Jumbo.md): what Jumbo changes in PERCS31, and the Generic, Squiz, Slevomat and Zend sniffs and custom sniffs it adds as
-  extra rules.
+- [Jumbo](docs/Jumbo.md): what Jumbo changes in PERCS31, and the Generic, Squiz, PHPCSExtra, Slevomat and Zend sniffs and custom sniffs
+  it adds as extra rules.
 
 ---
 

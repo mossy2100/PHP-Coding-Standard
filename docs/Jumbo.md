@@ -81,7 +81,8 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
 
 ## Inherited Sniffs
 
-Sniffs from PHP_CodeSniffer and Slevomat that Jumbo adds on top of PERCS31. They're extra rules, not PER rules.
+Sniffs from PHP_CodeSniffer, PHPCSExtra and Slevomat that Jumbo adds on top of PERCS31. They're extra rules, not PER
+rules.
 
 ### Generic
 
@@ -106,6 +107,12 @@ Sniffs from PHP_CodeSniffer and Slevomat that Jumbo adds on top of PERCS31. They
   assignments are not aligned. Used through [`PERCS31.Operators.OperatorSpacing`](PERCS31.md#percs31operatorsoperatorspacing), which extends it to `&&`, `||`, `and`,
   `or`, `xor`, `.` and `|>`. PERCS31 excludes its codes for more than one space, and Jumbo turns them back on. `=>` is
   covered by [`PERCS31.WhiteSpace.ArrowSpacing`](PERCS31.md#percs31whitespacearrowspacing).
+
+### PHPCSExtra
+
+- **Universal.Constants.ModifierKeywordOrder**: Requires `final` before the visibility on a constant, as in
+  `final public const A`. Section 4.6 sets that order for classes, properties and methods, but doesn't name constants,
+  so PERCS31 allows either. Auto-fixable.
 
 ### Slevomat
 

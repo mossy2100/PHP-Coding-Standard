@@ -358,6 +358,32 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that `final` must come before a constant's visibility in Jumbo, and that either order passes in PERCS31.
+     */
+    public function testConstantModifierOrderIsFixedInJumboOnly(): void
+    {
+        $header = "<?php\n\ndeclare(strict_types=1);\n\nnamespace A;\n\nclass B\n{\n";
+        $footer = "}\n";
+        $code = "    public final const int C = 1;\n";
+        foreach (['Jumbo' => "    final public const int C = 1;\n", 'PERCS31' => $code] as $standard => $expected) {
+            $file = $this->copyToTempFile(null, $header . $code . $footer);
+
+            try {
+                $result = $this->runTool('phpcs', ['-s', "--standard=$standard", '--report=emacs', $file]);
+                $fixer = $this->runTool('phpcbf', ["--standard=$standard", $file]);
+                $fixed = (string) file_get_contents($file);
+            } finally {
+                unlink($file);
+            }
+
+            $reported = str_contains($result['output'], 'Universal.Constants.ModifierKeywordOrder.Incorrect');
+            $this->assertSame($standard === 'Jumbo', $reported, $result['output']);
+            $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
+            $this->assertSame($header . $expected . $footer, $fixed);
+        }
+    }
+
+    /**
      * Test that a default value's `=` can be aligned in PERCS31, which only requires a space, and not in Jumbo.
      */
     public function testDefaultParameterSpacing(): void
