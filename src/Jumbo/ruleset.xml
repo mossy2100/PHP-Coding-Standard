@@ -345,6 +345,9 @@
         </properties>
     </rule>
 
+    <!-- A warning for code that can never run, such as code after a return or break -->
+    <rule ref="Squiz.PHP.NonExecutableCode"/>
+
     <!-- ====== CLOSURES (7) ====== -->
 
     <rule ref="SlevomatCodingStandard.Functions.RequireArrowFunction"/>

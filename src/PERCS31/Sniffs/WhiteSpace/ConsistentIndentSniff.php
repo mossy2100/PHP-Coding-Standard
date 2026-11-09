@@ -27,6 +27,10 @@ use PhpCollective\Sniffs\WhiteSpace\ConsistentIndentSniff as PhpCollectiveSniff;
  *
  * It also skips the lines under a PHP opening tag that isn't at the start of its line, as in a template. The parent
  * measures from column 1, so it would report PHP indented to match the markup around it.
+ *
+ * Three more lines are checked, each indented exactly as section 2.4 sets: a value wrapped after `=>` in an array, once
+ * past the key's line; a group use's items, once past the `use` line, as section 3's example shows; and dead code after
+ * a `break` or other statement that ends a switch case, with no case to measure from, level with that statement.
  */
 class ConsistentIndentSniff extends PhpCollectiveSniff
 {
@@ -42,7 +46,7 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
      */
     public function register(): array
     {
-        return [...parent::register(), T_OPEN_TAG, T_OPEN_TAG_WITH_ECHO];
+        return [...parent::register(), T_OPEN_TAG, T_OPEN_TAG_WITH_ECHO, T_DOUBLE_ARROW, T_OPEN_USE_GROUP];
     }
 
     /**
@@ -55,6 +59,16 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
     public function process(File $phpcsFile, $stackPtr): void
     {
         $token = $phpcsFile->getTokens()[$stackPtr];
+        if ($token['code'] === T_DOUBLE_ARROW || $token['code'] === T_OPEN_USE_GROUP) {
+            if (!$this->isAfterIndentedTag && $token['code'] === T_DOUBLE_ARROW) {
+                $this->checkWrappedArrayValue($phpcsFile, $stackPtr);
+            } elseif (!$this->isAfterIndentedTag) {
+                $this->checkGroupUseItems($phpcsFile, $stackPtr);
+            }
+
+            return;
+        }
+
         if ($token['code'] !== T_WHITESPACE) {
             $this->isAfterIndentedTag = $token['column'] > 1;
             return;
@@ -125,8 +139,19 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
             return;
         }
 
-        $expected = $this->findExpectedFromAnchor($phpcsFile, $next, $anchor);
+        // Dead code after a `break` is directly in the switch, with no `case` to measure from, so it's level with the
+        // statement before it, exactly.
         $found = strlen($tokens[$stackPtr]['content']);
+        if ($this->isDeadCodeInSwitch($phpcsFile, $next)) {
+            $expected = $this->findLineIndent($phpcsFile, $this->findStatementStart($phpcsFile, $previous));
+            if ($found !== $expected) {
+                $this->reportIndent($phpcsFile, $next, $expected, $found);
+            }
+
+            return;
+        }
+
+        $expected = $this->findExpectedFromAnchor($phpcsFile, $next, $anchor);
         if ($expected === null || $found <= $expected) {
             return;
         }
@@ -256,5 +281,187 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
         return isset($operators[$code])
             || in_array($code, [T_INSTANCEOF, T_FN_ARROW, T_COALESCE, T_STRING_CONCAT], true)
             || (defined('T_PIPE') && $code === T_PIPE);
+    }
+
+    /**
+     * Check whether a line's first code is dead code directly in a switch, after the statement that ends a case.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $ptr The position of the line's first code.
+     * @return bool True if it is.
+     */
+    private function isDeadCodeInSwitch(File $phpcsFile, int $ptr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $conditions = $tokens[$ptr]['conditions'];
+        if (end($conditions) !== T_SWITCH || in_array($tokens[$ptr]['code'], [T_CASE, T_DEFAULT], true)) {
+            return false;
+        }
+
+        // A `case` isn't among the conditions of the `break` that closes it, though it's in its body.
+        $condition = $tokens[$ptr]['scope_condition'] ?? null;
+
+        return !is_int($condition) || $tokens[$ptr]['scope_closer'] !== $ptr;
+    }
+
+    /**
+     * Find the first token of the statement a `;` ends, as in `break;`. PHP_CodeSniffer's findStartOfStatement() goes
+     * back to a `case` label from the statement that closes it.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $endPtr The position of the `;`.
+     * @return int The position of the statement's first token.
+     */
+    private function findStatementStart(File $phpcsFile, int $endPtr): int
+    {
+        $tokens = $phpcsFile->getTokens();
+        $boundaries = [T_SEMICOLON, T_OPEN_CURLY_BRACKET, T_CLOSE_CURLY_BRACKET, T_COLON, T_OPEN_TAG];
+        for ($i = ($endPtr - 1); $i > 0; $i--) {
+            if (in_array($tokens[$i]['code'], $boundaries, true)) {
+                break;
+            }
+
+            // Skip back over anything in brackets, such as a call's arguments split over lines.
+            $i = $tokens[$i]['parenthesis_opener'] ?? $tokens[$i]['bracket_opener'] ?? $i;
+        }
+
+        $start = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), $endPtr, true);
+
+        return $start === false ? $endPtr : $start;
+    }
+
+    /**
+     * Check a value wrapped onto the line after an array's `=>`, which is indented once past the key's line.
+     *
+     * A heredoc or nowdoc is left to PERCS31.Strings.HeredocIndentation.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $arrowPtr The position of the `=>`.
+     */
+    private function checkWrappedArrayValue(File $phpcsFile, int $arrowPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $value = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($arrowPtr + 1), null, true);
+        if (
+            $value === false
+            || $tokens[$value]['line'] === $tokens[$arrowPtr]['line']
+            || in_array($tokens[$value]['code'], [T_START_HEREDOC, T_START_NOWDOC], true)
+            || $phpcsFile->findFirstOnLine(T_WHITESPACE, $value, true) !== $value
+            || !$this->isInArray($phpcsFile, $arrowPtr)
+        ) {
+            return;
+        }
+
+        $expected = $this->findLineIndent($phpcsFile, $arrowPtr) + 4;
+        $found = $tokens[$value]['column'] - 1;
+        if ($found !== $expected) {
+            $this->reportIndent($phpcsFile, $value, $expected, $found);
+        }
+    }
+
+    /**
+     * Check whether a `=>` is between an array's keys and values, not in a `foreach` or after `yield`.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $arrowPtr The position of the `=>`.
+     * @return bool True if it is.
+     */
+    private function isInArray(File $phpcsFile, int $arrowPtr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        for ($i = ($arrowPtr - 1); $i >= 0; $i--) {
+            $code = $tokens[$i]['code'];
+            if ($code === T_OPEN_SHORT_ARRAY) {
+                return true;
+            }
+
+            if ($code === T_OPEN_PARENTHESIS) {
+                $owner = $tokens[$i]['parenthesis_owner'] ?? null;
+
+                return is_int($owner) && $tokens[$owner]['code'] === T_ARRAY;
+            }
+
+            if (in_array($code, [T_OPEN_SQUARE_BRACKET, T_OPEN_CURLY_BRACKET, T_SEMICOLON, T_YIELD], true)) {
+                return false;
+            }
+
+            // Skip back over anything nested in the key, such as a call's arguments.
+            $i = $tokens[$i]['parenthesis_opener'] ?? $tokens[$i]['bracket_opener'] ?? $i;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check each line of a group use's items, which is indented once past the `use` line, as section 3's example
+     * shows.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $openerPtr The position of the group's `{`.
+     */
+    private function checkGroupUseItems(File $phpcsFile, int $openerPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $closer = $phpcsFile->findNext(T_CLOSE_USE_GROUP, ($openerPtr + 1));
+        if ($closer === false) {
+            return;
+        }
+
+        $expected = $this->findLineIndent($phpcsFile, $openerPtr) + 4;
+        for ($i = ($openerPtr + 1); $i < $closer; $i++) {
+            $isLineStart = $tokens[$i]['line'] !== $tokens[($i - 1)]['line'] || $tokens[($i - 1)]['column'] === 1
+                && $tokens[($i - 1)]['code'] === T_WHITESPACE && $tokens[($i - 1)]['line'] === $tokens[$i]['line'];
+            if (!$isLineStart || isset(Tokens::EMPTY_TOKENS[$tokens[$i]['code']])) {
+                continue;
+            }
+
+            $found = $tokens[$i]['column'] - 1;
+            if ($found !== $expected) {
+                $this->reportIndent($phpcsFile, $i, $expected, $found);
+            }
+        }
+    }
+
+    /**
+     * Find the indentation of the line a token is on.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $ptr The position of the token.
+     * @return int The number of spaces before the line's first code.
+     */
+    private function findLineIndent(File $phpcsFile, int $ptr): int
+    {
+        $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $ptr, true);
+
+        return ($firstOnLine === false ? 1 : $phpcsFile->getTokens()[$firstOnLine]['column']) - 1;
+    }
+
+    /**
+     * Report a line's first code indented wrongly, and fix the indentation.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $ptr The position of the line's first code.
+     * @param int $expected The expected number of spaces.
+     * @param int $found The number of spaces found.
+     */
+    private function reportIndent(File $phpcsFile, int $ptr, int $expected, int $found): void
+    {
+        $fix = $phpcsFile->addFixableError(
+            'Line indented incorrectly; expected %s spaces, found %s spaces',
+            $ptr,
+            'Incorrect',
+            [$expected, $found],
+        );
+        if (!$fix) {
+            return;
+        }
+
+        $tokens = $phpcsFile->getTokens();
+        $before = $ptr - 1;
+        if ($tokens[$before]['code'] === T_WHITESPACE && $tokens[$before]['line'] === $tokens[$ptr]['line']) {
+            $phpcsFile->fixer->replaceToken($before, str_repeat(' ', $expected));
+        } else {
+            $phpcsFile->fixer->addContentBefore($ptr, str_repeat(' ', $expected));
+        }
     }
 }

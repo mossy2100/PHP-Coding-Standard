@@ -1967,6 +1967,14 @@ past the tags is allowed, as PER doesn't say, and its example in section 3 uses 
 accepts both too, and doesn't check the indent of `?>`, as PER has no rule on it. The [Jumbo standard](Jumbo.md) requires
 0 levels, and `?>` level with `<?php`.
 
+Three more lines are checked, each indented exactly, as section 2.4 sets:
+
+- **A value wrapped after an array's `=>`:** once past the key's line. A heredoc or nowdoc is left to
+  [`PERCS31.Strings.HeredocIndentation`](#percs31stringsheredocindentation).
+- **A group `use`'s items:** once past the `use` line, as section 3's example shows.
+- **Dead code in a `switch`, after the `break`, `return` or other statement that ends a case:** level with that
+  statement, as there's no `case` to measure from.
+
 **Auto-fixable:** yes.
 
 **Good:**
@@ -2088,7 +2096,5 @@ class User
   in the section on classes, so this standard follows PHP_CodeSniffer in reading it as classes and functions. After a
   block `declare` in the file header, a statement is still reported, as section 3 wants a blank line after the block.
   The [Jumbo standard](Jumbo.md) reports a statement after any control structure's closing brace.
-- **Three over-indented lines (2.4, 3, 11).** A value wrapped after an array's `=>`, a group `use`'s item, and dead code
-  after a `break`.
 - **The pipe operator `|>` on PHP 8.4.** It's only checked when PHP_CodeSniffer runs on PHP 8.5, as 8.4 has no `T_PIPE`
   token.

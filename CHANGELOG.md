@@ -28,7 +28,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`PERCS31.WhiteSpace.ConsistentIndent` (breaking).** Reports a line indented further than its scope after a complete
   statement, as PER Coding Style 3.1 requires an indent of 4 spaces per level. It extends php-collective's
   `ConsistentIndent`, adding the pipe operator and the other binary operators to the lines it treats as continuation
-  lines. `php-collective/code-sniffer` is now a dependency. Auto-fixable.
+  lines. `php-collective/code-sniffer` is now a dependency. It also checks a value wrapped after an array's `=>`, a
+  group `use`'s items, and dead code in a `switch`, each indented exactly. Auto-fixable.
+- **`Squiz.PHP.NonExecutableCode` in Jumbo.** A warning for code that can never run, such as code after a `return`.
 - **`Universal.ControlStructures.DisallowAlternativeSyntax` (breaking).** The alternative syntax for a control
   structure, such as `if ($a): ... endif;`, is now reported directly, as PER Coding Style 3.1 says a structure's body
   MUST be in braces. It was only reported as a spacing error before. Auto-fixable, including in a file that mixes PHP
