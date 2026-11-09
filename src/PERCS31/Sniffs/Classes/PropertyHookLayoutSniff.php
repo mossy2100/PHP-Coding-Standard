@@ -426,29 +426,10 @@ class PropertyHookLayoutSniff implements Sniff
     private function checkHookBodies(File $phpcsFile, int $opener, int $closer): bool
     {
         $tokens = $phpcsFile->getTokens();
-        $bodies = [];
         // Where a hook can end, so another can start: the list's opening brace, a `;`, or a body's closing brace.
-        $boundaries = [$opener];
-        $inShortBody = false;
-        for ($i = ($opener + 1); $i < $closer; $i++) {
-            $code = $tokens[$i]['code'];
-            if ($code === T_DOUBLE_ARROW) {
-                $inShortBody = true;
-            } elseif ($code === T_SEMICOLON) {
-                $inShortBody = false;
-                $boundaries[] = $i;
-            } elseif ($code === T_OPEN_CURLY_BRACKET && !$inShortBody) {
-                $bodies[] = $i;
-            }
-
-            $jumpTo = TokenHelper::findCloser($tokens[$i]);
-            if (is_int($jumpTo) && $jumpTo > $i && $jumpTo < $closer) {
-                $i = $jumpTo;
-                if ($code === T_OPEN_CURLY_BRACKET && !$inShortBody) {
-                    $boundaries[] = $i;
-                }
-            }
-        }
+        $hooks = PropertyHookHelper::parseHooks($phpcsFile, $opener, $closer) ?? [];
+        $boundaries = [$opener, ...array_column($hooks, 'end')];
+        $bodies = array_values(array_filter(array_column($hooks, 'bodyOpener'), is_int(...)));
 
         // A short hook may be inline, and a list with no bodies must be, so only a `{}` body rules them out.
         if ($bodies === []) {
@@ -581,25 +562,9 @@ class PropertyHookLayoutSniff implements Sniff
      */
     private function findArrows(File $phpcsFile, int $opener, int $closer): array
     {
-        $tokens = $phpcsFile->getTokens();
-        $arrows = [];
-        $inShortBody = false;
-        for ($i = ($opener + 1); $i < $closer; $i++) {
-            // A short hook's body runs to the `;` at this level, so a `=>` within it isn't a hook's.
-            if ($tokens[$i]['code'] === T_DOUBLE_ARROW && !$inShortBody) {
-                $arrows[] = $i;
-                $inShortBody = true;
-            } elseif ($tokens[$i]['code'] === T_SEMICOLON) {
-                $inShortBody = false;
-            }
+        $hooks = PropertyHookHelper::parseHooks($phpcsFile, $opener, $closer) ?? [];
 
-            $jumpTo = TokenHelper::findCloser($tokens[$i]);
-            if (is_int($jumpTo) && $jumpTo > $i && $jumpTo < $closer) {
-                $i = $jumpTo;
-            }
-        }
-
-        return $arrows;
+        return array_values(array_filter(array_column($hooks, 'arrowPtr'), is_int(...)));
     }
 
     /**

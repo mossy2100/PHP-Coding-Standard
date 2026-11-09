@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\Classes;
 
 use PERCS31\Helpers\PropertyHookHelper;
-use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
@@ -86,27 +85,8 @@ class PromotedPropertyHooksSniff implements Sniff
             return false;
         }
 
-        // Count the hooks: each one ends with a `;` after its `=>`, or with a block body.
-        $hooks = 0;
-        $afterArrow = false;
-        for ($i = ($opener + 1); $i < $closer; $i++) {
-            $code = $tokens[$i]['code'];
-            if ($code === T_DOUBLE_ARROW) {
-                $afterArrow = true;
-            } elseif ($code === T_SEMICOLON) {
-                $hooks++;
-                $afterArrow = false;
-            } elseif ($code === T_OPEN_CURLY_BRACKET && !$afterArrow) {
-                return false;
-            }
+        $hooks = PropertyHookHelper::parseHooks($phpcsFile, $opener, $closer);
 
-            // Skip over parameter lists, attributes, and brackets inside an expression.
-            $jumpTo = TokenHelper::findCloser($tokens[$i]);
-            if (is_int($jumpTo) && $jumpTo > $i && $jumpTo < $closer) {
-                $i = $jumpTo;
-            }
-        }
-
-        return $hooks === 1;
+        return $hooks !== null && count($hooks) === 1 && $hooks[0]['bodyOpener'] === null;
     }
 }

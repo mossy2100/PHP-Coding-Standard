@@ -534,4 +534,67 @@ class PropertyHookHelper
             }
         }
     }
+
+    /**
+     * Find the hooks in a hook list, from the first token of each (an attribute, modifier, `&` or the name) to its last
+     * (the `;` or the closing brace of its body), skipping anything in brackets, such as a parameter list.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the hook list's opening brace.
+     * @param int $closer The position of the hook list's closing brace.
+     * @return list<array{name: string, start: int, end: int, namePtr: int, hasBody: bool, arrowPtr: int|null,
+     *     bodyOpener: int|null}>|null The hooks, with the `=>` of a short hook and the `{` of a block body, or null
+     *     if the list can't be parsed.
+     */
+    public static function parseHooks(File $phpcsFile, int $opener, int $closer): ?array
+    {
+        $tokens = $phpcsFile->getTokens();
+        $hooks = [];
+        $i = $opener + 1;
+        while (true) {
+            $i = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, $i, $closer, true);
+            if ($i === false) {
+                return $hooks;
+            }
+
+            $start = $i;
+            $name = null;
+            $namePtr = null;
+            $arrowPtr = null;
+            $bodyOpener = null;
+            $end = null;
+            while ($i < $closer) {
+                $code = $tokens[$i]['code'];
+                $jumpTo = TokenHelper::findCloser($tokens[$i]);
+                if ($code === T_STRING && $name === null) {
+                    $name = strtolower($tokens[$i]['content']);
+                    $namePtr = $i;
+                } elseif ($code === T_DOUBLE_ARROW && $arrowPtr === null) {
+                    $arrowPtr = $i;
+                } elseif ($code === T_SEMICOLON || ($code === T_OPEN_CURLY_BRACKET && $arrowPtr === null)) {
+                    $bodyOpener = $code === T_SEMICOLON ? null : $i;
+                    $end = $code === T_SEMICOLON ? $i : $jumpTo;
+                    break;
+                }
+
+                // Skip over attributes, parameter lists, and brackets inside an expression.
+                $i = is_int($jumpTo) && $jumpTo > $i ? $jumpTo + 1 : $i + 1;
+            }
+
+            if ($name === null || !is_int($namePtr) || !is_int($end)) {
+                return null;
+            }
+
+            $hooks[] = [
+                'name' => $name,
+                'start' => $start,
+                'end' => $end,
+                'namePtr' => $namePtr,
+                'hasBody' => $arrowPtr !== null || $bodyOpener !== null,
+                'arrowPtr' => $arrowPtr,
+                'bodyOpener' => $bodyOpener,
+            ];
+            $i = $end + 1;
+        }
+    }
 }

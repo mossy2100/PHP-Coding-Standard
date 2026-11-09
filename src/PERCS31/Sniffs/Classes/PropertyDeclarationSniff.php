@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\Classes;
 
 use PERCS31\Helpers\PropertyHookHelper;
-use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\PSR2\Sniffs\Classes\PropertyDeclarationSniff as Psr2Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -92,7 +91,7 @@ class PropertyDeclarationSniff extends Psr2Sniff
             return;
         }
 
-        $hooks = $this->findHooks($phpcsFile, $opener, $closer, $tokens);
+        $hooks = PropertyHookHelper::parseHooks($phpcsFile, $opener, $closer);
         if ($hooks === null) {
             return;
         }
@@ -142,72 +141,13 @@ class PropertyDeclarationSniff extends Psr2Sniff
     }
 
     /**
-     * Find the hooks in a hook list, from the first token of each (an attribute, modifier, `&` or the name) to its
-     * last (the `;` or the closing brace of its body).
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $opener The position of the hook list's opening brace.
-     * @param int $closer The position of the hook list's closing brace.
-     * @param array<int, array<string, mixed>> $tokens The token stack.
-     * @return list<array{name: string, start: int, end: int, namePtr: int, hasBody: bool}>|null The hooks, or null if
-     *     the list can't be parsed.
-     */
-    private function findHooks(File $phpcsFile, int $opener, int $closer, array $tokens): ?array
-    {
-        $hooks = [];
-        $i = $opener + 1;
-        while (true) {
-            $i = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, $i, $closer, true);
-            if ($i === false) {
-                return $hooks;
-            }
-
-            $start = $i;
-            $name = null;
-            $namePtr = null;
-            $afterArrow = false;
-            $end = null;
-            while ($i < $closer) {
-                $code = $tokens[$i]['code'];
-                $jumpTo = TokenHelper::findCloser($tokens[$i]);
-                if ($code === T_STRING && $name === null) {
-                    $content = $tokens[$i]['content'];
-                    assert(is_string($content));
-                    $name = strtolower($content);
-                    $namePtr = $i;
-                } elseif ($code === T_DOUBLE_ARROW) {
-                    $afterArrow = true;
-                } elseif ($code === T_SEMICOLON || ($code === T_OPEN_CURLY_BRACKET && !$afterArrow)) {
-                    $end = $code === T_SEMICOLON ? $i : $jumpTo;
-                    break;
-                }
-
-                // Skip over attributes, parameter lists, and brackets inside an expression.
-                $i = is_int($jumpTo) && $jumpTo > $i ? $jumpTo + 1 : $i + 1;
-            }
-
-            if ($name === null || !is_int($namePtr) || !is_int($end)) {
-                return null;
-            }
-
-            $hooks[] = [
-                'name' => $name,
-                'start' => $start,
-                'end' => $end,
-                'namePtr' => $namePtr,
-                'hasBody' => $afterArrow || $tokens[$end]['code'] !== T_SEMICOLON,
-            ];
-            $i = $end + 1;
-        }
-    }
-
-    /**
      * Check whether there's a comment in the hook list outside the hooks themselves.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $opener The position of the hook list's opening brace.
      * @param int $closer The position of the hook list's closing brace.
-     * @param list<array{name: string, start: int, end: int, namePtr: int, hasBody: bool}> $hooks The hooks.
+     * @param list<array{name: string, start: int, end: int, namePtr: int, hasBody: bool, arrowPtr: int|null,
+     *     bodyOpener: int|null}> $hooks The hooks.
      * @return bool True if there's a comment between, before or after the hooks.
      */
     private function hasCommentBetweenHooks(File $phpcsFile, int $opener, int $closer, array $hooks): bool
