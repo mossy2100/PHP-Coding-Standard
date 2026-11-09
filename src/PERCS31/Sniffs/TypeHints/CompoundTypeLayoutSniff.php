@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\TypeHints;
 
+use PERCS31\Helpers\LayoutHelper;
 use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
@@ -282,9 +283,7 @@ class CompoundTypeLayoutSniff implements Sniff
 
         // The new line takes the indentation of the line the symbol is on.
         $tokens = $phpcsFile->getTokens();
-        $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $symbol, true);
-        $column = $firstOnLine === false ? 1 : $tokens[$firstOnLine]['column'];
-        $break = $phpcsFile->eolChar . str_repeat(' ', ($column - 1));
+        $break = $phpcsFile->eolChar . str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $symbol));
 
         if ($tokens[($symbol - 1)]['code'] === T_WHITESPACE) {
             $phpcsFile->fixer->replaceToken(($symbol - 1), $break);

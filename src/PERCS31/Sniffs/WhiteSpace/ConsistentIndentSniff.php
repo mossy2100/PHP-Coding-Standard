@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\WhiteSpace;
 
+use PERCS31\Helpers\LayoutHelper;
 use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
@@ -144,7 +145,7 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
         // statement before it, exactly.
         $found = strlen($tokens[$stackPtr]['content']);
         if ($this->isDeadCodeInSwitch($phpcsFile, $next)) {
-            $expected = $this->findLineIndent($phpcsFile, $this->findStatementStart($phpcsFile, $previous));
+            $expected = LayoutHelper::lineIndent($phpcsFile, $this->findStatementStart($phpcsFile, $previous));
             if ($found !== $expected) {
                 $this->reportIndent($phpcsFile, $next, $expected, $found);
             }
@@ -353,7 +354,7 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
             return;
         }
 
-        $expected = $this->findLineIndent($phpcsFile, $arrowPtr) + 4;
+        $expected = LayoutHelper::lineIndent($phpcsFile, $arrowPtr) + LayoutHelper::INDENT;
         $found = $tokens[$value]['column'] - 1;
         if ($found !== $expected) {
             $this->reportIndent($phpcsFile, $value, $expected, $found);
@@ -408,7 +409,7 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
             return;
         }
 
-        $expected = $this->findLineIndent($phpcsFile, $openerPtr) + 4;
+        $expected = LayoutHelper::lineIndent($phpcsFile, $openerPtr) + LayoutHelper::INDENT;
         for ($i = ($openerPtr + 1); $i < $closer; $i++) {
             $isLineStart = $tokens[$i]['line'] !== $tokens[($i - 1)]['line'] || $tokens[($i - 1)]['column'] === 1
                 && $tokens[($i - 1)]['code'] === T_WHITESPACE && $tokens[($i - 1)]['line'] === $tokens[$i]['line'];
@@ -421,20 +422,6 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
                 $this->reportIndent($phpcsFile, $i, $expected, $found);
             }
         }
-    }
-
-    /**
-     * Find the indentation of the line a token is on.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $ptr The position of the token.
-     * @return int The number of spaces before the line's first code.
-     */
-    private function findLineIndent(File $phpcsFile, int $ptr): int
-    {
-        $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $ptr, true);
-
-        return ($firstOnLine === false ? 1 : $phpcsFile->getTokens()[$firstOnLine]['column']) - 1;
     }
 
     /**

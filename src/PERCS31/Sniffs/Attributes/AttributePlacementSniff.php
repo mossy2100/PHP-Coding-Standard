@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\Attributes;
 
 use PERCS31\Helpers\AttributeHelper;
+use PERCS31\Helpers\LayoutHelper;
 use PERCS31\Helpers\PropertyHookHelper;
 use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
@@ -187,9 +188,7 @@ class AttributePlacementSniff implements Sniff
         }
 
         // Indent the target as the first token on the attribute's line is indented.
-        $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $stackPtr, true);
-        assert(is_int($firstOnLine));
-        $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1));
+        $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $stackPtr));
         $phpcsFile->fixer->replaceToken($nextPtr, $phpcsFile->eolChar . $indent);
     }
 
@@ -215,10 +214,8 @@ class AttributePlacementSniff implements Sniff
 
         $tokens = $phpcsFile->getTokens();
         $closer = $tokens[$opener]['parenthesis_closer'];
-        $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $opener, true);
-        assert(is_int($firstOnLine));
-        $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1));
-        $itemIndent = $phpcsFile->eolChar . $indent . '    ';
+        $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $opener));
+        $itemIndent = $phpcsFile->eolChar . $indent . str_repeat(' ', LayoutHelper::INDENT);
 
         // The commas between items, skipping anything nested in brackets, braces or attributes.
         $commas = [];
@@ -270,7 +267,7 @@ class AttributePlacementSniff implements Sniff
             $tokens = $phpcsFile->getTokens();
             $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $stackPtr, true);
             assert(is_int($firstOnLine));
-            $extra = $tokens[$firstOnLine]['code'] === T_ATTRIBUTE ? 0 : 4;
+            $extra = $tokens[$firstOnLine]['code'] === T_ATTRIBUTE ? 0 : LayoutHelper::INDENT;
             $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1 + $extra));
             $this->setSpacing($phpcsFile, $closerPtr, $targetPtr, $phpcsFile->eolChar . $indent);
         }
@@ -446,9 +443,7 @@ class AttributePlacementSniff implements Sniff
     private function processAnonClass(File $phpcsFile, int $newPtr, int $anonClassPtr): void
     {
         $tokens = $phpcsFile->getTokens();
-        $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $newPtr, true);
-        assert(is_int($firstOnLine));
-        $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1 + 4));
+        $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $newPtr) + LayoutHelper::INDENT);
 
         // The attribute blocks, and whether each starts a line at the right indent, as `class` must.
         $blocks = [];

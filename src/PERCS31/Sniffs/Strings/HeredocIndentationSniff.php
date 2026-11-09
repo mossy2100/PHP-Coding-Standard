@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Strings;
 
+use PERCS31\Helpers\LayoutHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -31,11 +32,6 @@ class HeredocIndentationSniff implements Sniff
     public const string CODE_INDENT = 'Indent';
 
     public const string CODE_NOT_ON_CONTEXT_LINE = 'NotOnContextLine';
-
-    /**
-     * The number of spaces in one indent.
-     */
-    private const int INDENT = 4;
 
     /**
      * Tokens that a heredoc or nowdoc may follow on an earlier line: the start of a list item or a statement.
@@ -81,7 +77,7 @@ class HeredocIndentationSniff implements Sniff
             return;
         }
 
-        $expected = $tokens[$firstOnLine]['column'] - 1 + self::INDENT;
+        $expected = $tokens[$firstOnLine]['column'] - 1 + LayoutHelper::INDENT;
         $endContent = $tokens[$end]['content'];
         $found = strlen($endContent) - strlen(ltrim($endContent, ' '));
         if ($found === $expected) {

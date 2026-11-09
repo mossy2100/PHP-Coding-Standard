@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Formatting;
 
+use PERCS31\Helpers\LayoutHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -22,11 +23,6 @@ use PHP_CodeSniffer\Util\Tokens;
 class MethodChainingSniff implements Sniff
 {
     public const string CODE_FIRST_METHOD_ON_SAME_LINE = 'FirstMethodOnSameLine';
-
-    /**
-     * The number of spaces in one indent.
-     */
-    private const int INDENT = 4;
 
     /**
      * The object operators that link a chain.
@@ -159,9 +155,10 @@ class MethodChainingSniff implements Sniff
         // Indent once past the line the statement starts on, as PEAR.WhiteSpace.ObjectOperatorIndent expects.
         $tokens = $phpcsFile->getTokens();
         $start = $phpcsFile->findStartOfStatement($operator);
-        $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $start, true);
-        $column = $firstOnLine === false ? 1 : $tokens[$firstOnLine]['column'];
-        $break = $phpcsFile->eolChar . str_repeat(' ', ($column - 1 + self::INDENT));
+        $break = $phpcsFile->eolChar . str_repeat(
+            ' ',
+            LayoutHelper::lineIndent($phpcsFile, $start) + LayoutHelper::INDENT,
+        );
 
         if ($tokens[($operator - 1)]['code'] === T_WHITESPACE) {
             $phpcsFile->fixer->replaceToken(($operator - 1), $break);

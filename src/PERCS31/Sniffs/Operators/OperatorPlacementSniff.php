@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Operators;
 
+use PERCS31\Helpers\LayoutHelper;
 use PERCS31\Helpers\OperatorHelper;
 use PERCS31\Helpers\PropertyHookHelper;
 use PERCS31\Helpers\TokenHelper;
@@ -57,11 +58,6 @@ class OperatorPlacementSniff implements Sniff
      * once past the line with the opening parenthesis. Section 5 only says "at least once", so it's off by default.
      */
     public bool $requireExactConditionIndent = false;
-
-    /**
-     * The number of spaces in one indent.
-     */
-    private const int INDENT = 4;
 
     /**
      * Control structures whose condition PSR12.ControlStructures.BooleanOperatorPlacement checks.
@@ -278,7 +274,7 @@ class OperatorPlacementSniff implements Sniff
             return;
         }
 
-        $expected = $this->findLineIndent($phpcsFile, $start) + self::INDENT;
+        $expected = LayoutHelper::lineIndent($phpcsFile, $start) + LayoutHelper::INDENT;
         $found = $tokens[$stackPtr]['column'] - 1;
         if ($found === $expected) {
             return;
@@ -303,7 +299,7 @@ class OperatorPlacementSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
         $found = $tokens[$stackPtr]['column'] - 1;
-        $minimum = $this->findLineIndent($phpcsFile, $opener) + self::INDENT;
+        $minimum = LayoutHelper::lineIndent($phpcsFile, $opener) + LayoutHelper::INDENT;
         if (!$this->requireExactConditionIndent) {
             if ($found < $minimum) {
                 $error = 'A line starting with operator "%s" in a condition must be indented at least once past the '
@@ -326,7 +322,7 @@ class OperatorPlacementSniff implements Sniff
 
         // Any other operator is indented once past the line its operand starts on, after a boolean operator or the (.
         $start = $this->findOperandStart($phpcsFile, $stackPtr, $opener);
-        $expected = $this->findLineIndent($phpcsFile, $start) + self::INDENT;
+        $expected = LayoutHelper::lineIndent($phpcsFile, $start) + LayoutHelper::INDENT;
         if ($found !== $expected) {
             $error = 'A line starting with operator "%s" must be indented once past the line its expression starts on; '
                 . 'expected %s spaces, found %s';
@@ -354,20 +350,6 @@ class OperatorPlacementSniff implements Sniff
         $start = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), $stackPtr, true);
 
         return $start === false ? $stackPtr : $start;
-    }
-
-    /**
-     * Find the indentation of the line a token is on.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $ptr The position of the token.
-     * @return int The number of spaces before the line's first token.
-     */
-    private function findLineIndent(File $phpcsFile, int $ptr): int
-    {
-        $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $ptr, true);
-
-        return ($firstOnLine === false ? 1 : $phpcsFile->getTokens()[$firstOnLine]['column']) - 1;
     }
 
     /**

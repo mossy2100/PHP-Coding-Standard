@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\ControlStructures;
 
+use PERCS31\Helpers\LayoutHelper;
 use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
@@ -90,9 +91,7 @@ class MatchArmPlacementSniff implements Sniff
             return;
         }
 
-        $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $comma, true);
-        assert(is_int($firstOnLine));
-        $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1));
+        $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $comma));
         $phpcsFile->fixer->beginChangeset();
         for ($i = ($comma + 1); $i < $next; $i++) {
             $phpcsFile->fixer->replaceToken($i, '');

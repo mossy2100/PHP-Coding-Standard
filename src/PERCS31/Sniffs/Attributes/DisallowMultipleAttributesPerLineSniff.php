@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\Attributes;
 
 use PERCS31\Helpers\AttributeHelper;
+use PERCS31\Helpers\LayoutHelper;
 use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
@@ -68,7 +69,7 @@ class DisallowMultipleAttributesPerLineSniff extends SlevomatSniff
             $phpcsFile->fixer->replaceToken($i, '');
         }
 
-        $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1 + ($isContinued ? 4 : 0)));
+        $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1 + ($isContinued ? LayoutHelper::INDENT : 0)));
         $phpcsFile->fixer->addContent($closerPtr, $phpcsFile->eolChar . $indent);
         $phpcsFile->fixer->endChangeset();
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Classes;
 
+use PERCS31\Helpers\LayoutHelper;
 use PERCS31\Helpers\PropertyHookHelper;
 use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
@@ -63,11 +64,6 @@ class PropertyHookLayoutSniff implements Sniff
     public const string CODE_HOOK_CLOSER_NOT_ON_OWN_LINE = 'HookCloserNotOnOwnLine';
 
     public const string CODE_SPACE_BEFORE_HOOK_BRACE = 'SpaceBeforeHookBrace';
-
-    /**
-     * The spaces per indent level the fixes use. PERCS31.WhiteSpace.ScopeIndent checks the result.
-     */
-    private const int INDENT = 4;
 
     /**
      * Whether to report whitespace between a by-reference hook's `&` and its name, e.g. `& get`. PER says nothing
@@ -278,9 +274,7 @@ class PropertyHookLayoutSniff implements Sniff
             if (isset(Tokens::COMMENT_TOKENS[$tokens[$previous]['code']])) {
                 $phpcsFile->addError($error, $closer, self::CODE_CLOSER_NOT_ON_OWN_LINE);
             } elseif ($phpcsFile->addFixableError($error, $closer, self::CODE_CLOSER_NOT_ON_OWN_LINE)) {
-                $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $opener, true);
-                assert(is_int($firstOnLine));
-                $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1));
+                $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $opener));
                 $this->setSpacing($phpcsFile, $previous, $closer, $phpcsFile->eolChar . $indent);
             }
         }
@@ -425,7 +419,6 @@ class PropertyHookLayoutSniff implements Sniff
      */
     private function checkHookBodies(File $phpcsFile, int $opener, int $closer): bool
     {
-        $tokens = $phpcsFile->getTokens();
         // Where a hook can end, so another can start: the list's opening brace, a `;`, or a body's closing brace.
         $hooks = PropertyHookHelper::parseHooks($phpcsFile, $opener, $closer) ?? [];
         $boundaries = [$opener, ...array_column($hooks, 'end')];
@@ -436,9 +429,7 @@ class PropertyHookLayoutSniff implements Sniff
             return false;
         }
 
-        $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $opener, true);
-        assert(is_int($firstOnLine));
-        $hookIndent = $tokens[$firstOnLine]['column'] - 1 + self::INDENT;
+        $hookIndent = LayoutHelper::lineIndent($phpcsFile, $opener) + LayoutHelper::INDENT;
 
         foreach ($boundaries as $boundary) {
             $this->checkHookStart($phpcsFile, $boundary, $closer, $hookIndent);
@@ -533,7 +524,7 @@ class PropertyHookLayoutSniff implements Sniff
             if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($bodyOpener + 1), $first) !== false) {
                 $phpcsFile->addError($error, $first, self::CODE_HOOK_BODY_NOT_ON_NEW_LINE);
             } elseif ($phpcsFile->addFixableError($error, $first, self::CODE_HOOK_BODY_NOT_ON_NEW_LINE)) {
-                $indent = str_repeat(' ', ($hookIndent + self::INDENT));
+                $indent = str_repeat(' ', ($hookIndent + LayoutHelper::INDENT));
                 $this->setSpacing($phpcsFile, $bodyOpener, $first, $phpcsFile->eolChar . $indent);
             }
         }

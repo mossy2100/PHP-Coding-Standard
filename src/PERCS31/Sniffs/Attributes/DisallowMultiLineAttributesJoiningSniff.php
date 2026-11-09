@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Attributes;
 
+use PERCS31\Helpers\LayoutHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -70,9 +71,7 @@ class DisallowMultiLineAttributesJoiningSniff implements Sniff
             return;
         }
 
-        $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $stackPtr, true);
-        assert(is_int($firstOnLine));
-        $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1));
+        $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $stackPtr));
         $blocks = array_map(static fn(string $attribute): string => '#[' . $attribute . ']', $attributes);
 
         $phpcsFile->fixer->beginChangeset();
