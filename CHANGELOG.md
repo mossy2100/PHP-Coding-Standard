@@ -209,7 +209,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `Squiz.WhiteSpace.OperatorSpacing`. It requires at least one space around a binary operator, and adds the pipe
   operator `|>`. The Jumbo standard requires exactly one, as before, and now also around `&&`, `||`, `and`, `or`, `xor`
   and `.`, e.g. `$a  &&  $b` is now an error. Auto-fixable. The `|` in a multi-catch is a union type, so it must have no
-  spaces, e.g. `catch (A|B $e)`, as PER Coding Style 3.1 requires; PSR-12's sniff required them. `$x=&$a`, which
+  spaces, e.g. `catch (A|B $e)`, as PER Coding Style 3.1 requires; PSR-12's sniff required them. That's checked by
+  `PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing`. `$x=&$a`, which
   PSR-12's sniff skips, is also an error now.
 - **`orderHooksWithBodies` on `PERCS31.Classes.PropertyDeclaration`.** `HookOrder` only checks a hook list with no
   bodies by default, as PER Coding Style 3.1 only sets the order of an abstract or interface property's hooks. The Jumbo

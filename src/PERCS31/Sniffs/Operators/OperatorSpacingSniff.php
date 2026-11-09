@@ -23,8 +23,8 @@ use PHP_CodeSniffer\Util\Tokens;
  * report more than one space, so only a missing space is reported. A standard that wants exactly one space, as
  * Jumbo does, turns them back on.
  *
- * The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operator. Section 2.5 says the union symbol
- * MUST NOT have a space either side, so this sniff reports one there instead.
+ * The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operator, so it's skipped. Section 2.5 says
+ * the union symbol MUST NOT have a space either side, which PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing checks.
  *
  * The `&` of a by-reference hook, e.g. `&get => $this->items;`, isn't an operator either, so it's skipped. So are the
  * `|`, `&` and `?` of a `set` hook's parameter type, e.g. `set(int|string $value)`, which PHP_CodeSniffer reads as
@@ -50,8 +50,6 @@ use PHP_CodeSniffer\Util\Tokens;
  */
 class OperatorSpacingSniff extends SquizSniff
 {
-    public const string CODE_CATCH_UNION_SPACING = 'CatchUnionSpacing';
-
     /**
      * Whether to check the `=` of a parameter's default value.
      */
@@ -94,7 +92,6 @@ class OperatorSpacingSniff extends SquizSniff
         }
 
         if ($this->isCatchUnion($phpcsFile, $stackPtr)) {
-            $this->checkCatchUnion($phpcsFile, $stackPtr);
             return null;
         }
 
@@ -170,41 +167,5 @@ class OperatorSpacingSniff extends SquizSniff
         $owner = $tokens[$opener]['parenthesis_owner'] ?? null;
 
         return is_int($owner) && $tokens[$owner]['code'] === T_CATCH;
-    }
-
-    /**
-     * Report whitespace either side of a multi-catch's `|`, and fix it by removing it.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $stackPtr The position of the `|`.
-     */
-    private function checkCatchUnion(File $phpcsFile, int $stackPtr): void
-    {
-        $tokens = $phpcsFile->getTokens();
-        $before = $tokens[($stackPtr - 1)]['code'] === T_WHITESPACE;
-        $after = $tokens[($stackPtr + 1)]['code'] === T_WHITESPACE;
-        if (!$before && !$after) {
-            return;
-        }
-
-        $fix = $phpcsFile->addFixableError(
-            'There must be no space around the "|" between the types in a multi-catch',
-            $stackPtr,
-            self::CODE_CATCH_UNION_SPACING,
-        );
-        if (!$fix) {
-            return;
-        }
-
-        $phpcsFile->fixer->beginChangeset();
-        if ($before) {
-            $phpcsFile->fixer->replaceToken(($stackPtr - 1), '');
-        }
-
-        if ($after) {
-            $phpcsFile->fixer->replaceToken(($stackPtr + 1), '');
-        }
-
-        $phpcsFile->fixer->endChangeset();
     }
 }

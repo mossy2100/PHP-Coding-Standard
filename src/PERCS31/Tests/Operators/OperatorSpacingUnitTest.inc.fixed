@@ -16,12 +16,12 @@ $a = $b && $c;
 $a = $b . $c;
 $a = $b or $c;
 
-// A multi-catch's | is a union type: no spaces (PER Coding Style 3.1, section 2.5).
+// A multi-catch's | is a union type, not an operator, so it isn't checked here.
 try {
     foo();
 } catch (FirstException|SecondException $e) {
     bar();
-} catch (ThirdException|FourthException $e) {
+} catch (ThirdException | FourthException $e) {
     bar();
 }
 

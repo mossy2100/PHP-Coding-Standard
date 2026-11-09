@@ -159,6 +159,13 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
   `T|null`, which SHOULD be `?T`. Its check for spaces around `|` and `&` is replaced by
   [`PERCS31.TypeHints.CompoundTypeOperatorSpacing`](#percs31typehintscompoundtypeoperatorspacing), which allows a split type.
 
+### PhpCollective
+
+Reference: [php-collective/code-sniffer repository and documentation](https://github.com/php-collective/code-sniffer)
+
+- **PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing**: Disallows a space around the `|` between a multi-catch's
+  types, e.g. `catch (A | B $e)` (2.5). A `|` at the start or end of a line is reported but not fixed.
+
 ---
 
 ## Custom Sniffs
@@ -1701,8 +1708,9 @@ The `=` of a parameter's default value is a binary operator too, so `int $a    =
 `SpaceBeforeEquals` and `SpaceAfterEquals` codes, and this sniff checks the `=` instead. Set `checkDefaultValues` to
 `false` to leave it to that sniff, as the Jumbo standard does.
 
-The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operator, so it gets the opposite rule:
-[Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the union symbol MUST NOT have a space either side. The parent would require one.
+The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operator, so it's skipped.
+[Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the union symbol MUST NOT have a space either side, which
+`PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing` checks. The parent would require one.
 
 The `&` of a by-reference hook, e.g. `&get => $this->items;`, isn't an operator either, so it's skipped, here and by
 `PERCS31.Operators.OperatorPlacement`. So are the `|`, `&` and `?` of a `set` hook's parameter type, e.g.

@@ -242,6 +242,9 @@
     <!-- A structure's body in braces, not the alternative syntax, e.g. if (): ... endif; (5) -->
     <rule ref="Universal.ControlStructures.DisallowAlternativeSyntax"/>
 
+    <!-- No space around the | between a multi-catch's types, as union types have none (2.5) -->
+    <rule ref="PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing"/>
+
     <!-- A control structure's parentheses, without PSR-12's rules for a multi-line foreach (5, 5.5) -->
     <rule ref="PERCS31.ControlStructures.ControlStructureSpacing"/>
 
