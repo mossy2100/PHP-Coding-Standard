@@ -30,6 +30,10 @@ use PHP_CodeSniffer\Util\Tokens;
  * except where explicitly forbidden, so the PERCS31 ruleset excludes those codes, and this sniff checks code on the
  * line itself. Set checkBlankLineAfterLabel to report a blank line straight after a label, as the Jumbo standard does.
  *
+ * To find a terminating statement nested in if/else, try/catch or another switch, it calls the parent's private
+ * findNestedTerminator() through Closure::bind, rather than copying it. After a PHP_CodeSniffer upgrade, check that
+ * the method still exists with the same signature, as a private method can change without notice.
+ *
  * Everything else is left to the parent.
  */
 class SwitchDeclarationSniff extends Psr2Sniff
