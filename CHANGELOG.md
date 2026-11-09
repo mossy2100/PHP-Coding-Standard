@@ -309,6 +309,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   promoted constructor parameter. They skip a function with one, and check everything else as before.
 - **`Squiz.WhiteSpace.ObjectOperatorSpacing` (breaking).** Disallows spaces around `->`, `?->` and `::`, e.g.
   `$a -> b()` or `Foo :: bar()`. A line break before one, in a wrapped method chain, is allowed. Auto-fixable.
+- **`PERCS31.Classes.ClosingBrace` (breaking).** Replaces `PSR12.Classes.ClosingBrace`, and also reports a comment
+  after an anonymous class's closing brace on the same line, e.g. `}; // Comment`, as PER Coding Style 3.1, section 4,
+  covers all classes. A phpcs annotation is allowed. Not auto-fixable.
 
 ### Changed
 

@@ -51,6 +51,7 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   `||` in a condition starts the line (5.1, 6.4). PSR-12 only requires consistency.
 - **PSR12.ControlStructures.ControlStructureSpacing**, by [`PERCS31.ControlStructures.ControlStructureSpacing`](#percs31controlstructurescontrolstructurespacing), which
   drops its rules for a multi-line `foreach`.
+- **PSR12.Classes.ClosingBrace**, by [`PERCS31.Classes.ClosingBrace`](#percs31classesclosingbrace), which also checks an anonymous class.
 - **PSR12.Files.DeclareStatement**, by [`PERCS31.Files.DeclareStatement`](#percs31filesdeclarestatement), which accepts a declare statement with several
   directives, such as `declare(ticks=1,strict_types=1);`, or a string value, such as `declare(encoding='UTF-8');`.
 - **PSR12.Files.FileHeader**, by [`PERCS31.Files.FileHeader`](#percs31filesfileheader), which allows `<?php declare(strict_types=1) ?>` on the
@@ -183,6 +184,7 @@ section gives the reason.
 | `PERCS31.Attributes.DisallowMultipleAttributesPerLine` | Separate attribute blocks on separate lines                         | Yes     |
 | `PERCS31.Classes.ClassDeclaration`                      | Class declarations, allowing an empty body as `{}`                  | Yes     |
 | `PERCS31.Classes.ClassInstantiationNoBrackets`          | A warning for `(new Foo())->bar()`                                  | Yes     |
+| `PERCS31.Classes.ClosingBrace`                          | No comment or statement after a class's `}`, including an anonymous | No      |
 | `PERCS31.Classes.EnumMemberVisibility`                  | `private`, not `protected`, for a method or constant in an enum     | Yes     |
 | `PERCS31.Classes.PromotedPropertyHooks`                 | A hook on a promoted parameter is a single short hook on one line   | No      |
 | `PERCS31.Classes.PropertyDeclaration`                   | No leading `_`, no `var`, a visibility, and `get` before `set`      | Partly  |
@@ -568,6 +570,37 @@ $fallback = ($cached ?: new Calculator())->add(1, 2);
 
 ```php
 $total = (new Calculator())->add(1, 2);
+```
+
+---
+
+### PERCS31.Classes.ClosingBrace
+
+Disallows a comment or statement after the closing brace of a class or function, including an anonymous class. This
+replaces `PSR12.Classes.ClosingBrace`.
+
+**Why:** [PER Coding Style 3.1, Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says any closing brace MUST NOT be followed by any comment or statement on the
+same line, and that "class" refers to all classes. The PSR-12 sniff doesn't check an anonymous class. An anonymous
+class's `}` is part of an expression, so what completes it may follow, as in `};` or `});`. Only a comment after it is
+reported, as a statement after the `;` is left to [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements). A phpcs annotation is
+allowed, as it only works on that line.
+
+**Auto-fixable:** no.
+
+**Good:**
+
+```php
+$handler = new class {
+    public int $count = 0;
+};
+```
+
+**Bad:**
+
+```php
+$handler = new class {
+    public int $count = 0;
+}; // Counts calls.
 ```
 
 ---

@@ -17,6 +17,8 @@
         <exclude name="Squiz.WhiteSpace.ScopeClosingBrace"/>
         <!-- Replaced by a PERCS31 version with the switch rules (5.2) -->
         <exclude name="PSR2.ControlStructures.SwitchDeclaration"/>
+        <!-- Replaced by a PERCS31 version that also checks an anonymous class (4) -->
+        <exclude name="PSR12.Classes.ClosingBrace"/>
         <!-- Replaced by a PERCS31 version that also covers the pipe operator |> (6.2) -->
         <exclude name="PSR12.Operators.OperatorSpacing"/>
         <!-- Replaced by a PERCS31 version that also warns, at a lower severity, over 80 characters (2.3) -->
@@ -166,6 +168,9 @@
     <rule ref="PERCS31.Files.DeclareStatement"/>
 
     <!-- ====== CLASSES, PROPERTIES AND CONSTANTS (4) ====== -->
+
+    <!-- No comment or statement after a class's or function's closing brace, including an anonymous class's (4) -->
+    <rule ref="PERCS31.Classes.ClosingBrace"/>
 
     <!-- A warning for new Foo() wrapped in parentheses before ->, ?-> or :: (4) -->
     <rule ref="PERCS31.Classes.ClassInstantiationNoBrackets"/>
