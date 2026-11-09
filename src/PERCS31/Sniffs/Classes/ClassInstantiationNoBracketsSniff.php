@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Classes;
 
+use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -42,22 +43,6 @@ class ClassInstantiationNoBracketsSniff implements Sniff
         T_LIST,
         T_USE,
         T_DECLARE,
-    ];
-
-    /**
-     * Tokens that can make up the class reference in a `new` expression, before its argument list.
-     *
-     * @var list<int|string>
-     */
-    private const array CLASS_REFERENCE = [
-        T_STRING,
-        T_NAME_QUALIFIED,
-        T_NAME_FULLY_QUALIFIED,
-        T_NAME_RELATIVE,
-        T_VARIABLE,
-        T_SELF,
-        T_STATIC,
-        T_PARENT,
     ];
 
     /**
@@ -102,7 +87,7 @@ class ClassInstantiationNoBracketsSniff implements Sniff
         }
 
         // The parentheses must hold just the `new` expression.
-        $end = $this->findNewExpressionEnd($phpcsFile, $newPtr, $closer);
+        $end = TokenHelper::findNewExpressionEnd($phpcsFile, $newPtr, $closer);
         if ($end === null || $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($end + 1), null, true) !== $closer) {
             return;
         }
@@ -139,43 +124,5 @@ class ClassInstantiationNoBracketsSniff implements Sniff
         }
 
         $phpcsFile->fixer->endChangeset();
-    }
-
-    /**
-     * Find the last token of a `new` expression: its argument list's `)`, or an anonymous class's `}`.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $newPtr The position of `new`.
-     * @param int $limit The position of the wrapping `)`, which the expression must end before.
-     * @return int|null The position, or null if there's no argument list or the class reference isn't simple.
-     */
-    private function findNewExpressionEnd(File $phpcsFile, int $newPtr, int $limit): ?int
-    {
-        $tokens = $phpcsFile->getTokens();
-        $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($newPtr + 1), $limit, true);
-        if ($next === false) {
-            return null;
-        }
-
-        if ($tokens[$next]['code'] === T_ANON_CLASS) {
-            $end = $tokens[$next]['scope_closer'] ?? null;
-
-            return is_int($end) && $end < $limit ? $end : null;
-        }
-
-        for ($i = $next; $i < $limit; $i++) {
-            $code = $tokens[$i]['code'];
-            if ($code === T_OPEN_PARENTHESIS) {
-                $end = $tokens[$i]['parenthesis_closer'] ?? null;
-
-                return is_int($end) && $end < $limit ? $end : null;
-            }
-
-            if (!in_array($code, self::CLASS_REFERENCE, true) && !isset(Tokens::EMPTY_TOKENS[$code])) {
-                return null;
-            }
-        }
-
-        return null;
     }
 }

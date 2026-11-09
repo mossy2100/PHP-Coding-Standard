@@ -5,12 +5,30 @@ declare(strict_types=1);
 namespace PERCS31\Helpers;
 
 use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Helper class for moving between brackets: a bracket's partner, and the bracket a token is inside.
+ * Helper class for moving between tokens: a bracket's partner, the bracket a token is inside, and the end of a `new`
+ * expression.
  */
 class TokenHelper
 {
+    /**
+     * Tokens that can name the class in a `new` expression.
+     *
+     * @var list<int|string>
+     */
+    private const array CLASS_REFERENCE = [
+        T_STRING,
+        T_NAME_QUALIFIED,
+        T_NAME_FULLY_QUALIFIED,
+        T_NAME_RELATIVE,
+        T_VARIABLE,
+        T_SELF,
+        T_STATIC,
+        T_PARENT,
+    ];
+
     /**
      * Find the closer that matches an opening parenthesis, bracket, brace or attribute.
      *
@@ -67,6 +85,46 @@ class TokenHelper
             $opener = self::findOpener($tokens[$i]) ?? $tokens[$i]['scope_opener'] ?? null;
             if (is_int($opener) && $opener < $i) {
                 $i = $opener;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Find the last token of a `new` expression: its argument list's `)`, or an anonymous class's `}`.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $newPtr The position of `new`.
+     * @param int|null $limit A position the expression must end before, or null for the end of the file.
+     * @return int|null The position, or null if there's no argument list, the class reference isn't simple, or it
+     *     ends at or after the limit.
+     */
+    public static function findNewExpressionEnd(File $phpcsFile, int $newPtr, ?int $limit = null): ?int
+    {
+        $tokens = $phpcsFile->getTokens();
+        $limit ??= $phpcsFile->numTokens;
+        $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($newPtr + 1), $limit, true);
+        if ($next === false) {
+            return null;
+        }
+
+        if ($tokens[$next]['code'] === T_ANON_CLASS) {
+            $end = $tokens[$next]['scope_closer'] ?? null;
+
+            return is_int($end) && $end < $limit ? $end : null;
+        }
+
+        for ($i = $next; $i < $limit; $i++) {
+            $code = $tokens[$i]['code'];
+            if ($code === T_OPEN_PARENTHESIS) {
+                $end = $tokens[$i]['parenthesis_closer'] ?? null;
+
+                return is_int($end) && $end < $limit ? $end : null;
+            }
+
+            if (!in_array($code, self::CLASS_REFERENCE, true) && !isset(Tokens::EMPTY_TOKENS[$code])) {
+                return null;
             }
         }
 

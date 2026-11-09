@@ -160,7 +160,7 @@ class RequireCloneParenthesesSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
         if ($tokens[$start]['code'] === T_NEW) {
-            $end = $this->findNewEnd($phpcsFile, $start);
+            $end = TokenHelper::findNewExpressionEnd($phpcsFile, $start);
         } elseif (in_array($tokens[$start]['code'], self::OPERAND_START, true)) {
             $end = $start;
         } else {
@@ -189,40 +189,5 @@ class RequireCloneParenthesesSniff implements Sniff
         }
 
         return null;
-    }
-
-    /**
-     * Find the last token of a `new` expression: its argument list's `)`, or an anonymous class's `}`.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $newPtr The position of `new`.
-     * @return int|null The position, or null if there's no argument list or the class reference isn't simple.
-     */
-    private function findNewEnd(File $phpcsFile, int $newPtr): ?int
-    {
-        $tokens = $phpcsFile->getTokens();
-        $class = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($newPtr + 1), null, true);
-        if ($class === false) {
-            return null;
-        }
-
-        if ($tokens[$class]['code'] === T_ANON_CLASS) {
-            $closer = $tokens[$class]['scope_closer'] ?? null;
-
-            return is_int($closer) ? $closer : null;
-        }
-
-        if (!in_array($tokens[$class]['code'], self::OPERAND_START, true)) {
-            return null;
-        }
-
-        $opener = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($class + 1), null, true);
-        if ($opener === false || $tokens[$opener]['code'] !== T_OPEN_PARENTHESIS) {
-            return null;
-        }
-
-        $closer = $tokens[$opener]['parenthesis_closer'] ?? null;
-
-        return is_int($closer) ? $closer : null;
     }
 }
