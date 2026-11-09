@@ -41,32 +41,32 @@ PERCS31 is installed with the `mossy2100/coding-standard` package, and registere
 
 The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included. These PSR-12 sniffs are replaced by PERCS31 versions:
 
-- **PSR2.Classes.PropertyDeclaration** and **Generic.WhiteSpace.ScopeIndent**, by [`PERCS31.Classes.PropertyDeclaration`](#percs31classespropertydeclaration)
-  and [`PERCS31.WhiteSpace.ScopeIndent`](#percs31whitespacescopeindent), which support property hooks (PHP 8.4).
-- **PSR12.ControlStructures.ControlStructureSpacing**, by [`PERCS31.ControlStructures.ControlStructureSpacing`](#percs31controlstructurescontrolstructurespacing), which
-  drops its rules for a multi-line `foreach`.
-- **Generic.Formatting.DisallowMultipleStatements**, by [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements), which allows
-  `{ get; set; }` on an abstract or interface property.
-- **PSR2.Classes.ClassDeclaration**, **Squiz.Functions.MultiLineFunctionDeclaration** and
-  **Squiz.WhiteSpace.ScopeClosingBrace**, by versions that allow an empty body as `{}`. See
-  [`PERCS31.Formatting.EmptyBody`](#percs31formattingemptybody).
 - **Generic.Files.LineLength**, by [`PERCS31.Files.LineLength`](#percs31fileslinelength), which also warns, at a lower severity, about a line over
   80 characters.
+- **Generic.Formatting.DisallowMultipleStatements**, by [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements), which allows
+  `{ get; set; }` on an abstract or interface property.
 - **Generic.NamingConventions.UpperCaseConstantName**, from PSR-1, by [`PERCS31.NamingConventions.UpperCaseConstantName`](#percs31namingconventionsuppercaseconstantname),
   which allows PascalCase for an enum constant.
-- **Squiz.Classes.ValidClassName**, from PSR-1, by [`PERCS31.NamingConventions.ValidClassName`](#percs31namingconventionsvalidclassname), which also reports a run
-  of capitals.
-- **PSR12.Files.FileHeader**, by [`PERCS31.Files.FileHeader`](#percs31filesfileheader), which allows `<?php declare(strict_types=1) ?>` on the
-  first line of a file with markup.
+- **PSR12.ControlStructures.BooleanOperatorPlacement** is kept, with `allowOnly` set to `first`, so a wrapped `&&` or
+  `||` in a condition starts the line (5.1, 6.4). PSR-12 only requires consistency.
+- **PSR12.ControlStructures.ControlStructureSpacing**, by [`PERCS31.ControlStructures.ControlStructureSpacing`](#percs31controlstructurescontrolstructurespacing), which
+  drops its rules for a multi-line `foreach`.
 - **PSR12.Files.DeclareStatement**, by [`PERCS31.Files.DeclareStatement`](#percs31filesdeclarestatement), which accepts a declare statement with several
   directives, such as `declare(ticks=1,strict_types=1);`, or a string value, such as `declare(encoding='UTF-8');`.
-- **PSR2.ControlStructures.SwitchDeclaration**, by [`PERCS31.ControlStructures.SwitchDeclaration`](#percs31controlstructuresswitchdeclaration), which adds PER's
-  `switch` rules.
+- **PSR12.Files.FileHeader**, by [`PERCS31.Files.FileHeader`](#percs31filesfileheader), which allows `<?php declare(strict_types=1) ?>` on the
+  first line of a file with markup.
 - **PSR12.Operators.OperatorSpacing**, by [`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing), which also covers the pipe operator `|>`.
 - **PSR12.Properties.ConstantVisibility** is kept, but a constant with no visibility is an error, not a warning, as
   [Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says MUST.
-- **PSR12.ControlStructures.BooleanOperatorPlacement** is kept, with `allowOnly` set to `first`, so a wrapped `&&` or
-  `||` in a condition starts the line (5.1, 6.4). PSR-12 only requires consistency.
+- **PSR2.Classes.ClassDeclaration**, **Squiz.Functions.MultiLineFunctionDeclaration** and
+  **Squiz.WhiteSpace.ScopeClosingBrace**, by versions that allow an empty body as `{}`. See
+  [`PERCS31.Formatting.EmptyBody`](#percs31formattingemptybody).
+- **PSR2.Classes.PropertyDeclaration** and **Generic.WhiteSpace.ScopeIndent**, by [`PERCS31.Classes.PropertyDeclaration`](#percs31classespropertydeclaration)
+  and [`PERCS31.WhiteSpace.ScopeIndent`](#percs31whitespacescopeindent), which support property hooks (PHP 8.4).
+- **PSR2.ControlStructures.SwitchDeclaration**, by [`PERCS31.ControlStructures.SwitchDeclaration`](#percs31controlstructuresswitchdeclaration), which adds PER's
+  `switch` rules.
+- **Squiz.Classes.ValidClassName**, from PSR-1, by [`PERCS31.NamingConventions.ValidClassName`](#percs31namingconventionsvalidclassname), which also reports a run
+  of capitals.
 
 `PSR2.Methods.FunctionCallSignature.EmptyLine` is excluded, with no replacement. PER says nothing about a blank line
 between a call's arguments, or before its closing parenthesis, so section 2.3 allows both. One before the first argument
@@ -108,25 +108,25 @@ Sniffs from PHP_CodeSniffer's other standards and the two base packages, each fo
 Reference: [PHPCSExtra repository and documentation](https://github.com/PHPCSStandards/PHPCSExtra)
 
 - **Universal.Attributes.BracketSpacing**: Disallows a space after `#[` or before `]`, e.g. `#[ Override ]` (12.1).
+- **Universal.Attributes.DisallowAttributeParentheses**: Disallows `()` on an attribute with no arguments, e.g.
+  `#[Override()]` (12.1).
 - **Universal.Attributes.TrailingComma**: Disallows a trailing comma in an attribute block on one line, and requires one
   in a split block of several attributes (2.6). Its `ForbiddenSingleAttributeMultiLine` code is excluded, as it forbids
   the comma in a split block of one attribute, where 2.6 requires it.
-- **Universal.Attributes.DisallowAttributeParentheses**: Disallows `()` on an attribute with no arguments, e.g.
-  `#[Override()]` (12.1).
 - **Universal.Classes.DisallowAnonClassParentheses**: Disallows `()` on an anonymous class with no arguments, e.g.
   `new class () {}` (8).
+- **Universal.Constants.LowercaseClassResolutionKeyword**: Requires `::class` in lower case (2.5).
 - **Universal.ControlStructures.DisallowAlternativeSyntax**: Disallows the alternative syntax, e.g.
   `if ($a): ... endif;`, as a structure's body must be in braces (5).
-- **Universal.Constants.LowercaseClassResolutionKeyword**: Requires `::class` in lower case (2.5).
 - **Universal.Operators.ConcatPosition**: Requires a wrapped `.` at the start of the line, not the end (6.4).
 - **Universal.PHP.LowercasePHPTag**: Requires the `<?php` tag in lower case (3).
 - **Universal.PHP.RequireExitDieParentheses**: Warns about `exit` or `die` without parentheses, as a SHOULD (4.7).
+- **Universal.UseStatements.LowercaseFunctionConst**: Requires `function` and `const` in lower case in a `use` statement
+  (2.5).
 - **Universal.WhiteSpace.CommaSpacing**: Requires no space before a comma and one after, in an attribute block, e.g.
   `#[Foo, Bar]` (12.3), and in any other list, such as an array, group `use`, `match` conditions or `clone()`, as the
   examples show (3, 5.2, 11). Its codes for parameter, argument, closure `use` and `declare` lists aren't used, as other
   sniffs check those. It also covers lists with no example, such as `echo 1, 2;` and `global $a, $b;`.
-- **Universal.UseStatements.LowercaseFunctionConst**: Requires `function` and `const` in lower case in a `use` statement
-  (2.5).
 
 ### Slevomat
 
@@ -150,9 +150,9 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
   including on promoted properties (4.3, 4.6).
 - **Functions.ArrowFunctionDeclaration**: Requires no space after `fn`, e.g. `fn($x) => $x`. The expression may be on
   the next line (7.1).
-- **Functions.NamedArgumentSpacing**: Requires no space before a named argument's colon, and one after (4.7).
 - **Functions.DisallowTrailingCommaInCall**, **...InClosureUse** and **...InDeclaration**: Disallow a trailing comma in
   a single-line list (2.6).
+- **Functions.NamedArgumentSpacing**: Requires no space before a named argument's colon, and one after (4.7).
 - **Functions.RequireTrailingCommaInCall**, **...InClosureUse** and **...InDeclaration**: Require a trailing comma in a
   multi-line list (2.6).
 - **TypeHints.DNFTypeHintFormat**: Requires no spaces inside the parentheses, and `null` last (2.5). It warns about
@@ -184,9 +184,9 @@ section gives the reason.
 | `PERCS31.Classes.ClassDeclaration`                      | Class declarations, allowing an empty body as `{}`                  | Yes     |
 | `PERCS31.Classes.ClassInstantiationNoBrackets`          | A warning for `(new Foo())->bar()`                                  | Yes     |
 | `PERCS31.Classes.EnumMemberVisibility`                  | `private`, not `protected`, for a method or constant in an enum     | Yes     |
-| `PERCS31.Classes.PropertyHookLayout`                    | A hook list's and hook body's braces, and a short hook's `=>`       | Partly  |
 | `PERCS31.Classes.PromotedPropertyHooks`                 | A hook on a promoted parameter is a single short hook on one line   | No      |
 | `PERCS31.Classes.PropertyDeclaration`                   | No leading `_`, no `var`, a visibility, and `get` before `set`      | Partly  |
+| `PERCS31.Classes.PropertyHookLayout`                    | A hook list's and hook body's braces, and a short hook's `=>`       | Partly  |
 | `PERCS31.ControlStructures.ControlStructureSpacing`     | A control structure's parentheses, with no split rule for `foreach` | Yes     |
 | `PERCS31.ControlStructures.MatchArmPlacement`           | Each `match` arm starts on a new line                               | Yes     |
 | `PERCS31.ControlStructures.MultiLineTernaryOperator`    | A multi-line ternary takes three lines, `?` and `:` leading         | Yes     |
@@ -616,92 +616,6 @@ enum Suit
 
 ---
 
-### PERCS31.Classes.PropertyHookLayout
-
-Checks the layout of a property's hook list: its braces, and the `=>` of a short hook.
-
-**Why:** [PER Coding Style 3.1, Section 4.9](https://www.php-fig.org/per/coding-style/#49-property-hooks) sets the layout of property hooks, and no inherited sniff knows about them.
-This sniff checks:
-
-- The opening brace is on the same line as the property, after a single space.
-- In the long form, the closing brace is on its own line, with no comment after it.
-- In a list with a `{}` body, each hook starts on its own line, each body starts on the line after its `{`, and each `}`
-  is first on its line. An empty body, `{}`, has nothing to move, and a comment may follow the `{`.
-- A short hook's `=>` has a single space either side, and its body starts on the same line.
-- A short hook listed inline has a single space after the opening brace and before the closing one.
-- A list with no bodies, as on an interface or abstract property, is on one line, written as `{ get; set; }`: a single
-  space inside each brace, no space before each `;`, and a single space between operations ([Section 4.10](https://www.php-fig.org/per/coding-style/#410-interface-and-abstract-properties)).
-- A bodiless hook in a list with bodies has no space before its `;`.
-
-Indentation is checked by `PERCS31.WhiteSpace.ScopeIndent`, and several statements on a line by
-`PERCS31.Formatting.DisallowMultipleStatements`. A hook on a promoted constructor parameter is reported by
-`PERCS31.Classes.PromotedPropertyHooks`.
-
-PER says nothing about a space in a by-reference hook, `& get`, so it passes. Set `checkReferenceSpacing` to report it,
-as the Jumbo standard does.
-
-PER also says nothing about where a hook's own `{` goes, so `get{` and `{` on the next line both pass. Set
-`checkHookBraceSpacing` to require exactly one space, as in `get {`, as the Jumbo standard does.
-
-**Auto-fixable:** yes, except a comment after the closing brace, or a comment in the way.
-
-**Good:**
-
-```php
-class User
-{
-    public string $name {
-        get => ucfirst($this->name);
-        set => trim($value);
-    }
-
-    public string $email { get => strtolower($this->email); }
-}
-
-interface Named
-{
-    public string $name { get; set; }
-}
-```
-
-**Bad:**
-
-```php
-class User
-{
-    public string $name
-    {
-        get  =>  ucfirst($this->name);
-        set =>
-            trim($value); }
-
-    public string $email {get => strtolower($this->email);}
-
-    public string $phone {
-        get { return $this->phone; }
-    }
-
-    public string $city { get { return $this->city; } }
-}
-
-interface Named
-{
-    public string $name {
-        get ;
-        set;
-    }
-}
-```
-
-**Configuration:**
-
-| Property                | Type | Default | Description                                                    |
-| ----------------------- | ---- | ------- | -------------------------------------------------------------- |
-| `checkReferenceSpacing` | bool | false   | Report a space between a by-reference hook's `&` and its name. |
-| `checkHookBraceSpacing` | bool | false   | Require exactly one space before a hook's own `{`.             |
-
----
-
 ### PERCS31.Classes.PromotedPropertyHooks
 
 Allows a property hook on a promoted constructor parameter only if it's a single hook with a short `=>` body, on one
@@ -813,6 +727,92 @@ interface Named
 | Property               | Type | Default | Description                                                      |
 | ---------------------- | ---- | ------- | ---------------------------------------------------------------- |
 | `orderHooksWithBodies` | bool | false   | Check the hook order in every hook list, not just bodiless ones. |
+
+---
+
+### PERCS31.Classes.PropertyHookLayout
+
+Checks the layout of a property's hook list: its braces, and the `=>` of a short hook.
+
+**Why:** [PER Coding Style 3.1, Section 4.9](https://www.php-fig.org/per/coding-style/#49-property-hooks) sets the layout of property hooks, and no inherited sniff knows about them.
+This sniff checks:
+
+- The opening brace is on the same line as the property, after a single space.
+- In the long form, the closing brace is on its own line, with no comment after it.
+- In a list with a `{}` body, each hook starts on its own line, each body starts on the line after its `{`, and each `}`
+  is first on its line. An empty body, `{}`, has nothing to move, and a comment may follow the `{`.
+- A short hook's `=>` has a single space either side, and its body starts on the same line.
+- A short hook listed inline has a single space after the opening brace and before the closing one.
+- A list with no bodies, as on an interface or abstract property, is on one line, written as `{ get; set; }`: a single
+  space inside each brace, no space before each `;`, and a single space between operations ([Section 4.10](https://www.php-fig.org/per/coding-style/#410-interface-and-abstract-properties)).
+- A bodiless hook in a list with bodies has no space before its `;`.
+
+Indentation is checked by `PERCS31.WhiteSpace.ScopeIndent`, and several statements on a line by
+`PERCS31.Formatting.DisallowMultipleStatements`. A hook on a promoted constructor parameter is reported by
+`PERCS31.Classes.PromotedPropertyHooks`.
+
+PER says nothing about a space in a by-reference hook, `& get`, so it passes. Set `checkReferenceSpacing` to report it,
+as the Jumbo standard does.
+
+PER also says nothing about where a hook's own `{` goes, so `get{` and `{` on the next line both pass. Set
+`checkHookBraceSpacing` to require exactly one space, as in `get {`, as the Jumbo standard does.
+
+**Auto-fixable:** yes, except a comment after the closing brace, or a comment in the way.
+
+**Good:**
+
+```php
+class User
+{
+    public string $name {
+        get => ucfirst($this->name);
+        set => trim($value);
+    }
+
+    public string $email { get => strtolower($this->email); }
+}
+
+interface Named
+{
+    public string $name { get; set; }
+}
+```
+
+**Bad:**
+
+```php
+class User
+{
+    public string $name
+    {
+        get  =>  ucfirst($this->name);
+        set =>
+            trim($value); }
+
+    public string $email {get => strtolower($this->email);}
+
+    public string $phone {
+        get { return $this->phone; }
+    }
+
+    public string $city { get { return $this->city; } }
+}
+
+interface Named
+{
+    public string $name {
+        get ;
+        set;
+    }
+}
+```
+
+**Configuration:**
+
+| Property                | Type | Default | Description                                                    |
+| ----------------------- | ---- | ------- | -------------------------------------------------------------- |
+| `checkReferenceSpacing` | bool | false   | Report a space between a by-reference hook's `&` and its name. |
+| `checkHookBraceSpacing` | bool | false   | Require exactly one space before a hook's own `{`.             |
 
 ---
 
@@ -1299,38 +1299,6 @@ $double = fn(int $x): int => $x * 2 ;
 
 ---
 
-### PERCS31.Functions.NullableTypeDeclaration
-
-Disallows a space between the `?` of a nullable type and the type, wherever a type can appear. This replaces
-`PSR12.Functions.NullableTypeDeclaration`.
-
-**Why:** [PER Coding Style 3.1, Section 4.5](https://www.php-fig.org/per/coding-style/#45-method-and-function-parameters) says there MUST NOT be a space between the question mark and the type. The
-PSR-12 sniff checks every position but one: PHP_CodeSniffer doesn't know about hooks, so the sniff doesn't see the `?`
-in a `set` hook's parameter.
-
-**Auto-fixable:** yes, unless a comment comes after the `?`.
-
-**Good:**
-
-```php
-class Counter
-{
-    public ?int $count {
-        set(?int $value) => $value;
-    }
-}
-```
-
-**Bad:**
-
-```php
-public ? int $count {
-    set(? int $value) => $value;
-}
-```
-
----
-
 ### PERCS31.Functions.MultiLineFunctionDeclaration
 
 Checks the layout of function, closure and arrow function declarations, including the placement of the opening brace,
@@ -1369,6 +1337,38 @@ An arrow function has no braces, so the brace checks don't apply.
 | Property                  | Type | Default | Description                                                 |
 | ------------------------- | ---- | ------- | ----------------------------------------------------------- |
 | `checkOptionalBlankLines` | bool | false   | Report a blank line PER doesn't forbid, as described above. |
+
+---
+
+### PERCS31.Functions.NullableTypeDeclaration
+
+Disallows a space between the `?` of a nullable type and the type, wherever a type can appear. This replaces
+`PSR12.Functions.NullableTypeDeclaration`.
+
+**Why:** [PER Coding Style 3.1, Section 4.5](https://www.php-fig.org/per/coding-style/#45-method-and-function-parameters) says there MUST NOT be a space between the question mark and the type. The
+PSR-12 sniff checks every position but one: PHP_CodeSniffer doesn't know about hooks, so the sniff doesn't see the `?`
+in a `set` hook's parameter.
+
+**Auto-fixable:** yes, unless a comment comes after the `?`.
+
+**Good:**
+
+```php
+class Counter
+{
+    public ?int $count {
+        set(?int $value) => $value;
+    }
+}
+```
+
+**Bad:**
+
+```php
+public ? int $count {
+    set(? int $value) => $value;
+}
+```
 
 ---
 

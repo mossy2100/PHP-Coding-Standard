@@ -48,6 +48,7 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
 - `PERCS31.Classes.PropertyHookLayout` reports a space in a by-reference hook, `& get` (`checkReferenceSpacing` set to
   `true`), and requires exactly one space before a hook's own `{`, as in `get {` (`checkHookBraceSpacing` set to
   `true`).
+- `PERCS31.Files.LineLength` has `lineLimit` set from the ruleset's `lineLength` entity. See [Line Length](LineLength.md).
 - `PERCS31.WhiteSpace.ArrowSpacing` checks the spacing around `=>` in every array and `yield`, not just a `match` arm
   (`checkArray` and `checkYield` set to `true`). It replaces Squiz `ArrayDeclaration`'s arrow spacing checks.
 - `PERCS31.Operators.OperatorPlacement` requires a line in a control structure's condition to be indented exactly once
@@ -84,10 +85,8 @@ Sniffs from PHP_CodeSniffer and Slevomat that Jumbo adds on top of PERCS31. They
 
 ### Generic
 
-- **Generic.Formatting.SpaceAfterNot**: Disallows whitespace after `!`, including a line break (`spacing` set to 0).
 - **Generic.CodeAnalysis.AssignmentInCondition**: Warns about assignments in conditions. See [Yoda-style Comparisons](../README.md#yoda-style-comparisons).
-- **PERCS31.Files.LineLength**: PERCS31's line length check, with `lineLimit` set from the ruleset's `lineLength`
-  entity. See [Line Length](LineLength.md).
+- **Generic.Formatting.SpaceAfterNot**: Disallows whitespace after `!`, including a line break (`spacing` set to 0).
 
 ### Squiz
 
@@ -96,17 +95,17 @@ Sniffs from PHP_CodeSniffer and Slevomat that Jumbo adds on top of PERCS31. They
   is left to [`PERCS31.WhiteSpace.ArrowSpacing`](PERCS31.md#percs31whitespacearrowspacing), as Squiz only checks it in a single-line array. Its alignment checks and
   `SingleLineNotAllowed` stay excluded, so keys, values and arrows are not aligned, and a single-line array with several
   values is allowed. `Jumbo.Arrays.ArrayDeclaration` requires single-line where it fits.
-- **Squiz.PHP.NonExecutableCode**: A warning for code that can never run, such as code after a `return` or `break`.
 - **Squiz.NamingConventions.ValidVariableName**: Enforces `$camelCase` for variables, parameters, and properties. Its
   checks for an underscore on properties are excluded, as one requires it on private properties. See [Variable and
   Property Names](VariableAndPropertyNames.md).
+- **Squiz.PHP.NonExecutableCode**: A warning for code that can never run, such as code after a `return` or `break`.
 - **Squiz.Strings.DoubleQuoteUsage.NotRequired**: Ensures strings use single quotes unless double quotes are necessary.
+- **Squiz.WhiteSpace.ObjectOperatorSpacing**: Disallows spaces around `->`, `?->` and `::`, e.g. `$a -> b()`. A line
+  break before one, in a wrapped method chain, is allowed.
 - **Squiz.WhiteSpace.OperatorSpacing**: Requires exactly one space around operators, including before `=`, so
   assignments are not aligned. Used through [`PERCS31.Operators.OperatorSpacing`](PERCS31.md#percs31operatorsoperatorspacing), which extends it to `&&`, `||`, `and`,
   `or`, `xor`, `.` and `|>`. PERCS31 excludes its codes for more than one space, and Jumbo turns them back on. `=>` is
   covered by [`PERCS31.WhiteSpace.ArrowSpacing`](PERCS31.md#percs31whitespacearrowspacing).
-- **Squiz.WhiteSpace.ObjectOperatorSpacing**: Disallows spaces around `->`, `?->` and `::`, e.g. `$a -> b()`. A line
-  break before one, in a wrapped method chain, is allowed.
 
 ### Slevomat
 
@@ -150,9 +149,9 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **ControlStructures.RequireNullCoalesceEqualOperator**: Requires `??=` when possible.
 - **ControlStructures.RequireNullCoalesceOperator**: Requires `??` when possible.
 - **ControlStructures.RequireNullSafeObjectOperator**: Requires `?->` when possible.
-- **ControlStructures.RequireSingleLineCondition**: Requires single-line format for short conditions.
 - **ControlStructures.RequireShortTernaryOperator**: Requires the short ternary `?:` when possible. Used through
   [`Jumbo.ControlStructures.RequireShortTernaryOperator`](#jumbocontrolstructuresrequireshortternaryoperator), which skips a nullable type in a `set` hook's parameter.
+- **ControlStructures.RequireSingleLineCondition**: Requires single-line format for short conditions.
 - **ControlStructures.RequireTernaryOperator**: Requires ternary operator when possible.
 - **ControlStructures.UselessIfConditionWithReturn**: Disallows useless if conditions returning true or false.
 - **Exceptions.DeadCatch**: Disallows unreachable catch blocks, e.g. a catch after `catch (Throwable)`.
@@ -230,17 +229,17 @@ gives the reason. The custom sniffs for PER Coding Style itself are in [PERCS31]
 | `Jumbo.Classes.RequireSingleLineClassHeader`               | A split class, interface or enum header fits on a line          | Yes     |
 | `Jumbo.Classes.RequireSingleLineMethodSignature`           | A short signature on one line, skipping a promoted hook         | Yes     |
 | `Jumbo.ControlStructures.LanguageConstructWithParentheses` | No `echo('x')`, allowing `exit()` and `die()`                   | Yes     |
+| `Jumbo.ControlStructures.MatchArmWrapIndent`               | One line if it fits, else a wrapped `match` arm indented once   | Yes     |
 | `Jumbo.ControlStructures.RequireShortTernaryOperator`      | `$a ?: $b`, skipping a nullable type in a `set` hook            | Yes     |
 | `Jumbo.ControlStructures.RequireSingleLineHeader`          | A multi-line loop, `switch` or `match` header fits on a line    | Yes     |
-| `Jumbo.ControlStructures.MatchArmWrapIndent`               | One line if it fits, else a wrapped `match` arm indented once   | Yes     |
 | `Jumbo.ControlStructures.StatementAfterClosingBrace`       | A control structure's `}` on its own line                       | Yes     |
-| `Jumbo.PHP.EmbeddedPhp`                                    | A block's tags on their own lines, level with its code          | Mostly  |
+| `Jumbo.Formatting.RequireSingleLineStatement`              | A split statement or `case` label fits on a line                | Yes     |
 | `Jumbo.Functions.RequireSingleLineCall`                    | A call that fits is on one line, skipping a class or `match`    | Yes     |
 | `Jumbo.Functions.RequireSingleLineSignature`               | A split function or closure signature fits on a line            | Yes     |
-| `Jumbo.Formatting.RequireSingleLineStatement`              | A split statement or `case` label fits on a line                | Yes     |
 | `Jumbo.Namespaces.UnusedUses`                              | No unused `use` statements, safe with a miscased `use Function` | Yes     |
 | `Jumbo.NamingConventions.ValidVariableName`                | No leading underscore on a variable or parameter in a class     | No      |
 | `Jumbo.Operators.UnaryOperatorSpacing`                     | No whitespace after a prefix `+`, `~` or `@`                    | Yes     |
+| `Jumbo.PHP.EmbeddedPhp`                                    | A block's tags on their own lines, level with its code          | Mostly  |
 | `Jumbo.TypeHints.DeclareStrictTypes`                       | `strict_types=1` required, allowing `<?php declare(...) ?>`     | Yes     |
 | `Jumbo.TypeHints.ParameterTypeHint`                        | Parameter type hints, skipping a promoted hook                  | Yes     |
 | `Jumbo.TypeHints.ParameterTypeHintSpacing`                 | Parameter type hint spacing, skipping a promoted hook           | Yes     |
@@ -329,19 +328,6 @@ $messages = [
 
 ---
 
-### Jumbo.Classes.EmptyLinesAroundClassBraces
-
-Disallows blank lines after a class's opening brace and before its closing brace. This replaces
-`SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces`.
-
-**Why:** `SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces` rejects an empty body written as `{}` on one line,
-which [PER Coding Style 3.1, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the
-parent. See [PERCS31.Formatting.EmptyBody](PERCS31.md#percs31formattingemptybody).
-
-**Auto-fixable:** yes, as the parent.
-
----
-
 ### Jumbo.Classes.ConstantSpacing, EnumCaseSpacing and PropertySpacing
 
 Enforce the blank lines after a class constant, enum case or property. These replace
@@ -353,6 +339,19 @@ fatal error. That ends the whole run, and loses the report for every other file.
 anyway. Each sniff only adds that one check, and can go once Slevomat fixes it.
 
 **Auto-fixable:** yes, as the parents.
+
+---
+
+### Jumbo.Classes.EmptyLinesAroundClassBraces
+
+Disallows blank lines after a class's opening brace and before its closing brace. This replaces
+`SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces`.
+
+**Why:** `SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces` rejects an empty body written as `{}` on one line,
+which [PER Coding Style 3.1, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the
+parent. See [PERCS31.Formatting.EmptyBody](PERCS31.md#percs31formattingemptybody).
+
+**Auto-fixable:** yes, as the parent.
 
 ---
 
@@ -380,6 +379,48 @@ replaces `SlevomatCodingStandard.ControlStructures.LanguageConstructWithParenthe
 each other's fixes. This sniff skips `exit` and `die`, and leaves everything else to the parent.
 
 **Auto-fixable:** yes, as the parent.
+
+---
+
+### Jumbo.ControlStructures.MatchArmWrapIndent
+
+Requires a `match` arm's conditions, its `=>` and the first line of its value to be on one line, if they fit. Otherwise,
+a line starting with a later condition, the `=>`, or the value must be indented one level past the arm's first line. Set
+`indent` to change the number of spaces, which is 4 by default.
+
+**Why:** PER Coding Style 3.1 doesn't say how a wrapped arm is laid out, so this is an extra rule, matching how Jumbo
+treats calls and arrays that fit, and keeping each arm distinct. `PERCS31.Operators.OperatorPlacement` checks a line
+starting with an operator. A comment among the arm's parts is left to a person.
+
+**Auto-fixable:** yes.
+
+**Good:**
+
+```php
+$label = match ($code) {
+    200, 201 => 'OK',
+    $thisIsAnExtremelyLongConditionThatTakesUpMostOfTheLineByItself,
+        $andThisIsAnotherOneThatWillNotFitOnTheSameLineAsThatOne => 'Long',
+    default => 'Error',
+};
+```
+
+**Bad:**
+
+```php
+$label = match ($code) {
+    200,
+    201 => 'OK',
+    default => 'Error',
+};
+```
+
+**Configuration:**
+
+| Property        | Type | Default | Description                                  |
+| --------------- | ---- | ------- | -------------------------------------------- |
+| `indent`        | int  | 4       | The number of spaces in one indent level.    |
+| `maxLineLength` | int  | 120     | Maximum line length for an arm's first line. |
 
 ---
 
@@ -438,48 +479,6 @@ To use a different limit, set every line-length property, as described in [Line 
 
 ---
 
-### Jumbo.ControlStructures.MatchArmWrapIndent
-
-Requires a `match` arm's conditions, its `=>` and the first line of its value to be on one line, if they fit. Otherwise,
-a line starting with a later condition, the `=>`, or the value must be indented one level past the arm's first line. Set
-`indent` to change the number of spaces, which is 4 by default.
-
-**Why:** PER Coding Style 3.1 doesn't say how a wrapped arm is laid out, so this is an extra rule, matching how Jumbo
-treats calls and arrays that fit, and keeping each arm distinct. `PERCS31.Operators.OperatorPlacement` checks a line
-starting with an operator. A comment among the arm's parts is left to a person.
-
-**Auto-fixable:** yes.
-
-**Good:**
-
-```php
-$label = match ($code) {
-    200, 201 => 'OK',
-    $thisIsAnExtremelyLongConditionThatTakesUpMostOfTheLineByItself,
-        $andThisIsAnotherOneThatWillNotFitOnTheSameLineAsThatOne => 'Long',
-    default => 'Error',
-};
-```
-
-**Bad:**
-
-```php
-$label = match ($code) {
-    200,
-    201 => 'OK',
-    default => 'Error',
-};
-```
-
-**Configuration:**
-
-| Property        | Type | Default | Description                                  |
-| --------------- | ---- | ------- | -------------------------------------------- |
-| `indent`        | int  | 4       | The number of spaces in one indent level.    |
-| `maxLineLength` | int  | 120     | Maximum line length for an arm's first line. |
-
----
-
 ### Jumbo.ControlStructures.StatementAfterClosingBrace
 
 Requires a control structure's closing brace to be on its own line, for `if`, `elseif`, `else`, `for`, `foreach`,
@@ -524,9 +523,9 @@ Require code split across lines to be written on one line, if the whole resultin
 
 | Sniff                                         | Covers                                                 |
 | --------------------------------------------- | ------------------------------------------------------ |
+| `Jumbo.Classes.RequireSingleLineClassHeader`  | A class, interface or enum's `extends`, `implements`   |
 | `Jumbo.Formatting.RequireSingleLineStatement` | A statement or `case` label, outside its calls, arrays |
 | `Jumbo.Functions.RequireSingleLineSignature`  | A function or closure's signature, and a `use` list    |
-| `Jumbo.Classes.RequireSingleLineClassHeader`  | A class, interface or enum's `extends`, `implements`   |
 
 **Why:** PER allows these splits, so this is an extra rule, in Jumbo only. Other sniffs already do the same for a call,
 an array, a method signature, a condition and a loop header.
