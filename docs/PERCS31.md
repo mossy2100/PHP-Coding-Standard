@@ -1693,7 +1693,8 @@ Requires at least one space around binary operators, including `&&`, `||`, `and`
 **Why:** [PER Coding Style 3.1, Section 6.2](https://www.php-fig.org/per/coding-style/#62-binary-operators) says all binary operators MUST be preceded and followed by at least one
 space, and section 6 allows more for readability. PSR-12's sniff checks that, but doesn't know `|>` (PHP 8.5).
 PHP_CodeSniffer 4.0 doesn't define `T_PIPE` itself, but passes PHP's own token through on PHP 8.5, so this sniff
-registers it when it's defined. The pipe isn't checked when PHPCS runs on PHP 8.4.
+registers it when it's defined. On PHP 8.4, where `|>` is a parse error, PHP_CodeSniffer reads it as `|` and `>`,
+and reports them.
 
 The parent skips an `=` directly followed by `&`, so this sniff checks it: `$x=&$a` and `$x =&$a` are reported, and
 fixed to `$x = &$a`. `$x =& $a` passes, as it has a space either side if `=&` is read as one operator, and PER doesn't
@@ -2113,5 +2114,5 @@ class User
   in the section on classes, so this standard follows PHP_CodeSniffer in reading it as classes and functions. After a
   block `declare` in the file header, a statement is still reported, as section 3 wants a blank line after the block.
   The [Jumbo standard](Jumbo.md) reports a statement after any control structure's closing brace.
-- **The pipe operator `|>` on PHP 8.4.** It's only checked when PHP_CodeSniffer runs on PHP 8.5, as 8.4 has no `T_PIPE`
-  token.
+- **The pipe operator `|>` on PHP 8.4.** It's only checked when PHP_CodeSniffer runs on PHP 8.5. On PHP 8.4, where `|>`
+  is a parse error, PHP_CodeSniffer reads it as `|` and `>`, and reports them.
