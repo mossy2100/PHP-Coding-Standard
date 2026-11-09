@@ -1683,9 +1683,10 @@ ternary `?:`, the arrow function's `=>`, and the pipe operator `|>` (PHP 8.5). I
 including `.`. A full ternary is checked by `PERCS31.ControlStructures.MultiLineTernaryOperator`, and section 6.2
 doesn't list `=>`, so one in an array or `match` arm isn't checked.
 
-A short ternary is written `?:`, with nothing between the `?` and the `:`, as section 6.3 says it follows the rules of a
-comparison operator, and its example writes it that way. So `$a ? : $b` is reported as `SplitShortTernary`, and so is
-one split across lines, as in `$a ?` then `: $b`. The fix joins them where the `:` is, at the start of the line.
+PER doesn't say whether a short ternary's `?` and `:` may be apart, so `$a ? : $b` passes. A `?` at the end of a line,
+as in `$a ?` then `: $b`, is reported like any other operator, and the fix moves it to the start of the next line. Set
+`checkSplitShortTernary` to require `?:`, with nothing between, as the [Jumbo standard](Jumbo.md) does. That reports
+`SplitShortTernary`, and the fix joins them where the `:` is.
 
 **Auto-fixable:** yes, unless a comment follows an operator at the end of a line, or is between a short ternary's `?`
 and `:`.
@@ -1738,6 +1739,7 @@ $this->expectOutputString(
 | Property                      | Type | Default | Description                                                      |
 | ----------------------------- | ---- | ------- | ---------------------------------------------------------------- |
 | `requireExactConditionIndent` | bool | false   | Require the exact indent in a condition, not just at least once. |
+| `checkSplitShortTernary`      | bool | false   | Require a short ternary written `?:`, with nothing between.      |
 
 ---
 
