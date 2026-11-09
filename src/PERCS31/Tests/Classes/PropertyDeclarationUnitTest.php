@@ -26,8 +26,6 @@ class PropertyDeclarationUnitTest extends AbstractSniffTestCase
         }
 
         return [
-            // Underscore.
-            58 => 1,
             // VarUsed + ScopeMissing.
             61 => 2,
             // Underscore: promoted constructor parameters.
@@ -51,10 +49,18 @@ class PropertyDeclarationUnitTest extends AbstractSniffTestCase
     /**
      * Returns the lines where warnings should occur.
      *
+     * @param string $testFile The name of the test input file.
      * @return array<int, int> Line number => warning count.
      */
-    protected function getWarningList(): array
+    protected function getWarningList(string $testFile = ''): array
     {
-        return [];
+        if ($testFile !== 'PropertyDeclarationUnitTest.inc') {
+            return [];
+        }
+
+        return [
+            // Underscore, which the parent reports as a warning, and the rulesets make an error.
+            58 => 1,
+        ];
     }
 }

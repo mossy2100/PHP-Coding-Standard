@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable PERCS31.Classes.PropertyDeclaration.Multiple,PERCS31.Classes.PropertyDeclaration.SpacingAfterType,PERCS31.Classes.PropertyDeclaration.StaticBeforeVisibility,PERCS31.Classes.PropertyDeclaration.ReadonlyBeforeVisibility,PERCS31.Classes.PropertyDeclaration.FinalAfterVisibility,PERCS31.Classes.PropertyDeclaration.AbstractAfterVisibility,PERCS31.Classes.PropertyDeclaration.AvizKeywordOrder
 
 // === VALID: Basic properties ===
 
@@ -54,7 +54,7 @@ abstract class ValidAbstractProperties
 
 class ErrorProperties
 {
-    // Underscore: error.
+    // Underscore: a warning here, as the parent gives, and an error in the rulesets.
     public string $_underscored = 'bad';
 
     // VarUsed + ScopeMissing: 2 errors.

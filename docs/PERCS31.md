@@ -735,11 +735,13 @@ class User
 
 ### PERCS31.Classes.PropertyDeclaration
 
-Verifies that properties are declared correctly. This replaces `PSR2.Classes.PropertyDeclaration`.
+Verifies that properties are declared correctly. This replaces `PSR2.Classes.PropertyDeclaration`, which it extends.
 
 **Why:** PSR-12's `PSR2.Classes.PropertyDeclaration` misreads variables in PHP 8.4 property hook bodies, such as
-`$value` and `$this`, as property declarations, and reports false errors on them. It also only warns about a leading
-underscore, and doesn't check promoted constructor properties, where [PER Coding Style 3.1, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says MUST NOT.
+`$value` and `$this`, as property declarations, and reports false errors on them, so this sniff skips them. The ruleset
+makes the parent's `Underscore` warning an error, and excludes its checks of modifier order, the spacing after the type,
+and several properties in one statement, which Slevomat sniffs make. The parent doesn't check a promoted constructor
+property either, which [PER Coding Style 3.1, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants)'s rules on underscores and visibility cover.
 This sniff also checks that `get` comes before `set` in an abstract or interface property's hooks, which no inherited
 sniff does.
 

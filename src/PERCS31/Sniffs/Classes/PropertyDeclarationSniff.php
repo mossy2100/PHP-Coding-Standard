@@ -4,28 +4,27 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Classes;
 
-use Exception;
 use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
-use PHP_CodeSniffer\Sniffs\AbstractVariableSniff;
+use PHP_CodeSniffer\Standards\PSR2\Sniffs\Classes\PropertyDeclarationSniff as Psr2Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Verifies that properties are declared correctly: no leading underscore, no var keyword, and a visibility.
+ * Verifies that properties are declared correctly: no leading underscore, no var keyword, a visibility, and `get`
+ * before `set` in a hook list.
  *
- * This sniff is based on PSR2's PropertyDeclarationSniff, which misreads variables in PHP 8.4 property hook bodies as
- * property declarations. Modifier order and the spacing after the type are left to
- * SlevomatCodingStandard.Classes.PropertyDeclaration, and several properties in one statement to
- * SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition.
+ * It extends PSR2.Classes.PropertyDeclaration, and changes three things:
+ * - It skips a variable in a PHP 8.4 property hook's body, such as `$value`, which the parent reads as a property.
+ * - It checks a promoted constructor parameter for a leading underscore and a visibility, which the parent doesn't.
+ * - It checks that `get` comes before `set` in an abstract or interface property's hooks, as PER Coding Style 3.1,
+ *   section 4.10, requires.
  *
- * Portions of this file are from PHP_CodeSniffer's PSR2.Classes.PropertyDeclaration sniff:
- *
- * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006-2023 Squiz Pty Ltd (ABN 77 084 670 600)
- * @copyright 2023 PHPCSStandards and contributors
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licence.txt BSD Licence
+ * The ruleset excludes the parent's checks that Slevomat sniffs make: modifier order, and the spacing after the type,
+ * by SlevomatCodingStandard.Classes.PropertyDeclaration, and several properties in one statement, by
+ * SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition. It makes the parent's Underscore warning an error, as
+ * section 4.3 says MUST NOT.
  */
-class PropertyDeclarationSniff extends AbstractVariableSniff
+class PropertyDeclarationSniff extends Psr2Sniff
 {
     /**
      * Whether HookOrder also checks a hook list with bodies, not just one like `{ set; get; }`.
@@ -49,23 +48,13 @@ class PropertyDeclarationSniff extends AbstractVariableSniff
             return;
         }
 
-        try {
-            $propertyInfo = $phpcsFile->getMemberProperties($stackPtr);
-        } catch (Exception) {
-            // Parse error: property in enum. Ignore.
-            return;
-        }
-
-        $tokens = $phpcsFile->getTokens();
-
-        $this->checkUnderscore($phpcsFile, $stackPtr, $tokens);
-        $this->checkVarKeyword($phpcsFile, $stackPtr, $tokens);
-        $this->checkVisibility($phpcsFile, $stackPtr, $tokens, $propertyInfo);
-        $this->checkHookOrder($phpcsFile, $stackPtr, $tokens);
+        parent::processMemberVar($phpcsFile, $stackPtr);
+        $this->checkHookOrder($phpcsFile, $stackPtr, $phpcsFile->getTokens());
     }
 
     /**
-     * Check for underscore-prefixed property names, which PER Coding Style 3.1 disallows.
+     * Check a promoted constructor parameter's name for a leading underscore, which PER Coding Style 3.1 disallows. The
+     * parent checks other properties, with the same message.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the property token.
@@ -76,42 +65,9 @@ class PropertyDeclarationSniff extends AbstractVariableSniff
         $content = $tokens[$stackPtr]['content'];
         assert(is_string($content));
         if (isset($content[1]) && $content[1] === '_') {
-            $error = 'Property name "%s" must not be prefixed with an underscore';
+            $error = 'Property name "%s" should not be prefixed with an underscore to indicate visibility';
             $data = [$tokens[$stackPtr]['content']];
             $phpcsFile->addError($error, $stackPtr, 'Underscore', $data);
-        }
-    }
-
-    /**
-     * Check that the var keyword isn't used.
-     *
-     * Several properties in one statement are left to SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition,
-     * which can fix them.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $stackPtr The position of the property token.
-     * @param array<int, array<string, mixed>> $tokens The token stack.
-     */
-    private function checkVarKeyword(File $phpcsFile, int $stackPtr, array $tokens): void
-    {
-        $find = Tokens::SCOPE_MODIFIERS;
-        $find[] = T_VARIABLE;
-        $find[] = T_VAR;
-        $find[] = T_READONLY;
-        $find[] = T_FINAL;
-        $find[] = T_ABSTRACT;
-        $find[] = T_SEMICOLON;
-        $find[] = T_OPEN_CURLY_BRACKET;
-
-        // A later property in a multi-property statement. The first one was already checked.
-        $prev = $phpcsFile->findPrevious($find, ($stackPtr - 1));
-        if ($tokens[$prev]['code'] === T_VARIABLE) {
-            return;
-        }
-
-        if ($tokens[$prev]['code'] === T_VAR) {
-            $error = 'The var keyword must not be used to declare a property';
-            $phpcsFile->addError($error, $stackPtr, 'VarUsed');
         }
     }
 
@@ -266,23 +222,6 @@ class PropertyDeclarationSniff extends AbstractVariableSniff
         }
 
         return false;
-    }
-
-    /**
-     * Check that visibility is declared.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $stackPtr The position of the property token.
-     * @param array<int, array<string, mixed>> $tokens The token stack.
-     * @param array<string, mixed> $propertyInfo The property info from getMemberProperties().
-     */
-    private function checkVisibility(File $phpcsFile, int $stackPtr, array $tokens, array $propertyInfo): void
-    {
-        if ($propertyInfo['scope_specified'] === false && $propertyInfo['set_scope'] === false) {
-            $error = 'Visibility must be declared on property "%s"';
-            $data = [$tokens[$stackPtr]['content']];
-            $phpcsFile->addError($error, $stackPtr, 'ScopeMissing', $data);
-        }
     }
 
     /**

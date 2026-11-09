@@ -692,6 +692,28 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a leading underscore on a property is an error in both standards, though PSR-2's sniff, which
+     * PERCS31.Classes.PropertyDeclaration extends, only warns, and that its excluded order check isn't reported.
+     */
+    #[DataProvider('standardProvider')]
+    public function testPropertyUnderscoreIsAnError(string $standard): void
+    {
+        $source = "<?php\n\nnamespace App;\n\nclass A\n{\n    public string \$_a = 'x';\n\n"
+            . "    static public int \$b = 1;\n}\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $args = ['-s', "--standard=$standard", '--report=emacs', $file];
+            $output = $this->runTool('phpcs', $args)['output'];
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertMatchesRegularExpression('/:7:\\d+: error - .*PropertyDeclaration\\.Underscore/', $output);
+        $this->assertStringNotContainsString('PERCS31.Classes.PropertyDeclaration.StaticBeforeVisibility', $output);
+    }
+
+    /**
      * The two standards.
      *
      * @return array<string, array{string}>
