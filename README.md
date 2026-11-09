@@ -28,7 +28,7 @@ The Jumbo Coding Standard has two rulesets, each usable as a PHP_CodeSniffer sta
 
 * Refers to a famous elephant, the elephant being PHP's spirit animal.
 * It sounds good.
-* Pairs nicely with `Dumbo`, another famous elephant. `Dumbo` is the `Jumbo` variant for Drupal.
+* Pairs nicely with `Dumbo`, another famous elephant. `Dumbo` will be the `Jumbo` variant for Drupal.
 
 ---
 
@@ -43,7 +43,7 @@ This package was developed with [Claude Code](https://claude.com/product/claude-
 
 The code is checked with:
 
-- [PHP_CodeSniffer](https://github.com/PHPCSStandards/PHP_CodeSniffer/), for [PSR-12](https://www.php-fig.org/psr/psr-12/) compliance plus the Jumbo coding standard
+- [PHP_CodeSniffer](https://github.com/PHPCSStandards/PHP_CodeSniffer/), for the Jumbo coding standard
 - [PHPStan](https://phpstan.org/), at level 9
 - [PHPUnit](https://phpunit.de/index.html), with a unit test for each custom sniff
 
@@ -103,12 +103,13 @@ The default maximum line length is 120. To change it, see [Line Length](docs/Lin
 
 ## Included Sniffs
 
-Each standard has its own page, listing every sniff it uses, inherited and custom, with the reason for each:
+Each standard has its own page, listing the sniffs it uses, inherited and custom, with the reason for each. PSR-12's own
+sniffs are listed only where PERCS31 changes or replaces them.
 
-- [PERCS31](docs/PERCS31.md): PSR-12, sniffs from Generic, Squiz, Slevomat and PHPCSExtra (`Universal`), and custom
-  sniffs, for PER Coding Style 3.1.
-- [Jumbo](docs/Jumbo.md): what Jumbo changes in PERCS31, and the Generic, Squiz and Slevomat sniffs and custom sniffs it
-  adds as extra rules.
+- [PERCS31](docs/PERCS31.md): PSR-12, sniffs from Generic, PEAR, Squiz, Slevomat, PHPCSExtra (`Universal`) and
+  PhpCollective, and custom sniffs, for PER Coding Style 3.1.
+- [Jumbo](docs/Jumbo.md): what Jumbo changes in PERCS31, and the Generic, Squiz, Slevomat and Zend sniffs and custom
+  sniffs it adds as extra rules.
 
 ---
 

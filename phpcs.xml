@@ -5,7 +5,7 @@
     <!-- Paths to check -->
     <file>src</file>
 
-    <!-- Use Jumbo Coding Standard (includes PSR12 + additional rules) -->
+    <!-- Use the Jumbo coding standard -->
     <rule ref="Jumbo"/>
 
     <!-- The standard's name is deliberately in capitals, to match PSR12, and PHP is a sniff category's name -->

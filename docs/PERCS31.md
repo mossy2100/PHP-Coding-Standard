@@ -957,7 +957,7 @@ The original also requires the body on the very next line. PER allows blank line
 a blank line after a label is allowed here. Set `checkBlankLineAfterLabel` to report one, as the [Jumbo standard](Jumbo.md)
 does.
 
-**Why:** [PER Coding Style 3.1, Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) adds both rules. The parent only checks a case that's followed by another,
+**Why:** [PER Coding Style 3.1, Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) sets these rules. The parent only checks a case that's followed by another,
 and doesn't check multi-line conditions.
 
 A multi-line `case` condition must also follow the rule for any expression split inside parentheses. The first condition

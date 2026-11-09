@@ -29,10 +29,10 @@ Three sniffs check this between them. This page shows which one checks each kind
 An acronym in any of these names, such as `$userID`, gets a warning from `PERCS31.NamingConventions.AcronymCasing`.
 
 Squiz allows a leading underscore inside a class, because the Squiz convention prefixes private members with one. The
-two Jumbo sniffs fill that gap.
+`Jumbo.NamingConventions.ValidVariableName` and `PERCS31.Classes.PropertyDeclaration` fill that gap.
 
 For properties, `PERCS31.Classes.PropertyDeclaration` replaces PSR-12's `PSR2.Classes.PropertyDeclaration`, which only
-issues a warning for a leading underscore, and doesn't check promoted constructor properties. The Jumbo sniff reports
+issues a warning for a leading underscore, and doesn't check promoted constructor properties. It reports
 both as errors, since [PER Coding Style 3.1, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says property names MUST NOT start with an underscore.
 
 ---
