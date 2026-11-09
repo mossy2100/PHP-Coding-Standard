@@ -99,6 +99,9 @@
          braces around a case body, and PERCS31.ControlStructures.SwitchDeclaration still reports them, so removing
          the braces fixes both. -->
     <rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat">
+        <!-- Replaced by PERCS31.TypeHints.CompoundTypeOperatorSpacing, which allows a compound type split before | or &
+             (2.5) -->
+        <exclude name="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.DisallowedWhitespaceAroundOperator"/>
         <properties>
             <property name="withSpacesAroundOperators" value="no"/>
             <property name="withSpacesInsideParentheses" value="no"/>
@@ -108,11 +111,6 @@
     </rule>
     <rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.RequiredShortNullable">
         <type>warning</type>
-    </rule>
-    <!-- Replaced by PERCS31.TypeHints.CompoundTypeOperatorSpacing, which allows a compound type split before | or &
-         (2.5) -->
-    <rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.DisallowedWhitespaceAroundOperator">
-        <severity>0</severity>
     </rule>
 
     <!-- No space around | or & in a compound type, but a split before one allowed (2.5) -->
