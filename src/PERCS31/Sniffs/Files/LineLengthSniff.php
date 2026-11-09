@@ -19,6 +19,11 @@ use PHP_CodeSniffer\Util\Tokens;
  * The line is measured exactly as by the parent, which reports at most one message per line. Neither limit is
  * auto-fixable, as only a person can choose where to split a line.
  *
+ * checkLineLength() is replaced, not extended, as the parent sets its one limit inside it, so a second limit needs the
+ * measuring code too. A second sniff for 80 would give a line over 120 two warnings, and change the codes. The
+ * measuring code is copied from PHP_CodeSniffer 4.0.4's Generic.Files.LineLength, so compare it after an upgrade. The
+ * only change is the second limit, reported as OverRecommended at a severity of 4.
+ *
  * Portions of this file are from PHP_CodeSniffer's Generic.Files.LineLength sniff:
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
