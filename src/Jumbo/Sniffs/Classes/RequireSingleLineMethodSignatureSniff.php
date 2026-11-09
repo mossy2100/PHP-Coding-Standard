@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Jumbo\Sniffs\Classes;
 
-use PERCS31\Helpers\PropertyHookHelper;
-use PHP_CodeSniffer\Files\File;
+use Jumbo\Helpers\SkipsPromotedPropertyHookTrait;
 use SlevomatCodingStandard\Sniffs\Classes\RequireSingleLineMethodSignatureSniff as SlevomatSniff;
 
 /**
@@ -19,18 +18,5 @@ use SlevomatCodingStandard\Sniffs\Classes\RequireSingleLineMethodSignatureSniff 
  */
 class RequireSingleLineMethodSignatureSniff extends SlevomatSniff
 {
-    /**
-     * Processes this test, when one of its tokens is encountered.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $methodPointer The position of the function keyword.
-     */
-    public function process(File $phpcsFile, int $methodPointer): void
-    {
-        if (PropertyHookHelper::hasPromotedPropertyHook($phpcsFile, $methodPointer)) {
-            return;
-        }
-
-        parent::process($phpcsFile, $methodPointer);
-    }
+    use SkipsPromotedPropertyHookTrait;
 }

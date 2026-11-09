@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Jumbo\Sniffs\TypeHints;
 
-use PERCS31\Helpers\PropertyHookHelper;
-use PHP_CodeSniffer\Files\File;
+use Jumbo\Helpers\SkipsPromotedPropertyHookTrait;
 use SlevomatCodingStandard\Sniffs\TypeHints\ParameterTypeHintSpacingSniff as SlevomatSniff;
 
 /**
@@ -19,18 +18,5 @@ use SlevomatCodingStandard\Sniffs\TypeHints\ParameterTypeHintSpacingSniff as Sle
  */
 class ParameterTypeHintSpacingSniff extends SlevomatSniff
 {
-    /**
-     * Processes this test, when one of its tokens is encountered.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $functionPointer The position of the function keyword.
-     */
-    public function process(File $phpcsFile, int $functionPointer): void
-    {
-        if (PropertyHookHelper::hasPromotedPropertyHook($phpcsFile, $functionPointer)) {
-            return;
-        }
-
-        parent::process($phpcsFile, $functionPointer);
-    }
+    use SkipsPromotedPropertyHookTrait;
 }
