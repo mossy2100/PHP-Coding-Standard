@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\Arrays;
 
 use PERCS31\Helpers\FixerHelper;
+use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -117,33 +118,9 @@ class OpeningBracketPlacementSniff implements Sniff
         }
 
         // The innermost bracket or parenthesis around the array decides what the comma belongs to.
-        for ($i = ($opener - 1); $i >= 0; $i--) {
-            $code = $tokens[$i]['code'];
-            if ($code === T_CLOSE_SHORT_ARRAY || $code === T_CLOSE_SQUARE_BRACKET) {
-                $i = $tokens[$i]['bracket_opener'] ?? $i;
-                continue;
-            }
+        $container = TokenHelper::findContainer($phpcsFile, $opener);
 
-            if ($code === T_CLOSE_PARENTHESIS) {
-                $i = $tokens[$i]['parenthesis_opener'] ?? $i;
-                continue;
-            }
-
-            if ($code === T_CLOSE_CURLY_BRACKET) {
-                $i = $tokens[$i]['scope_opener'] ?? $tokens[$i]['bracket_opener'] ?? $i;
-                continue;
-            }
-
-            if (in_array($code, [T_OPEN_PARENTHESIS, T_OPEN_SQUARE_BRACKET, T_OPEN_CURLY_BRACKET, T_SEMICOLON], true)) {
-                return false;
-            }
-
-            if ($code === T_OPEN_SHORT_ARRAY) {
-                return true;
-            }
-        }
-
-        return false;
+        return $container !== null && $tokens[$container]['code'] === T_OPEN_SHORT_ARRAY;
     }
 
     /**

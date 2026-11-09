@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Jumbo\Sniffs\Arrays;
 
 use Jumbo\Helpers\SingleLineHelper;
+use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
@@ -98,32 +99,15 @@ class ArrayDeclarationSniff implements Sniff
      */
     private function findEnclosingArray(File $phpcsFile, int $openPtr): ?int
     {
+        // Go out through parentheses and index brackets, such as a call's, but not out of a block.
         $tokens = $phpcsFile->getTokens();
-        for ($i = $openPtr - 1; $i >= 0; $i--) {
-            $code = $tokens[$i]['code'];
-
-            // Skip over complete bracketed groups before this array, such as earlier elements.
-            if ($code === T_CLOSE_SHORT_ARRAY || $code === T_CLOSE_SQUARE_BRACKET) {
-                $i = $tokens[$i]['bracket_opener'];
-                continue;
-            }
-            if ($code === T_CLOSE_PARENTHESIS) {
-                $i = $tokens[$i]['parenthesis_opener'];
-                continue;
-            }
-            if ($code === T_CLOSE_CURLY_BRACKET && isset($tokens[$i]['bracket_opener'])) {
-                $i = $tokens[$i]['bracket_opener'];
-                continue;
+        $container = TokenHelper::findContainer($phpcsFile, $openPtr);
+        while ($container !== null && $tokens[$container]['code'] !== T_OPEN_CURLY_BRACKET) {
+            if ($tokens[$container]['code'] === T_OPEN_SHORT_ARRAY) {
+                return $container;
             }
 
-            if ($code === T_OPEN_SHORT_ARRAY) {
-                return $i;
-            }
-
-            // Stop at the start of the statement or block.
-            if ($code === T_SEMICOLON || $code === T_OPEN_CURLY_BRACKET || $code === T_OPEN_TAG) {
-                return null;
-            }
+            $container = TokenHelper::findContainer($phpcsFile, $container);
         }
 
         return null;
