@@ -2103,6 +2103,9 @@ class User
 - **Whether a fall-through comment is clear (5.2).** Any comment just before the next `case` or `default` passes, as the
   spec doesn't set any wording.
 - **Avoiding abbreviations (2.7).** Whether a name could avoid an abbreviation can't be judged by a sniff.
+- **A `(double)` cast (2.5).** Section 2.5's short form rule is checked for the long forms PSR-12 knows, `(boolean)`
+  and `(integer)`. `(double)` is left to the [Jumbo standard](Jumbo.md), whose `SlevomatCodingStandard.PHP.TypeCast`
+  requires `(float)`.
 - **Some rules for a `set` hook's parameter type (2.5).** PHP_CodeSniffer reads the type as an expression, so the sniffs
   that check types elsewhere don't see it. That leaves `?T` over `T|null`, `null` last, and keywords in lower case. The
   spacing around `|`, `&` and after `?`, the parentheses of a DNF type, and a split type's layout are checked.
