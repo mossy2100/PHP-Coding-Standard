@@ -119,3 +119,10 @@ function firstGroupSplit(
     |(A
     &B) $y,
 ): void {}
+
+// A return type split after a single-line parameter list passes, as each line has one type.
+function splitReturnType(): int
+    |string
+{
+    return 1;
+}
