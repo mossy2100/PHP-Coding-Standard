@@ -233,8 +233,15 @@
         <exclude name="PERCS31.Classes.PropertyDeclaration.Underscore"/>
     </rule>
 
-    <!-- The layout of a property's hook list: its braces, and a short hook's => (4.9, 4.10) -->
-    <rule ref="PERCS31.Classes.PropertyHookLayout"/>
+    <!-- The layout of a property's hook list: its braces, and a short hook's => (4.9, 4.10). One space before a hook's
+         own {, and a set hook's parameter list spaced like a method's, as the examples in 4.9 show. -->
+    <rule ref="PERCS31.Classes.PropertyHookLayout">
+        <properties>
+            <property name="checkReferenceSpacing" value="false"/>
+            <property name="checkHookBraceSpacing" value="true"/>
+            <property name="checkHookParameterSpacing" value="true"/>
+        </properties>
+    </rule>
 
     <!-- A hook on a promoted constructor parameter only as a single short hook on one line (4.9) -->
     <rule ref="PERCS31.Classes.PromotedPropertyHooks"/>

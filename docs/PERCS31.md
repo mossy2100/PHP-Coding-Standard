@@ -822,11 +822,10 @@ Indentation is checked by `PERCS31.WhiteSpace.ScopeIndent`, and several statemen
 PER says nothing about a space in a by-reference hook, `& get`, so it passes. Set `checkReferenceSpacing` to report it,
 as the Jumbo standard does.
 
-PER also says nothing about where a hook's own `{` goes, so `get{` and `{` on the next line both pass. Set
-`checkHookBraceSpacing` to require exactly one space, as in `get {`, as the Jumbo standard does.
-
-Nor does PER set the spacing of a `set` hook's parameter list, so `set ( string $value )` passes. Set
-`checkHookParameterSpacing` to space it like a method's, as in `set(string $value)`, as the Jumbo standard does.
+Section 4.9's text doesn't say where a hook's own `{` goes, or how a `set` hook's parameter list is spaced, but its
+examples show `get {` and `set(string $value)`. So the PERCS31 ruleset sets `checkHookBraceSpacing`, which requires
+exactly one space before a hook's `{`, and `checkHookParameterSpacing`, which spaces a `set` hook's parameter list like
+a method's: no space after `set`, and none just inside the parentheses.
 
 **Auto-fixable:** yes, except a comment after the closing brace, or a comment in the way.
 
@@ -1392,8 +1391,7 @@ gaps:
   object, as in `clone ($a)->b`, aren't an argument list. Nor are parentheses after a space, as in `clone ($a)`, which
   [`PERCS31.PHP.RequireCloneParentheses`](#percs31phprequirecloneparentheses) reports.
 - It reads a `set` hook's parameter list, as in `set (string $value)`, as a call to `set()`. That list is part of the
-  hook's declaration, and PER says nothing about its spacing, so this sniff skips it.
-  [`PERCS31.Classes.PropertyHookLayout`](#percs31classespropertyhooklayout) checks it when `checkHookParameterSpacing` is set, as the Jumbo standard does.
+  hook's declaration, so this sniff skips it, and [`PERCS31.Classes.PropertyHookLayout`](#percs31classespropertyhooklayout) checks it instead.
 
 It's named Layout, not Signature like its parent, as a function's signature is its declaration. PSR-12 turns off the
 parent's `SpaceAfterCloseBracket` and `OpeningIndent` codes, and PERCS31 its `EmptyLine` code, so they're off here too.

@@ -330,13 +330,13 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that a hook's own opening brace is moved to one space after its name, in Jumbo, and left in PERCS31.
+     * Test that a hook's own opening brace is moved to one space after its name, in both standards.
      */
-    public function testHookBraceSpacingIsFixedInJumboOnly(): void
+    public function testHookBraceSpacingIsFixed(): void
     {
         $header = "<?php\n\ndeclare(strict_types=1);\n\nnamespace A;\n\nfinal class B\n{\n    public int \$c {\n";
         $body = "            return 1;\n        }\n    }\n}\n";
-        foreach (['Jumbo' => "        get {\n", 'PERCS31' => "        get\n        {\n"] as $standard => $expected) {
+        foreach (['Jumbo' => "        get {\n", 'PERCS31' => "        get {\n"] as $standard => $expected) {
             $file = $this->copyToTempFile(null, $header . "        get\n        {\n" . $body);
 
             try {

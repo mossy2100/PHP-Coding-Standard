@@ -30,8 +30,9 @@ use PHP_CodeSniffer\Util\Tokens;
  * A bodiless hook in a list with bodies also has no space before its `;`.
  *
  * PER says nothing about a space in a by-reference hook, `& get`, so it's only reported when checkReferenceSpacing is
- * set, as it is in Jumbo. It also says nothing about where a hook's own `{` goes, so that's only checked when
- * checkHookBraceSpacing is set, as it is in Jumbo.
+ * set, as it is in Jumbo. Its text doesn't say where a hook's own `{` goes, or how a `set` hook's parameter list is
+ * spaced, but its examples show `get {` and `set(string $value)`. Those are checked when checkHookBraceSpacing and
+ * checkHookParameterSpacing are set, as the PERCS31 ruleset does.
  *
  * A hook on a promoted constructor parameter is reported by PERCS31.Classes.PromotedPropertyHooks, so its body isn't
  * checked here. Indentation is checked by PERCS31.WhiteSpace.ScopeIndent, several statements on a line by
@@ -79,14 +80,14 @@ class PropertyHookLayoutSniff implements Sniff
     public bool $checkReferenceSpacing = false;
 
     /**
-     * Whether to require exactly one space before a hook's own `{`, e.g. `get {`. PER says nothing about it, so it's
-     * off by default.
+     * Whether to require exactly one space before a hook's own `{`, e.g. `get {`, as PER's examples show. The PERCS31
+     * ruleset turns it on.
      */
     public bool $checkHookBraceSpacing = false;
 
     /**
      * Whether to check a `set` hook's parameter list as a method's: no space after `set`, and none just inside the
-     * parentheses, e.g. `set(string $value)`. PER says nothing about it, so it's off by default.
+     * parentheses, e.g. `set(string $value)`, as PER's examples show. The PERCS31 ruleset turns it on.
      */
     public bool $checkHookParameterSpacing = false;
 
