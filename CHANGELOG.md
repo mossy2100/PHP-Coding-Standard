@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **At least one space around an array's `=>` (breaking).** `PERCS31.WhiteSpace.ArrowSpacing` now checks arrays in
+  PERCS31, as PER Coding Style 3.1's array example has a space each side, using the new property
+  `allowSeveralSpacesInArray`, so arrows can still be lined up. Jumbo still requires exactly one. Auto-fixable.
 - **`Universal.Constants.UppercaseMagicConstants` in Jumbo (breaking).** A magic constant must be in upper case, as in
   `__DIR__`. PHP ignores their case, and PERCS31 doesn't check it. Auto-fixable.
 - **At most one blank line between hooks (breaking).** `PERCS31.Classes.PropertyHookLayout` now reports two or more

@@ -1,0 +1,22 @@
+<?php
+
+// phpcs:set PERCS31.WhiteSpace.ArrowSpacing checkArray true
+// phpcs:set PERCS31.WhiteSpace.ArrowSpacing allowSeveralSpacesInArray true
+
+// At least one space each side of an array's =>, so arrows may be lined up.
+$valid = [
+    'a'   => 1,
+    'bcd' => 2,
+];
+$alsoValid = ['a'  =>  1, 'b' => 2];
+
+// No space on one side, or either.
+$invalid = ['a'=>1, 'b' =>2, 'c'=> 3];
+
+// A match arm still needs exactly one.
+$value = match ($x) {
+    1  => 'one',
+};
+
+// phpcs:set PERCS31.WhiteSpace.ArrowSpacing checkArray false
+// phpcs:set PERCS31.WhiteSpace.ArrowSpacing allowSeveralSpacesInArray false

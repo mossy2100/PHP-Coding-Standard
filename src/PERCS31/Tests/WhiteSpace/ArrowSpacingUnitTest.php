@@ -19,6 +19,11 @@ class ArrowSpacingUnitTest extends AbstractSniffTestCase
      */
     protected function getErrorList(string $testFile = ''): array
     {
+        if ($testFile === 'ArrowSpacingUnitTest.3.inc') {
+            // With allowSeveralSpacesInArray set: no space before or after an array's arrow, and two in a match arm.
+            return [14 => 4, 18 => 1];
+        }
+
         if ($testFile === 'ArrowSpacingUnitTest.2.inc') {
             // With checkArray and checkYield set.
             return [

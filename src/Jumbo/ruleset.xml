@@ -364,11 +364,12 @@
         <severity>5</severity>
     </rule>
 
-    <!-- One space around => in every array and yield $key => $value too, not just a match arm. This replaces
-         Squiz.Arrays.ArrayDeclaration's arrow spacing checks, which cover only a single-line array. -->
+    <!-- Exactly one space around => in every array, where PERCS31 allows more so arrows can be lined up, and around
+         yield $key => $value too. This replaces Squiz.Arrays.ArrayDeclaration's arrow spacing checks, which cover only
+         a single-line array. -->
     <rule ref="PERCS31.WhiteSpace.ArrowSpacing">
         <properties>
-            <property name="checkArray" value="true"/>
+            <property name="allowSeveralSpacesInArray" value="false"/>
             <property name="checkYield" value="true"/>
         </properties>
     </rule>

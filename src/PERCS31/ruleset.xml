@@ -292,9 +292,15 @@
     <!-- Each match arm on a new line, as in the example in 5.2 -->
     <rule ref="PERCS31.ControlStructures.MatchArmPlacement"/>
 
-    <!-- One space around => in match arms, as in the example in 5.2. The sniff's array and yield checks are off by
-         default, as PER leaves them undefined. -->
-    <rule ref="PERCS31.WhiteSpace.ArrowSpacing"/>
+    <!-- One space around => in match arms, as in the example in 5.2. At least one around an array's =>, as in the
+         example in 11, which is too little to rule out lining arrows up. A yield's => isn't checked, as PER leaves it
+         undefined. -->
+    <rule ref="PERCS31.WhiteSpace.ArrowSpacing">
+        <properties>
+            <property name="checkArray" value="true"/>
+            <property name="allowSeveralSpacesInArray" value="true"/>
+        </properties>
+    </rule>
 
     <!-- ====== OPERATORS (6) ====== -->
 

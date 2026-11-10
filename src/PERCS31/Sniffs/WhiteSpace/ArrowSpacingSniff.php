@@ -11,15 +11,19 @@ use PHPCSUtils\Utils\Lists;
 use PHPCSUtils\Utils\PassedParameters;
 
 /**
- * Requires exactly one space before and after the `=>` in a `match` arm, and optionally in an array or a `yield`.
+ * Requires exactly one space before and after the `=>` in a `match` arm, and optionally in an array or a `yield`, where
+ * at least one can be allowed instead.
  *
  * PER Coding Style 3.1, section 6.2, doesn't list `=>` among the binary operators, so section 6 leaves its spacing
  * undefined, except where another section gives it a rule:
  * - A `match` arm: section 5.2 shows one space each side, and says to "note the placement of parentheses, spaces, and
  *   braces". Although it doesn't say so explicitly, it appears to imply the same rule that sections 4.9 and 7.1 set
  *   for a property hook's and an arrow function's `=>`. Checked by default (checkMatch).
- * - An array element, including a destructuring assignment's, or `yield $key => $value`: PER says nothing, so they're
- *   only checked if checkArray or checkYield is set, as the Jumbo standard does.
+ * - An array element, including a destructuring assignment's: checked if checkArray is set. Section 11's example, which
+ *   "shows correct array usage", has a space each side, but too few examples to rule out lining arrows up. So the
+ *   PERCS31 ruleset sets checkArray and allowSeveralSpacesInArray, requiring at least one space. The Jumbo standard
+ *   requires exactly one.
+ * - `yield $key => $value`: PER says nothing, so it's only checked if checkYield is set, as the Jumbo standard does.
  *
  * Other uses of `=>` have their own sniffs: Squiz.ControlStructures.ForEachLoopDeclaration for `foreach`,
  * SlevomatCodingStandard.Functions.ArrowFunctionDeclaration for an arrow function, and
@@ -59,6 +63,12 @@ class ArrowSpacingSniff implements Sniff
      * Whether to check the `=>` in an array element, including a destructuring assignment's. PER says nothing about it.
      */
     public bool $checkArray = false;
+
+    /**
+     * Whether to allow more than one space each side of an array's `=>`, so arrows can be lined up. With it off, an
+     * array's `=>` needs exactly one, as a `match` arm's does.
+     */
+    public bool $allowSeveralSpacesInArray = false;
 
     /**
      * Whether to check the `=>` in `yield $key => $value`. PER says nothing about it.
@@ -187,8 +197,9 @@ class ArrowSpacingSniff implements Sniff
      */
     private function checkArrow(File $phpcsFile, int $arrowPtr, string $context): void
     {
-        $this->checkSpacing($phpcsFile, $arrowPtr, $arrowPtr - 1, 'before', $context, self::CODE_SPACING_BEFORE);
-        $this->checkSpacing($phpcsFile, $arrowPtr, $arrowPtr + 1, 'after', $context, self::CODE_SPACING_AFTER);
+        $minimum = $context === 'array' && $this->allowSeveralSpacesInArray;
+        $this->checkSpacing($phpcsFile, $arrowPtr, $arrowPtr - 1, 'before', $context, $minimum);
+        $this->checkSpacing($phpcsFile, $arrowPtr, $arrowPtr + 1, 'after', $context, $minimum);
     }
 
     /**
@@ -199,7 +210,7 @@ class ArrowSpacingSniff implements Sniff
      * @param int $sidePtr The position of the token next to the arrow, on the side being checked.
      * @param string $side 'before' or 'after', for the error message.
      * @param string $context What the arrow belongs to, for the error message.
-     * @param string $code The error code.
+     * @param bool $minimum Whether more than one space is allowed.
      */
     private function checkSpacing(
         File $phpcsFile,
@@ -207,16 +218,18 @@ class ArrowSpacingSniff implements Sniff
         int $sidePtr,
         string $side,
         string $context,
-        string $code,
+        bool $minimum,
     ): void {
         $tokens = $phpcsFile->getTokens();
         $isWhitespace = $tokens[$sidePtr]['code'] === T_WHITESPACE;
 
-        // One space is correct. A line break is allowed; indentation at the start of a line is a separate token.
+        // One space is correct, or any if more are allowed. A line break is allowed; indentation at the start of a
+        // line is a separate token.
         if (
             $isWhitespace
             && (
-                $tokens[$sidePtr]['content'] === ' '
+                $minimum
+                    || $tokens[$sidePtr]['content'] === ' '
                     || str_contains($tokens[$sidePtr]['content'], "\n")
                     || $tokens[$sidePtr]['column'] === 1
             )
@@ -225,10 +238,11 @@ class ArrowSpacingSniff implements Sniff
         }
 
         $found = $isWhitespace ? strlen($tokens[$sidePtr]['content']) : 0;
+        $error = 'Expected ' . ($minimum ? 'at least ' : '') . '1 space %s "=>" in %s; %s found.';
         $fix = $phpcsFile->addFixableError(
-            'Expected 1 space %s "=>" in %s; %s found.',
+            $error,
             $arrowPtr,
-            $code,
+            $side === 'before' ? self::CODE_SPACING_BEFORE : self::CODE_SPACING_AFTER,
             [$side, $context, $found],
         );
         if (!$fix) {

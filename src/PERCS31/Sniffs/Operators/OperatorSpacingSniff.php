@@ -45,7 +45,7 @@ use PHPCSUtils\Utils\Parentheses;
  *
  * `=>` isn't registered, although PHP_CodeSniffer counts it as an assignment token. Section 6.2 doesn't list it, so
  * section 6 leaves its spacing undefined. Each use has its own sniff:
- * - An array: PERCS31.WhiteSpace.ArrowSpacing, in Jumbo only.
+ * - An array: PERCS31.WhiteSpace.ArrowSpacing.
  * - `foreach`: Squiz.ControlStructures.ForEachLoopDeclaration.
  * - A `match` arm: PERCS31.WhiteSpace.ArrowSpacing.
  * - An arrow function: SlevomatCodingStandard.Functions.ArrowFunctionDeclaration.
