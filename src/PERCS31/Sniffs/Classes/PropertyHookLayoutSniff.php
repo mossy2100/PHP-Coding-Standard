@@ -29,10 +29,10 @@ use PHP_CodeSniffer\Util\Tokens;
  * `{ get; set; }`: a single space inside each brace, no space before each `;`, and a single space between operations.
  * A bodiless hook in a list with bodies also has no space before its `;`.
  *
- * PER says nothing about a space in a by-reference hook, `& get`, so it's only reported when checkReferenceSpacing is
- * set, as it is in Jumbo. Its text doesn't say where a hook's own `{` goes, or how a `set` hook's parameter list is
- * spaced, but its examples show `get {` and `set(string $value)`. Those are checked when checkHookBraceSpacing and
- * checkHookParameterSpacing are set, as the PERCS31 ruleset does.
+ * Section 4.9's text doesn't say where a hook's own `{` goes, how a `set` hook's parameter list is spaced, or whether a
+ * by-reference hook's `&` is followed by a space. Its examples show `get {` and `set(string $value)`, and section 4.5
+ * puts no space after a by-reference parameter's `&`. These are checked when checkHookBraceSpacing,
+ * checkHookParameterSpacing and checkReferenceSpacing are set, as the PERCS31 ruleset does.
  *
  * A hook on a promoted constructor parameter is reported by PERCS31.Classes.PromotedPropertyHooks, so its body isn't
  * checked here. Indentation is checked by PERCS31.WhiteSpace.ScopeIndent, several statements on a line by
@@ -74,8 +74,8 @@ class PropertyHookLayoutSniff implements Sniff
     public const string CODE_SPACE_INSIDE_HOOK_PARAMETERS = 'SpaceInsideHookParameters';
 
     /**
-     * Whether to report whitespace between a by-reference hook's `&` and its name, e.g. `& get`. PER says nothing
-     * about it, so it's off by default.
+     * Whether to report whitespace between a by-reference hook's `&` and its name, e.g. `& get`, as section 4.5 does
+     * for a parameter. The PERCS31 ruleset turns it on.
      */
     public bool $checkReferenceSpacing = false;
 

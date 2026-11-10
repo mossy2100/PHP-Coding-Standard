@@ -195,8 +195,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   and a single space inside the braces of an inline hook. In a list with a `{}` body, each hook starts on its own line,
   so `get { return $this->a; }` must be split over three lines. A list with no bodies, as on an interface or abstract
   property, must be on one line as `{ get; set; }`, and a bodiless hook has no space before its `;`, as section 4.10
-  requires. Auto-fixable, except a comment after the closing brace, or a comment in the way. Jumbo also reports a space
-  in a by-reference hook, `& get` (new property `checkReferenceSpacing`).
+  requires. Auto-fixable, except a comment after the closing brace, or a comment in the way. It also reports a space in
+  a by-reference hook, `& get`, as for a by-reference parameter (new property `checkReferenceSpacing`, which the PERCS31
+  ruleset sets).
 - **No blank line between declare statements, including a block `declare` (breaking).** As PER Coding Style 3.1
   requires, `declare(strict_types=1);` then a blank line then `declare(ticks=1) {` is now an error, in PERCS31 and
   Jumbo. Auto-fixable. Jumbo no longer wants a blank line after `strict_types` when another declare statement follows.

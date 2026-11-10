@@ -808,13 +808,14 @@ Indentation is checked by `PERCS31.WhiteSpace.ScopeIndent`, and several statemen
 `PERCS31.Formatting.DisallowMultipleStatements`. A hook on a promoted constructor parameter is reported by
 `PERCS31.Classes.PromotedPropertyHooks`.
 
-PER says nothing about a space in a by-reference hook, `& get`, so it passes. Set `checkReferenceSpacing` to report it,
-as the Jumbo standard does.
+Section 4.9's text doesn't say where a hook's own `{` goes, how a `set` hook's parameter list is spaced, or whether a
+by-reference hook's `&` is followed by a space. Its examples show `get {` and `set(string $value)`, and section 4.5 puts
+no space after a by-reference parameter's `&`. So the PERCS31 ruleset sets:
 
-Section 4.9's text doesn't say where a hook's own `{` goes, or how a `set` hook's parameter list is spaced, but its
-examples show `get {` and `set(string $value)`. So the PERCS31 ruleset sets `checkHookBraceSpacing`, which requires
-exactly one space before a hook's `{`, and `checkHookParameterSpacing`, which spaces a `set` hook's parameter list like
-a method's: no space after `set`, and none just inside the parentheses.
+- `checkHookBraceSpacing`, which requires exactly one space before a hook's `{`.
+- `checkHookParameterSpacing`, which spaces a `set` hook's parameter list like a method's: no space after `set`, and
+  none just inside the parentheses.
+- `checkReferenceSpacing`, which reports a space after a by-reference hook's `&`, as in `& get`.
 
 **Auto-fixable:** yes, except a comment after the closing brace, or a comment in the way.
 

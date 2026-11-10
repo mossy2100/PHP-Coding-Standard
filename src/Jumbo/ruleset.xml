@@ -146,13 +146,6 @@
         </properties>
     </rule>
 
-    <!-- No space between a by-reference hook's & and its name: &get, not & get -->
-    <rule ref="PERCS31.Classes.PropertyHookLayout">
-        <properties>
-            <property name="checkReferenceSpacing" value="true"/>
-        </properties>
-    </rule>
-
     <!-- Global constants in UPPER_CASE too, which PER doesn't require -->
     <rule ref="PERCS31.NamingConventions.UpperCaseConstantName">
         <properties>

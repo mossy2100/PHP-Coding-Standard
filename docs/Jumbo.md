@@ -45,8 +45,6 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
   enum case, a property hook or a closure outside a call (`checkSameLineSpacing` set to `true`).
 - `PERCS31.Classes.PropertyDeclaration` checks the hook order in every hook list, including ones with bodies
   (`orderHooksWithBodies` set to `true`).
-- `PERCS31.Classes.PropertyHookLayout` reports a space in a by-reference hook, `& get` (`checkReferenceSpacing` set to
-  `true`).
 - `PERCS31.Files.LineLength` has `lineLimit` set from the ruleset's `lineLength` entity. See [Line Length](LineLength.md).
 - `PERCS31.WhiteSpace.ArrowSpacing` requires exactly one space around an array's `=>`, where PERCS31 allows more
   (`allowSeveralSpacesInArray` set to `false`), and checks a `yield`'s too (`checkYield` set to `true`). It replaces
