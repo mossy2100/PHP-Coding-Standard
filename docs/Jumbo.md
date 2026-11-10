@@ -41,8 +41,7 @@ The line length limit is 120. To change it, see [Line Length](LineLength.md).
 The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-12. These are Jumbo's changes to it:
 
 - `PERCS31.Attributes.AttributePlacement` reports a comment on its own line between an attribute and its parameter
-  (`checkParameterComments` set to `true`). An attribute on its target's line must be followed by a single space, on an
-  enum case, a property hook or a closure outside a call (`checkSameLineSpacing` set to `true`).
+  (`checkParameterComments` set to `true`).
 - `PERCS31.Files.LineLength` has `lineLimit` set from the ruleset's `lineLength` entity. See [Line Length](LineLength.md).
 - `PERCS31.WhiteSpace.ArrowSpacing` requires exactly one space around an array's `=>`, where PERCS31 allows more
   (`allowSeveralSpacesInArray` set to `false`). It replaces Squiz `ArrayDeclaration`'s arrow spacing checks.

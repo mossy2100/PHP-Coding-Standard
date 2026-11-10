@@ -390,9 +390,8 @@ $pure = #[A]
     static fn($x) => $x;
 ```
 
-PER doesn't set the spacing for one block on an enum case, a hook, or a closure outside a call, so
-`#[Label]  case Active;` passes. Set `checkSameLineSpacing` to require a single space when the attribute is on its
-target's line, as the Jumbo standard does. It's fixable.
+On an enum case, a hook, or a closure outside a call, an attribute on its target's line is followed by a single space,
+as section 12.2 requires for a parameter in a single-line list. So `#[Label]  case Active;` is reported, and fixed.
 
 **Why:** `SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing` covers some of this, but its only option for an
 attribute on its target's line, `allowOnSameLine`, is all or nothing, and its fix for a blank line deletes a comment
@@ -467,10 +466,9 @@ $handler = new #[Attribute] class {
 
 **Configuration:**
 
-| Property                 | Type | Default | Description                                                                  |
-| ------------------------ | ---- | ------- | ---------------------------------------------------------------------------- |
-| `checkParameterComments` | bool | false   | Report a comment on its own line between an attribute and its parameter.     |
-| `checkSameLineSpacing`   | bool | false   | Require a single space between an attribute and its target on the same line. |
+| Property                 | Type | Default | Description                                                              |
+| ------------------------ | ---- | ------- | ------------------------------------------------------------------------ |
+| `checkParameterComments` | bool | false   | Report a comment on its own line between an attribute and its parameter. |
 
 ---
 

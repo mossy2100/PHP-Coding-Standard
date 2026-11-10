@@ -63,17 +63,24 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             237 => 1,
             // A comment before a parameter, when set.
             245 => 1,
+            // Two spaces after a closure's attribute outside a call.
+            161 => 1,
+            171 => 1,
             // A hook's parameter: two spaces, and inline in a split list.
             293 => 1,
             309 => 1,
             // A method called get.
             316 => 1,
-            // Two spaces before a target on the same line, with checkSameLineSpacing set.
+            // Two spaces before a target on the same line.
+            322 => 1,
             327 => 1,
             331 => 1,
             350 => 1,
             358 => 1,
             363 => 1,
+            // Two spaces after an attribute on an enum case, and on a closure outside a call.
+            369 => 1,
+            372 => 1,
             // Two or more attribute blocks: on an enum case, one not fixable, on a hook, and in single-line lists.
             378 => 1,
             381 => 1,

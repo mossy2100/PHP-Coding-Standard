@@ -369,12 +369,10 @@
 
     <!-- ====== ATTRIBUTES (12) ====== -->
 
-    <!-- A comment on its own line between an attribute and its parameter is reported, and an attribute on its target's
-         line is followed by a single space -->
+    <!-- A comment on its own line between an attribute and its parameter is reported -->
     <rule ref="PERCS31.Attributes.AttributePlacement">
         <properties>
             <property name="checkParameterComments" value="true"/>
-            <property name="checkSameLineSpacing" value="true"/>
         </properties>
     </rule>
 

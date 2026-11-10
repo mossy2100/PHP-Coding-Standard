@@ -1,6 +1,6 @@
 # Jumbo Coding Standard - Line Length
 
-The line length limit in the [Jumbo Coding Standard](../README.md) is 120. To use a different limit, override it in your project's
+The soft line length limit in the [Jumbo Coding Standard](../README.md) is 120. To use a different limit, override it in your project's
 `phpcs.xml` (see [Usage](../README.md#usage)).
 
 A line over the limit gets a warning, `PERCS31.Files.LineLength.TooLong`, not an error, as PER Coding Style 3.1 requires

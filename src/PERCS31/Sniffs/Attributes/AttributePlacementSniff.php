@@ -34,8 +34,8 @@ use PHPCSUtils\Utils\PassedParameters;
  * An enum case isn't in section 12.2's list either, so its attribute may be on the case's line. Nor is a property hook,
  * which isn't a method, so its attribute may be on the hook's line. A hook's parameter follows the parameter rule.
  *
- * PER doesn't set the spacing where it allows an attribute on its target's line, or says nothing: an enum case, a hook,
- * or a closure outside a call. Set checkSameLineSpacing to require a single space there, as the Jumbo standard does.
+ * Where an attribute may be on its target's line, on an enum case, a hook, or a closure outside a call, it's followed
+ * by a single space, as section 12.2 requires for a parameter in a single-line list.
  *
  * It also reports a blank line or a comment between the last attribute and its target, except a comment on its own
  * line before a parameter, which section 12.2 allows. Set checkParameterComments to report that too. That replaces
@@ -77,12 +77,6 @@ class AttributePlacementSniff implements Sniff
      * "prior to the parameter", not "immediately prior", so it's off by default.
      */
     public bool $checkParameterComments = false;
-
-    /**
-     * Whether to require a single space between an attribute and its target on the same line, where PER doesn't set the
-     * spacing: an enum case, a property hook, or a closure outside a call. It's off by default.
-     */
-    public bool $checkSameLineSpacing = false;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -512,7 +506,7 @@ class AttributePlacementSniff implements Sniff
      * In a call's argument list that isn't split, the attribute is inline with the closure, after a single space. A
      * closure split over lines doesn't split the list, as section 4.7 says. In a split list, the attribute is on its
      * own line before the closure, which is indented the same. Anywhere else, PER says nothing, so only the spacing is
-     * checked, if checkSameLineSpacing is set.
+     * checked.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the last attribute block's opener.
@@ -588,7 +582,7 @@ class AttributePlacementSniff implements Sniff
     }
 
     /**
-     * If checkSameLineSpacing is set, check that an attribute on its target's line is followed by a single space.
+     * Check that an attribute on its target's line is followed by a single space.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $closerPtr The position of the last attribute block's closer.
@@ -597,7 +591,7 @@ class AttributePlacementSniff implements Sniff
     private function checkSameLineSpacing(File $phpcsFile, int $closerPtr, int $targetPtr): void
     {
         $tokens = $phpcsFile->getTokens();
-        if ($this->checkSameLineSpacing && $tokens[$targetPtr]['line'] === $tokens[$closerPtr]['line']) {
+        if ($tokens[$targetPtr]['line'] === $tokens[$closerPtr]['line']) {
             $error = 'Expected 1 space between an attribute and its target on the same line';
             $this->checkInlineSpacing($phpcsFile, $closerPtr, $targetPtr, $error, self::CODE_SAME_LINE_SPACING);
         }

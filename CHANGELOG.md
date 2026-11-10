@@ -105,8 +105,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   holding several attributes, as in `#[A, B] case X;`, can stay inline. Uses
   `PERCS31.Attributes.DisallowMultipleAttributesPerLine`, which replaces the Slevomat sniff of the same name.
   Auto-fixable.
-- **One space after an attribute on its target's line in Jumbo.** On an enum case, a property hook or a closure outside
-  a call, using the new `PERCS31.Attributes.AttributePlacement` property `checkSameLineSpacing`. Auto-fixable.
+- **One space after an attribute on its target's line (breaking).** On an enum case, a property hook or a closure
+  outside a call, `PERCS31.Attributes.AttributePlacement` requires a single space, as PER Coding Style 3.1 does for a
+  parameter in a single-line list. Auto-fixable.
 - **A default value's `=` can be aligned in PERCS31.** It's a binary operator, so PER Coding Style 3.1 only requires at
   least one space. `PERCS31.Operators.OperatorSpacing` now checks it, with the new property `checkDefaultValues`, in
   place of `Squiz.Functions.FunctionDeclarationArgumentSpacing`. The Jumbo standard still requires exactly one space.

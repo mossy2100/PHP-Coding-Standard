@@ -157,7 +157,7 @@ $misIndented = array_map(
     $items,
 );
 
-// Elsewhere, PER says nothing, so nothing is checked.
+// Elsewhere, PER says nothing about placement, so only the single space after the attribute is checked.
 $pure = #[Pure]  fn(int $x): int => $x;
 $plain = #[Pure]
     function (): int {
@@ -322,7 +322,7 @@ class SameLineSpacing
         #[C]  get => 'a';
     }
 
-    // phpcs:set PERCS31.Attributes.AttributePlacement checkSameLineSpacing true
+    // Two spaces are reported.
     public string $b {
         #[C]  get => 'b';
     }
@@ -362,14 +362,14 @@ $ownLine = #[Pure]
 $inArray = [
     #[Pure]  fn(int $x): int => $x,
 ];
-// phpcs:set PERCS31.Attributes.AttributePlacement checkSameLineSpacing false
+// End of the same-line cases.
 
-enum SpacingNotCheckedEnum
+enum SpacingCheckedEnum
 {
     #[C]  case A;
 }
 
-$notChecked = #[Pure]  fn(int $x): int => $x;
+$checked = #[Pure]  fn(int $x): int => $x;
 
 // === TWO OR MORE ATTRIBUTE BLOCKS ===
 
