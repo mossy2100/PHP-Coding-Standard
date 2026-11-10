@@ -1018,9 +1018,7 @@ Checks `switch` statements. This replaces `PSR2.ControlStructures.SwitchDeclarat
 - A non-empty `default` that continues into the next case MUST have a comment saying so, as a `case` must.
 - A `case` or `default` line MUST consist only of the label, so code or a comment there is reported. A phpcs annotation
   is left alone, as it only works on that line.
-
-The original also requires the body on the very next line. PER allows blank lines, except where explicitly forbidden, so
-a blank line after a label is allowed here. Set `checkBlankLineAfterLabel` to report one, as the [Jumbo standard](Jumbo.md) does.
+- No blank line straight after a label, as section 5.2's example, the template for its rules, has none.
 
 **Why:** [PER Coding Style 3.1, Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) sets these rules. The parent only checks a case that's followed by another,
 and doesn't check multi-line conditions.
@@ -1060,12 +1058,6 @@ switch (true) {
         chargeFullPrice();
 }
 ```
-
-**Configuration:**
-
-| Property                   | Type | Default | Description                                            |
-| -------------------------- | ---- | ------- | ------------------------------------------------------ |
-| `checkBlankLineAfterLabel` | bool | false   | Report a blank line after a `case` or `default` label. |
 
 ---
 

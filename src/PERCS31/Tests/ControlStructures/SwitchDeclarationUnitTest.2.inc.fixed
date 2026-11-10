@@ -3,25 +3,20 @@
 // phpcs:disable PERCS31.ControlStructures.SwitchDeclaration.BodyOnNextLineCASE
 // phpcs:disable PERCS31.ControlStructures.SwitchDeclaration.BodyOnNextLineDEFAULT
 
-// A blank line after a label, as many as you like, is allowed by default.
+// A blank line straight after a label is reported, and removed by the fix.
 switch ($a) {
     case 1:
-
         foo();
         break;
 
     case 2:
-
-
         foo();
         break;
     case 3:
-
         // Comment.
         foo();
         break;
     case 4:
-
     case 5:
         foo();
 
@@ -34,10 +29,8 @@ switch ($a) {
     case 7:
         // Comment.
     case 8:
-
         break;
     default:
-
         foo();
         break;
 }

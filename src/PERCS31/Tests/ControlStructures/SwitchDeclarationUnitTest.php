@@ -21,6 +21,13 @@ class SwitchDeclarationUnitTest extends AbstractSniffTestCase
     {
         if ($testFile === 'SwitchDeclarationUnitTest.2.inc') {
             return [
+                // A blank line after a label: one, two, before a comment, before another label, and on a default.
+                8 => 1,
+                13 => 1,
+                18 => 1,
+                23 => 1,
+                36 => 1,
+                39 => 1,
                 // Code on the label's line.
                 47 => 1,
                 // A comment on the label's line.
@@ -38,7 +45,7 @@ class SwitchDeclarationUnitTest extends AbstractSniffTestCase
 
         if ($testFile === 'SwitchDeclarationUnitTest.3.inc') {
             return [
-                // With checkBlankLineAfterLabel: one blank line, two, before a comment, and before another label.
+                // A blank line after a label: one, two, before a comment, and before another label.
                 8 => 1,
                 12 => 1,
                 17 => 1,

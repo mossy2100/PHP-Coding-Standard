@@ -216,13 +216,6 @@
 
     <!-- ====== CONTROL STRUCTURES (5) ====== -->
 
-    <!-- No blank line straight after a case or default label -->
-    <rule ref="PERCS31.ControlStructures.SwitchDeclaration">
-        <properties>
-            <property name="checkBlankLineAfterLabel" value="true"/>
-        </properties>
-    </rule>
-
     <rule ref="Generic.CodeAnalysis.AssignmentInCondition"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.DisallowContinueWithoutIntegerOperandInSwitch"/>
     <!-- One space after a language construct such as return, echo or throw, with no line break. The Jumbo version of

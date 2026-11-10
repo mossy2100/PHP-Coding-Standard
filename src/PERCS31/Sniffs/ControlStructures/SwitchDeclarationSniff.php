@@ -26,9 +26,9 @@ use PHP_CodeSniffer\Util\Tokens;
  * - The `case` line MUST consist only of the keyword, the condition and a colon. So code or a comment there is
  *   reported, and the fix moves it to the next line. A phpcs annotation is left alone, as it only works on that line.
  *
- * The parent also requires the body on the very next line (BodyOnNextLine). Section 2.3 says blank lines MAY be added
- * except where explicitly forbidden, so the PERCS31 ruleset excludes those codes, and this sniff checks code on the
- * line itself. Set checkBlankLineAfterLabel to report a blank line straight after a label, as the Jumbo standard does.
+ * The parent also requires the body on the very next line (BodyOnNextLine), but its fix can't handle a comment on the
+ * label's line. So the PERCS31 ruleset excludes those codes, and this sniff reports code or a comment on the label's
+ * line, and a blank line straight after it (BlankLineAfterLabel), as section 5.2's example has none.
  *
  * To find a terminating statement nested in if/else, try/catch or another switch, it calls the parent's private
  * findNestedTerminator() through Closure::bind, rather than copying it. After a PHP_CodeSniffer upgrade, check that
@@ -64,12 +64,6 @@ class SwitchDeclarationSniff extends Psr2Sniff
      * @var list<int|string>
      */
     private const array TERMINATORS = [T_BREAK, T_RETURN, T_CONTINUE, T_THROW, T_EXIT, T_GOTO];
-
-    /**
-     * Whether to report a blank line straight after a `case` or `default` label. PER Coding Style 3.1, section 2.3,
-     * allows it, so it's off by default.
-     */
-    public bool $checkBlankLineAfterLabel = false;
 
     /**
      * Processes this test, when one of its tokens is encountered.
@@ -120,7 +114,7 @@ class SwitchDeclarationSniff extends Psr2Sniff
         }
 
         if ($tokens[$next]['line'] !== $tokens[$opener]['line']) {
-            if ($this->checkBlankLineAfterLabel && ($tokens[$next]['line'] - $tokens[$opener]['line']) > 1) {
+            if (($tokens[$next]['line'] - $tokens[$opener]['line']) > 1) {
                 $this->reportBlankLineAfterLabel($phpcsFile, $case, $opener, $next);
             }
 

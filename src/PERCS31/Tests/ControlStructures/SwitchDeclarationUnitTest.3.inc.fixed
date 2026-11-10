@@ -2,7 +2,7 @@
 
 // phpcs:disable PERCS31.ControlStructures.SwitchDeclaration.BodyOnNextLineCASE
 // phpcs:disable PERCS31.ControlStructures.SwitchDeclaration.BodyOnNextLineDEFAULT
-// phpcs:set PERCS31.ControlStructures.SwitchDeclaration checkBlankLineAfterLabel true
+// A blank line straight after a label is reported.
 
 switch ($a) {
     case 1:
