@@ -6,6 +6,7 @@ namespace PERCS31\Sniffs\Classes;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use PHPCSUtils\Utils\Scopes;
 
 /**
  * Requires a non-public method or constant in an enum to be `private`, not `protected`.
@@ -37,11 +38,11 @@ class EnumMemberVisibilitySniff implements Sniff
      */
     public function process(File $phpcsFile, int $stackPtr): void
     {
-        $tokens = $phpcsFile->getTokens();
-        $conditions = $tokens[$stackPtr]['conditions'];
-        if ($conditions === [] || end($conditions) !== T_ENUM) {
+        if (Scopes::validDirectScope($phpcsFile, $stackPtr, T_ENUM) === false) {
             return;
         }
+
+        $tokens = $phpcsFile->getTokens();
 
         // The keyword is among the modifiers, after the previous member or the enum's opening brace.
         $start = $phpcsFile->findPrevious(

@@ -8,6 +8,7 @@ use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\Context;
 
 /**
  * Requires each value of a multi-line array to start on a new line.
@@ -131,21 +132,7 @@ class ValuePerLineSniff implements Sniff
      */
     private function isForeachList(File $phpcsFile, int $stackPtr): bool
     {
-        $tokens = $phpcsFile->getTokens();
-        if ($tokens[$stackPtr]['code'] !== T_OPEN_SHORT_ARRAY || !isset($tokens[$stackPtr]['nested_parenthesis'])) {
-            return false;
-        }
-
-        $parentheses = $tokens[$stackPtr]['nested_parenthesis'];
-        $parenthesisCloser = end($parentheses);
-        $parenthesisOpener = key($parentheses);
-        $owner = $tokens[$parenthesisCloser]['parenthesis_owner'] ?? null;
-        if ($owner === null || $tokens[$owner]['code'] !== T_FOREACH) {
-            return false;
-        }
-
-        $as = $phpcsFile->findNext(T_AS, ($parenthesisOpener + 1), $parenthesisCloser);
-
-        return $as !== false && $as < $stackPtr;
+        return $phpcsFile->getTokens()[$stackPtr]['code'] === T_OPEN_SHORT_ARRAY
+            && Context::inForeachCondition($phpcsFile, $stackPtr) === 'afterAs';
     }
 }

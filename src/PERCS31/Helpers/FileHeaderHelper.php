@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PERCS31\Helpers;
 
 use PHP_CodeSniffer\Files\File;
+use PHPCSUtils\Utils\FileInfo;
 
 /**
  * Helper class for the file header.
@@ -59,7 +60,7 @@ class FileHeaderHelper
                 continue;
             }
 
-            if ($i === 0 && str_starts_with($tokens[$i]['content'], '#!')) {
+            if ($i === 0 && FileInfo::hasSheBang($phpcsFile)) {
                 continue;
             }
 
@@ -103,7 +104,7 @@ class FileHeaderHelper
         }
 
         $content = $tokens[0]['content'];
-        if (str_starts_with($content, '#!')) {
+        if (FileInfo::hasSheBang($phpcsFile)) {
             $newline = strpos($content, "\n");
             $content = $newline === false ? '' : substr($content, ($newline + 1));
         }

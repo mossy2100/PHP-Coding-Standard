@@ -8,7 +8,10 @@ use PERCS31\Helpers\NamingHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\PassedParameters;
+use PHPCSUtils\Utils\Scopes;
 use PHPCSUtils\Utils\TextStrings;
+use PHPCSUtils\Utils\Variables;
 
 /**
  * Warns about an acronym in capitals in a name.
@@ -53,24 +56,6 @@ class AcronymCasingSniff implements Sniff
      * if a `phpcs:set` comment clears it.
      */
     public ?string $excludedAcronyms = '';
-
-    /**
-     * PHP's reserved variables, which may be in capitals.
-     *
-     * @var list<string>
-     */
-    private const array RESERVED_VARIABLES = [
-        '$GLOBALS',
-        '$HTTP_RAW_POST_DATA',
-        '$_COOKIE',
-        '$_ENV',
-        '$_FILES',
-        '$_GET',
-        '$_POST',
-        '$_REQUEST',
-        '$_SERVER',
-        '$_SESSION',
-    ];
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -171,7 +156,7 @@ class AcronymCasingSniff implements Sniff
             $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
             $isStaticAccess = $previous !== false && $tokens[$previous]['code'] === T_DOUBLE_COLON;
 
-            return $isStaticAccess || in_array($tokens[$stackPtr]['content'], self::RESERVED_VARIABLES, true)
+            return $isStaticAccess || Variables::isPHPReservedVarName($tokens[$stackPtr]['content'])
                 ? false
                 : $stackPtr;
         }
@@ -240,9 +225,7 @@ class AcronymCasingSniff implements Sniff
      */
     private function findGlobalConstantName(File $phpcsFile, int $stackPtr): int|false
     {
-        $tokens = $phpcsFile->getTokens();
-        $conditions = $tokens[$stackPtr]['conditions'];
-        if ($conditions !== [] && isset(Tokens::OO_SCOPE_TOKENS[end($conditions)])) {
+        if (Scopes::isOOConstant($phpcsFile, $stackPtr)) {
             return false;
         }
 
@@ -275,12 +258,12 @@ class AcronymCasingSniff implements Sniff
             return false;
         }
 
-        $open = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
-        if ($open === false || $tokens[$open]['code'] !== T_OPEN_PARENTHESIS) {
+        $name = PassedParameters::getParameter($phpcsFile, $stackPtr, 1, 'constant_name');
+        if ($name === false || !is_int($name['start']) || !is_int($name['end'])) {
             return false;
         }
 
-        $namePtr = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($open + 1), null, true);
+        $namePtr = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, $name['start'], ($name['end'] + 1), true);
 
         return $namePtr !== false && $tokens[$namePtr]['code'] === T_CONSTANT_ENCAPSED_STRING ? $namePtr : false;
     }

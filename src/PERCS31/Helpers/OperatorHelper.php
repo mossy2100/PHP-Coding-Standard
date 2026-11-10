@@ -16,6 +16,8 @@ class OperatorHelper
     /**
      * Tokens that can only come before a unary `+`, `-` or `&`, not a binary one.
      *
+     * Operators::isUnaryPlusMinus() has a similar list, but only for `+` and `-`, so the `&` checks need this one.
+     *
      * @var list<int|string>
      */
     private const array BEFORE_UNARY = [

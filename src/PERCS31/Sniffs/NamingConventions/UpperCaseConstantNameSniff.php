@@ -8,6 +8,7 @@ use PERCS31\Helpers\NamingHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\Generic\Sniffs\NamingConventions\UpperCaseConstantNameSniff as GenericSniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\Scopes;
 
 /**
  * Requires class constant names in UPPER_CASE, except in an enum, where PascalCase is also allowed, and recommended.
@@ -76,9 +77,9 @@ class UpperCaseConstantNameSniff extends GenericSniff
             return;
         }
 
-        $conditions = $tokens[$stackPtr]['conditions'];
-        $scope = $conditions === [] ? null : end($conditions);
-        if ($scope !== null && isset(Tokens::OO_SCOPE_TOKENS[$scope]) && $scope !== T_ENUM) {
+        $isClassConstant = Scopes::isOOConstant($phpcsFile, $stackPtr);
+        $isEnum = $isClassConstant && Scopes::validDirectScope($phpcsFile, $stackPtr, T_ENUM) !== false;
+        if ($isClassConstant && !$isEnum) {
             parent::process($phpcsFile, $stackPtr);
             return;
         }
@@ -88,7 +89,7 @@ class UpperCaseConstantNameSniff extends GenericSniff
             return;
         }
 
-        if ($scope === T_ENUM) {
+        if ($isEnum) {
             $this->checkEnumConstant($phpcsFile, $namePtr);
             return;
         }
