@@ -397,18 +397,18 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that only Jumbo reports a blank line between a call's arguments or before its closing parenthesis, and that
-     * both standards report one before the first argument.
+     * Test that both standards report a blank line between a call's arguments or before its closing parenthesis, as
+     * EmptyLine, and one before the first argument, as FirstArgumentPosition.
      */
     public function testBlankLinesInCall(): void
     {
         $fixture = dirname(__DIR__, 2) . '/Jumbo/Tests/Ruleset/BlankLinesInCall.inc';
         $sniff = '--sniffs=PERCS31.Functions.FunctionCallLayout';
-        foreach (['PERCS31' => [], 'Jumbo' => ['9', '15', '20']] as $standard => $expected) {
+        foreach (['PERCS31', 'Jumbo'] as $standard) {
             $result = $this->runTool('phpcs', ['-s', "--standard=$standard", $sniff, '--report=emacs', $fixture]);
 
             preg_match_all('/:(\\d+):\\d+: error - .*\\.EmptyLine\\)/', $result['output'], $matches);
-            $this->assertSame($expected, $matches[1], $result['output']);
+            $this->assertSame(['9', '15', '20'], $matches[1], $result['output']);
             $this->assertStringContainsString('FirstArgumentPosition', $result['output']);
         }
     }

@@ -264,14 +264,12 @@
     <!-- A warning for clone without parentheses, e.g. clone $a (4.7) -->
     <rule ref="PERCS31.PHP.RequireCloneParentheses"/>
 
-    <!-- A call's argument list, including clone()'s, but not a set hook's parameter list (4.7). PSR-12 turns off the
-         parent's SpaceAfterCloseBracket and OpeningIndent codes. PER says nothing about a blank line between arguments,
-         or before the closing parenthesis (2.3). A blank line before the first argument is still reported, as
-         FirstArgumentPosition (4.7). -->
+    <!-- A call's argument list, including clone()'s, but not a set hook's parameter list (4.7). No blank line between
+         arguments, as 4.7's examples show. PSR-12 turns off the parent's SpaceAfterCloseBracket and OpeningIndent
+         codes. -->
     <rule ref="PERCS31.Functions.FunctionCallLayout">
         <exclude name="PERCS31.Functions.FunctionCallLayout.SpaceAfterCloseBracket"/>
         <exclude name="PERCS31.Functions.FunctionCallLayout.OpeningIndent"/>
-        <exclude name="PERCS31.Functions.FunctionCallLayout.EmptyLine"/>
     </rule>
 
     <!-- ====== CONTROL STRUCTURES (5) ====== -->

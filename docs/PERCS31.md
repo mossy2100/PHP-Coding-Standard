@@ -73,10 +73,6 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 - **Squiz.Classes.ValidClassName**, from PSR-1, by [`PERCS31.NamingConventions.ValidClassName`](#percs31namingconventionsvalidclassname), which also reports a run
   of capitals.
 
-`PERCS31.Functions.FunctionCallLayout`'s `EmptyLine` code is excluded. PER says nothing about a blank line
-between a call's arguments, or before its closing parenthesis, so section 2.3 allows both. One before the first argument
-is still reported, as `FirstArgumentPosition`.
-
 `Squiz.Functions.FunctionDeclarationArgumentSpacing`'s `SpaceBeforeEquals` and `SpaceAfterEquals` are excluded, as a
 default value's `=` is a binary operator, which section 6.2 allows more than one space around.
 [`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing) checks it instead.
@@ -1394,7 +1390,9 @@ gaps:
   hook's declaration, so this sniff skips it, and [`PERCS31.Classes.PropertyHookLayout`](#percs31classespropertyhooklayout) checks it instead.
 
 It's named Layout, not Signature like its parent, as a function's signature is its declaration. PSR-12 turns off the
-parent's `SpaceAfterCloseBracket` and `OpeningIndent` codes, and PERCS31 its `EmptyLine` code, so they're off here too.
+parent's `SpaceAfterCloseBracket` and `OpeningIndent` codes, so they're off here too. A blank line between arguments,
+or before the closing parenthesis, is reported as `EmptyLine`, as 4.7's examples, which "show correct argument usage",
+have none.
 
 **Auto-fixable:** yes, as the parent.
 
