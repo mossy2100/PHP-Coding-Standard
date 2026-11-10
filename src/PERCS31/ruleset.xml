@@ -127,7 +127,10 @@
     <!-- No space after the ? of a nullable type, wherever a type can appear (4.5) -->
     <rule ref="PERCS31.Functions.NullableTypeDeclaration"/>
 
-    <!-- ====== TRAILING COMMAS (2.6) ====== -->
+    <!-- No space around the | between a multi-catch's types, as union types have none (2.5) -->
+    <rule ref="PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing"/>
+
+    <!-- ====== COMMAS (2.6) ====== -->
 
     <!-- Trailing commas: disallowed on single-line lists, required on multi-line ones (2.6) -->
     <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInCall">
@@ -162,6 +165,14 @@
     <rule ref="Universal.Attributes.TrailingComma">
         <exclude name="Universal.Attributes.TrailingComma.ForbiddenSingleAttributeMultiLine"/>
     </rule>
+
+    <!-- A comma with no space before it and one after in any other list, such as an array, group use, match
+         conditions or clone(), as the examples show (3, 5.2, 11). Parameter, argument, closure use and declare lists
+         have their own codes, which other sniffs already cover. -->
+    <rule ref="Universal.WhiteSpace.CommaSpacing.SpaceBefore"/>
+    <rule ref="Universal.WhiteSpace.CommaSpacing.NoSpaceAfter"/>
+    <rule ref="Universal.WhiteSpace.CommaSpacing.TooMuchSpaceAfter"/>
+    <rule ref="Universal.WhiteSpace.CommaSpacing.CommaAfterComment"/>
 
     <!-- ====== FILES (3) ====== -->
 
@@ -260,9 +271,6 @@
 
     <!-- A structure's body in braces, not the alternative syntax, e.g. if (): ... endif; (5) -->
     <rule ref="Universal.ControlStructures.DisallowAlternativeSyntax"/>
-
-    <!-- No space around the | between a multi-catch's types, as union types have none (2.5) -->
-    <rule ref="PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing"/>
 
     <!-- A control structure's parentheses, without PSR-12's rules for a multi-line foreach (5, 5.5) -->
     <rule ref="PERCS31.ControlStructures.ControlStructureSpacing"/>
@@ -420,15 +428,9 @@
     <!-- Several attributes may share a block on one line, but not one split over lines (12.3) -->
     <rule ref="PERCS31.Attributes.DisallowMultiLineAttributesJoining"/>
 
-    <!-- A comma with no space before it and one after: in an attribute block (12.3), and in any other list, such as an
-         array, group use, match conditions or clone(), as the examples show (3, 5.2, 11). Parameter, argument, closure
-         use and declare lists have their own codes, which other sniffs already cover. -->
+    <!-- A comma in an attribute block with no space before it and one after (12.3) -->
     <rule ref="Universal.WhiteSpace.CommaSpacing.SpaceBeforeInAttributeBlock"/>
     <rule ref="Universal.WhiteSpace.CommaSpacing.NoSpaceAfterInAttributeBlock"/>
     <rule ref="Universal.WhiteSpace.CommaSpacing.TooMuchSpaceAfterInAttributeBlock"/>
-    <rule ref="Universal.WhiteSpace.CommaSpacing.SpaceBefore"/>
-    <rule ref="Universal.WhiteSpace.CommaSpacing.NoSpaceAfter"/>
-    <rule ref="Universal.WhiteSpace.CommaSpacing.TooMuchSpaceAfter"/>
-    <rule ref="Universal.WhiteSpace.CommaSpacing.CommaAfterComment"/>
 
 </ruleset>

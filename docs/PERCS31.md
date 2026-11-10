@@ -1,7 +1,7 @@
 # PERCS31 Coding Standard
 
 A PHP_CodeSniffer standard for [PER Coding Style 3.1](https://www.php-fig.org/per/coding-style/), and nothing more. It's built on PSR-12, which PER Coding Style
-extends.
+extends, and so includes [PSR-1](https://www.php-fig.org/psr/psr-1/), which PER Coding Style requires.
 
 No complete PHP_CodeSniffer standard for PER Coding Style exists at the time of development. PSR-12's sniffs get some
 PER rules wrong, such as rejecting an empty body written as `{}`, and don't yet support PHP 8.4 and 8.5 features such as
@@ -971,10 +971,10 @@ $label = $isActive
     : 'Inactive';
 ```
 
-**Auto-fixable:** yes, unless a comment is next to `?` or `:`.
-
 The indentation is always 4 spaces, as [PER Coding Style 3.1, Section 2.4](https://www.php-fig.org/per/coding-style/#24-indenting) requires. This sniff doesn't use the `indent`
 property of `PERCS31.WhiteSpace.ScopeIndent`.
+
+**Auto-fixable:** yes, unless a comment is next to `?` or `:`.
 
 **Good:**
 
@@ -2121,9 +2121,9 @@ Section 6.2 doesn't list `=>` among the binary operators, so section 6 leaves it
 array's and a `yield`'s are only checked if `checkArray` or `checkYield` is set, as the Jumbo standard does. A
 `foreach`'s, an arrow function's and a property hook's `=>` have their own sniffs.
 
-**Auto-fixable:** yes.
-
 A line break before or after the arrow is allowed, for wrapping a long arm, element or value.
+
+**Auto-fixable:** yes.
 
 **Good:**
 
