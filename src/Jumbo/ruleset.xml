@@ -336,12 +336,10 @@
     </rule>
 
     <!-- A line in a control structure's condition indented exactly as needed: once past the ( line for a boolean
-         operator, and once past its operand's line for any other operator. PERCS31 allows at least once (5). A short
-         ternary written ?:, with nothing between, which PERCS31 allows (6.3). -->
+         operator, and once past its operand's line for any other operator. PERCS31 allows at least once (5). -->
     <rule ref="PERCS31.Operators.OperatorPlacement">
         <properties>
             <property name="requireExactConditionIndent" value="true"/>
-            <property name="checkSplitShortTernary" value="true"/>
         </properties>
     </rule>
 

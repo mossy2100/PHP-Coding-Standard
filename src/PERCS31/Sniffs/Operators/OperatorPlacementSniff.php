@@ -49,9 +49,8 @@ use PHPCSUtils\Utils\Parentheses;
  * PhpCollective.Operators.OperatorPosition covers some of this, but only about 14 operators, and doesn't check the
  * indent.
  *
- * PER doesn't say whether a short ternary's `?` and `:` may be apart, as in `$a ? : $b`, so they may, and a `?` at the
- * end of a line is reported like any other operator. Set checkSplitShortTernary to require `?:`, with nothing between,
- * as the Jumbo standard does.
+ * A short ternary must be written `?:`, with nothing between the `?` and `:`, as SplitShortTernary. Section 6.3 says it
+ * follows the rules for other binary operators, and its examples write it as one, `?:`.
  */
 class OperatorPlacementSniff implements Sniff
 {
@@ -66,13 +65,6 @@ class OperatorPlacementSniff implements Sniff
      * once past the line with the opening parenthesis. Section 5 only says "at least once", so it's off by default.
      */
     public bool $requireExactConditionIndent = false;
-
-    /**
-     * Whether to report a short ternary with a space, line break or comment between its `?` and `:`, as in `$a ? : $b`.
-     * PER doesn't say whether they may be apart, so it's off by default, and a `?` is then placed like any other
-     * operator.
-     */
-    public bool $checkSplitShortTernary = false;
 
     /**
      * Control structures whose condition PSR12.ControlStructures.BooleanOperatorPlacement checks.
@@ -148,13 +140,8 @@ class OperatorPlacementSniff implements Sniff
             $lastPtr = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
             assert(is_int($lastPtr));
             if ($lastPtr !== ($stackPtr + 1)) {
-                if ($this->checkSplitShortTernary) {
-                    $this->reportSplitShortTernary($phpcsFile, $stackPtr, $lastPtr);
-                    return;
-                }
-
-                // The `?` is placed as an operator of its own, so one at the end of a line is reported.
-                $lastPtr = $stackPtr;
+                $this->reportSplitShortTernary($phpcsFile, $stackPtr, $lastPtr);
+                return;
             }
         }
 
@@ -207,9 +194,8 @@ class OperatorPlacementSniff implements Sniff
     }
 
     /**
-     * Report a short ternary with a space, line break or comment between its `?` and `:`, when checkSplitShortTernary
-     * is on. The fix joins them where the `:` is, so a `?` at the end of a line moves to the start of the next, as
-     * section 6.4 requires.
+     * Report a short ternary with a space, line break or comment between its `?` and `:`. The fix joins them where the
+     * `:` is, so a `?` at the end of a line moves to the start of the next, as section 6.4 requires.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $thenPtr The position of the `?`.

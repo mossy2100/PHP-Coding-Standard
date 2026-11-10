@@ -54,8 +54,7 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
   (`checkArray` and `checkYield` set to `true`). It replaces Squiz `ArrayDeclaration`'s arrow spacing checks.
 - `PERCS31.Operators.OperatorPlacement` requires a line in a control structure's condition to be indented exactly once
   past the `(` line if it starts with `&&` or `||`, and exactly once past its operand's line if it starts with any other
-  operator. PERCS31 allows at least once (`requireExactConditionIndent` set to `true`). It also requires a short ternary
-  written `?:`, with nothing between the `?` and `:`, which PERCS31 allows (`checkSplitShortTernary` set to `true`).
+  operator. PERCS31 allows at least once (`requireExactConditionIndent` set to `true`).
 - `PERCS31.Formatting.TrailingComma` disallows a comma before a `match` arm's `=>` when its conditions are split over
   lines, which PERCS31 doesn't check (`disallowInSplitMatchConditions` set to `true`).
 - `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat` and `PERCS31.TypeHints.NullType` report `T|null`, which should
