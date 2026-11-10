@@ -238,9 +238,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   spaces, e.g. `catch (A|B $e)`, as PER Coding Style 3.1 requires; PSR-12's sniff required them. That's checked by
   `PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing`. `$x=&$a`, which
   PSR-12's sniff skips, is also an error now.
-- **`orderHooksWithBodies` on `PERCS31.Classes.PropertyDeclaration`.** `HookOrder` only checks a hook list with no
-  bodies by default, as PER Coding Style 3.1 only sets the order of an abstract or interface property's hooks. The Jumbo
-  standard turns it on, to check every hook list as before.
 - **`Jumbo.Functions.RequireSingleLineCall`.** Replaces `SlevomatCodingStandard.Functions.RequireSingleLineCall`, which
   reported a call with a multi-line anonymous class argument, e.g. `consume(new class {` ... `});`, and fixed it by
   putting the class body on one line. Such a call is now skipped, as one with a closure argument already was. So is a

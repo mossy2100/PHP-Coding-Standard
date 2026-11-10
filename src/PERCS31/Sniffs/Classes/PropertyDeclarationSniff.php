@@ -20,8 +20,8 @@ use PHP_CodeSniffer\Util\Tokens;
  *   including a promoted one. A double underscore, as in `$__a`, is allowed, as the rule is about a single one, and
  *   PSR2.Methods.MethodDeclaration reads the same rule that way for methods. The parent's Underscore check can't skip
  *   it, so the ruleset excludes that code.
- * - It checks that `get` comes before `set` in an abstract or interface property's hooks, as PER Coding Style 3.1,
- *   section 4.10, requires. Set orderHooksWithBodies to check every hook list, as the Jumbo standard does.
+ * - It checks that `get` comes before `set` in a property's hooks. PER Coding Style 3.1, section 4.10, requires it
+ *   for an abstract or interface property's, and every example in section 4.9 has `get` first too.
  *
  * The ruleset excludes the parent's checks that Slevomat sniffs make: modifier order, and the spacing after the type,
  * by SlevomatCodingStandard.Classes.PropertyDeclaration, and several properties in one statement, by
@@ -30,14 +30,6 @@ use PHP_CodeSniffer\Util\Tokens;
 class PropertyDeclarationSniff extends Psr2Sniff
 {
     public const string CODE_LEADING_UNDERSCORE = 'LeadingUnderscore';
-
-    /**
-     * Whether HookOrder also checks a hook list with bodies, not just one like `{ set; get; }`.
-     *
-     * PER Coding Style 3.1, section 4.10, only sets the order of an abstract or interface property's hooks, which have
-     * no bodies. The Jumbo standard turns this on.
-     */
-    public bool $orderHooksWithBodies = false;
 
     /**
      * Processes the function tokens within the class.
@@ -79,8 +71,8 @@ class PropertyDeclarationSniff extends Psr2Sniff
      * Check that the `get` hook comes before the `set` hook, when a property has both.
      *
      * PER Coding Style 3.1, section 4.10, requires this order for an abstract or interface property with no hook
-     * bodies, so only a list with no bodies is checked, unless $orderHooksWithBodies is on. Then every hook list is
-     * checked, including ones with bodies, `&` or attributes. The fix swaps the two hooks, with their attributes,
+     * bodies, and every example in section 4.9 follows it, so every hook list is checked, including ones with bodies,
+     * `&` or attributes. The fix swaps the two hooks, with their attributes,
      * modifiers and bodies. It isn't offered if there's a comment between the hooks.
      *
      * @param File $phpcsFile The file being scanned.
@@ -98,10 +90,6 @@ class PropertyDeclarationSniff extends Psr2Sniff
 
         $hooks = PropertyHookHelper::parseHooks($phpcsFile, $opener, $closer);
         if ($hooks === null) {
-            return;
-        }
-
-        if (!$this->orderHooksWithBodies && in_array(true, array_column($hooks, 'hasBody'), true)) {
             return;
         }
 

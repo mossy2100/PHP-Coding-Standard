@@ -731,10 +731,9 @@ It reports:
   parameters. Section 4.3 says "a single underscore", so a double one, as in `$__a`, passes, as it does on a method.
 - The `var` keyword (`VarUsed`).
 - A property with no visibility (`ScopeMissing`).
-- `set` before `get` in a property's hooks (`HookOrder`). [PER Coding Style 3.1, Section 4.10](https://www.php-fig.org/per/coding-style/#410-interface-and-abstract-properties) requires this for an
-  abstract or interface property with no hook bodies, e.g. `{ get; set; }`, so only a list with no bodies is checked.
-  Set `orderHooksWithBodies` to check every hook list, including ones with bodies, `&` or attributes. The Jumbo standard
-  does.
+- `set` before `get` in a property's hooks (`HookOrder`). [PER Coding Style 3.1, Section 4.10](https://www.php-fig.org/per/coding-style/#410-interface-and-abstract-properties) requires `get` first for
+  an abstract or interface property with no hook bodies, e.g. `{ get; set; }`, and every example in section 4.9 has
+  `get` first too. So every hook list is checked, including ones with bodies, `&` or attributes.
 
 `SlevomatCodingStandard.Classes.PropertyDeclaration` checks modifier order and the spacing after the type, and
 `SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition` checks for several properties in one statement.
@@ -775,12 +774,6 @@ interface Named
     public string $name { set; get; }
 }
 ```
-
-**Configuration:**
-
-| Property               | Type | Default | Description                                                      |
-| ---------------------- | ---- | ------- | ---------------------------------------------------------------- |
-| `orderHooksWithBodies` | bool | false   | Check the hook order in every hook list, not just bodiless ones. |
 
 ---
 

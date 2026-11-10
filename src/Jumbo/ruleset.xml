@@ -139,13 +139,6 @@
         <exclude name="SlevomatCodingStandard.Classes.TraitUseSpacing.IncorrectLinesCountAfterLastUse"/>
     </rule>
 
-    <!-- get before set in every hook list, including ones with bodies, not just abstract and interface properties -->
-    <rule ref="PERCS31.Classes.PropertyDeclaration">
-        <properties>
-            <property name="orderHooksWithBodies" value="true"/>
-        </properties>
-    </rule>
-
     <!-- Global constants in UPPER_CASE too, which PER doesn't require -->
     <rule ref="PERCS31.NamingConventions.UpperCaseConstantName">
         <properties>

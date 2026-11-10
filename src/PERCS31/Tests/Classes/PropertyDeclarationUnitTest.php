@@ -37,7 +37,9 @@ class PropertyDeclarationUnitTest extends AbstractSniffTestCase
             141 => 1,
             144 => 1,
             147 => 1,
-            // HookOrder with orderHooksWithBodies on: arrow hooks, block hooks, and a comment between the hooks.
+            // HookOrder in a hook list with bodies.
+            154 => 1,
+            // HookOrder: arrow hooks, block hooks, and a comment between the hooks.
             165 => 1,
             171 => 1,
             181 => 1,

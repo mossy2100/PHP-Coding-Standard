@@ -147,16 +147,16 @@ interface HookOrder
     public string $withAttribute { get; #[Pure] set; }
 }
 
-// Valid by default: a hook list with bodies, as PER only sets the order for an abstract or interface property.
+// A hook list with bodies is checked too, as every example in 4.9 has get first.
 class HookOrderWithBodiesDefault
 {
     public string $notChecked {
-        set => $value;
         get => 'x';
+        set => $value;
     }
 }
 
-// phpcs:set PERCS31.Classes.PropertyDeclaration orderHooksWithBodies true
+// More hook lists with bodies.
 
 abstract class HookOrderWithBodies
 {
