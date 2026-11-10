@@ -200,6 +200,8 @@
 
     <!-- Property modifier order, and the spacing around them and the type (4.3, 4.6) -->
     <rule ref="SlevomatCodingStandard.Classes.PropertyDeclaration">
+        <!-- A space after the ? of a nullable type is reported by PERCS31.Functions.NullableTypeDeclaration -->
+        <exclude name="SlevomatCodingStandard.Classes.PropertyDeclaration.WhitespaceAfterNullabilitySymbol"/>
         <properties>
             <property name="checkPromoted" value="true"/>
         </properties>

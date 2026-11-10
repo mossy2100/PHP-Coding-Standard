@@ -157,7 +157,9 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
   or later, which stops it flagging a comma inside parentheses, as in `const I = new Complex(0, 1);`.
 - **Classes.DisallowMultiPropertyDefinition**: Disallows several properties in one statement (4.3).
 - **Classes.PropertyDeclaration**: Requires the modifier order, and the spacing around the modifiers and the type,
-  including on promoted properties (4.3, 4.6).
+  including on promoted properties (4.3, 4.6). Its check for a space after a nullable type's `?` is replaced by
+  [`PERCS31.Functions.NullableTypeDeclaration`](#percs31functionsnullabletypedeclaration), which is more complete: it checks every place a type can
+  appear, including a `set` hook's parameter, not just a property.
 - **Functions.ArrowFunctionDeclaration**: Requires no space after `fn`, e.g. `fn($x) => $x`. The expression may be on
   the next line (7.1).
 - **Functions.DisallowTrailingCommaInCall**, **...InClosureUse** and **...InDeclaration**: Disallow a trailing comma in
@@ -1450,7 +1452,8 @@ code, which has to be rewritten, so this sniff leaves that parameter list alone.
 ### PERCS31.Functions.NullableTypeDeclaration
 
 Disallows a space between the `?` of a nullable type and the type, wherever a type can appear. This replaces
-`PSR12.Functions.NullableTypeDeclaration`.
+`PSR12.Functions.NullableTypeDeclaration`, and the same check in `SlevomatCodingStandard.Classes.PropertyDeclaration`
+(`WhitespaceAfterNullabilitySymbol`), which only covers a property.
 
 **Why:** [PER Coding Style 3.1, Section 4.5](https://www.php-fig.org/per/coding-style/#45-method-and-function-parameters) says there MUST NOT be a space between the question mark and the type. The
 PSR-12 sniff checks every position but one: PHP_CodeSniffer doesn't know about hooks, so the sniff doesn't see the `?`

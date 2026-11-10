@@ -397,7 +397,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
-- **Three duplicate messages.** Each of these was reported twice. The second report is gone, so a `phpcs:ignore` for it
+- **Four duplicate messages.** Each of these was reported twice. The second report is gone, so a `phpcs:ignore` for it
   can be removed:
   - `PERCS31.Classes.PropertyHookLayout.CommentAfterCloser`, as `PERCS31.Classes.ClosingBrace` reports a comment after
     a hook list's closing brace.
@@ -405,6 +405,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     `PERCS31.Classes.ClassDeclaration` reports the space after an enum's colon.
   - `Squiz.Arrays.ArrayDeclaration.CloseBraceNewLine`, as `Generic.Arrays.ArrayIndent` reports a closing bracket that
     isn't on a new line.
+  - `SlevomatCodingStandard.Classes.PropertyDeclaration.WhitespaceAfterNullabilitySymbol`, as
+    `PERCS31.Functions.NullableTypeDeclaration` reports a space after a nullable type's `?`.
 - **Four Slevomat checks that PERCS31 already covers.** `SlevomatCodingStandard.Classes.TraitUseDeclaration`,
   `SlevomatCodingStandard.Namespaces.NamespaceSpacing`,
   `SlevomatCodingStandard.Namespaces.UseDoesNotStartWithBackslash`, and the before-first and after-last checks of
