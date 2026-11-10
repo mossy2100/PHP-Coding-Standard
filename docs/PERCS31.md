@@ -56,6 +56,8 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   directives, such as `declare(ticks=1,strict_types=1);`, or a string value, such as `declare(encoding='UTF-8');`.
 - **PSR12.Files.FileHeader**, by [`PERCS31.Files.FileHeader`](#percs31filesfileheader), which allows `<?php declare(strict_types=1) ?>` on the
   first line of a file with markup.
+- **PSR12.Functions.NullableTypeDeclaration**, by [`PERCS31.Functions.NullableTypeDeclaration`](#percs31functionsnullabletypedeclaration), which also checks a
+  `set` hook's parameter.
 - **PSR12.Operators.OperatorSpacing**, by [`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing), which also covers the pipe operator `|>`.
 - **PSR12.Properties.ConstantVisibility** is kept, but a constant with no visibility is an error, not a warning, as
   [Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says MUST.
@@ -73,11 +75,16 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 between a call's arguments, or before its closing parenthesis, so section 2.3 allows both. One before the first argument
 is still reported, as `FirstArgumentPosition`.
 
+`Squiz.Functions.FunctionDeclarationArgumentSpacing`'s `SpaceBeforeEquals` and `SpaceAfterEquals` are excluded, as a
+default value's `=` is a binary operator, which section 6.2 allows more than one space around.
+[`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing) checks it instead.
+
 ---
 
 ## Inherited Sniffs
 
-Sniffs from PHP_CodeSniffer's other standards and the two base packages, each for the PER Coding Style rule in brackets.
+Sniffs from PHP_CodeSniffer's other standards, Slevomat, PHPCSExtra and php-collective, each for the PER Coding Style
+rule in brackets.
 
 ### Generic
 
