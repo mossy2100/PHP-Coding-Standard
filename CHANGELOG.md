@@ -114,10 +114,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **A multi-line `case` condition must start on the next line and be indented (breaking).**
   `PERCS31.ControlStructures.SwitchDeclaration` reports `case ($a`, and a line not indented past the `case`, as PER
   Coding Style 3.1, section 5.2, requires. Auto-fixable, unless a comment is in the way.
-- **More blank lines are allowed in PERCS31.** PER Coding Style 3.1 doesn't forbid a blank line between call arguments
-  or `use` items, or before a closing parenthesis, or more than one between parameters, so PERCS31 no longer reports
-  them. The Jumbo standard still does, using the new `PERCS31.Functions.MultiLineFunctionDeclaration` property
-  `checkOptionalBlankLines`.
+- **One blank line is allowed between parameters in PERCS31.** PER Coding Style 3.1, section 12.4's example has one, so
+  `PERCS31.Functions.MultiLineFunctionDeclaration` reports any other blank line in a parameter or closure `use` list
+  as `BlankLine`, not every one, as `EmptyLine` did. A blank line between call arguments isn't reported in PERCS31.
 - **A body's first line indented too far is an error (breaking).** `PERCS31.WhiteSpace.ScopeIndent` now reports it,
   including in a closure, a `case` or a property hook. Auto-fixable.
 - **A `match` arm indented too far is an error (breaking).** `PERCS31.WhiteSpace.ScopeIndent` requires a line starting

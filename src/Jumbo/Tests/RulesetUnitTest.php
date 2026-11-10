@@ -379,19 +379,19 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that both standards allow one blank line between parameters, and that Jumbo also reports more than one, or
-     * one before a closing parenthesis or between `use` items, which PER doesn't forbid. The parent's EmptyLine, which
-     * reports them all, is excluded in the ruleset.
+     * Test that both standards allow one blank line between parameters, as section 12.4's example has, and report
+     * more than one, or one before a closing parenthesis or between `use` items. The parent's EmptyLine, which reports
+     * them all, is excluded in the ruleset.
      */
     public function testBlankLinesInDeclaration(): void
     {
         $fixture = dirname(__DIR__, 2) . '/Jumbo/Tests/Ruleset/BlankLinesInDeclaration.inc';
         $sniff = '--sniffs=PERCS31.Functions.MultiLineFunctionDeclaration';
-        foreach (['PERCS31' => ['20'], 'Jumbo' => ['16', '20', '32', '41']] as $standard => $expected) {
+        foreach (['PERCS31', 'Jumbo'] as $standard) {
             $result = $this->runTool('phpcs', ['-s', "--standard=$standard", $sniff, '--report=emacs', $fixture]);
 
             preg_match_all('/:(\\d+):\\d+: error - .*\\.BlankLine\\)/', $result['output'], $matches);
-            $this->assertSame($expected, $matches[1], $result['output']);
+            $this->assertSame(['16', '20', '32', '41'], $matches[1], $result['output']);
             $this->assertStringNotContainsString('EmptyLine', $result['output']);
         }
     }

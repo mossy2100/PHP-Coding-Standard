@@ -22,11 +22,10 @@ use PHP_CodeSniffer\Util\Tokens;
  * `) {}`.
  *
  * The parent also reports any blank line in a multi-line parameter or `use` list (EmptyLine). PER Coding Style 3.1,
- * section 2.3, allows blank lines anywhere they aren't forbidden, and section 12.4's example has one between two
- * parameters, both before an attribute and before a parameter with none. The parent's check can't be run on its own,
- * so the PERCS31 ruleset excludes EmptyLine, and this sniff reports blank lines itself (BlankLine). PER says nothing
- * about one before the closing parenthesis or between `use` items, or about how many can go between parameters, so
- * those are only reported if $checkOptionalBlankLines is set. A single one between parameters is always allowed.
+ * section 12.4's example has one between two parameters, both before an attribute and before a parameter with none.
+ * The parent's check can't be run on its own, so the PERCS31 ruleset excludes EmptyLine, and this sniff reports blank
+ * lines itself (BlankLine). A single blank line between parameters is allowed, as the example shows. Any other, such
+ * as more than one in a row, one before the closing parenthesis, or one between `use` items, is reported.
  *
  * The parent doesn't register an arrow function. Section 7.1 says one follows the same rules as a closure, so this
  * sniff registers `fn` too, and checks a split parameter list. It has no braces, so the brace checks don't apply.
@@ -38,14 +37,6 @@ use PHP_CodeSniffer\Util\Tokens;
 class MultiLineFunctionDeclarationSniff extends SquizSniff
 {
     public const string CODE_BLANK_LINE = 'BlankLine';
-
-    /**
-     * Whether to report a blank line PER doesn't forbid: before a closing parenthesis, between `use` items, or more
-     * than one between parameters.
-     *
-     * @var bool
-     */
-    public bool $checkOptionalBlankLines = false;
 
     /**
      * Returns an array of tokens this test wants to listen for: the parent's, and an arrow function's `fn`.
@@ -175,11 +166,7 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
             $isBlankLine = $tokens[$i]['code'] === T_WHITESPACE
                 && $tokens[$i]['column'] === 1
                 && $tokens[$i]['line'] !== $tokens[($i + 1)]['line'];
-            if (
-                !$isBlankLine
-                || $this->isAllowedBetweenParameters($phpcsFile, $i, $parameterCloser)
-                || (!$this->checkOptionalBlankLines && $this->isOptional($phpcsFile, $i, $parameterCloser, $closer))
-            ) {
+            if (!$isBlankLine || $this->isAllowedBetweenParameters($phpcsFile, $i, $parameterCloser)) {
                 continue;
             }
 
@@ -192,30 +179,6 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
                 $phpcsFile->fixer->replaceToken($i, '');
             }
         }
-    }
-
-    /**
-     * Check whether a blank line is one PER says nothing about: before a closing parenthesis, or after a comma between
-     * items.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $blankPtr The blank line's whitespace token.
-     * @param int $parameterCloser The position of the parameter list's closing parenthesis.
-     * @param int $closer The position of the last list's closing parenthesis.
-     * @return bool True if PER neither requires nor forbids the blank line.
-     */
-    private function isOptional(File $phpcsFile, int $blankPtr, int $parameterCloser, int $closer): bool
-    {
-        $tokens = $phpcsFile->getTokens();
-        $next = $phpcsFile->findNext(T_WHITESPACE, ($blankPtr + 1), null, true);
-        $previous = $phpcsFile->findPrevious(T_WHITESPACE, ($blankPtr - 1), null, true);
-        if ($next === $parameterCloser || $next === $closer) {
-            return $previous === false || $tokens[$previous]['code'] !== T_OPEN_PARENTHESIS;
-        }
-
-        $previousCode = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($blankPtr - 1), null, true);
-
-        return $previousCode !== false && $tokens[$previousCode]['code'] === T_COMMA;
     }
 
     /**

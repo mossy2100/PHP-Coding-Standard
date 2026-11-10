@@ -210,12 +210,7 @@
     <rule ref="SlevomatCodingStandard.Functions.UselessParameterDefaultValue"/>
     <rule ref="SlevomatCodingStandard.PHP.DisallowDirectMagicInvokeCall"/>
 
-    <!-- No blank line in a call's arguments, a closure's use list, or before a closing parenthesis -->
-    <rule ref="PERCS31.Functions.MultiLineFunctionDeclaration">
-        <properties>
-            <property name="checkOptionalBlankLines" value="true"/>
-        </properties>
-    </rule>
+    <!-- No blank line in a call's arguments -->
     <rule ref="PERCS31.Functions.FunctionCallLayout.EmptyLine">
         <severity>5</severity>
     </rule>

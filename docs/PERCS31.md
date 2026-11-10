@@ -1431,14 +1431,11 @@ recommends for a function. This sniff skips that case, and leaves everything els
 a single-line signature, the parent's `CloseBracketNewLine` check is skipped too, as it can't be run on its own. See
 [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
 
-The parent also reports every blank line in a multi-line parameter or `use` list. [Section 2.3](https://www.php-fig.org/per/coding-style/#23-lines) allows blank lines
-wherever they aren't forbidden, and [section 12.4](https://www.php-fig.org/per/coding-style/#124-example)'s example has one between two parameters, both before an attribute and
-before a parameter with none. So the ruleset excludes the parent's `EmptyLine` code, and this sniff reports blank lines
-itself, as `BlankLine`, such as one straight after `(`, or after a parameter's attributes.
-
-PER says nothing about a blank line before the closing parenthesis, or between a closure's `use` items, or about how
-many can go between parameters, so section 2.3 allows those too. Set `checkOptionalBlankLines` to report them, as the
-Jumbo standard does.
+The parent also reports every blank line in a multi-line parameter or `use` list, but [section 12.4](https://www.php-fig.org/per/coding-style/#124-example)'s example
+has one between two parameters, both before an attribute and before a parameter with none. So the ruleset excludes the
+parent's `EmptyLine` code, and this sniff reports blank lines itself, as `BlankLine`. A single blank line between
+parameters is allowed, as the example shows. Any other is reported, such as two in a row, one straight after `(` or
+before `)`, one after a parameter's attributes, or one between a closure's `use` items.
 
 The parent doesn't check an arrow function. [Section 7.1](https://www.php-fig.org/per/coding-style/#71-short-closures) says an arrow function follows the same rules as a closure, so
 this sniff checks its split parameter list too:
@@ -1455,12 +1452,6 @@ The parent would also indent every line of a promoted parameter's multi-line hoo
 code, which has to be rewritten, so this sniff leaves that parameter list alone.
 
 **Auto-fixable:** yes, as the parent.
-
-**Configuration:**
-
-| Property                  | Type | Default | Description                                                 |
-| ------------------------- | ---- | ------- | ----------------------------------------------------------- |
-| `checkOptionalBlankLines` | bool | false   | Report a blank line PER doesn't forbid, as described above. |
 
 ---
 
