@@ -610,8 +610,9 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that a leading underscore on a property is an error in both standards, though PSR-2's sniff, which
-     * PERCS31.Classes.PropertyDeclaration extends, only warns, and that its excluded order check isn't reported.
+     * Test that a leading underscore on a property is an error in both standards, as LeadingUnderscore, not the
+     * warning from PSR-2's sniff, which PERCS31.Classes.PropertyDeclaration extends, and that its excluded order check
+     * isn't reported.
      */
     #[DataProvider('standardProvider')]
     public function testPropertyUnderscoreIsAnError(string $standard): void
@@ -627,7 +628,8 @@ class RulesetUnitTest extends TestCase
             unlink($file);
         }
 
-        $this->assertMatchesRegularExpression('/:7:\\d+: error - .*PropertyDeclaration\\.Underscore/', $output);
+        $this->assertMatchesRegularExpression('/:7:\\d+: error - .*PropertyDeclaration\\.LeadingUnderscore/', $output);
+        $this->assertStringNotContainsString('(PERCS31.Classes.PropertyDeclaration.Underscore)', $output);
         $this->assertStringNotContainsString('PERCS31.Classes.PropertyDeclaration.StaticBeforeVisibility', $output);
     }
 

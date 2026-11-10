@@ -229,10 +229,9 @@
         <exclude name="PERCS31.Classes.PropertyDeclaration.FinalAfterVisibility"/>
         <exclude name="PERCS31.Classes.PropertyDeclaration.AbstractAfterVisibility"/>
         <exclude name="PERCS31.Classes.PropertyDeclaration.AvizKeywordOrder"/>
-    </rule>
-    <!-- A leading underscore is a MUST NOT (4.3), but the parent only warns -->
-    <rule ref="PERCS31.Classes.PropertyDeclaration.Underscore">
-        <type>error</type>
+        <!-- The parent's warning for a leading underscore can't skip a double one, so the sniff's LeadingUnderscore error
+             replaces it (4.3) -->
+        <exclude name="PERCS31.Classes.PropertyDeclaration.Underscore"/>
     </rule>
 
     <!-- The layout of a property's hook list: its braces, and a short hook's => (4.9, 4.10) -->

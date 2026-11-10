@@ -26,9 +26,11 @@ class PropertyDeclarationUnitTest extends AbstractSniffTestCase
         }
 
         return [
+            // LeadingUnderscore.
+            58 => 1,
             // VarUsed + ScopeMissing.
             61 => 2,
-            // Underscore: promoted constructor parameters.
+            // LeadingUnderscore: promoted constructor parameters.
             127 => 1,
             128 => 1,
             // HookOrder: bodiless, with &, and with an attribute.
@@ -59,8 +61,9 @@ class PropertyDeclarationUnitTest extends AbstractSniffTestCase
         }
 
         return [
-            // Underscore, which the parent reports as a warning, and the rulesets make an error.
+            // The parent's Underscore warning. It can't skip a double underscore, so the PERCS31 ruleset excludes it.
             58 => 1,
+            209 => 1,
         ];
     }
 }

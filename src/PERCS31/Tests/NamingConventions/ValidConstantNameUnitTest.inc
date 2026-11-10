@@ -32,7 +32,7 @@ final class Invalid
 
     protected const _PROTECTED = 2;
 
-    private const string __DOUBLE = 'x';
+    private const string __DOUBLE = 'x'; // Passes: a double underscore isn't a single one.
 
     public const A = 1, _B = 2;
 }

@@ -54,7 +54,7 @@ abstract class ValidAbstractProperties
 
 class ErrorProperties
 {
-    // Underscore: a warning here, as the parent gives, and an error in the rulesets.
+    // LeadingUnderscore: an error, replacing the parent's Underscore warning.
     public string $_underscored = 'bad';
 
     // VarUsed + ScopeMissing: 2 errors.
@@ -122,7 +122,7 @@ enum Status
 
 class PromotedProperties
 {
-    // Underscore: an error on each promoted parameter, but not on the plain one.
+    // LeadingUnderscore: an error on each promoted parameter, but not on the plain one.
     public function __construct(
         public readonly int $_promoted,
         private string $_alsoPromoted,
@@ -200,5 +200,15 @@ class PromotedVisibility
         private(set) int $setOnly,
         protected readonly int $protected,
         int $notPromoted,
+    ) {}
+}
+
+class DoubleUnderscore
+{
+    // A double underscore isn't a single one, so it passes, as on a method.
+    private string $__double = 'ok';
+
+    public function __construct(
+        private int $__promoted,
     ) {}
 }

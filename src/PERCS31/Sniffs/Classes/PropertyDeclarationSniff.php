@@ -13,19 +13,24 @@ use PHP_CodeSniffer\Util\Tokens;
  * Verifies that properties are declared correctly: no leading underscore, no var keyword, a visibility, and `get`
  * before `set` in a hook list.
  *
- * It extends PSR2.Classes.PropertyDeclaration, and changes three things:
+ * It extends PSR2.Classes.PropertyDeclaration, and changes four things:
  * - It skips a variable in a PHP 8.4 property hook's body, such as `$value`, which the parent reads as a property.
- * - It checks a promoted constructor parameter for a leading underscore and a visibility, which the parent doesn't.
+ * - It checks a promoted constructor parameter for a visibility, which the parent doesn't.
+ * - It reports a leading underscore as LeadingUnderscore, an error, as section 4.3 says MUST NOT, on every property,
+ *   including a promoted one. A double underscore, as in `$__a`, is allowed, as the rule is about a single one, and
+ *   PSR2.Methods.MethodDeclaration reads the same rule that way for methods. The parent's Underscore check can't skip
+ *   it, so the ruleset excludes that code.
  * - It checks that `get` comes before `set` in an abstract or interface property's hooks, as PER Coding Style 3.1,
  *   section 4.10, requires. Set orderHooksWithBodies to check every hook list, as the Jumbo standard does.
  *
  * The ruleset excludes the parent's checks that Slevomat sniffs make: modifier order, and the spacing after the type,
  * by SlevomatCodingStandard.Classes.PropertyDeclaration, and several properties in one statement, by
- * SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition. It makes the parent's Underscore warning an error, as
- * section 4.3 says MUST NOT.
+ * SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition.
  */
 class PropertyDeclarationSniff extends Psr2Sniff
 {
+    public const string CODE_LEADING_UNDERSCORE = 'LeadingUnderscore';
+
     /**
      * Whether HookOrder also checks a hook list with bodies, not just one like `{ set; get; }`.
      *
@@ -49,12 +54,12 @@ class PropertyDeclarationSniff extends Psr2Sniff
         }
 
         parent::processMemberVar($phpcsFile, $stackPtr);
+        $this->checkUnderscore($phpcsFile, $stackPtr, $phpcsFile->getTokens());
         $this->checkHookOrder($phpcsFile, $stackPtr, $phpcsFile->getTokens());
     }
 
     /**
-     * Check a promoted constructor parameter's name for a leading underscore, which PER Coding Style 3.1 disallows. The
-     * parent checks other properties, with the same message.
+     * Check a property's name for a single leading underscore, which PER Coding Style 3.1 disallows.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the property token.
@@ -64,10 +69,9 @@ class PropertyDeclarationSniff extends Psr2Sniff
     {
         $content = $tokens[$stackPtr]['content'];
         assert(is_string($content));
-        if (isset($content[1]) && $content[1] === '_') {
-            $error = 'Property name "%s" should not be prefixed with an underscore to indicate visibility';
-            $data = [$tokens[$stackPtr]['content']];
-            $phpcsFile->addError($error, $stackPtr, 'Underscore', $data);
+        if (str_starts_with($content, '$_') && !str_starts_with($content, '$__')) {
+            $error = 'Property name "%s" must not be prefixed with an underscore to indicate visibility';
+            $phpcsFile->addError($error, $stackPtr, self::CODE_LEADING_UNDERSCORE, [$content]);
         }
     }
 

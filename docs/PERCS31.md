@@ -722,8 +722,9 @@ Verifies that properties are declared correctly. This replaces `PSR2.Classes.Pro
 
 **Why:** PSR-12's `PSR2.Classes.PropertyDeclaration` misreads variables in PHP 8.4 property hook bodies, such as
 `$value` and `$this`, as property declarations, and reports false errors on them, so this sniff skips them. The ruleset
-makes the parent's `Underscore` warning an error, and excludes its checks of modifier order, the spacing after the type,
-and several properties in one statement, which Slevomat sniffs make. The parent doesn't check a promoted constructor
+excludes the parent's checks of modifier order, the spacing after the type, and several properties in one statement,
+which Slevomat sniffs make. It also excludes the parent's `Underscore` warning, which this sniff replaces with a
+`LeadingUnderscore` error, as section 4.3 says MUST NOT. The parent doesn't check a promoted constructor
 property either, which [PER Coding Style 3.1, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants)'s rules on underscores and visibility cover. This sniff also
 checks that `get` comes before `set` in an abstract or interface property's hooks, which no inherited sniff does.
 
@@ -735,8 +736,8 @@ in `private(set) int $a`, is allowed, as the public get-visibility MAY then be l
 
 It reports:
 
-- A property name with a leading underscore (`Underscore`), for any visibility, including promoted constructor
-  parameters. PER Coding Style 3.1 disallows it too.
+- A property name with a leading underscore (`LeadingUnderscore`), for any visibility, including promoted constructor
+  parameters. Section 4.3 says "a single underscore", so a double one, as in `$__a`, passes, as it does on a method.
 - The `var` keyword (`VarUsed`).
 - A property with no visibility (`ScopeMissing`).
 - `set` before `get` in a property's hooks (`HookOrder`). [PER Coding Style 3.1, Section 4.10](https://www.php-fig.org/per/coding-style/#410-interface-and-abstract-properties) requires this for an
@@ -1668,7 +1669,8 @@ interface JSONParser {}
 
 ### PERCS31.NamingConventions.ValidConstantName
 
-Disallows a constant name that starts with an underscore, for class constants and `const` statements at file scope.
+Disallows a constant name that starts with an underscore, for class constants and `const` statements at file scope. A
+double underscore, as in `__A`, passes, as section 4.3 says "a single underscore", and it passes on a method.
 
 **Why:** [PER Coding Style 3.1, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says constant names MUST NOT start with an underscore.
 `Generic.NamingConventions.UpperCaseConstantName` only checks the case, so `const _HIDDEN = 1;` passes it.
