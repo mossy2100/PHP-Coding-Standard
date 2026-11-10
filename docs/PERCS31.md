@@ -95,14 +95,14 @@ Sniffs from PHP_CodeSniffer's other standards and the two base packages, each fo
 
 ### Squiz
 
-- **Squiz.Arrays.ArrayDeclaration**: Requires the first value of a multi-line array on the next line, one value per
-  line, and the closing bracket on the next line after the last value (11), and no trailing comma on a single-line array
-  (2.6). Its other checks aren't PER rules, so they're excluded: alignment, spacing around `=>`, the spacing in `[]`,
-  mixing keyed and unkeyed values, and which line a comma goes on. Its comma spacing checks never run on a single-line
-  array, so `Universal.WhiteSpace.CommaSpacing` checks that instead. Its check for a multi-line array's trailing comma
-  is replaced by Slevomat's `Arrays.TrailingArrayComma`, as it missed a keyed last element, and wanted the comma after a
-  heredoc on the next line, as before PHP 7.3. Its `ValueNoNewline` check is replaced by [`PERCS31.Arrays.ValuePerLine`](#percs31arraysvalueperline),
-  as it read an attribute on a value as an earlier value.
+- **Squiz.Arrays.ArrayDeclaration**: Requires the first value of a multi-line array on the next line, and one value per
+  line (11), and no trailing comma on a single-line array (2.6). Its other checks aren't PER rules, so they're excluded:
+  alignment, spacing around `=>`, the spacing in `[]`, mixing keyed and unkeyed values, and which line a comma goes on.
+  Its check for the closing bracket on a new line is excluded too, as `Generic.Arrays.ArrayIndent` reports the same. Its
+  comma spacing checks never run on a single-line array, so `Universal.WhiteSpace.CommaSpacing` checks that instead. Its
+  check for a multi-line array's trailing comma is replaced by Slevomat's `Arrays.TrailingArrayComma`, as it missed a
+  keyed last element, and wanted the comma after a heredoc on the next line, as before PHP 7.3. Its `ValueNoNewline`
+  check is replaced by [`PERCS31.Arrays.ValuePerLine`](#percs31arraysvalueperline), as it read an attribute on a value as an earlier value.
 
 ### PHPCSExtra
 
@@ -133,7 +133,8 @@ Reference: [PHPCSExtra repository and documentation](https://github.com/PHPCSSta
 
 Reference: [Slevomat coding standard repository and documentation](https://github.com/slevomat/coding-standard)
 
-- **Arrays.MultiLineArrayEndBracketPlacement**: Requires the closing bracket of a multi-line array on its own line (11).
+- **Arrays.MultiLineArrayEndBracketPlacement**: Requires a nested array that starts on its parent's first line to end on
+  its parent's last line (11).
 - **Arrays.SingleLineArrayWhitespace**: Requires no space inside a single-line array's brackets, as section 11's example
   shows (11). Its comma checks are excluded, as `Universal.WhiteSpace.CommaSpacing` covers them, including in an array
   nested in a multi-line one, which this sniff skips.
@@ -141,7 +142,8 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
   destructuring list, as in `[$a, $b] = $c;`, including after a heredoc's closing marker (2.6). `list()` is covered by
   [`PERCS31.Formatting.TrailingComma`](#percs31formattingtrailingcomma).
 - **Attributes.RequireAttributeAfterDocComment**: Requires a doc comment before the attributes, not after (12.2).
-- **Classes.BackedEnumTypeSpacing**: Requires no space before a backed enum's colon, and one after (9).
+- **Classes.BackedEnumTypeSpacing**: Requires no space before a backed enum's colon (9). Its check for one space after
+  it is excluded, as [`PERCS31.Classes.ClassDeclaration`](#percs31classesclassdeclaration) reports the same.
 - **Classes.ClassKeywordOrder**: Requires `abstract` or `final` before `readonly` on a class, e.g.
   `final readonly class` (4.6).
 - **Classes.DisallowMultiConstantDefinition**: Disallows several constants in one statement (4.3). Needs Slevomat 8.31.3
@@ -228,8 +230,8 @@ Disallows a blank line before the closing bracket of a multi-line array. This ex
 `PhpCollective.Arrays.ArrayBracketSpacing`, from [php-collective/code-sniffer](https://github.com/php-collective/code-sniffer).
 
 **Why:** [PER Coding Style 3.1, Section 11](https://www.php-fig.org/per/coding-style/#11-arrays) says the closing bracket MUST be on the next line after the last value.
-Slevomat's `MultiLineArrayEndBracketPlacement` only checks that it starts a line. This subclass skips a destructuring
-assignment, which isn't an array declaration, so section 2.3 allows the blank line.
+`Generic.Arrays.ArrayIndent` only checks that it starts a line. This subclass skips a destructuring assignment, which
+isn't an array declaration, so section 2.3 allows the blank line.
 
 **Auto-fixable:** yes, except after a comment.
 
@@ -789,7 +791,8 @@ Checks the layout of a property's hook list: its braces, and the `=>` of a short
 This sniff checks:
 
 - The opening brace is on the same line as the property, after a single space.
-- In the long form, the closing brace is on its own line, with no comment after it.
+- In the long form, the closing brace is on its own line. A comment after it is reported by
+  [`PERCS31.Classes.ClosingBrace`](#percs31classesclosingbrace).
 - In a list with a `{}` body, each hook starts on its own line, each body starts on the line after its `{`, and each `}`
   is first on its line. An empty body, `{}`, has nothing to move, and a comment may follow the `{`.
 - A short hook's `=>` has a single space either side, and its body starts on the same line.

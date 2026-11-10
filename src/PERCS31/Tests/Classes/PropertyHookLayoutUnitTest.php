@@ -25,8 +25,6 @@ class PropertyHookLayoutUnitTest extends AbstractSniffTestCase
             37 => 1,
             // The closing brace after code.
             42 => 1,
-            // A comment after the closing brace (not fixable).
-            46 => 1,
             // Two spaces either side of =>.
             49 => 1,
             // The short hook's body on the next line.

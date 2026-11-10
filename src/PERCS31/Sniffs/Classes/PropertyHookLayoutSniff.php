@@ -34,7 +34,8 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * A hook on a promoted constructor parameter is reported by PERCS31.Classes.PromotedPropertyHooks, so its body isn't
  * checked here. Indentation is checked by PERCS31.WhiteSpace.ScopeIndent, several statements on a line by
- * PERCS31.Formatting.DisallowMultipleStatements, and `get` before `set` by PERCS31.Classes.PropertyDeclaration.
+ * PERCS31.Formatting.DisallowMultipleStatements, `get` before `set` by PERCS31.Classes.PropertyDeclaration, and a
+ * comment after the closing brace by PERCS31.Classes.ClosingBrace.
  */
 class PropertyHookLayoutSniff implements Sniff
 {
@@ -43,8 +44,6 @@ class PropertyHookLayoutSniff implements Sniff
     public const string CODE_SPACE_BEFORE_OPENER = 'SpaceBeforeOpener';
 
     public const string CODE_CLOSER_NOT_ON_OWN_LINE = 'CloserNotOnOwnLine';
-
-    public const string CODE_COMMENT_AFTER_CLOSER = 'CommentAfterCloser';
 
     public const string CODE_ARROW_SPACING = 'ArrowSpacing';
 
@@ -260,7 +259,8 @@ class PropertyHookLayoutSniff implements Sniff
     }
 
     /**
-     * Check that the closing brace of a hook list over several lines is on its own line, with no comment after it.
+     * Check that the closing brace of a hook list over several lines is on its own line. A comment after it is reported
+     * by PERCS31.Classes.ClosingBrace.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $opener The position of the hook list's opening brace.
@@ -278,19 +278,6 @@ class PropertyHookLayoutSniff implements Sniff
                 $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $opener));
                 FixerHelper::replaceBetween($phpcsFile, $previous, $closer, $phpcsFile->eolChar . $indent);
             }
-        }
-
-        $next = $phpcsFile->findNext(T_WHITESPACE, ($closer + 1), null, true);
-        if (
-            $next !== false
-            && $tokens[$next]['line'] === $tokens[$closer]['line']
-            && isset(Tokens::COMMENT_TOKENS[$tokens[$next]['code']])
-        ) {
-            $phpcsFile->addError(
-                'A comment must not follow the closing brace of a property\'s hooks',
-                $next,
-                self::CODE_COMMENT_AFTER_CLOSER,
-            );
         }
     }
 

@@ -320,8 +320,11 @@
 
     <!-- ====== ENUMS (9) ====== -->
 
-    <!-- No space before a backed enum's colon, one after (9) -->
-    <rule ref="SlevomatCodingStandard.Classes.BackedEnumTypeSpacing"/>
+    <!-- No space before a backed enum's colon (9). One after it is checked by PERCS31.Classes.ClassDeclaration, as the
+         parent reads the type like an interface name. -->
+    <rule ref="SlevomatCodingStandard.Classes.BackedEnumTypeSpacing">
+        <exclude name="SlevomatCodingStandard.Classes.BackedEnumTypeSpacing.IncorrectSpacesBeforeType"/>
+    </rule>
 
     <!-- Enum cases in PascalCase (9) -->
     <rule ref="PERCS31.NamingConventions.ValidEnumCaseName"/>
@@ -368,6 +371,8 @@
         <exclude name="Squiz.Arrays.ArrayDeclaration.NoComma"/>
         <!-- A multi-line array's trailing comma is checked by SlevomatCodingStandard.Arrays.TrailingArrayComma -->
         <exclude name="Squiz.Arrays.ArrayDeclaration.NoCommaAfterLast"/>
+        <!-- A closing bracket not on a new line is reported by Generic.Arrays.ArrayIndent -->
+        <exclude name="Squiz.Arrays.ArrayDeclaration.CloseBraceNewLine"/>
         <!-- Replaced by PERCS31.Arrays.ValuePerLine, as it reads an attribute on a value as an earlier value -->
         <exclude name="Squiz.Arrays.ArrayDeclaration.ValueNoNewline"/>
     </rule>
@@ -385,7 +390,7 @@
     <!-- A multi-line array's [ not on a line of its own, except as an element of a multi-line array (11) -->
     <rule ref="PERCS31.Arrays.OpeningBracketPlacement"/>
 
-    <!-- The closing bracket of a multi-line array on its own line (11) -->
+    <!-- A nested array that starts on its parent's first line ends on its parent's last line (11) -->
     <rule ref="SlevomatCodingStandard.Arrays.MultiLineArrayEndBracketPlacement"/>
 
     <!-- No blank line before a multi-line array's closing bracket (11) -->
