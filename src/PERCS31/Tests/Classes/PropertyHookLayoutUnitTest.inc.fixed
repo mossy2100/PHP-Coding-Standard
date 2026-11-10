@@ -269,3 +269,42 @@ class ValidHookBodies
     }
     // phpcs:set PERCS31.Classes.PropertyHookLayout checkHookBraceSpacing false
 }
+
+final class BlankLinesBetweenHooks
+{
+    // No blank line, or one, between hooks: both pass.
+    public string $none {
+        get {
+            return $this->none;
+        }
+        set {
+            $this->none = $value;
+        }
+    }
+
+    public string $one {
+        get {
+            return $this->one;
+        }
+
+        set {
+            $this->one = $value;
+        }
+    }
+
+    // Two blank lines: reported, and fixed to one.
+    public string $two {
+        get => $this->two;
+
+        set => $value;
+    }
+
+    // Two blank lines with a comment between: reported, not fixed.
+    public string $commented {
+        get => $this->commented;
+
+        // Why.
+
+        set => $value;
+    }
+}

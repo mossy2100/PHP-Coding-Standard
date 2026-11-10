@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **At most one blank line between hooks (breaking).** `PERCS31.Classes.PropertyHookLayout` now reports two or more
+  blank lines between the hooks of a list over several lines, as `TooManyBlankLinesBetweenHooks`, as PER Coding Style
+  3.1 allows no blank line or one. Auto-fixable, unless a comment is between the hooks.
 - **An import after the rest of the code (breaking).** `PERCS31.Files.FileHeader` now reports a `use` import after
   the file's code, as `ImportAfterCode`, as PER Coding Style 3.1 puts imports in the header. A file with more than one
   namespace is skipped. Not auto-fixable.

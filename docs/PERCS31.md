@@ -805,6 +805,8 @@ This sniff checks:
   [`PERCS31.Classes.ClosingBrace`](#percs31classesclosingbrace).
 - In a list with a `{}` body, each hook starts on its own line, each body starts on the line after its `{`, and each `}`
   is first on its line. An empty body, `{}`, has nothing to move, and a comment may follow the `{`.
+- In a list over several lines, there's at most one blank line between hooks. Section 4.9 says hooks MAY be separated by
+  an additional blank line, and its example shows them with none and with one.
 - A short hook's `=>` has a single space either side, and its body starts on the same line.
 - A short hook listed inline has a single space after the opening brace and before the closing one.
 - A list with no bodies, as on an interface or abstract property, is on one line, written as `{ get; set; }`: a single

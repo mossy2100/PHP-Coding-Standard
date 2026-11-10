@@ -19,8 +19,9 @@ use PHP_CodeSniffer\Util\Tokens;
  * - The opening brace MUST be on the same line as the property, after a single space.
  * - In the long form, the closing brace MUST be on its own line, with no comment after it.
  * - The entire body of the hook definition, and the body of each hook, MUST be indented one level, and hooks MUST be
- *   separated by a line break. So in a list with a `{}` body, each hook starts on its own line, each body starts on the
- *   line after its `{`, and each `}` is first on its line. An empty body, `{}`, has nothing to move.
+ *   separated by a line break. So in a list with a `{}` body, each hook starts on its own line, each body starts on
+ *   the line after its `{`, and each `}` is first on its line. An empty body, `{}`, has nothing to move.
+ * - Hooks MAY be separated by an additional blank line, so more than one blank line between them is reported.
  * - A short hook's `=>` MUST have a single space on either side, and its body MUST begin on the same line.
  * - A short hook listed inline MUST have a single space after the opening brace and before the closing one.
  *
@@ -64,6 +65,8 @@ class PropertyHookLayoutSniff implements Sniff
     public const string CODE_HOOK_CLOSER_NOT_ON_OWN_LINE = 'HookCloserNotOnOwnLine';
 
     public const string CODE_SPACE_BEFORE_HOOK_BRACE = 'SpaceBeforeHookBrace';
+
+    public const string CODE_TOO_MANY_BLANK_LINES_BETWEEN_HOOKS = 'TooManyBlankLinesBetweenHooks';
 
     /**
      * Whether to report whitespace between a by-reference hook's `&` and its name, e.g. `& get`. PER says nothing
@@ -133,6 +136,9 @@ class PropertyHookLayoutSniff implements Sniff
         // as ScopeIndent and ConsistentIndent can't agree on the indentation after a line with two closing braces.
         if ($hasHookBodies || $tokens[$opener]['line'] !== $tokens[$closer]['line']) {
             $this->checkLongFormCloser($phpcsFile, $opener, $closer);
+            if (!$isPromoted) {
+                $this->checkBlankLinesBetweenHooks($phpcsFile, $opener, $closer);
+            }
         } elseif ($arrows !== []) {
             $this->checkInlineSpacing($phpcsFile, $opener, $closer);
         }
@@ -279,6 +285,80 @@ class PropertyHookLayoutSniff implements Sniff
                 $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $opener));
                 FixerHelper::replaceBetween($phpcsFile, $previous, $closer, $phpcsFile->eolChar . $indent);
             }
+        }
+    }
+
+    /**
+     * Check that the hooks of a list over several lines have at most one blank line between them.
+     *
+     * Section 4.9 says hooks in the long form MUST be separated by at least a single line break, and MAY be separated
+     * by an additional blank line, and its example shows both. So one blank line is allowed, and more isn't. Hooks on
+     * the same line are left to HookNotOnOwnLine.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the hook list's opening brace.
+     * @param int $closer The position of the hook list's closing brace.
+     */
+    private function checkBlankLinesBetweenHooks(File $phpcsFile, int $opener, int $closer): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $hooks = PropertyHookHelper::parseHooks($phpcsFile, $opener, $closer) ?? [];
+        $previousEnd = null;
+        foreach ($hooks as $hook) {
+            $start = $hook['start'];
+            if ($previousEnd === null || $tokens[$previousEnd]['line'] === $tokens[$start]['line']) {
+                $previousEnd = $hook['end'];
+                continue;
+            }
+
+            if ($this->countBlankLines($phpcsFile, $previousEnd, $start) > 1) {
+                $this->reportTooManyBlankLines($phpcsFile, $previousEnd, $start);
+            }
+
+            $previousEnd = $hook['end'];
+        }
+    }
+
+    /**
+     * Count the blank lines between two tokens on different lines.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $from The position of the first token.
+     * @param int $to The position of the second token.
+     * @return int The number of lines between them with only whitespace on.
+     */
+    private function countBlankLines(File $phpcsFile, int $from, int $to): int
+    {
+        $tokens = $phpcsFile->getTokens();
+        $usedLines = [];
+        for ($i = ($from + 1); $i < $to; $i++) {
+            if ($tokens[$i]['code'] !== T_WHITESPACE && $tokens[$i]['line'] > $tokens[$from]['line']) {
+                $usedLines[$tokens[$i]['line']] = true;
+            }
+        }
+
+        return $tokens[$to]['line'] - $tokens[$from]['line'] - 1 - count($usedLines);
+    }
+
+    /**
+     * Report more than one blank line between hooks, and fix it to one if there's nothing but whitespace between them.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $previousEnd The position of the end of the first hook.
+     * @param int $start The position of the start of the second hook.
+     */
+    private function reportTooManyBlankLines(File $phpcsFile, int $previousEnd, int $start): void
+    {
+        $error = 'There must be no more than one blank line between hooks';
+        if ($phpcsFile->findNext(T_WHITESPACE, ($previousEnd + 1), $start, true) !== false) {
+            $phpcsFile->addError($error, $start, self::CODE_TOO_MANY_BLANK_LINES_BETWEEN_HOOKS);
+            return;
+        }
+
+        if ($phpcsFile->addFixableError($error, $start, self::CODE_TOO_MANY_BLANK_LINES_BETWEEN_HOOKS)) {
+            $indent = str_repeat(' ', ($phpcsFile->getTokens()[$start]['column'] - 1));
+            $eol = $phpcsFile->eolChar;
+            FixerHelper::replaceBetween($phpcsFile, $previousEnd, $start, $eol . $eol . $indent);
         }
     }
 

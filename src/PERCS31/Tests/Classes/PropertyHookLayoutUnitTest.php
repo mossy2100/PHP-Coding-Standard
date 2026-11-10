@@ -69,6 +69,9 @@ class PropertyHookLayoutUnitTest extends AbstractSniffTestCase
             239 => 1,
             243 => 1,
             249 => 1,
+            // More than one blank line between hooks.
+            283 => 1,
+            292 => 1,
         ];
     }
 
