@@ -1075,6 +1075,9 @@ look in the wrong place. The fork checks each directive in turn, with any value,
 statement, including a block declare with several directives. Its codes and messages are the original's. It's temporary,
 until PHP_CodeSniffer handles several directives.
 
+The original's fix for the space before a block declare's `{` never ends on `){`, with no space at all. The fork's fix
+removes whatever is between them, then adds one space.
+
 **Auto-fixable:** yes.
 
 **Good:**
@@ -1429,6 +1432,10 @@ this sniff checks its split parameter list too:
 - Blank lines, as above.
 
 An arrow function has no braces, so the brace checks don't apply.
+
+The parent would also indent every line of a promoted parameter's multi-line hook list as a parameter, fighting
+[`PERCS31.WhiteSpace.ScopeIndent`](#percs31whitespacescopeindent) until `phpcbf` fails. [`PERCS31.Classes.PromotedPropertyHooks`](#percs31classespromotedpropertyhooks) already reports that
+code, which has to be rewritten, so this sniff leaves that parameter list alone.
 
 **Auto-fixable:** yes, as the parent.
 
@@ -1823,6 +1830,9 @@ space, and section 6 allows more for readability. PSR-12's sniff checks that, bu
 PHP_CodeSniffer 4.0 doesn't define `T_PIPE` itself, but passes PHP's own token through on PHP 8.5, so this sniff
 registers it when it's defined. On PHP 8.4, where `|>` is a parse error, PHP_CodeSniffer reads it as `|` and `>`, and
 reports them.
+
+The parent reads a `+` or `-` that starts a statement, as in `foo();` then `-$a->b();`, as binary, and reports the
+missing space before it. A unary operator is left undefined by section 6, so this sniff skips it.
 
 The parent skips an `=` directly followed by `&`, so this sniff checks it: `$x=&$a` and `$x =&$a` are reported, and
 fixed to `$x = &$a`. `$x =& $a` passes, as it has a space either side if `=&` is read as one operator, and PER doesn't

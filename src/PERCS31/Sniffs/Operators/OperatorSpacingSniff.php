@@ -35,6 +35,9 @@ use PHPCSUtils\Utils\Parentheses;
  * `$x = &$a`. It still skips `$x =& $a`, as that has a space either side if `=&` is read as one operator, and PER
  * doesn't say whether it is.
  *
+ * The parent reads a `+` or `-` that starts a statement, as in `foo();` then `-$a->b();`, as binary, and reports the
+ * missing space before it. This sniff skips one that OperatorHelper::isUnary() finds is unary.
+ *
  * The parent skips a parameter's default value, as Squiz.Functions.FunctionDeclarationArgumentSpacing requires exactly
  * one space there. Its `=` is a binary operator, so section 6.2 applies: the PERCS31 ruleset excludes that sniff's
  * codes, and this sniff checks it, unless checkDefaultValues is off. A standard that wants exactly one space, as Jumbo
