@@ -202,6 +202,7 @@ section gives the reason.
 | `PERCS31.Formatting.MethodChaining`                     | The first method of a split chain on the next line                  | Yes     |
 | `PERCS31.Formatting.TrailingComma`                      | Trailing commas in `match`, group `use` and `new class (...)`       | Yes     |
 | `PERCS31.Functions.ArrowFunctionSemicolonSpacing`       | No space before the `;` that ends an arrow function                 | Yes     |
+| `PERCS31.Functions.CloneCallSignature`                  | `clone()`'s argument list, checked like a call's                    | Yes     |
 | `PERCS31.Functions.MultiLineFunctionDeclaration`        | Function, closure and `fn` declarations, allowing `{}` bodies       | Yes     |
 | `PERCS31.Functions.NullableTypeDeclaration`             | No space after the `?` of a nullable type, in any position          | Yes     |
 | `PERCS31.NamingConventions.AcronymCasing`               | A warning for an acronym in capitals in a name                      | No      |
@@ -1185,8 +1186,8 @@ including a constructor that only promotes properties. [Section 7](https://www.p
 an anonymous class MUST follow the same rules as a closure. No inherited sniff checks any of these. A body containing a
 comment isn't empty.
 
-**Auto-fixable:** yes. After a block comment, the fix puts `{}` after it, as in `function a() /* Why. */ {}`. A body after
-a `//` or `#` comment is reported but not fixed, as `{}` can't go on the comment's line.
+**Auto-fixable:** yes. After a block comment, the fix puts `{}` after it, as in `function a() /* Why. */ {}`. A body
+after a `//` or `#` comment is reported but not fixed, as `{}` can't go on the comment's line.
 
 **Good:**
 
@@ -1346,6 +1347,40 @@ $double = fn(int $x): int => $x * 2;
 
 ```php
 $double = fn(int $x): int => $x * 2 ;
+```
+
+---
+
+### PERCS31.Functions.CloneCallSignature
+
+Checks the argument list of `clone()` like a function call's. A subclass of `PSR2.Methods.FunctionCallSignature` that
+registers only `clone`.
+
+**Why:** [PER Coding Style 3.1, Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) calls it "the `clone()` function", so its arguments follow the
+rules for a call: no space just inside the parentheses, and when split, the first argument on the next line and one per
+line. `PSR2.Methods.FunctionCallSignature` checks those for `exit()` and `die()`, but doesn't register `clone`.
+
+Parentheses that may only group the object, as in `clone ($a)->b`, aren't an argument list. Nor are parentheses after a
+space, as in `clone ($a)`, which [`PERCS31.PHP.RequireCloneParentheses`](#percs31phprequirecloneparentheses) reports. The codes PSR-12 turns off for a call,
+and the blank line PERCS31 allows in one, are off here too.
+
+**Auto-fixable:** yes, as the parent.
+
+**Good:**
+
+```php
+$copy = clone($original, [
+    'name' => 'Copy',
+]);
+```
+
+**Bad:**
+
+```php
+$copy = clone( $original );
+$copy = clone($original,
+    ['name' => 'Copy'],
+);
 ```
 
 ---

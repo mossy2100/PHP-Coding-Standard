@@ -245,6 +245,14 @@
     <!-- A warning for clone without parentheses, e.g. clone $a (4.7) -->
     <rule ref="PERCS31.PHP.RequireCloneParentheses"/>
 
+    <!-- clone()'s argument list follows the rules for a call (4.7). The codes PSR-12 turns off for calls, and the blank
+         line PERCS31 allows in one (2.3), are off here too. -->
+    <rule ref="PERCS31.Functions.CloneCallSignature">
+        <exclude name="PERCS31.Functions.CloneCallSignature.SpaceAfterCloseBracket"/>
+        <exclude name="PERCS31.Functions.CloneCallSignature.OpeningIndent"/>
+        <exclude name="PERCS31.Functions.CloneCallSignature.EmptyLine"/>
+    </rule>
+
     <!-- ====== CONTROL STRUCTURES (5) ====== -->
 
     <!-- A structure's body in braces, not the alternative syntax, e.g. if (): ... endif; (5) -->

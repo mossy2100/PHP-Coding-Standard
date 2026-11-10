@@ -213,6 +213,9 @@
     <rule ref="PSR2.Methods.FunctionCallSignature.EmptyLine">
         <severity>5</severity>
     </rule>
+    <rule ref="PERCS31.Functions.CloneCallSignature.EmptyLine">
+        <severity>5</severity>
+    </rule>
 
     <!-- No space around ->, ?-> and ::, except a line break in a wrapped chain -->
     <rule ref="Squiz.WhiteSpace.ObjectOperatorSpacing">

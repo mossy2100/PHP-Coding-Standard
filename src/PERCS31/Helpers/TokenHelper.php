@@ -8,8 +8,8 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Helper class for moving between tokens: a bracket's partner, the bracket a token is inside, and the end of a `new`
- * expression.
+ * Helper class for moving between tokens: a bracket's partner, the bracket a token is inside, the end of a `new`
+ * expression, and the argument list of `clone`.
  */
 class TokenHelper
 {
@@ -27,6 +27,19 @@ class TokenHelper
         T_SELF,
         T_STATIC,
         T_PARENT,
+    ];
+
+    /**
+     * Tokens that dereference the expression before them.
+     *
+     * @var list<int|string>
+     */
+    public const array DEREFERENCE = [
+        T_OBJECT_OPERATOR,
+        T_NULLSAFE_OBJECT_OPERATOR,
+        T_DOUBLE_COLON,
+        T_OPEN_SQUARE_BRACKET,
+        T_OPEN_PARENTHESIS,
     ];
 
     /**
@@ -129,5 +142,36 @@ class TokenHelper
         }
 
         return null;
+    }
+
+    /**
+     * Find the parentheses after `clone`, unless they may only group the object.
+     *
+     * Before PHP 8.5, `clone` is an operator, so in `clone ($a)->b` the parentheses group `$a`, and `$a->b` is cloned.
+     * From PHP 8.5, `clone()` is a function. So parentheses followed by a dereference aren't read as an argument list.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $clonePtr The position of `clone`.
+     * @return array{int, int}|null The positions of the `(` and `)`, or null if there's no argument list.
+     */
+    public static function findCloneArguments(File $phpcsFile, int $clonePtr): ?array
+    {
+        $tokens = $phpcsFile->getTokens();
+        $opener = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($clonePtr + 1), null, true);
+        if ($opener === false || $tokens[$opener]['code'] !== T_OPEN_PARENTHESIS) {
+            return null;
+        }
+
+        $closer = $tokens[$opener]['parenthesis_closer'] ?? null;
+        if (!is_int($closer)) {
+            return null;
+        }
+
+        $after = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($closer + 1), null, true);
+        if ($after !== false && in_array($tokens[$after]['code'], self::DEREFERENCE, true)) {
+            return null;
+        }
+
+        return [$opener, $closer];
     }
 }

@@ -44,19 +44,6 @@ class RequireCloneParenthesesSniff implements Sniff
     ];
 
     /**
-     * Tokens that dereference the expression before them.
-     *
-     * @var list<int|string>
-     */
-    private const array DEREFERENCE = [
-        T_OBJECT_OPERATOR,
-        T_NULLSAFE_OBJECT_OPERATOR,
-        T_DOUBLE_COLON,
-        T_OPEN_SQUARE_BRACKET,
-        T_OPEN_PARENTHESIS,
-    ];
-
-    /**
      * Tokens that can follow a dereferencing operator.
      *
      * @var list<int|string>
@@ -127,13 +114,10 @@ class RequireCloneParenthesesSniff implements Sniff
      */
     private function processSpaceBefore(File $phpcsFile, int $stackPtr, int $opener): void
     {
-        $tokens = $phpcsFile->getTokens();
         $error = 'Expected no space between clone and "("';
-        $closer = $tokens[$opener]['parenthesis_closer'] ?? null;
-        $after = is_int($closer) ? $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($closer + 1), null, true) : false;
-        $dereferenced = $after !== false && in_array($tokens[$after]['code'], self::DEREFERENCE, true);
+        $isArgumentList = TokenHelper::findCloneArguments($phpcsFile, $stackPtr) !== null;
         $hasComment = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($stackPtr + 1), $opener) !== false;
-        if (!is_int($closer) || $dereferenced || $hasComment) {
+        if (!$isArgumentList || $hasComment) {
             $phpcsFile->addWarning($error, $stackPtr, self::CODE_SPACE_BEFORE);
             return;
         }
@@ -180,7 +164,7 @@ class RequireCloneParenthesesSniff implements Sniff
                 continue;
             }
 
-            if (!in_array($code, self::DEREFERENCE, true)) {
+            if (!in_array($code, TokenHelper::DEREFERENCE, true)) {
                 return $end;
             }
 

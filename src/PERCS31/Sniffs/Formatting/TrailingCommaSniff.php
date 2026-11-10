@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\Formatting;
 
 use PERCS31\Helpers\MatchHelper;
+use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -102,22 +103,24 @@ class TrailingCommaSniff implements Sniff
     private function processArguments(File $phpcsFile, int $stackPtr, string $kind): void
     {
         $tokens = $phpcsFile->getTokens();
-        $opener = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
-        if ($opener === false || $tokens[$opener]['code'] !== T_OPEN_PARENTHESIS) {
-            return;
-        }
+        if ($tokens[$stackPtr]['code'] === T_CLONE) {
+            // Parentheses followed by an access may only group the object, as in `clone ($a)->b`.
+            $parentheses = TokenHelper::findCloneArguments($phpcsFile, $stackPtr);
+            if ($parentheses === null) {
+                return;
+            }
 
-        $closer = $tokens[$opener]['parenthesis_closer'] ?? null;
-        if (!is_int($closer)) {
-            return;
-        }
+            [$opener, $closer] = $parentheses;
+        } else {
+            $opener = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
+            if ($opener === false || $tokens[$opener]['code'] !== T_OPEN_PARENTHESIS) {
+                return;
+            }
 
-        // After clone, parentheses followed by an access may only group the object, as in `clone ($a)->b`.
-        $after = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($closer + 1), null, true);
-        $accesses = [T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR, T_DOUBLE_COLON, T_OPEN_SQUARE_BRACKET];
-        $isAccess = $after !== false && in_array($tokens[$after]['code'], $accesses, true);
-        if ($tokens[$stackPtr]['code'] === T_CLONE && $isAccess) {
-            return;
+            $closer = $tokens[$opener]['parenthesis_closer'] ?? null;
+            if (!is_int($closer)) {
+                return;
+            }
         }
 
         // As in a call, a closing parenthesis straight after a multi-line last argument isn't a split list.
