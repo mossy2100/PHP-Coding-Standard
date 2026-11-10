@@ -47,7 +47,7 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   `{ get; set; }` on an abstract or interface property.
 - **Generic.NamingConventions.UpperCaseConstantName**, from PSR-1, by [`PERCS31.NamingConventions.UpperCaseConstantName`](#percs31namingconventionsuppercaseconstantname),
   which allows PascalCase for an enum constant.
-- **PSR12.Classes.ClosingBrace**, by [`PERCS31.Classes.ClosingBrace`](#percs31classesclosingbrace), which also checks an anonymous class.
+- **PSR12.Classes.ClosingBrace**, by [`PERCS31.Classes.ClosingBrace`](#percs31classesclosingbrace), which also checks a property hook's closing braces.
 - **PSR12.ControlStructures.BooleanOperatorPlacement** is kept, with `allowOnly` set to `first`, so a wrapped `&&` or
   `||` in a condition starts the line (5.1, 6.4). PSR-12 only requires consistency.
 - **PSR12.ControlStructures.ControlStructureSpacing**, by [`PERCS31.ControlStructures.ControlStructureSpacing`](#percs31controlstructurescontrolstructurespacing), which
@@ -591,39 +591,37 @@ $total = (new Calculator())->add(1, 2);
 
 ### PERCS31.Classes.ClosingBrace
 
-Disallows a comment or statement after the closing brace of a class, method or function, including an anonymous class,
-and after a property's hook list or hook body. This replaces `PSR12.Classes.ClosingBrace`.
+Disallows a comment or statement after the closing brace of a class, method or function, and after a property's hook
+list or hook body. This replaces `PSR12.Classes.ClosingBrace`.
 
 **Why:** [PER Coding Style 3.1, Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says any closing brace MUST NOT be followed by any comment or statement on the
-same line, and that "class" refers to all classes. The PSR-12 sniff doesn't check an anonymous class. An anonymous
-class's `}` is part of an expression, so what completes it may follow, as in `};` or `});`. Only a comment after it is
-reported, as a statement after the `;` is left to [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements). A phpcs annotation is
-allowed, as it only works on that line.
+same line. The PSR-12 sniff checks classes, interfaces, traits, enums and functions, but not a property hook, as
+PHP_CodeSniffer doesn't know about hooks. So this sniff also checks a hook list's `}` and each hook body's, as section 4
+covers properties. Only a comment after one is reported, including after a promoted property's hook list, as in
+`{ set => trim($value); }, // Comment`. A phpcs annotation is allowed, as it only works on that line.
 
-A property hook's `}` is checked the same way, for its hook list and each hook body, as section 4 covers properties.
-This includes a promoted property's hook list, so `{ set => trim($value); }, // Comment` is reported.
-
-A function's closing brace is checked as well, as the PSR-12 sniff does. A closure's and a control structure's aren't,
-as section 4 is about classes, properties, methods and functions.
+An anonymous class's, a closure's and a control structure's closing brace aren't checked. Each is part of a larger
+expression or statement, and what completes it, such as `};`, follows.
 
 **Auto-fixable:** no.
 
 **Good:**
 
 ```php
-$handler = new class {
+final class Counter
+{
     public int $count = 0;
-};
+}
 ```
 
 **Bad:**
 
 ```php
-$handler = new class {
+final class Counter
+{
     public int $count = 0;
-}; // Counts calls.
+} // Counts calls.
 ```
-
 
 ---
 
@@ -2297,9 +2295,10 @@ class User
   `(integer)`. `(double)` is left to the [Jumbo standard](Jumbo.md), whose `SlevomatCodingStandard.PHP.TypeCast` requires `(float)`.
 - **Keywords in lower case in a `set` hook's parameter type (2.5).** PHP_CodeSniffer reads the type as an expression, so
   `Generic.PHP.LowerCaseType` doesn't see it. The other type rules are checked there.
-- **A comment or statement after a closure's or control structure's closing brace (4).** Section 4 says "any closing
-  brace", but it's in the section on classes, properties, methods and functions, so this standard reads it as those
-  only. After a block `declare` in the file header, a statement is still reported, as section 3 wants a blank line after
-  the block. The [Jumbo standard](Jumbo.md) reports a statement after a control structure's closing brace.
+- **A comment or statement after an anonymous class's, closure's or control structure's closing brace (4).** Section 4
+  says "any closing brace", but each of these is part of a larger expression or statement, so this standard reads it as
+  covering classes, methods, functions and property hooks only. After a block `declare` in the file header, a statement
+  is still reported, as section 3 wants a blank line after the block. The [Jumbo standard](Jumbo.md) reports a statement after a
+  control structure's closing brace.
 - **The pipe operator `|>` on PHP 8.4.** It's only checked when PHP_CodeSniffer runs on PHP 8.5. On PHP 8.4, where `|>`
   is a parse error, PHP_CodeSniffer reads it as `|` and `>`, and reports them.

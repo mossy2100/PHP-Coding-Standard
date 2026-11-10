@@ -186,8 +186,7 @@
 
     <!-- ====== CLASSES, PROPERTIES AND CONSTANTS (4) ====== -->
 
-    <!-- No comment or statement after a class's, method's or property hook's closing brace, including an anonymous
-         class's (4) -->
+    <!-- No comment or statement after a class's, method's, function's or property hook's closing brace (4) -->
     <rule ref="PERCS31.Classes.ClosingBrace"/>
 
     <!-- A warning for new Foo() wrapped in parentheses before ->, ?-> or :: (4) -->

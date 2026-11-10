@@ -10,21 +10,17 @@ use PHP_CodeSniffer\Standards\PSR12\Sniffs\Classes\ClosingBraceSniff as Psr12Sni
 use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Disallows a comment or statement after the closing brace of a class, method or function, including an anonymous
- * class, and after a property's hook list or hook body.
+ * Disallows a comment or statement after the closing brace of a class, method or function, and after a property's
+ * hook list or hook body.
  *
  * PER Coding Style 3.1, section 4, says any closing brace MUST NOT be followed by any comment or statement on the same
- * line, and that the term "class" refers to all classes. PSR12.Classes.ClosingBrace checks classes, interfaces, traits,
- * enums and every function, but not an anonymous class or a property hook. So this sniff extends it. A closure's or a
- * control structure's closing brace isn't checked, as section 4 is about classes, properties, methods and functions.
+ * line. PSR12.Classes.ClosingBrace checks classes, interfaces, traits, enums and every function, but not a property
+ * hook, so this sniff extends it. An anonymous class's, a closure's and a control structure's closing brace aren't
+ * checked: each is part of a larger expression or statement, and what completes it, such as `};`, follows.
  *
- * An anonymous class's `}` is part of an expression, so what completes it may follow, as in `};`, `});` or `})->x;`.
- * Only a comment after it on the same line is reported, as in `}; // Comment` or `}, // Comment`. A statement after
- * the `;` is left to PERCS31.Formatting.DisallowMultipleStatements. A phpcs annotation is allowed, as it only works on
- * that line. It isn't fixable, as where the comment should go is left to a person.
- *
- * A property hook's braces are covered too, as section 4 covers properties: the hook list's `}` and each hook body's.
- * As with an anonymous class, only a comment after one is reported. What follows a promoted property's hook list, a
+ * A property hook's braces are covered, as section 4 covers properties: the hook list's `}` and each hook body's. Only
+ * a comment after one is reported. A phpcs annotation is allowed, as it only works on that line. It isn't fixable, as
+ * where the comment should go is left to a person. What follows a promoted property's hook list, a
  * `,` or `)`, is part of the parameter list, and PERCS31.Classes.PropertyHookLayout already puts each hook on its own
  * line.
  */
@@ -33,14 +29,13 @@ class ClosingBraceSniff extends Psr12Sniff
     public const string CODE_STATEMENT_AFTER = 'StatementAfter';
 
     /**
-     * Returns an array of tokens this test wants to listen for: the parent's, an anonymous class, and a variable, for a
-     * property's hooks.
+     * Returns an array of tokens this test wants to listen for: the parent's, and a variable, for a property's hooks.
      *
      * @return array<int|string>
      */
     public function register(): array
     {
-        return [...parent::register(), T_ANON_CLASS, T_VARIABLE];
+        return [...parent::register(), T_VARIABLE];
     }
 
     /**
@@ -57,17 +52,7 @@ class ClosingBraceSniff extends Psr12Sniff
             return;
         }
 
-        if ($tokens[$stackPtr]['code'] !== T_ANON_CLASS) {
-            parent::process($phpcsFile, $stackPtr);
-            return;
-        }
-
-        $closer = $tokens[$stackPtr]['scope_closer'] ?? null;
-        if (!is_int($closer)) {
-            return;
-        }
-
-        $this->checkCommentAfter($phpcsFile, $closer);
+        parent::process($phpcsFile, $stackPtr);
     }
 
     /**

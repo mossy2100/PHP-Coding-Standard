@@ -24,7 +24,7 @@ $e = array_map(function ($v) {
 
 $f = new class {}; $g = 1;
 
-// === INVALID ===
+// An anonymous class's closing brace isn't checked, so a comment after it passes.
 
 $h = new class {
     public int $x = 1;
@@ -46,7 +46,7 @@ $k = new class {
 } /* Comment */;
 
 $l = new class {}; // Comment.
-
+// === INVALID ===
 final class Named
 {
     public int $x = 1;
