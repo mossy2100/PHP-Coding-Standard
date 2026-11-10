@@ -25,7 +25,6 @@ class ArrowSpacingUnitTest extends AbstractSniffTestCase
         }
 
         if ($testFile === 'ArrowSpacingUnitTest.2.inc') {
-            // With checkArray and checkYield set.
             return [
                 // No spaces, and two spaces, in a single-line array.
                 26 => 4,
@@ -52,6 +51,11 @@ class ArrowSpacingUnitTest extends AbstractSniffTestCase
             18 => 1,
             // No spaces before or after.
             24 => 2,
+            // Two spaces in an array inside a match arm.
+            38 => 1,
+            // An array's arrows, and a yield's.
+            43 => 4,
+            46 => 2,
         ];
     }
 

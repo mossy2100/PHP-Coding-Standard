@@ -31,8 +31,8 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * Section 4.9's text doesn't say where a hook's own `{` goes, how a `set` hook's parameter list is spaced, or whether a
  * by-reference hook's `&` is followed by a space. Its examples show `get {` and `set(string $value)`, and section 4.5
- * puts no space after a by-reference parameter's `&`. These are checked when checkHookBraceSpacing,
- * checkHookParameterSpacing and checkReferenceSpacing are set, as the PERCS31 ruleset does.
+ * puts no space after a by-reference parameter's `&`, so all three are checked: one space before a hook's `{`, a `set`
+ * hook's parameter list spaced like a method's, and no space after `&`.
  *
  * A hook on a promoted constructor parameter is reported by PERCS31.Classes.PromotedPropertyHooks, so its body isn't
  * checked here. Indentation is checked by PERCS31.WhiteSpace.ScopeIndent, several statements on a line by
@@ -74,24 +74,6 @@ class PropertyHookLayoutSniff implements Sniff
     public const string CODE_SPACE_INSIDE_HOOK_PARAMETERS = 'SpaceInsideHookParameters';
 
     /**
-     * Whether to report whitespace between a by-reference hook's `&` and its name, e.g. `& get`, as section 4.5 does
-     * for a parameter. The PERCS31 ruleset turns it on.
-     */
-    public bool $checkReferenceSpacing = false;
-
-    /**
-     * Whether to require exactly one space before a hook's own `{`, e.g. `get {`, as PER's examples show. The PERCS31
-     * ruleset turns it on.
-     */
-    public bool $checkHookBraceSpacing = false;
-
-    /**
-     * Whether to check a `set` hook's parameter list as a method's: no space after `set`, and none just inside the
-     * parentheses, e.g. `set(string $value)`, as PER's examples show. The PERCS31 ruleset turns it on.
-     */
-    public bool $checkHookParameterSpacing = false;
-
-    /**
      * Returns an array of tokens this test wants to listen for.
      *
      * @return array<int|string>
@@ -121,13 +103,9 @@ class PropertyHookLayoutSniff implements Sniff
         [$opener, $closer] = $hookList;
 
         $this->checkOpener($phpcsFile, $opener);
-        if ($this->checkReferenceSpacing) {
-            $this->checkReferences($phpcsFile, $opener, $closer);
-        }
+        $this->checkReferences($phpcsFile, $opener, $closer);
 
-        if ($this->checkHookParameterSpacing) {
-            $this->checkHookParameters($phpcsFile, $opener, $closer);
-        }
+        $this->checkHookParameters($phpcsFile, $opener, $closer);
 
         $arrows = $this->findArrows($phpcsFile, $opener, $closer);
         $hasBlockBody = $phpcsFile->findNext(T_OPEN_CURLY_BRACKET, ($opener + 1), $closer) !== false;
@@ -607,9 +585,7 @@ class PropertyHookLayoutSniff implements Sniff
         }
 
         foreach ($bodies as $body) {
-            if ($this->checkHookBraceSpacing) {
-                $this->checkHookBrace($phpcsFile, $body);
-            }
+            $this->checkHookBrace($phpcsFile, $body);
 
             $this->checkHookBody($phpcsFile, $body, $hookIndent);
         }

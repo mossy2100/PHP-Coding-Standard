@@ -25,10 +25,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   now `PERCS31.Functions.FunctionCallLayout.*`, so a `phpcs:ignore` for the old ones needs updating. It also checks
   `clone()`'s argument list, as PER Coding Style 3.1 calls it a function, skipping parentheses that only group the
   object, as in `clone ($a)->b`. And it no longer reads a `set` hook's parameter list as a call. Auto-fixable.
-- **A `set` hook's parameter list spaced like a method's (breaking).** `PERCS31.Classes.PropertyHookLayout`, with
-  `checkHookParameterSpacing` set, as in the PERCS31 ruleset, reports `set (string $value)` and `set( string $value )`,
-  as `SpaceBeforeHookParameters` and `SpaceInsideHookParameters`, as PER Coding Style 3.1's examples show
-  `set(string $value)`. Auto-fixable.
+- **A `set` hook's parameter list spaced like a method's (breaking).** `PERCS31.Classes.PropertyHookLayout` reports
+  `set (string $value)` and `set( string $value )`, as `SpaceBeforeHookParameters` and `SpaceInsideHookParameters`, as
+  PER Coding Style 3.1's examples show `set(string $value)`. Auto-fixable.
 - **A backed enum's type in lower case (breaking).** `PERCS31.Classes.ClassDeclaration` now reports `enum Suit: STRING`,
   as PER Coding Style 3.1 requires types in lower case, and `Generic.PHP.LowerCaseType` doesn't check a backing type.
   Auto-fixable.
@@ -112,8 +111,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   least one space. `PERCS31.Operators.OperatorSpacing` now checks it, with the new property `checkDefaultValues`, in
   place of `Squiz.Functions.FunctionDeclarationArgumentSpacing`. The Jumbo standard still requires exactly one space.
 - **A hook's own `{` must be one space after its name (breaking).** `get{`, `get  {` and `{` on the next line are
-  errors, as PER Coding Style 3.1's examples show `get {`, using the new `PERCS31.Classes.PropertyHookLayout` property
-  `checkHookBraceSpacing`, which the PERCS31 ruleset sets. Auto-fixable, unless a comment is in the way.
+  errors in `PERCS31.Classes.PropertyHookLayout`, as PER Coding Style 3.1's examples show `get {`. Auto-fixable, unless
+  a comment is in the way.
 - **A multi-line `case` condition must start on the next line and be indented (breaking).**
   `PERCS31.ControlStructures.SwitchDeclaration` reports `case ($a`, and a line not indented past the `case`, as PER
   Coding Style 3.1, section 5.2, requires. Auto-fixable, unless a comment is in the way.
@@ -196,8 +195,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   so `get { return $this->a; }` must be split over three lines. A list with no bodies, as on an interface or abstract
   property, must be on one line as `{ get; set; }`, and a bodiless hook has no space before its `;`, as section 4.10
   requires. Auto-fixable, except a comment after the closing brace, or a comment in the way. It also reports a space in
-  a by-reference hook, `& get`, as for a by-reference parameter (new property `checkReferenceSpacing`, which the PERCS31
-  ruleset sets).
+  a by-reference hook, `& get`, as for a by-reference parameter.
 - **No blank line between declare statements, including a block `declare` (breaking).** As PER Coding Style 3.1
   requires, `declare(strict_types=1);` then a blank line then `declare(ticks=1) {` is now an error, in PERCS31 and
   Jumbo. Auto-fixable. Jumbo no longer wants a blank line after `strict_types` when another declare statement follows.
@@ -325,9 +323,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`Jumbo.ControlStructures.RequireSingleLineHeader` (breaking).** Requires a multi-line `foreach`, `for`, `switch` or
   `match` header to be written on one line if it fits, as Slevomat's `RequireSingleLineCondition` does for `if` and
   `while`. Auto-fixable.
-- **`PERCS31.WhiteSpace.ArrowSpacing` (breaking).** Requires one space before and after `=>` in a `match` arm, so arms
-  aren't aligned. No stock sniff checks these. Properties `checkArray` and `checkYield` extend it to arrays and `yield`,
-  which Jumbo turns on, so array arrows are never aligned, single-line or multi-line. Auto-fixable.
+- **`PERCS31.WhiteSpace.ArrowSpacing` (breaking).** Requires one space before and after `=>` in a `match` arm or a
+  `yield`, so arms aren't aligned, and at least one in an array. No stock sniff checks these. Jumbo requires exactly
+  one in an array too, so array arrows are never aligned. Auto-fixable.
 - **`PERCS31.Classes.PromotedPropertyHooks` (breaking).** A hook on a promoted constructor parameter must be a single
   hook with a short `=>` body, on one line, as PER Coding Style 3.1 requires, e.g.
   `public function __construct(public string $name { set => trim($value); })`. Otherwise, declare the property in the

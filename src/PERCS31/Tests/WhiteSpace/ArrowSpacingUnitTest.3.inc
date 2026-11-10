@@ -1,6 +1,6 @@
 <?php
 
-// phpcs:set PERCS31.WhiteSpace.ArrowSpacing checkArray true
+// Arrays are checked by default.
 // phpcs:set PERCS31.WhiteSpace.ArrowSpacing allowSeveralSpacesInArray true
 
 // At least one space each side of an array's =>, so arrows may be lined up.
@@ -18,5 +18,5 @@ $value = match ($x) {
     1  => 'one',
 };
 
-// phpcs:set PERCS31.WhiteSpace.ArrowSpacing checkArray false
+// End of the arrays.
 // phpcs:set PERCS31.WhiteSpace.ArrowSpacing allowSeveralSpacesInArray false

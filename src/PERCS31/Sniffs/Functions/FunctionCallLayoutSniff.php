@@ -21,8 +21,7 @@ use PHP_CodeSniffer\Util\Tokens;
  *   only group the object, as in `clone ($a)->b`, are skipped, and so are parentheses after a space, as in
  *   `clone ($a)`, where `clone` may be the operator. PERCS31.PHP.RequireCloneParentheses reports that space.
  * - It skips a `set` hook's parameter list, as in `set (string $value)`, which PHP_CodeSniffer reads as a call to
- *   `set()`. It's part of the hook's declaration, not a call, so PERCS31.Classes.PropertyHookLayout checks it, with
- *   checkHookParameterSpacing set, as in the PERCS31 ruleset.
+ *   `set()`. It's part of the hook's declaration, not a call, so PERCS31.Classes.PropertyHookLayout checks it.
  *
  * It's named Layout, not Signature like its parent, as a function's signature is its declaration, not a call.
  */

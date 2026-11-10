@@ -33,13 +33,13 @@ $label = match ($size) {
         => 'many',
 };
 
-// Array arrows inside a match arm aren't checked by this sniff.
+// An array inside a match arm is checked as an array.
 $label = match ($size) {
     1 => ['a'  => 1],
     default => [],
 };
 
-// Array and yield arrows aren't checked by default.
+// An array's and a yield's arrows are checked too.
 $array = ['a'=>1, 'b'  =>  2];
 function generate(): iterable
 {

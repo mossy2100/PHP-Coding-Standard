@@ -11,19 +11,19 @@ use PHPCSUtils\Utils\Lists;
 use PHPCSUtils\Utils\PassedParameters;
 
 /**
- * Requires exactly one space before and after the `=>` in a `match` arm, and optionally in an array or a `yield`, where
+ * Requires exactly one space before and after the `=>` in a `match` arm, an array element and a `yield`. In an array,
  * at least one can be allowed instead.
  *
  * PER Coding Style 3.1, section 6.2, doesn't list `=>` among the binary operators, so section 6 leaves its spacing
  * undefined, except where another section gives it a rule:
  * - A `match` arm: section 5.2 shows one space each side, and says to "note the placement of parentheses, spaces, and
  *   braces". Although it doesn't say so explicitly, it appears to imply the same rule that sections 4.9 and 7.1 set
- *   for a property hook's and an arrow function's `=>`. Checked by default (checkMatch).
- * - An array element, including a destructuring assignment's: checked if checkArray is set. Section 11's example, which
- *   "shows correct array usage", has a space each side, but too few examples to rule out lining arrows up. So the
- *   PERCS31 ruleset sets checkArray and allowSeveralSpacesInArray, requiring at least one space. The Jumbo standard
- *   requires exactly one.
- * - `yield $key => $value`: PER says nothing, so it's only checked if checkYield is set, as the Jumbo standard does.
+ *   for a property hook's and an arrow function's `=>`.
+ * - An array element, including a destructuring assignment's: section 11's example, which "shows correct array usage",
+ *   has a space each side, but too few examples to rule out lining arrows up. So the PERCS31 ruleset sets
+ *   allowSeveralSpacesInArray, requiring at least one space. The Jumbo standard requires exactly one.
+ * - `yield $key => $value`: PER says nothing, but every `=>` it does set has one space each side, so this one does
+ *   too.
  *
  * Other uses of `=>` have their own sniffs: Squiz.ControlStructures.ForEachLoopDeclaration for `foreach`,
  * SlevomatCodingStandard.Functions.ArrowFunctionDeclaration for an arrow function, and
@@ -55,25 +55,10 @@ class ArrowSpacingSniff implements Sniff
     ];
 
     /**
-     * Whether to check the `=>` in a `match` arm.
-     */
-    public bool $checkMatch = true;
-
-    /**
-     * Whether to check the `=>` in an array element, including a destructuring assignment's. PER says nothing about it.
-     */
-    public bool $checkArray = false;
-
-    /**
      * Whether to allow more than one space each side of an array's `=>`, so arrows can be lined up. With it off, an
      * array's `=>` needs exactly one, as a `match` arm's does.
      */
     public bool $allowSeveralSpacesInArray = false;
-
-    /**
-     * Whether to check the `=>` in `yield $key => $value`. PER says nothing about it.
-     */
-    public bool $checkYield = false;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -95,23 +80,17 @@ class ArrowSpacingSniff implements Sniff
     {
         $code = $phpcsFile->getTokens()[$stackPtr]['code'];
         if ($code === T_MATCH_ARROW) {
-            if ($this->checkMatch) {
-                $this->checkArrow($phpcsFile, $stackPtr, 'match arm');
-            }
+            $this->checkArrow($phpcsFile, $stackPtr, 'match arm');
 
             return;
         }
 
         if ($code === T_YIELD) {
-            $arrow = $this->checkYield ? $this->findYieldArrow($phpcsFile, $stackPtr) : null;
+            $arrow = $this->findYieldArrow($phpcsFile, $stackPtr);
             if ($arrow !== null) {
                 $this->checkArrow($phpcsFile, $arrow, 'yield');
             }
 
-            return;
-        }
-
-        if (!$this->checkArray) {
             return;
         }
 

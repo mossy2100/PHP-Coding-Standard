@@ -38,7 +38,9 @@ class PropertyHookLayoutUnitTest extends AbstractSniffTestCase
             72 => 1,
             // A space before a bodiless hook's ; in a list with bodies.
             87 => 1,
-            // With checkReferenceSpacing, a space after a by-reference hook's &, long and inline.
+            // A space after a by-reference hook's &.
+            95 => 1,
+            // A space after a by-reference hook's &, long and inline.
             100 => 1,
             103 => 1,
             // A hook body on one line.
@@ -61,6 +63,8 @@ class PropertyHookLayoutUnitTest extends AbstractSniffTestCase
             151 => 1,
             // A comment before the body, in the way of the fix (not fixable).
             156 => 1,
+            // No space before a hook's own brace.
+            203 => 1,
             // The space before a hook's own brace, when set.
             219 => 1,
             222 => 1,
@@ -72,7 +76,7 @@ class PropertyHookLayoutUnitTest extends AbstractSniffTestCase
             // More than one blank line between hooks.
             283 => 1,
             292 => 1,
-            // A space after set, and just inside its parentheses, with checkHookParameterSpacing set.
+            // A space after set, and just inside its parentheses.
             306 => 1,
             310 => 2,
         ];

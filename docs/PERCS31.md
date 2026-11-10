@@ -810,12 +810,11 @@ Indentation is checked by `PERCS31.WhiteSpace.ScopeIndent`, and several statemen
 
 Section 4.9's text doesn't say where a hook's own `{` goes, how a `set` hook's parameter list is spaced, or whether a
 by-reference hook's `&` is followed by a space. Its examples show `get {` and `set(string $value)`, and section 4.5 puts
-no space after a by-reference parameter's `&`. So the PERCS31 ruleset sets:
+no space after a by-reference parameter's `&`. So this sniff also requires:
 
-- `checkHookBraceSpacing`, which requires exactly one space before a hook's `{`.
-- `checkHookParameterSpacing`, which spaces a `set` hook's parameter list like a method's: no space after `set`, and
-  none just inside the parentheses.
-- `checkReferenceSpacing`, which reports a space after a by-reference hook's `&`, as in `& get`.
+- Exactly one space before a hook's own `{`, as in `get {`.
+- A `set` hook's parameter list spaced like a method's: no space after `set`, and none just inside the parentheses.
+- No space after a by-reference hook's `&`, as in `&get`.
 
 **Auto-fixable:** yes, except a comment after the closing brace, or a comment in the way.
 
@@ -866,14 +865,6 @@ interface Named
     }
 }
 ```
-
-**Configuration:**
-
-| Property                    | Type | Default | Description                                                      |
-| --------------------------- | ---- | ------- | ---------------------------------------------------------------- |
-| `checkReferenceSpacing`     | bool | false   | Report a space between a by-reference hook's `&` and its name.   |
-| `checkHookBraceSpacing`     | bool | false   | Require exactly one space before a hook's own `{`.               |
-| `checkHookParameterSpacing` | bool | false   | No space after `set`, or just inside its parameter list's `( )`. |
 
 ---
 
@@ -2097,8 +2088,8 @@ class Limits
 
 ### PERCS31.WhiteSpace.ArrowSpacing
 
-Requires exactly one space before and after the `=>` in a `match` arm, and at least one in an array element, so arrows
-can be lined up. Optionally checks a `yield`'s too.
+Requires exactly one space before and after the `=>` in a `match` arm or a `yield`, and at least one in an array
+element, so arrows can be lined up.
 
 **Why:** [PER Coding Style 3.1, Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) shows a `match` expression with one space each side of `=>`, and says to
 "note the placement of parentheses, spaces, and braces". Although the specification doesn't say so explicitly, it
@@ -2106,11 +2097,11 @@ appears to imply the same rule as for the `=>` of a property hook (4.9) and an a
 checks a `match` arm, which has its own token, so aligned arms aren't caught.
 
 [Section 11](https://www.php-fig.org/per/coding-style/#11-arrays)'s example, which "shows correct array usage", has one space each side of an array's `=>`, but too few
-examples to rule out lining arrows up. So the ruleset sets `checkArray` and `allowSeveralSpacesInArray`, which require
-at least one space. The [Jumbo standard](Jumbo.md) requires exactly one.
+examples to rule out lining arrows up. So the ruleset sets `allowSeveralSpacesInArray`, which requires at least one
+space. The [Jumbo standard](Jumbo.md) requires exactly one.
 
-Section 6.2 doesn't list `=>` among the binary operators, so a `yield`'s is only checked if `checkYield` is set, as the
-Jumbo standard does. A `foreach`'s, an arrow function's and a property hook's `=>` have their own sniffs.
+PER says nothing about a `yield`'s `=>`, but every `=>` it does set has one space each side, so a `yield`'s does too.
+A `foreach`'s, an arrow function's and a property hook's `=>` have their own sniffs.
 
 A line break before or after the arrow is allowed, for wrapping a long arm, element or value.
 
@@ -2138,10 +2129,7 @@ $label = match ($size) {
 
 | Property                    | Type | Default | Description                                             |
 | --------------------------- | ---- | ------- | ------------------------------------------------------- |
-| `checkMatch`                | bool | true    | Check the `=>` in a `match` arm.                        |
-| `checkArray`                | bool | false   | Check the `=>` in an array element.                     |
 | `allowSeveralSpacesInArray` | bool | false   | Allow more than one space each side of an array's `=>`. |
-| `checkYield`                | bool | false   | Check the `=>` in `yield $key => $value`.               |
 
 ---
 

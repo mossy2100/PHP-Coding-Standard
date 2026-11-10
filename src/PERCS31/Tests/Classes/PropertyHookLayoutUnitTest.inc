@@ -90,12 +90,12 @@ abstract class MixedBodies
 
 class ReferenceHooks
 {
-    // PER says nothing about a space after a by-reference hook's &, so it's allowed by default.
+    // A space after a by-reference hook's & is reported, as for a by-reference parameter.
     public array $allowed = [] {
         & get => $this->allowed;
     }
 
-    // phpcs:set PERCS31.Classes.PropertyHookLayout checkReferenceSpacing true
+    // Checked by default.
     public array $spaced = [] {
         & get => $this->spaced;
     }
@@ -105,7 +105,7 @@ class ReferenceHooks
     public array $unspaced = [] {
         &get => $this->unspaced;
     }
-    // phpcs:set PERCS31.Classes.PropertyHookLayout checkReferenceSpacing false
+    // End of this case.
 }
 
 class HookBodies
@@ -205,7 +205,7 @@ class ValidHookBodies
         }
     }
 
-    // phpcs:set PERCS31.Classes.PropertyHookLayout checkHookBraceSpacing true
+    // Checked by default.
     public string $braceOne {
         get {
             return 'a';
@@ -250,7 +250,7 @@ class ValidHookBodies
             return $this->braceReference;
         }
     }
-    // phpcs:set PERCS31.Classes.PropertyHookLayout checkHookBraceSpacing false
+    // End of this case.
 }
 
 final class BlankLinesBetweenHooks
@@ -293,7 +293,7 @@ final class BlankLinesBetweenHooks
     }
 }
 
-// phpcs:set PERCS31.Classes.PropertyHookLayout checkHookParameterSpacing true
+// Checked by default.
 final class HookParameterSpacing
 {
     public string $valid {
@@ -318,4 +318,4 @@ final class HookParameterSpacing
         ) => trim($value);
     }
 }
-// phpcs:set PERCS31.Classes.PropertyHookLayout checkHookParameterSpacing false
+// End of this case.

@@ -235,13 +235,7 @@
     <!-- The layout of a property's hook list: its braces, and a short hook's => (4.9, 4.10). One space before a hook's
          own {, and a set hook's parameter list spaced like a method's, as the examples in 4.9 show. No space after a
          by-reference hook's &, as for a by-reference parameter (4.5). -->
-    <rule ref="PERCS31.Classes.PropertyHookLayout">
-        <properties>
-            <property name="checkReferenceSpacing" value="true"/>
-            <property name="checkHookBraceSpacing" value="true"/>
-            <property name="checkHookParameterSpacing" value="true"/>
-        </properties>
-    </rule>
+    <rule ref="PERCS31.Classes.PropertyHookLayout"/>
 
     <!-- A hook on a promoted constructor parameter only as a single short hook on one line (4.9) -->
     <rule ref="PERCS31.Classes.PromotedPropertyHooks"/>
@@ -297,7 +291,6 @@
          undefined. -->
     <rule ref="PERCS31.WhiteSpace.ArrowSpacing">
         <properties>
-            <property name="checkArray" value="true"/>
             <property name="allowSeveralSpacesInArray" value="true"/>
         </properties>
     </rule>

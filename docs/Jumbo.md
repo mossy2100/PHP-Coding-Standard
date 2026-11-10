@@ -47,8 +47,7 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
   (`orderHooksWithBodies` set to `true`).
 - `PERCS31.Files.LineLength` has `lineLimit` set from the ruleset's `lineLength` entity. See [Line Length](LineLength.md).
 - `PERCS31.WhiteSpace.ArrowSpacing` requires exactly one space around an array's `=>`, where PERCS31 allows more
-  (`allowSeveralSpacesInArray` set to `false`), and checks a `yield`'s too (`checkYield` set to `true`). It replaces
-  Squiz `ArrayDeclaration`'s arrow spacing checks.
+  (`allowSeveralSpacesInArray` set to `false`). It replaces Squiz `ArrayDeclaration`'s arrow spacing checks.
 - `PERCS31.Operators.OperatorPlacement` requires a line in a control structure's condition to be indented exactly once
   past the `(` line if it starts with `&&` or `||`, and exactly once past its operand's line if it starts with any other
   operator. PERCS31 allows at least once (`requireExactConditionIndent` set to `true`).
