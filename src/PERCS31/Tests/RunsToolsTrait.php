@@ -7,7 +7,7 @@ namespace PERCS31\Tests;
 use RuntimeException;
 
 /**
- * Runs phpcs or phpcbf from the package's vendor directory, as a user would.
+ * Runs phpcs or phpcbf from the package's vendor directory, as a user would, on fixtures or temporary files.
  */
 trait RunsToolsTrait
 {
@@ -31,5 +31,21 @@ trait RunsToolsTrait
         fclose($pipes[2]);
 
         return ['exitCode' => proc_close($process), 'output' => $output];
+    }
+
+    /**
+     * Write a file's contents, or the given contents, to a new temporary file.
+     *
+     * @param ?string $source The file to copy, or null to use $contents.
+     * @param string $contents The contents to write when $source is null.
+     * @param string $extension The temporary file's extension.
+     * @return string The temporary file's path.
+     */
+    private function copyToTempFile(?string $source, string $contents = '', string $extension = '.php'): string
+    {
+        $path = sys_get_temp_dir() . '/mossy2100-cs-' . bin2hex(random_bytes(8)) . $extension;
+        file_put_contents($path, $source !== null ? file_get_contents($source) : $contents);
+
+        return $path;
     }
 }
