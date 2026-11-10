@@ -16,10 +16,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **An import after the rest of the code (breaking).** `PERCS31.Files.FileHeader` now reports a `use` import after
   the file's code, as `ImportAfterCode`, as PER Coding Style 3.1 puts imports in the header. A file with more than one
   namespace is skipped. Not auto-fixable.
-- **`PERCS31.Functions.CloneCallSignature` (breaking).** `clone()`'s argument list is checked like a call's, as PER
-  Coding Style 3.1 calls it a function: no space just inside the parentheses, and when split, the first argument on the
-  next line and one per line. Parentheses that only group the object, as in `clone ($a)->b`, are skipped.
-  Auto-fixable.
+- **`PERCS31.Functions.FunctionCallLayout` replaces `PSR2.Methods.FunctionCallSignature` (breaking).** Its codes are
+  now `PERCS31.Functions.FunctionCallLayout.*`, so a `phpcs:ignore` for the old ones needs updating. It also checks
+  `clone()`'s argument list, as PER Coding Style 3.1 calls it a function, skipping parentheses that only group the
+  object, as in `clone ($a)->b`. And it no longer reads a `set` hook's parameter list as a call, as PER says nothing
+  about its spacing. Auto-fixable.
+- **A `set` hook's parameter list spaced like a method's, in Jumbo (breaking).** `PERCS31.Classes.PropertyHookLayout`,
+  with `checkHookParameterSpacing` set, as in Jumbo, reports `set (string $value)` and `set( string $value )`, as
+  `SpaceBeforeHookParameters` and `SpaceInsideHookParameters`. Auto-fixable.
 - **A backed enum's type in lower case (breaking).** `PERCS31.Classes.ClassDeclaration` now reports `enum Suit: STRING`,
   as PER Coding Style 3.1 requires types in lower case, and `Generic.PHP.LowerCaseType` doesn't check a backing type.
   Auto-fixable.

@@ -68,6 +68,10 @@ class PropertyHookLayoutSniff implements Sniff
 
     public const string CODE_TOO_MANY_BLANK_LINES_BETWEEN_HOOKS = 'TooManyBlankLinesBetweenHooks';
 
+    public const string CODE_SPACE_BEFORE_HOOK_PARAMETERS = 'SpaceBeforeHookParameters';
+
+    public const string CODE_SPACE_INSIDE_HOOK_PARAMETERS = 'SpaceInsideHookParameters';
+
     /**
      * Whether to report whitespace between a by-reference hook's `&` and its name, e.g. `& get`. PER says nothing
      * about it, so it's off by default.
@@ -79,6 +83,12 @@ class PropertyHookLayoutSniff implements Sniff
      * off by default.
      */
     public bool $checkHookBraceSpacing = false;
+
+    /**
+     * Whether to check a `set` hook's parameter list as a method's: no space after `set`, and none just inside the
+     * parentheses, e.g. `set(string $value)`. PER says nothing about it, so it's off by default.
+     */
+    public bool $checkHookParameterSpacing = false;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -112,6 +122,10 @@ class PropertyHookLayoutSniff implements Sniff
         $this->checkOpener($phpcsFile, $opener);
         if ($this->checkReferenceSpacing) {
             $this->checkReferences($phpcsFile, $opener, $closer);
+        }
+
+        if ($this->checkHookParameterSpacing) {
+            $this->checkHookParameters($phpcsFile, $opener, $closer);
         }
 
         $arrows = $this->findArrows($phpcsFile, $opener, $closer);
@@ -285,6 +299,95 @@ class PropertyHookLayoutSniff implements Sniff
                 $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $opener));
                 FixerHelper::replaceBetween($phpcsFile, $previous, $closer, $phpcsFile->eolChar . $indent);
             }
+        }
+    }
+
+    /**
+     * Check a `set` hook's parameter list as a method's: no space after `set`, and none just inside the parentheses. A
+     * line break just inside them is left alone, as in a split list.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the hook list's opening brace.
+     * @param int $closer The position of the hook list's closing brace.
+     */
+    private function checkHookParameters(File $phpcsFile, int $opener, int $closer): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        foreach (PropertyHookHelper::parseHooks($phpcsFile, $opener, $closer) ?? [] as $hook) {
+            $parenOpener = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($hook['namePtr'] + 1), null, true);
+            if ($parenOpener === false || $tokens[$parenOpener]['code'] !== T_OPEN_PARENTHESIS) {
+                continue;
+            }
+
+            $parenCloser = $tokens[$parenOpener]['parenthesis_closer'] ?? null;
+            if (!is_int($parenCloser)) {
+                continue;
+            }
+
+            if ($parenOpener !== ($hook['namePtr'] + 1)) {
+                $this->reportHookParameterSpace(
+                    $phpcsFile,
+                    $hook['namePtr'],
+                    $parenOpener,
+                    'There must be no space between a hook\'s name and its parameter list',
+                    self::CODE_SPACE_BEFORE_HOOK_PARAMETERS,
+                );
+            }
+
+            $first = $parenOpener + 1;
+            if ($tokens[$first]['code'] === T_WHITESPACE && !str_contains($tokens[$first]['content'], "\n")) {
+                $next = $phpcsFile->findNext(T_WHITESPACE, $first, null, true);
+                if ($next !== false && $next !== $parenCloser) {
+                    $this->reportHookParameterSpace(
+                        $phpcsFile,
+                        $parenOpener,
+                        $next,
+                        'There must be no space just inside a hook\'s parameter list',
+                        self::CODE_SPACE_INSIDE_HOOK_PARAMETERS,
+                    );
+                }
+            }
+
+            $last = $parenCloser - 1;
+            $previous = $phpcsFile->findPrevious(T_WHITESPACE, $last, null, true);
+            $isSameLine = $previous !== false && $tokens[$previous]['line'] === $tokens[$parenCloser]['line'];
+            if ($tokens[$last]['code'] === T_WHITESPACE && $isSameLine && $previous !== $parenOpener) {
+                $this->reportHookParameterSpace(
+                    $phpcsFile,
+                    $previous,
+                    $parenCloser,
+                    'There must be no space just inside a hook\'s parameter list',
+                    self::CODE_SPACE_INSIDE_HOOK_PARAMETERS,
+                );
+            }
+        }
+    }
+
+    /**
+     * Report whitespace in a hook's parameter list, and fix it by removing it, unless a comment is in the way.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $before The position of the token before the whitespace.
+     * @param int $after The position of the token after the whitespace.
+     * @param string $error The message.
+     * @param string $code The error code.
+     */
+    private function reportHookParameterSpace(
+        File $phpcsFile,
+        int $before,
+        int $after,
+        string $error,
+        string $code,
+    ): void {
+        if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($before + 1), $after) !== false) {
+            $phpcsFile->addError($error, $after, $code);
+            return;
+        }
+
+        if ($phpcsFile->addFixableError($error, $after, $code)) {
+            $phpcsFile->fixer->beginChangeset();
+            FixerHelper::blankBetween($phpcsFile, $before, $after);
+            $phpcsFile->fixer->endChangeset();
         }
     }
 

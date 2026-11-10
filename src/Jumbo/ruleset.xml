@@ -142,11 +142,13 @@
         </properties>
     </rule>
 
-    <!-- No space between a by-reference hook's & and its name: &get, not & get. One space before a hook's own {. -->
+    <!-- No space between a by-reference hook's & and its name: &get, not & get. One space before a hook's own {. A set
+         hook's parameter list spaced like a method's: set(string $value), not set ( string $value ). -->
     <rule ref="PERCS31.Classes.PropertyHookLayout">
         <properties>
             <property name="checkReferenceSpacing" value="true"/>
             <property name="checkHookBraceSpacing" value="true"/>
+            <property name="checkHookParameterSpacing" value="true"/>
         </properties>
     </rule>
 
@@ -210,10 +212,7 @@
             <property name="checkOptionalBlankLines" value="true"/>
         </properties>
     </rule>
-    <rule ref="PSR2.Methods.FunctionCallSignature.EmptyLine">
-        <severity>5</severity>
-    </rule>
-    <rule ref="PERCS31.Functions.CloneCallSignature.EmptyLine">
+    <rule ref="PERCS31.Functions.FunctionCallLayout.EmptyLine">
         <severity>5</severity>
     </rule>
 

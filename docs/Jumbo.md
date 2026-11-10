@@ -48,8 +48,9 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
 - `PERCS31.Classes.PropertyDeclaration` checks the hook order in every hook list, including ones with bodies
   (`orderHooksWithBodies` set to `true`).
 - `PERCS31.Classes.PropertyHookLayout` reports a space in a by-reference hook, `& get` (`checkReferenceSpacing` set to
-  `true`), and requires exactly one space before a hook's own `{`, as in `get {` (`checkHookBraceSpacing` set to
-  `true`).
+  `true`), requires exactly one space before a hook's own `{`, as in `get {` (`checkHookBraceSpacing` set to `true`),
+  and spaces a `set` hook's parameter list like a method's, as in `set(string $value)` (`checkHookParameterSpacing` set
+  to `true`).
 - `PERCS31.Files.LineLength` has `lineLimit` set from the ruleset's `lineLength` entity. See [Line Length](LineLength.md).
 - `PERCS31.WhiteSpace.ArrowSpacing` checks the spacing around `=>` in every array and `yield`, not just a `match` arm
   (`checkArray` and `checkYield` set to `true`). It replaces Squiz `ArrayDeclaration`'s arrow spacing checks.
@@ -61,7 +62,7 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
   lines, which PERCS31 doesn't check (`disallowInSplitMatchConditions` set to `true`).
 - `PERCS31.Functions.MultiLineFunctionDeclaration` reports a blank line before a closing parenthesis or between a
   closure's `use` items, and more than one between parameters (`checkOptionalBlankLines` set to `true`).
-- `PSR2.Methods.FunctionCallSignature.EmptyLine` reports a blank line in a call's arguments, which PERCS31 excludes.
+- `PERCS31.Functions.FunctionCallLayout.EmptyLine` reports a blank line in a call's arguments, which PERCS31 excludes.
 - `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat` and `PERCS31.TypeHints.NullType` report `T|null`, which should
   be `?T`, as an error, not a warning.
 - `Squiz.Arrays.ArrayDeclaration` also runs the checks PERCS31 leaves out. See [Squiz](#squiz).

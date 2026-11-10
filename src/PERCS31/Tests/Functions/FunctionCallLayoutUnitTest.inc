@@ -33,3 +33,17 @@ $a = clone(
 $a = clone(
         $b,
 );
+
+// A set hook's parameter list isn't a call, so its spacing isn't checked here.
+final class Hooks
+{
+    public string $a {
+        set ( string $value ) {
+            $this->a = $value;
+        }
+    }
+
+    public string $b {
+        set( string $value ) => trim($value);
+    }
+}

@@ -403,7 +403,7 @@ class RulesetUnitTest extends TestCase
     public function testBlankLinesInCall(): void
     {
         $fixture = dirname(__DIR__, 2) . '/Jumbo/Tests/Ruleset/BlankLinesInCall.inc';
-        $sniff = '--sniffs=PSR2.Methods.FunctionCallSignature';
+        $sniff = '--sniffs=PERCS31.Functions.FunctionCallLayout';
         foreach (['PERCS31' => [], 'Jumbo' => ['9', '15', '20']] as $standard => $expected) {
             $result = $this->runTool('phpcs', ['-s', "--standard=$standard", $sniff, '--report=emacs', $fixture]);
 

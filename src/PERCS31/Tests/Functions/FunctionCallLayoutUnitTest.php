@@ -7,9 +7,9 @@ namespace PERCS31\Tests\Functions;
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffTestCase;
 
 /**
- * Unit tests for PERCS31.Functions.CloneCallSignature sniff.
+ * Unit tests for PERCS31.Functions.FunctionCallLayout sniff.
  */
-class CloneCallSignatureUnitTest extends AbstractSniffTestCase
+class FunctionCallLayoutUnitTest extends AbstractSniffTestCase
 {
     /**
      * Returns the lines where errors should occur.

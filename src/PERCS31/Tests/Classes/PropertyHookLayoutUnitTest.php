@@ -72,6 +72,9 @@ class PropertyHookLayoutUnitTest extends AbstractSniffTestCase
             // More than one blank line between hooks.
             283 => 1,
             292 => 1,
+            // A space after set, and just inside its parentheses, with checkHookParameterSpacing set.
+            306 => 1,
+            310 => 2,
         ];
     }
 

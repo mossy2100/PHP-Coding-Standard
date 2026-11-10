@@ -68,10 +68,12 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   and [`PERCS31.WhiteSpace.ScopeIndent`](#percs31whitespacescopeindent), which support property hooks (PHP 8.4).
 - **PSR2.ControlStructures.SwitchDeclaration**, by [`PERCS31.ControlStructures.SwitchDeclaration`](#percs31controlstructuresswitchdeclaration), which adds PER's
   `switch` rules.
+- **PSR2.Methods.FunctionCallSignature**, by [`PERCS31.Functions.FunctionCallLayout`](#percs31functionsfunctioncalllayout), which also checks `clone()`, and
+  skips a `set` hook's parameter list, which isn't a call.
 - **Squiz.Classes.ValidClassName**, from PSR-1, by [`PERCS31.NamingConventions.ValidClassName`](#percs31namingconventionsvalidclassname), which also reports a run
   of capitals.
 
-`PSR2.Methods.FunctionCallSignature.EmptyLine` is excluded, with no replacement. PER says nothing about a blank line
+`PERCS31.Functions.FunctionCallLayout`'s `EmptyLine` code is excluded. PER says nothing about a blank line
 between a call's arguments, or before its closing parenthesis, so section 2.3 allows both. One before the first argument
 is still reported, as `FirstArgumentPosition`.
 
@@ -213,7 +215,7 @@ section gives the reason.
 | `PERCS31.Formatting.MethodChaining`                     | The first method of a split chain on the next line                  | Yes     |
 | `PERCS31.Formatting.TrailingComma`                      | Trailing commas in `match`, group `use`, `list()` and some calls    | Yes     |
 | `PERCS31.Functions.ArrowFunctionSemicolonSpacing`       | No space before the `;` that ends an arrow function                 | Yes     |
-| `PERCS31.Functions.CloneCallSignature`                  | `clone()`'s argument list, checked like a call's                    | Yes     |
+| `PERCS31.Functions.FunctionCallLayout`                  | A call's argument list, including `clone()`'s                       | Yes     |
 | `PERCS31.Functions.MultiLineFunctionDeclaration`        | Function, closure and `fn` declarations, allowing `{}` bodies       | Yes     |
 | `PERCS31.Functions.NullableTypeDeclaration`             | No space after the `?` of a nullable type, in any position          | Yes     |
 | `PERCS31.NamingConventions.AcronymCasing`               | A warning for an acronym in capitals in a name                      | No      |
@@ -823,6 +825,9 @@ as the Jumbo standard does.
 PER also says nothing about where a hook's own `{` goes, so `get{` and `{` on the next line both pass. Set
 `checkHookBraceSpacing` to require exactly one space, as in `get {`, as the Jumbo standard does.
 
+Nor does PER set the spacing of a `set` hook's parameter list, so `set ( string $value )` passes. Set
+`checkHookParameterSpacing` to space it like a method's, as in `set(string $value)`, as the Jumbo standard does.
+
 **Auto-fixable:** yes, except a comment after the closing brace, or a comment in the way.
 
 **Good:**
@@ -875,10 +880,11 @@ interface Named
 
 **Configuration:**
 
-| Property                | Type | Default | Description                                                    |
-| ----------------------- | ---- | ------- | -------------------------------------------------------------- |
-| `checkReferenceSpacing` | bool | false   | Report a space between a by-reference hook's `&` and its name. |
-| `checkHookBraceSpacing` | bool | false   | Require exactly one space before a hook's own `{`.             |
+| Property                    | Type | Default | Description                                                      |
+| --------------------------- | ---- | ------- | ---------------------------------------------------------------- |
+| `checkReferenceSpacing`     | bool | false   | Report a space between a by-reference hook's `&` and its name.   |
+| `checkHookBraceSpacing`     | bool | false   | Require exactly one space before a hook's own `{`.               |
+| `checkHookParameterSpacing` | bool | false   | No space after `set`, or just inside its parameter list's `( )`. |
 
 ---
 
@@ -1373,18 +1379,24 @@ $double = fn(int $x): int => $x * 2 ;
 
 ---
 
-### PERCS31.Functions.CloneCallSignature
+### PERCS31.Functions.FunctionCallLayout
 
-Checks the argument list of `clone()` like a function call's. A subclass of `PSR2.Methods.FunctionCallSignature` that
-registers only `clone`.
+Checks the spacing and layout of a function call's argument list, including `clone()`'s. This replaces
+`PSR2.Methods.FunctionCallSignature`, which it extends.
 
-**Why:** [PER Coding Style 3.1, Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) calls it "the `clone()` function", so its arguments follow the
-rules for a call: no space just inside the parentheses, and when split, the first argument on the next line and one per
-line. `PSR2.Methods.FunctionCallSignature` checks those for `exit()` and `die()`, but doesn't register `clone`.
+**Why:** [PER Coding Style 3.1, Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) sets the rules for a call: no space before or just inside the
+parentheses, and when split, the first argument on the next line and one per line. The parent checks those, with two
+gaps:
 
-Parentheses that may only group the object, as in `clone ($a)->b`, aren't an argument list. Nor are parentheses after a
-space, as in `clone ($a)`, which [`PERCS31.PHP.RequireCloneParentheses`](#percs31phprequirecloneparentheses) reports. The codes PSR-12 turns off for a call,
-and the blank line PERCS31 allows in one, are off here too.
+- It doesn't check `clone()`, which section 4.7 calls a function. This sniff does. Parentheses that may only group the
+  object, as in `clone ($a)->b`, aren't an argument list. Nor are parentheses after a space, as in `clone ($a)`, which
+  [`PERCS31.PHP.RequireCloneParentheses`](#percs31phprequirecloneparentheses) reports.
+- It reads a `set` hook's parameter list, as in `set (string $value)`, as a call to `set()`. That list is part of the
+  hook's declaration, and PER says nothing about its spacing, so this sniff skips it.
+  [`PERCS31.Classes.PropertyHookLayout`](#percs31classespropertyhooklayout) checks it when `checkHookParameterSpacing` is set, as the Jumbo standard does.
+
+It's named Layout, not Signature like its parent, as a function's signature is its declaration. PSR-12 turns off the
+parent's `SpaceAfterCloseBracket` and `OpeningIndent` codes, and PERCS31 its `EmptyLine` code, so they're off here too.
 
 **Auto-fixable:** yes, as the parent.
 

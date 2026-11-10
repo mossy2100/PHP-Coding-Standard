@@ -308,3 +308,30 @@ final class BlankLinesBetweenHooks
         set => $value;
     }
 }
+
+// phpcs:set PERCS31.Classes.PropertyHookLayout checkHookParameterSpacing true
+final class HookParameterSpacing
+{
+    public string $valid {
+        set(string $value) {
+            $this->valid = $value;
+        }
+    }
+
+    public string $spaceBefore {
+        set(string $value) => trim($value);
+    }
+
+    public string $spaceInside {
+        set(string $value) {
+            $this->spaceInside = $value;
+        }
+    }
+
+    public string $split {
+        set(
+            string $value,
+        ) => trim($value);
+    }
+}
+// phpcs:set PERCS31.Classes.PropertyHookLayout checkHookParameterSpacing false
