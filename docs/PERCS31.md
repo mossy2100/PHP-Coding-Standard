@@ -406,9 +406,8 @@ It also reports a blank line between a docblock and the attributes after it, bet
 the last attribute and its target, and anything but a single space between an attribute and its parameter on the same
 line, as section 12.2 requires. A comment on a line of its own between an attribute and its target is reported too, as
 the attributes go immediately prior to the structure. A comment at the end of the attribute's line, as in
-`#[Override] // Stringable`, is fine. Section 12.2 only says "prior to the parameter", so a comment before a parameter
-is only reported if `checkParameterComments` is set, as the Jumbo standard does. A blank line between a parameter and
-the next parameter's attributes is allowed, as 12.2 also says.
+`#[Override] // Stringable`, is fine. Section 12.2 only says "prior to the parameter", but a comment before a parameter
+is reported too. A blank line between a parameter and the next parameter's attributes is allowed, as 12.2 also says.
 
 **Auto-fixable:** yes, unless a comment is between the attribute and its target. For an anonymous class, the fix puts
 each attribute block on its own line.
@@ -463,12 +462,6 @@ $handler = new #[Attribute] class {
     public int $retries = 3;
 };
 ```
-
-**Configuration:**
-
-| Property                 | Type | Default | Description                                                              |
-| ------------------------ | ---- | ------- | ------------------------------------------------------------------------ |
-| `checkParameterComments` | bool | false   | Report a comment on its own line between an attribute and its parameter. |
 
 ---
 

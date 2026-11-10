@@ -61,7 +61,8 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             199 => 1,
             // A constant, unlike an enum case.
             237 => 1,
-            // A comment before a parameter, when set.
+            // A comment on its own line before a parameter.
+            241 => 1,
             245 => 1,
             // Two spaces after a closure's attribute outside a call.
             161 => 1,

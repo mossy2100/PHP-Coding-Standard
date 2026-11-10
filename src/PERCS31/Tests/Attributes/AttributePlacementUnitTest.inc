@@ -239,9 +239,9 @@ enum AttributesOnCases
 
 function commentsBeforeParameters(
     #[Pure]
-    // A comment, not reported by default.
+    // A comment, reported.
     int $a,
-    // phpcs:set PERCS31.Attributes.AttributePlacement checkParameterComments true
+    // More comments.
     #[Pure]
     // A comment.
     int $b,
@@ -251,7 +251,7 @@ function commentsBeforeParameters(
     #[Pure]
 
     int $d,
-    // phpcs:set PERCS31.Attributes.AttributePlacement checkParameterComments false
+    // End of the comments.
 ): void {
 }
 

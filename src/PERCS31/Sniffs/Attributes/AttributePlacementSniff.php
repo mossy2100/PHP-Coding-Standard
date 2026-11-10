@@ -37,8 +37,8 @@ use PHPCSUtils\Utils\PassedParameters;
  * Where an attribute may be on its target's line, on an enum case, a hook, or a closure outside a call, it's followed
  * by a single space, as section 12.2 requires for a parameter in a single-line list.
  *
- * It also reports a blank line or a comment between the last attribute and its target, except a comment on its own
- * line before a parameter, which section 12.2 allows. Set checkParameterComments to report that too. That replaces
+ * It also reports a blank line or a comment between the last attribute and its target. That includes a comment before
+ * a parameter, though section 12.2 says "immediately prior" only for the other targets. That replaces
  * SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing, whose fix deletes a comment there, and whose only option
  * for an attribute on its target's line, allowOnSameLine, is all or nothing.
  *
@@ -71,12 +71,6 @@ class AttributePlacementSniff implements Sniff
     public const string CODE_SAME_LINE_SPACING = 'SameLineSpacing';
 
     public const string CODE_SINGLE_LINE_LIST = 'SingleLineList';
-
-    /**
-     * Whether to report a comment on a line of its own between an attribute and its parameter. Section 12.2 only says
-     * "prior to the parameter", not "immediately prior", so it's off by default.
-     */
-    public bool $checkParameterComments = false;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -300,7 +294,7 @@ class AttributePlacementSniff implements Sniff
      *
      * A docblock there is reported by SlevomatCodingStandard.Attributes.RequireAttributeAfterDocComment, and a blank
      * line before a parameter by PERCS31.Functions.MultiLineFunctionDeclaration, so both are left alone. A comment
-     * before a parameter is only reported if checkParameterComments is set.
+     * before a parameter is reported, as for the other targets.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the attribute block's opener.
@@ -314,7 +308,6 @@ class AttributePlacementSniff implements Sniff
         if (
             $tokens[$targetPtr]['code'] === T_ATTRIBUTE
             || $tokens[$targetPtr]['line'] === $tokens[$closerPtr]['line']
-            || ($isParameter && !$this->checkParameterComments)
             || $phpcsFile->findNext(T_DOC_COMMENT_OPEN_TAG, ($closerPtr + 1), $targetPtr) !== false
         ) {
             return;

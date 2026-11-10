@@ -369,12 +369,6 @@
 
     <!-- ====== ATTRIBUTES (12) ====== -->
 
-    <!-- A comment on its own line between an attribute and its parameter is reported -->
-    <rule ref="PERCS31.Attributes.AttributePlacement">
-        <properties>
-            <property name="checkParameterComments" value="true"/>
-        </properties>
-    </rule>
 
     <rule ref="SlevomatCodingStandard.Attributes.AttributesOrder">
         <properties>

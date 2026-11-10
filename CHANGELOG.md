@@ -91,8 +91,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   into a form that breaks PER Coding Style 3.1, section 11. `PERCS31.ControlStructures.ControlStructureSpacing` replaces
   `PSR12.ControlStructures.ControlStructureSpacing`, so update any `phpcs:ignore` comments or `<exclude>` rules that name
   it.
-- **A comment between an attribute and its parameter is an error in Jumbo (breaking).** It uses the new
-  `PERCS31.Attributes.AttributePlacement` property `checkParameterComments`. Not auto-fixable.
+- **A comment on its own line between an attribute and its parameter is an error (breaking).** Reported by
+  `PERCS31.Attributes.AttributePlacement`. Not auto-fixable.
 - **An attribute can be on an enum case's or a property hook's line.** Section 12.2 of PER Coding Style 3.1 lists
   neither, and a hook isn't a method. An attribute on a hook's parameter now follows the parameter rule, instead of being
   reported.
