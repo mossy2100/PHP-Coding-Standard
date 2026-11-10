@@ -1,0 +1,3 @@
+<?php
+
+$noOpFunction = fn() => null;

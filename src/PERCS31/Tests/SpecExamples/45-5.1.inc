@@ -1,0 +1,9 @@
+<?php
+
+if ($expr1) {
+    // ...
+} elseif ($expr2) {
+    // ...
+} else {
+    // ...
+}

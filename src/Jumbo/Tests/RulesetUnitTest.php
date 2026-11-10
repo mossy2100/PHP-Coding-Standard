@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Jumbo\Tests;
 
+use PERCS31\Tests\RunsToolsTrait;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 
 /**
  * Tests of the full Jumbo and PERCS31 rulesets, and of sniff properties that can only be set in a ruleset.
@@ -18,6 +18,8 @@ use RuntimeException;
 #[CoversNothing]
 class RulesetUnitTest extends TestCase
 {
+    use RunsToolsTrait;
+
     /**
      * The fixture directory.
      */
@@ -836,28 +838,6 @@ class RulesetUnitTest extends TestCase
     #endregion
 
     #region Helper methods.
-
-    /**
-     * Run phpcs or phpcbf from vendor/bin with the current PHP binary.
-     *
-     * @param string $tool The tool name, 'phpcs' or 'phpcbf'.
-     * @param list<string> $args The command-line arguments.
-     * @return array{exitCode: int, output: string} The exit code and standard output.
-     */
-    private function runTool(string $tool, array $args): array
-    {
-        $command = [PHP_BINARY, dirname(__DIR__, 3) . "/vendor/bin/$tool", '-q', ...$args];
-        $process = proc_open($command, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
-        if ($process === false) {
-            throw new RuntimeException("Couldn't run $tool.");
-        }
-
-        $output = (string) stream_get_contents($pipes[1]) . (string) stream_get_contents($pipes[2]);
-        fclose($pipes[1]);
-        fclose($pipes[2]);
-
-        return ['exitCode' => proc_close($process), 'output' => $output];
-    }
 
     /**
      * Write a file's contents, or the given contents, to a new temporary file.
