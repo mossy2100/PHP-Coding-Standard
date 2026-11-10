@@ -101,6 +101,9 @@
         <!-- Replaced by PERCS31.TypeHints.CompoundTypeOperatorSpacing, which allows a compound type split before | or &
              (2.5) -->
         <exclude name="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.DisallowedWhitespaceAroundOperator"/>
+        <!-- Replaced by PERCS31.TypeHints.NullType, which also checks a type with an intersection, a typed constant and
+             a set hook's parameter (2.5) -->
+        <exclude name="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.NullTypeHintNotOnLastPosition"/>
         <properties>
             <property name="withSpacesAroundOperators" value="no"/>
             <property name="withSpacesInsideParentheses" value="no"/>
@@ -116,6 +119,9 @@
     <rule ref="PERCS31.TypeHints.CompoundTypeOperatorSpacing"/>
     <!-- A compound type split across lines has one type, or one union segment, per line (2.5) -->
     <rule ref="PERCS31.TypeHints.CompoundTypeLayout"/>
+    <!-- null last in a union, everywhere a type can appear, and a warning recommending ?T in a typed constant or a set
+         hook's parameter, which Slevomat's sniff doesn't see (2.5) -->
+    <rule ref="PERCS31.TypeHints.NullType"/>
 
     <!-- No space after the ? of a nullable type, wherever a type can appear (4.5) -->
     <rule ref="PERCS31.Functions.NullableTypeDeclaration"/>

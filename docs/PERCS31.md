@@ -156,9 +156,10 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Functions.NamedArgumentSpacing**: Requires no space before a named argument's colon, and one after (4.7).
 - **Functions.RequireTrailingCommaInCall**, **...InClosureUse** and **...InDeclaration**: Require a trailing comma in a
   multi-line list (2.6).
-- **TypeHints.DNFTypeHintFormat**: Requires no spaces inside the parentheses, and `null` last (2.5). It warns about
-  `T|null`, which SHOULD be `?T`. Its check for spaces around `|` and `&` is replaced by
-  [`PERCS31.TypeHints.CompoundTypeOperatorSpacing`](#percs31typehintscompoundtypeoperatorspacing), which allows a split type.
+- **TypeHints.DNFTypeHintFormat**: Requires no spaces inside the parentheses (2.5). It warns about `T|null`, which
+  SHOULD be `?T`. Its check for spaces around `|` and `&` is replaced by
+  [`PERCS31.TypeHints.CompoundTypeOperatorSpacing`](#percs31typehintscompoundtypeoperatorspacing), which allows a split type, and its check
+  for `null` last by [`PERCS31.TypeHints.NullType`](#percs31typehintsnulltype), which covers every type.
 
 ### PhpCollective
 
@@ -214,6 +215,7 @@ section gives the reason.
 | `PERCS31.Strings.HeredocIndentation`                    | Where a heredoc or nowdoc begins, and its indentation               | Yes     |
 | `PERCS31.TypeHints.CompoundTypeLayout`                  | One type, or one DNF union segment, per line of a split type        | Yes     |
 | `PERCS31.TypeHints.CompoundTypeOperatorSpacing`         | No space around `\|` or `&` in a type, but a split before one       | Yes     |
+| `PERCS31.TypeHints.NullType`                            | `null` last in a union, and `?T` in a constant or hook parameter    | Yes     |
 | `PERCS31.WhiteSpace.ArrowSpacing`                       | One space around `=>` in `match` arms                               | Yes     |
 | `PERCS31.WhiteSpace.ConsistentIndent`                   | No line indented further than its scope, after a statement          | Yes     |
 | `PERCS31.WhiteSpace.ScopeClosingBrace`                  | A closing brace on its own line, allowing `{}`                      | Yes     |
@@ -1990,6 +1992,53 @@ function reflect(
 
 ---
 
+### PERCS31.TypeHints.NullType
+
+Requires `null` to be the last type in a union, wherever a type can appear. Recommends `?T` for a union of one type with
+`null` in a typed constant or a `set` hook's parameter.
+
+**Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says `null` MUST be the last item, and that a union of a single
+simple type with `null` SHOULD be written `?T`. `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat` misses some cases:
+
+- It skips the `null` position in a type with an intersection, such as `null|(A&B)`.
+- For `null|int`, it only gives the `?T` warning, so the MUST is lost below warning level.
+- It doesn't check a typed constant, or a `set` hook's parameter, which PHP_CodeSniffer reads as an expression.
+
+So this sniff checks `null` last everywhere, replacing the Slevomat check. It only checks `?T` where the Slevomat sniff
+doesn't. The `?T` warning is a SHOULD, so a warning.
+
+**Auto-fixable:** yes. A type split across lines, or with a comment in it, is reported but not fixed.
+
+**Good:**
+
+```php
+function find((A&B)|null $a): int|string|null
+{
+    // ...
+}
+
+class Limits
+{
+    public const ?int MAX = null;
+}
+```
+
+**Bad:**
+
+```php
+function find(null|(A&B) $a): int|null|string
+{
+    // ...
+}
+
+class Limits
+{
+    public const int|null MAX = null;
+}
+```
+
+---
+
 ### PERCS31.WhiteSpace.ArrowSpacing
 
 Requires exactly one space before and after the `=>` in a `match` arm, and optionally in an array element or a `yield`.
@@ -2183,9 +2232,8 @@ class User
 - **Avoiding abbreviations (2.7).** Whether a name could avoid an abbreviation can't be judged by a sniff.
 - **A `(double)` cast (2.5).** Section 2.5's short form rule is checked for the long forms PSR-12 knows, `(boolean)` and
   `(integer)`. `(double)` is left to the [Jumbo standard](Jumbo.md), whose `SlevomatCodingStandard.PHP.TypeCast` requires `(float)`.
-- **Some rules for a `set` hook's parameter type (2.5).** PHP_CodeSniffer reads the type as an expression, so the sniffs
-  that check types elsewhere don't see it. That leaves `?T` over `T|null`, `null` last, and keywords in lower case. The
-  spacing around `|`, `&` and after `?`, the parentheses of a DNF type, and a split type's layout are checked.
+- **Keywords in lower case in a `set` hook's parameter type (2.5).** PHP_CodeSniffer reads the type as an expression, so
+  `Generic.PHP.LowerCaseType` doesn't see it. The other type rules are checked there.
 - **A comment or statement after a function's or control structure's closing brace (4).** Section 4 says "any closing
   brace", but it's in the section on classes, properties and methods, so this standard reads it as those only. After a
   block `declare` in the file header, a statement is still reported, as section 3 wants a blank line after the block.

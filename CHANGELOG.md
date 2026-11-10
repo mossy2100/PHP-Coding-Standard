@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`PERCS31.TypeHints.NullType` (breaking).** `null` must be the last type in a union everywhere a type can appear,
+  as PER Coding Style 3.1 requires: a type with an intersection, such as `null|(A&B)`, a typed constant, and a `set`
+  hook's parameter are now checked, and `null|int` is an error, not just the `?T` warning. A warning recommends `?T` in
+  a typed constant or a `set` hook's parameter, an error in Jumbo. Auto-fixable, except a split type.
 - **Single-line rules for statements, signatures and class headers (breaking).** In the Jumbo standard, new
   `Jumbo.Formatting.RequireSingleLineStatement`, `Jumbo.Functions.RequireSingleLineSignature` and
   `Jumbo.Classes.RequireSingleLineClassHeader` require code split across lines to be on one line, if it fits. With a

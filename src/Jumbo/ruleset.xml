@@ -43,6 +43,9 @@
     <rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.RequiredShortNullable">
         <type>error</type>
     </rule>
+    <rule ref="PERCS31.TypeHints.NullType.ShortNullable">
+        <type>error</type>
+    </rule>
     <rule ref="SlevomatCodingStandard.TypeHints.NullableTypeForNullDefaultValue"/>
     <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint">
         <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.UselessAnnotation"/>

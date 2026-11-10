@@ -1,0 +1,81 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Vendor\Package;
+
+// Valid: null last, or no null.
+function valid(int|string|null $a, (A&B)|null $b, ?int $c, int|string $d): (A&B)|C|null
+{
+    return null;
+}
+
+// null first in a DNF type, and in the middle of one.
+function dnf((A&B)|null $a, (A&B)|C|null $b): void
+{
+}
+
+// null first in a union of two, which Slevomat only reports as ?T.
+function two(int|null $a): void
+{
+}
+
+// null not last in a union of three.
+function three(): int|string|null
+{
+    return 1;
+}
+
+final class Example
+{
+    public (A&B)|null $a;
+
+    // Typed constants: ?T is recommended, and null must be last.
+    public const ?int A = 1;
+    public const ?int B = 1;
+    public const int|string|null C = 1;
+    public const int|string|null D = 1;
+    public const ?int E = 1;
+
+    // set hook parameters.
+    public ?int $c {
+        set(?int $value) {
+            $this->c = $value;
+        }
+    }
+
+    public ?int $d {
+        set(?int $value) {
+            $this->d = $value;
+        }
+    }
+
+    public int|string|null $e {
+        set(int|string|null $value) {
+            $this->e = $value;
+        }
+    }
+
+    public int|string|null $f {
+        set(int|string|null $value) {
+            $this->f = $value;
+        }
+    }
+}
+
+// A split type is reported, but not fixed.
+function split(
+    null
+    |int
+    |string $a,
+): void {
+}
+
+// A comment in the type stops the fix too.
+function commented(null/* why */|int|string $a): void
+{
+}
+
+// Not a type.
+$g = $a | $b & $c;
+$h = fn((A&B)|null $x): int => 1;

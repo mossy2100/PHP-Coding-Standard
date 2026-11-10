@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\TypeHints;
 
+use PERCS31\Helpers\CompoundTypeHelper;
 use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\LayoutHelper;
 use PERCS31\Helpers\PropertyHookHelper;
@@ -35,42 +36,6 @@ class CompoundTypeLayoutSniff implements Sniff
     public const string CODE_SPLIT_INTERSECTION = 'SplitIntersection';
 
     /**
-     * The tokens that can make up a type, besides whitespace and comments.
-     *
-     * @var list<int|string>
-     */
-    private const array TYPE_TOKENS = [
-        T_STRING,
-        T_NAME_QUALIFIED,
-        T_NAME_FULLY_QUALIFIED,
-        T_NAME_RELATIVE,
-        T_NULL,
-        T_FALSE,
-        T_TRUE,
-        T_SELF,
-        T_STATIC,
-        T_PARENT,
-        T_CALLABLE,
-        T_TYPE_UNION,
-        T_TYPE_INTERSECTION,
-        T_TYPE_OPEN_PARENTHESIS,
-        T_TYPE_CLOSE_PARENTHESIS,
-    ];
-
-    /**
-     * The tokens PHP_CodeSniffer gives a type's parts in a `set` hook's parameter, which it reads as an expression.
-     *
-     * @var list<int|string>
-     */
-    private const array HOOK_TYPE_TOKENS = [
-        T_BITWISE_OR,
-        T_BITWISE_AND,
-        T_OPEN_PARENTHESIS,
-        T_CLOSE_PARENTHESIS,
-        T_ARRAY,
-    ];
-
-    /**
      * Returns an array of tokens this test wants to listen for.
      *
      * @return array<int|string>
@@ -95,7 +60,7 @@ class CompoundTypeLayoutSniff implements Sniff
             return;
         }
 
-        $symbols = $this->findSymbols($phpcsFile, $stackPtr, $isHook);
+        $symbols = CompoundTypeHelper::findSymbols($phpcsFile, $stackPtr, $isHook);
 
         // Check each type once, from its first symbol.
         if ($symbols[0] !== $stackPtr) {
@@ -113,7 +78,7 @@ class CompoundTypeLayoutSniff implements Sniff
                 $depth++;
             } elseif ($code === T_TYPE_CLOSE_PARENTHESIS || $code === T_CLOSE_PARENTHESIS) {
                 $depth--;
-            } elseif ($this->isSymbol($code)) {
+            } elseif (CompoundTypeHelper::isSymbol($code)) {
                 if ($depth === 0) {
                     $topLevel[] = $i;
                 } else {
@@ -158,7 +123,7 @@ class CompoundTypeLayoutSniff implements Sniff
     private function isInsideGroup(File $phpcsFile, int $stackPtr, bool $isHook): bool
     {
         $tokens = $phpcsFile->getTokens();
-        for ($i = ($stackPtr - 1); $i >= 0 && $this->isTypeToken($tokens[$i]['code'], $isHook); $i--) {
+        for ($i = ($stackPtr - 1); $i >= 0 && CompoundTypeHelper::isTypeToken($tokens[$i]['code'], $isHook); $i--) {
             if ($tokens[$i]['code'] === T_TYPE_OPEN_PARENTHESIS) {
                 return true;
             }
@@ -172,56 +137,6 @@ class CompoundTypeLayoutSniff implements Sniff
         }
 
         return false;
-    }
-
-    /**
-     * Find the `|` and `&` symbols of the type a symbol belongs to.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $stackPtr The position of a symbol.
-     * @param bool $isHook Whether the symbol is in a `set` hook's parameter type.
-     * @return non-empty-list<int> The positions of the symbols, in order.
-     */
-    private function findSymbols(File $phpcsFile, int $stackPtr, bool $isHook): array
-    {
-        $tokens = $phpcsFile->getTokens();
-        $start = $stackPtr;
-        while ($start > 0 && $this->isTypeToken($tokens[($start - 1)]['code'], $isHook)) {
-            $start--;
-        }
-
-        $symbols = [];
-        for ($i = $start; isset($tokens[$i]) && $this->isTypeToken($tokens[$i]['code'], $isHook); $i++) {
-            if ($this->isSymbol($tokens[$i]['code'])) {
-                $symbols[] = $i;
-            }
-        }
-
-        return $symbols === [] ? [$stackPtr] : $symbols;
-    }
-
-    /**
-     * Check whether a token can be part of a type.
-     *
-     * @param int|string $code The token's code.
-     * @param bool $isHook Whether the type is a `set` hook's parameter type.
-     */
-    private function isTypeToken(int|string $code, bool $isHook): bool
-    {
-        return in_array($code, self::TYPE_TOKENS, true)
-            || isset(Tokens::EMPTY_TOKENS[$code])
-            || ($isHook && in_array($code, self::HOOK_TYPE_TOKENS, true));
-    }
-
-    /**
-     * Check whether a token is a `|` or `&` in a type. The process() method has already ruled out any bitwise operator
-     * that isn't one.
-     *
-     * @param int|string $code The token's code.
-     */
-    private function isSymbol(int|string $code): bool
-    {
-        return in_array($code, [T_TYPE_UNION, T_TYPE_INTERSECTION, T_BITWISE_OR, T_BITWISE_AND], true);
     }
 
     /**

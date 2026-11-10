@@ -62,8 +62,8 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
 - `PERCS31.Functions.MultiLineFunctionDeclaration` reports a blank line before a closing parenthesis or between a
   closure's `use` items, and more than one between parameters (`checkOptionalBlankLines` set to `true`).
 - `PSR2.Methods.FunctionCallSignature.EmptyLine` reports a blank line in a call's arguments, which PERCS31 excludes.
-- `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat` reports `T|null`, which should be `?T`, as an error, not a
-  warning.
+- `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat` and `PERCS31.TypeHints.NullType` report `T|null`, which should
+  be `?T`, as an error, not a warning.
 - `Squiz.Arrays.ArrayDeclaration` also runs the checks PERCS31 leaves out. See [Squiz](#squiz).
 - `PERCS31.Operators.OperatorSpacing` also reports more than one space around an operator, with `ignoreNewlines` on and
   `ignoreSpacingBeforeAssignments` off. See [Squiz](#squiz).
