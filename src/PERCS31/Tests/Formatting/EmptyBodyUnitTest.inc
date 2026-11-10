@@ -88,3 +88,15 @@ function closures(): array
         },
     ];
 }
+
+function commentedClosures(): array
+{
+    return [
+        static function () /* Why. */ {},
+        static function () /* Why. */ {
+        },
+        static function () // Why.
+        {
+        },
+    ];
+}

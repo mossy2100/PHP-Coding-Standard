@@ -1185,7 +1185,8 @@ including a constructor that only promotes properties. [Section 7](https://www.p
 an anonymous class MUST follow the same rules as a closure. No inherited sniff checks any of these. A body containing a
 comment isn't empty.
 
-**Auto-fixable:** yes, unless a comment is between the declaration and the opening brace.
+**Auto-fixable:** yes. After a block comment, the fix puts `{}` after it, as in `function a() /* Why. */ {}`. A body after
+a `//` or `#` comment is reported but not fixed, as `{}` can't go on the comment's line.
 
 **Good:**
 

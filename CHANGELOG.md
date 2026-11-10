@@ -413,6 +413,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **`PERCS31.Formatting.EmptyBody` and a comment before the brace (breaking).** An empty body after a comment, as in
+  `function () /* Why. */ {` then `};`, was not reported. It now is, and the fix puts `{}` after a block comment. After
+  a `//` or `#` comment, it's reported but not fixed.
 - **`PERCS31.ControlStructures.SwitchDeclaration` and the `case` line (breaking).** A blank line after a `case` or
   `default` label is allowed in PERCS31, as PER doesn't forbid it, and Jumbo still reports it, as `BlankLineAfterLabel`.
   A comment on the label's line is now an error in both, as `CommentOnCaseLine`, as PER says the line consists only of

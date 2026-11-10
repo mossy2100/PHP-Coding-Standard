@@ -33,6 +33,10 @@ class EmptyBodyUnitTest extends AbstractSniffTestCase
             80 => 1,
             // Closure with a multi-line signature.
             84 => 1,
+            // Closure after a block comment, fixed after it.
+            96 => 1,
+            // Closure after a line comment, reported but not fixed.
+            99 => 1,
         ];
     }
 
@@ -56,6 +60,8 @@ class EmptyBodyUnitTest extends AbstractSniffTestCase
             26 => 1,
             // Multi-line signature.
             32 => 1,
+            // Method after a line comment, reported but not fixed.
+            41 => 1,
             // Function.
             56 => 1,
         ];
