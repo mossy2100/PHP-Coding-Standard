@@ -117,6 +117,9 @@ rules.
 - **Universal.Constants.ModifierKeywordOrder**: Requires `final` before the visibility on a constant, as in
   `final public const A`. Section 4.6 sets that order for classes, properties and methods, but doesn't name constants,
   so PERCS31 allows either. Auto-fixable.
+- **Universal.Constants.UppercaseMagicConstants**: Requires a magic constant in upper case, as in `__DIR__`, not
+  `__dir__`. PHP ignores their case. Section 2.5's rule that keywords are in lower case isn't read as covering them, so
+  PERCS31 doesn't check their case. Auto-fixable.
 
 ### Slevomat
 

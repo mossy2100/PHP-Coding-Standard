@@ -31,6 +31,10 @@
 
     <!-- ====== TYPES (2.5) ====== -->
 
+    <!-- Magic constants in upper case, as in __DIR__. PHP ignores their case, and PERCS31 doesn't check it, as 2.5's
+         rule on keywords isn't read as covering them. -->
+    <rule ref="Universal.Constants.UppercaseMagicConstants"/>
+
     <!-- The Jumbo versions of ParameterTypeHintSpacing and ParameterTypeHint, which skip a function with a hook on a
          promoted constructor parameter, as the parents read the variables in the hook as parameters -->
     <rule ref="Jumbo.TypeHints.ParameterTypeHintSpacing"/>

@@ -164,4 +164,14 @@ final class Inventory implements Countable, Stringable
     {
         return $this->name . ': ' . implode(', ', $this->items);
     }
+
+    /**
+     * Get the directory this class is in.
+     *
+     * @return string The directory.
+     */
+    public function directory(): string
+    {
+        return __dir__;
+    }
 }

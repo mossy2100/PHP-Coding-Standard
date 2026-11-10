@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`Universal.Constants.UppercaseMagicConstants` in Jumbo (breaking).** A magic constant must be in upper case, as in
+  `__DIR__`. PHP ignores their case, and PERCS31 doesn't check it. Auto-fixable.
 - **At most one blank line between hooks (breaking).** `PERCS31.Classes.PropertyHookLayout` now reports two or more
   blank lines between the hooks of a list over several lines, as `TooManyBlankLinesBetweenHooks`, as PER Coding Style
   3.1 allows no blank line or one. Auto-fixable, unless a comment is between the hooks.
