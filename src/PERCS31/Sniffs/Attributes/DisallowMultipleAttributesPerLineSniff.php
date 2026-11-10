@@ -16,7 +16,7 @@ use SlevomatCodingStandard\Sniffs\Attributes\DisallowMultipleAttributesPerLineSn
  * Requires separate attribute blocks on separate lines.
  *
  * PER Coding Style 3.1, section 12.2, says two separate attribute blocks MUST be on separate lines. This extends
- * SlevomatCodingStandard.Attributes.DisallowMultipleAttributesPerLine, and changes two things:
+ * SlevomatCodingStandard.Attributes.DisallowMultipleAttributesPerLine, and changes three things:
  * - It skips blocks on a parameter or argument in a single-line list. The parent's fix would put each block at the
  *   start of a line and leave the list half split, so PERCS31.Attributes.AttributePlacement reports that case, and
  *   splits the whole list.

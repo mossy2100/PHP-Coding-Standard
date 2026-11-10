@@ -27,7 +27,7 @@ use PHP_CodeSniffer\Util\Tokens;
  * body line, and rejects a body line indented less than the marker, so this sniff checks the marker. The fix moves the
  * marker and every body line by the same amount, keeping any extra indentation within the text.
  *
- * An indent is 4 spaces, as PER Coding Style section 2.4 requires.
+ * An indent is 4 spaces, as PER Coding Style 3.1, section 2.4, requires.
  */
 class HeredocIndentationSniff implements Sniff
 {

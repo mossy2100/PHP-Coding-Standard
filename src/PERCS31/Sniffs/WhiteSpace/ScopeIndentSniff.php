@@ -1,6 +1,6 @@
 <?php
 /**
- * Checks that control structures are defined and indented correctly.
+ * Checks that code is indented correctly, including property hooks and an anonymous class with attributes.
  *
  * This is a fork of Generic.WhiteSpace.ScopeIndent from PHP_CodeSniffer 4.0.4. It isn't a subclass, as every change is
  * inside process(), which is one long method with no smaller one to override. The changes:

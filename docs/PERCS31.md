@@ -47,11 +47,11 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   `{ get; set; }` on an abstract or interface property.
 - **Generic.NamingConventions.UpperCaseConstantName**, from PSR-1, by [`PERCS31.NamingConventions.UpperCaseConstantName`](#percs31namingconventionsuppercaseconstantname),
   which allows PascalCase for an enum constant.
+- **PSR12.Classes.ClosingBrace**, by [`PERCS31.Classes.ClosingBrace`](#percs31classesclosingbrace), which also checks an anonymous class.
 - **PSR12.ControlStructures.BooleanOperatorPlacement** is kept, with `allowOnly` set to `first`, so a wrapped `&&` or
   `||` in a condition starts the line (5.1, 6.4). PSR-12 only requires consistency.
 - **PSR12.ControlStructures.ControlStructureSpacing**, by [`PERCS31.ControlStructures.ControlStructureSpacing`](#percs31controlstructurescontrolstructurespacing), which
   drops its rules for a multi-line `foreach`.
-- **PSR12.Classes.ClosingBrace**, by [`PERCS31.Classes.ClosingBrace`](#percs31classesclosingbrace), which also checks an anonymous class.
 - **PSR12.Files.DeclareStatement**, by [`PERCS31.Files.DeclareStatement`](#percs31filesdeclarestatement), which accepts a declare statement with several
   directives, such as `declare(ticks=1,strict_types=1);`, or a string value, such as `declare(encoding='UTF-8');`.
 - **PSR12.Files.FileHeader**, by [`PERCS31.Files.FileHeader`](#percs31filesfileheader), which allows `<?php declare(strict_types=1) ?>` on the
@@ -191,10 +191,10 @@ section gives the reason.
 | `PERCS31.Arrays.ValuePerLine`                           | One value per line in a multi-line array, the first on the next     | Yes     |
 | `PERCS31.Attributes.AttributePlacement`                 | An attribute is on its own line, except on a parameter              | Yes     |
 | `PERCS31.Attributes.DisallowMultiLineAttributesJoining` | One attribute per block when a block spans lines                    | Yes     |
-| `PERCS31.Attributes.DisallowMultipleAttributesPerLine` | Separate attribute blocks on separate lines                         | Yes     |
+| `PERCS31.Attributes.DisallowMultipleAttributesPerLine`  | Separate attribute blocks on separate lines                         | Yes     |
 | `PERCS31.Classes.ClassDeclaration`                      | Class declarations, allowing an empty body as `{}`                  | Yes     |
 | `PERCS31.Classes.ClassInstantiationNoBrackets`          | A warning for `(new Foo())->bar()`                                  | Yes     |
-| `PERCS31.Classes.ClosingBrace`                          | No comment or statement after a class's `}`, including an anonymous | No      |
+| `PERCS31.Classes.ClosingBrace`                          | No comment or statement after a class's, method's or hook's `}`     | No      |
 | `PERCS31.Classes.EnumMemberVisibility`                  | `private`, not `protected`, for a method or constant in an enum     | Yes     |
 | `PERCS31.Classes.PromotedPropertyHooks`                 | A hook on a promoted parameter is a single short hook on one line   | No      |
 | `PERCS31.Classes.PropertyDeclaration`                   | No leading `_`, no `var`, a visibility, and `get` before `set`      | Partly  |
@@ -209,7 +209,7 @@ section gives the reason.
 | `PERCS31.Formatting.DisallowMultipleStatements`         | One statement per line, allowing `{ get; set; }`                    | Yes     |
 | `PERCS31.Formatting.EmptyBody`                          | An empty class, function, closure or anonymous class body is `{}`   | Yes     |
 | `PERCS31.Formatting.MethodChaining`                     | The first method of a split chain on the next line                  | Yes     |
-| `PERCS31.Formatting.TrailingComma`                      | Trailing commas in `match`, group `use` and `new class (...)`       | Yes     |
+| `PERCS31.Formatting.TrailingComma`                      | Trailing commas in `match`, group `use`, `list()` and some calls    | Yes     |
 | `PERCS31.Functions.ArrowFunctionSemicolonSpacing`       | No space before the `;` that ends an arrow function                 | Yes     |
 | `PERCS31.Functions.CloneCallSignature`                  | `clone()`'s argument list, checked like a call's                    | Yes     |
 | `PERCS31.Functions.MultiLineFunctionDeclaration`        | Function, closure and `fn` declarations, allowing `{}` bodies       | Yes     |
@@ -390,9 +390,9 @@ $pure = #[A]
     static fn($x) => $x;
 ```
 
-PER doesn't set the spacing for one block in these three cases, so `#[Label]  case Active;` passes. Set
-`checkSameLineSpacing` to require a single space when the attribute is on its target's line, as the Jumbo standard does.
-It's fixable.
+PER doesn't set the spacing for one block on an enum case, a hook, or a closure outside a call, so
+`#[Label]  case Active;` passes. Set `checkSameLineSpacing` to require a single space when the attribute is on its
+target's line, as the Jumbo standard does. It's fixable.
 
 **Why:** `SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing` covers some of this, but its only option for an
 attribute on its target's line, `allowOnSameLine`, is all or nothing, and its fix for a blank line deletes a comment
@@ -516,7 +516,7 @@ Requires separate attribute blocks on separate lines. This replaces
 `SlevomatCodingStandard.Attributes.DisallowMultipleAttributesPerLine`, which it extends.
 
 **Why:** [PER Coding Style 3.1, Section 12.2](https://www.php-fig.org/per/coding-style/#122-placement) says two separate attribute blocks MUST be on separate lines. The Slevomat
-sniff checks this, with two problems:
+sniff checks this, with three problems:
 
 - In a single-line parameter or argument list, its fix puts each block at the start of a line and leaves the list half
   split. This sniff skips that case, and [`AttributePlacement`](#percs31attributesattributeplacement) splits the whole list instead.
@@ -549,7 +549,7 @@ Checks the declaration of a class, interface, trait or enum, and the placement o
 written as `{}` on one line, e.g. `class Foo {}`. This replaces `PSR2.Classes.ClassDeclaration`.
 
 **Why:** `PSR2.Classes.ClassDeclaration` rejects an empty body written as `{}` on one line, which [PER Coding Style 3.1,
-Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff
+Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff
 skips that case, and leaves everything else to the parent. For an empty body, the checks on `extends` and `implements`
 still run. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
 
@@ -665,7 +665,7 @@ enum Suit
 {
     case Hearts;
 
-    protected const string RED = 'red';
+    protected const string Red = 'red';
 
     protected function symbol(): string
     {
@@ -1008,7 +1008,7 @@ $options = $isActive ? [
 Checks `switch` statements. This replaces `PSR2.ControlStructures.SwitchDeclaration`, and adds these rules:
 
 - The last non-empty case MUST end with a terminating statement, such as `break`, `return` or `throw`.
-- A multi-line case condition MUST be wrapped in parentheses, with `):` on a line of their own.
+- A multi-line case condition MUST be wrapped in parentheses, with `):` on a line of its own.
 - A non-empty `default` that continues into the next case MUST have a comment saying so, as a `case` must.
 - A `case` or `default` line MUST consist only of the label, so code or a comment there is reported. A phpcs annotation
   is left alone, as it only works on that line.
@@ -2211,8 +2211,8 @@ Checks that a scope's closing brace is on a line by itself, and indented to matc
 `{}` on one line, e.g. `class Foo {}` or `function () {}`. This replaces `Squiz.WhiteSpace.ScopeClosingBrace`.
 
 **Why:** `Squiz.WhiteSpace.ScopeClosingBrace` rejects an empty body written as `{}` on one line, which [PER Coding Style
-3.1, Sections 4.4 and 7](https://www.php-fig.org/per/coding-style/#7-closures) requires for a closure and recommends for
-a class or function. This sniff skips that case, and leaves everything else to the parent. See
+3.1, Sections 4, 4.4 and 7](https://www.php-fig.org/per/coding-style/#7-closures) requires for a closure and recommends
+for a class or function. This sniff skips that case, and leaves everything else to the parent. See
 [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
 
 **Auto-fixable:** yes, as the parent.
@@ -2290,9 +2290,10 @@ class User
 - **An empty closure SHOULD be an arrow function (7).** Rewriting `function () {}` as `fn() => null` changes the return
   value, and `function (): void {}` has no arrow function equivalent.
 - **A trailing comma in a split list of `match` conditions (2.6).** A comma before `=>` isn't required when an arm's
-  conditions are on several lines, and no sniff requires one in a split attribute block with a single attribute. Set
-  `disallowInSplitMatchConditions` on `PERCS31.Formatting.TrailingComma` to disallow the first, as the [Jumbo standard](Jumbo.md)
-  does.
+  conditions are on several lines. Set `disallowInSplitMatchConditions` on `PERCS31.Formatting.TrailingComma` to
+  disallow one, as the [Jumbo standard](Jumbo.md) does.
+- **A trailing comma in a split attribute block holding one attribute (2.6).** No sniff requires one. Splitting such a
+  block already breaks section 12.1, as nothing may come between `#[` and the attribute's name.
 - **Whether a fall-through comment is clear (5.2).** Any comment just before the next `case` or `default` passes, as the
   spec doesn't set any wording.
 - **Avoiding abbreviations (2.7).** Whether a name could avoid an abbreviation can't be judged by a sniff.

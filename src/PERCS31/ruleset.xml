@@ -192,7 +192,7 @@
     <!-- No leading underscore on a constant (4.3) -->
     <rule ref="PERCS31.NamingConventions.ValidConstantName"/>
 
-    <!-- Constants in UPPER_CASE, except in an enum, where a warning recommends PascalCase (9) -->
+    <!-- Class constants in UPPER_CASE (PSR-1), except in an enum, where a warning recommends PascalCase (9) -->
     <rule ref="PERCS31.NamingConventions.UpperCaseConstantName"/>
 
     <!-- One property per statement (4.3) -->
@@ -222,7 +222,7 @@
         <type>error</type>
     </rule>
 
-    <!-- The layout of a property's hook list: its braces, and a short hook's => (4.9) -->
+    <!-- The layout of a property's hook list: its braces, and a short hook's => (4.9, 4.10) -->
     <rule ref="PERCS31.Classes.PropertyHookLayout"/>
 
     <!-- A hook on a promoted constructor parameter only as a single short hook on one line (4.9) -->
