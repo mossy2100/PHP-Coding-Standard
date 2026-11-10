@@ -8,6 +8,8 @@ use PERCS31\Helpers\FileHeaderHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\PSR12\Sniffs\Files\FileHeaderSniff as Psr12Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\Namespaces;
+use PHPCSUtils\Utils\UseStatements;
 
 /**
  * Checks the file header, allowing a declare statement between PHP tags on the first line of a file with markup.
@@ -34,10 +36,17 @@ use PHP_CodeSniffer\Util\Tokens;
  * The parent ends a `use` statement at its first comma, so it reads `use A, B;` as the end of the header, and reports
  * the missing blank line before `B`. Section 3 doesn't forbid several imports in one statement, so this sniff extends
  * that line to its semicolon, and adds any `use` statements after it.
+ *
+ * The parent only looks at the header, so an import after the rest of the code passed. Section 3 puts the imports
+ * before "The remainder of the code in the file", and says that in a file with markup they "MUST be present at the top
+ * of the file". This sniff reports one as ImportAfterCode, but not in a file with more than one namespace, where each
+ * namespace has its own imports. It isn't fixed, as moving an import can change what a name resolves to.
  */
 class FileHeaderSniff extends Psr12Sniff
 {
     public const string CODE_STRICT_TYPES_NOT_ON_FIRST_LINE = 'StrictTypesNotOnFirstLine';
+
+    public const string CODE_IMPORT_AFTER_CODE = 'ImportAfterCode';
 
     /**
      * Processes this test, when one of its tokens is encountered.
@@ -55,6 +64,10 @@ class FileHeaderSniff extends Psr12Sniff
         // Once the declare is reported, the rest of the header is left until it's moved, so the fixes don't clash.
         if ($stackPtr === 0 && $this->checkStrictTypesOnFirstLine($phpcsFile)) {
             return $phpcsFile->numTokens;
+        }
+
+        if ($phpcsFile->findPrevious(T_OPEN_TAG, ($stackPtr - 1)) === false) {
+            $this->checkImportsAfterCode($phpcsFile, $stackPtr);
         }
 
         $result = parent::process($phpcsFile, $stackPtr);
@@ -134,6 +147,48 @@ class FileHeaderSniff extends Psr12Sniff
         }
 
         return $lines;
+    }
+
+    /**
+     * Report an import after the header, in a file with one namespace or none.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the first opening tag.
+     */
+    private function checkImportsAfterCode(File $phpcsFile, int $stackPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $namespaces = 0;
+        $namespace = $phpcsFile->findNext(T_NAMESPACE, 0);
+        while ($namespace !== false) {
+            if (Namespaces::isDeclaration($phpcsFile, $namespace)) {
+                $namespaces++;
+            }
+
+            $namespace = $phpcsFile->findNext(T_NAMESPACE, ($namespace + 1));
+        }
+
+        if ($namespaces > 1) {
+            return;
+        }
+
+        $lines = $this->getHeaderLines($phpcsFile, $stackPtr);
+        $last = end($lines);
+        $headerEnd = $last === false ? $stackPtr : $last['end'];
+        assert(is_int($headerEnd));
+
+        $use = $phpcsFile->findNext(T_USE, ($headerEnd + 1));
+        while ($use !== false) {
+            if ($tokens[$use]['conditions'] === [] && UseStatements::isImportUse($phpcsFile, $use)) {
+                $phpcsFile->addError(
+                    'An import must be in the file header, before the rest of the code',
+                    $use,
+                    self::CODE_IMPORT_AFTER_CODE,
+                );
+            }
+
+            $use = $phpcsFile->findNext(T_USE, ($use + 1));
+        }
     }
 
     /**

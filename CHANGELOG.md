@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **An import after the rest of the code (breaking).** `PERCS31.Files.FileHeader` now reports a `use` import after
+  the file's code, as `ImportAfterCode`, as PER Coding Style 3.1 puts imports in the header. A file with more than one
+  namespace is skipped. Not auto-fixable.
 - **`PERCS31.Functions.CloneCallSignature` (breaking).** `clone()`'s argument list is checked like a call's, as PER
   Coding Style 3.1 calls it a function: no space just inside the parentheses, and when split, the first argument on the
   next line and one per line. Parentheses that only group the object, as in `clone ($a)->b`, are skipped.
