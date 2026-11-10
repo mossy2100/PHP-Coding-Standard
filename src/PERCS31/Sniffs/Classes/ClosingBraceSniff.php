@@ -20,9 +20,8 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * A property hook's braces are covered, as section 4 covers properties: the hook list's `}` and each hook body's. Only
  * a comment after one is reported. A phpcs annotation is allowed, as it only works on that line. It isn't fixable, as
- * where the comment should go is left to a person. What follows a promoted property's hook list, a
- * `,` or `)`, is part of the parameter list, and PERCS31.Classes.PropertyHookLayout already puts each hook on its own
- * line.
+ * where the comment should go is left to a person. What follows a promoted property's hook list, a `,` or `)`, is part
+ * of the parameter list, and PERCS31.Classes.PropertyHookLayout already puts each hook on its own line.
  */
 class ClosingBraceSniff extends Psr12Sniff
 {
