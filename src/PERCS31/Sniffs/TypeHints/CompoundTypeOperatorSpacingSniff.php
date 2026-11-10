@@ -14,8 +14,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  * PER Coding Style 3.1, section 2.5, says the union symbol `|` and intersection symbol `&` MUST NOT have a leading or
  * trailing space, and that a compound type MAY be split across lines, with the symbol at the start of each line.
  * SlevomatCodingStandard.TypeHints.DNFTypeHintFormat counts that line break as a space, so it rejects every split
- * type. The PERCS31 ruleset excludes its DisallowedWhitespaceAroundOperator code, and this sniff checks the spacing
- * instead:
+ * type. Universal.Operators.TypeSeparatorSpacing does the same. The PERCS31 ruleset excludes Slevomat's
+ * DisallowedWhitespaceAroundOperator code, and this sniff checks the spacing instead:
  * - A space before or after the symbol, on the same line, is reported, and removed by the fix.
  * - A line break before the symbol is allowed.
  * - A line break after the symbol, which leaves it at the end of the line, is reported, and the fix moves the symbol

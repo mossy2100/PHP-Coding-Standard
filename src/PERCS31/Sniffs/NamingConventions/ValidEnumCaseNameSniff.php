@@ -17,8 +17,9 @@ use PHP_CodeSniffer\Util\Tokens;
  * capitals isn't PascalCase, even if it's an acronym. So `Hearts`, `C2`, `B2B` and a lone `A` pass, and `FOO`,
  * `HTTPStatus` and `AClass` don't.
  *
- * Based on PhpCollective.Classes.EnumCaseCasing (php-collective/code-sniffer), which skips a name with no capitals,
- * such as `hearts`. This sniff doesn't fix the name, as references to the case elsewhere wouldn't change with it.
+ * It replaces PhpCollective.Classes.EnumCaseCasing (php-collective/code-sniffer), which skips a name with no capitals,
+ * such as `hearts`, and allows a run of capitals. This sniff doesn't fix the name, as references to the case elsewhere
+ * wouldn't change with it.
  */
 class ValidEnumCaseNameSniff implements Sniff
 {

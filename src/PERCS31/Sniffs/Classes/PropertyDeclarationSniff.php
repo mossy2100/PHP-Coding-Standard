@@ -216,16 +216,4 @@ class PropertyDeclarationSniff extends Psr2Sniff
             [$tokens[$stackPtr]['content']],
         );
     }
-
-    /**
-     * Processes variables in double quoted strings.
-     *
-     * @param File $phpcsFile The file where this token was found.
-     * @param int $stackPtr The position where the token was found.
-     * @return void
-     */
-    protected function processVariableInString(File $phpcsFile, int $stackPtr): void
-    {
-        // We don't care about normal variables.
-    }
 }

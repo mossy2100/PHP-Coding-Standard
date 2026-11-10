@@ -28,6 +28,9 @@ use PHP_CodeSniffer\Util\Tokens;
  * about one before the closing parenthesis or between `use` items, or about how many can go between parameters, so
  * those are only reported if $checkOptionalBlankLines is set. A single one between parameters is always allowed.
  *
+ * The parent doesn't register an arrow function. Section 7.1 says one follows the same rules as a closure, so this
+ * sniff registers `fn` too, and checks a split parameter list. It has no braces, so the brace checks don't apply.
+ *
  * The parent would also indent every line of a promoted parameter's multi-line hook list as a parameter, fighting
  * PERCS31.WhiteSpace.ScopeIndent until phpcbf fails. PERCS31.Classes.PromotedPropertyHooks already reports that code,
  * and it has to be rewritten, so this sniff leaves its parameter list alone.

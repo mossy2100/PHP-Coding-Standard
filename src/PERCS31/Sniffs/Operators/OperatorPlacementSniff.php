@@ -46,6 +46,9 @@ use PHPCSUtils\Utils\Parentheses;
  * nowdoc is left to PERCS31.Strings.HeredocIndentation, as section 10 says it must begin on the same line as the
  * variable it's set against.
  *
+ * PhpCollective.Operators.OperatorPosition covers some of this, but only about 14 operators, and doesn't check the
+ * indent.
+ *
  * PER doesn't say whether a short ternary's `?` and `:` may be apart, as in `$a ? : $b`, so they may, and a `?` at the
  * end of a line is reported like any other operator. Set checkSplitShortTernary to require `?:`, with nothing between,
  * as the Jumbo standard does.

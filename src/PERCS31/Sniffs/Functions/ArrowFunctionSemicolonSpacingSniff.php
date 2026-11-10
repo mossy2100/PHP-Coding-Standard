@@ -13,7 +13,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  *
  * PER Coding Style 3.1, section 7.1, says the semicolon at the end of a short closure's expression MUST NOT be
  * preceded by a space. SlevomatCodingStandard.Functions.ArrowFunctionDeclaration checks the spacing around `fn` and
- * `=>`, but not this. The fix removes the space, or line break, before the semicolon.
+ * `=>`, but not this. Squiz.WhiteSpace.SemicolonSpacing would, but it checks every semicolon, which PER doesn't
+ * require. The fix removes the space, or line break, before the semicolon.
  */
 class ArrowFunctionSemicolonSpacingSniff implements Sniff
 {

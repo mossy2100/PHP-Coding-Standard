@@ -21,7 +21,7 @@ use PhpCollective\Sniffs\WhiteSpace\ConsistentIndentSniff as PhpCollectiveSniff;
  * statement, including inside a property hook. It skips continuation lines, arrays, closures and switch cases, which it
  * can't judge safely.
  *
- * This subclass only extends the operators that may start a continuation line, which are skipped, to every binary
+ * This subclass extends the operators that may start a continuation line, which are skipped, to every binary
  * operator section 6.4 allows a statement to be split at. The parent's list predates the pipe operator `|>`, so it
  * reported section 6.4's own example, and also missed `%`, `**`, `instanceof`, bitwise, comparison and assignment
  * operators, and an arrow function's `=>`.
