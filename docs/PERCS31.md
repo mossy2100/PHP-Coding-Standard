@@ -1458,8 +1458,11 @@ class Counter
 **Bad:**
 
 ```php
-public ? int $count {
-    set(? int $value) => $value;
+class Counter
+{
+    public ? int $count {
+        set(? int $value) => $value;
+    }
 }
 ```
 
