@@ -500,8 +500,8 @@ Requires a control structure's closing brace to be on its own line, for `if`, `e
 - A closing PHP tag, or another closing brace.
 
 **Why:** [PER Coding Style 3.1, Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says any closing brace MUST NOT be followed by a comment or statement on the
-same line, but it's in the section on classes, and PERCS31 reads it as classes and functions. So this is an extra rule.
-No inherited sniff checks it.
+same line, but it's in the section on classes, properties and methods, and PERCS31 reads it as only those. So this is an
+extra rule. No inherited sniff checks it.
 
 A block `declare` in the file header is skipped, as [`PERCS31.Files.FileHeader`](PERCS31.md#percs31filesfileheader) reports what follows it.
 

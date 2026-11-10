@@ -135,11 +135,12 @@ Opinion on Yoda conditions is split:
 - Laravel doesn't use them, and [Laravel Pint](https://laravel.com/docs/pint) rewrites them to the usual order.
 - Slevomat, which this standard borrows from, disallows them with `DisallowYodaComparison` (not included here).
 
-So this standard is silent on operand order. Write comparisons in whichever order reads best to you.
+So neither standard checks operand order. Write comparisons in whichever order reads best to you.
 
-It does include `Generic.CodeAnalysis.AssignmentInCondition`, which flags assignments in `if`, `elseif`, `while`, `for`,
+Jumbo includes `Generic.CodeAnalysis.AssignmentInCondition`, which flags assignments in `if`, `elseif`, `while`, `for`,
 `switch`, `case` and `match` conditions. That solves the problem Yoda conditions were meant to solve, without dictating
-operand order. IDEs such as PhpStorm, and VS Code with Intelephense, flag these assignments too.
+operand order. PERCS31 doesn't include it, as PER has no such rule. IDEs such as PhpStorm, and VS Code with
+Intelephense, flag these assignments too.
 
 ---
 
