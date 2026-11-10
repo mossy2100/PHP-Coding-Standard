@@ -167,13 +167,6 @@
 
     <!-- ====== FUNCTIONS AND CALLS (4.7) ====== -->
 
-    <!-- No comment or statement after a function's closing brace, which PERCS31 only checks for a method (4) -->
-    <rule ref="PERCS31.Classes.ClosingBrace">
-        <properties>
-            <property name="checkFunctions" value="true"/>
-        </properties>
-    </rule>
-
     <rule ref="SlevomatCodingStandard.Classes.RequireMultiLineMethodSignature">
         <properties>
             <property name="minLineLength" value="&lineLengthPlusOne;"/>

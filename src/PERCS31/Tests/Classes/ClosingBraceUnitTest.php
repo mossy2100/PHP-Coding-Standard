@@ -26,6 +26,8 @@ class ClosingBraceUnitTest extends AbstractSniffTestCase
             48 => 1,
             53 => 1,
             60 => 1,
+            67 => 1,
+            72 => 1,
             78 => 1,
             83 => 1,
             92 => 1,

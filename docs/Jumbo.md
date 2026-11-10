@@ -43,8 +43,6 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
 - `PERCS31.Attributes.AttributePlacement` reports a comment on its own line between an attribute and its parameter
   (`checkParameterComments` set to `true`). An attribute on its target's line must be followed by a single space, on an
   enum case, a property hook or a closure outside a call (`checkSameLineSpacing` set to `true`).
-- `PERCS31.Classes.ClosingBrace` reports a comment or statement after a function's closing brace, not just a method's
-  (`checkFunctions` set to `true`).
 - `PERCS31.Classes.PropertyDeclaration` checks the hook order in every hook list, including ones with bodies
   (`orderHooksWithBodies` set to `true`).
 - `PERCS31.Classes.PropertyHookLayout` reports a space in a by-reference hook, `& get` (`checkReferenceSpacing` set to

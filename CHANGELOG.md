@@ -339,8 +339,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`PERCS31.Classes.ClosingBrace` (breaking).** Replaces `PSR12.Classes.ClosingBrace`, and also reports a comment
   after an anonymous class's closing brace on the same line, e.g. `}; // Comment`, as PER Coding Style 3.1, section 4,
   covers all classes, and a comment after a property hook list's or hook body's closing brace. A phpcs annotation is
-  allowed. Not auto-fixable. PERCS31 no longer checks a function outside a
-  class, as section 4 covers classes, properties and methods. Jumbo still does (new property `checkFunctions`).
+  allowed. Not auto-fixable.
 - **`Universal.Constants.ModifierKeywordOrder` (breaking).** In the Jumbo standard, `final` must come before the
   visibility on a constant, as in `final public const A`, the order PER Coding Style 3.1 sets for classes, properties
   and methods. Auto-fixable. PERCS31 allows either order, as section 4.6 doesn't name constants.

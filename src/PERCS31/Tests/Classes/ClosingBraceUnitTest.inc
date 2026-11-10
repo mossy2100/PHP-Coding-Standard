@@ -71,7 +71,7 @@ function commented(): void
     $m = 1;
 } // Comment.
 
-// phpcs:set PERCS31.Classes.ClosingBrace checkFunctions true
+// A function's closing brace is checked too.
 function checked(): void
 {
     $m = 1;
@@ -81,7 +81,7 @@ function checkedComment(): void
 {
     $m = 1;
 } // Comment.
-// phpcs:set PERCS31.Classes.ClosingBrace checkFunctions false
+// End of the functions.
 
 // A property hook body or hook list.
 class B
