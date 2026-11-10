@@ -1,0 +1,845 @@
+# PER-CS 3.1 Judgement Calls
+
+[PER Coding Style 3.1](https://www.php-fig.org/per/coding-style/) and PSR-1 leave some points unclear, contradict
+themselves in places, and say nothing about others. A coding standard still has to do something in each case. This page
+lists the calls the [PERCS31](PERCS31.md) standard makes, and why.
+
+Each item has three parts:
+
+- **Issue:** the ambiguity, contradiction or omission in the spec.
+- **Ruleset:** what PERCS31 does about it.
+- **Why:** the reasoning.
+
+The general principles come first, as they settle most of the other cases. The items after them follow the spec's
+section order.
+
+---
+
+## General Principles
+
+### Rule Text and Examples
+
+**Issue:** The spec's code examples sometimes show more than its text says, and a few contradict it.
+
+**Ruleset:**
+
+- The rule text beats an example that contradicts it.
+- Where the text is silent, an example sets a rule when the spec presents it as a template, as in "Note the placement
+  of parentheses, spaces, and braces", "MUST be formatted as below" or "The following example shows correct array
+  usage".
+- Otherwise an example shows one allowed form, and is used as evidence when reading unclear text.
+
+**Why:** The text is the normative part of the spec. An example introduced as showing the correct form is the spec's
+own statement of the rule, so it's treated as one.
+
+---
+
+### Unclear Text
+
+**Issue:** Some rules can be read more than one way.
+
+**Ruleset:** PERCS31 chooses the reading that best fits the spec's examples, its rules for similar constructs, and
+PHP_CodeSniffer's reading of the same PSR-12 wording where there is one. It allows something only when nothing in the
+spec or established practice points either way.
+
+**Why:** A reading backed by the spec's own patterns is more likely to be what its authors meant than the most lenient
+one. A little extra strictness, consistent with the rest of the spec, is unlikely to trouble anyone.
+
+---
+
+### Spec Examples That Break the Spec
+
+**Issue:** Some examples break the spec's own rules:
+
+- 2.5: `somethingWithReflection` has no trailing comma (2.6), and returns `object|null`, not `?object`.
+- 2.5: `veryComplex` has its `)` and `{` on different lines (4.5).
+- 4.4: a blank line has trailing whitespace (2.3).
+- 4.9: a promoted hook has no trailing comma (2.6).
+- 4.10: `abstract class Example {` has its brace on the class's line (4.1).
+- 8: an empty constructor body isn't written as `{}` (4.4).
+- 10: the `<<<COMPLIANT` heredoc has nothing to interpolate, so it SHOULD be a nowdoc.
+
+**Ruleset:** These are reported like any other code.
+
+**Why:** The rule text beats an example (see [Rule Text and Examples](#rule-text-and-examples)).
+
+---
+
+### PER Replaces PSR-12
+
+**Issue:** PER Coding Style replaces PSR-12, but many PHP_CodeSniffer sniffs were written for PSR-12, and some reject
+code PER allows.
+
+**Ruleset:** A PSR-12 or PSR-1 sniff that rejects something PER allows is replaced, configured or excluded.
+
+**Why:** PERCS31 implements PER 3.1. A PSR-12 report on code PER allows is a false positive.
+
+---
+
+### What Goes in PERCS31
+
+**Issue:** The spec doesn't cover every formatting question, such as which line a comma goes on.
+
+**Ruleset:** PERCS31 contains only the rules the spec requires, read as described on this page. Anything else is left
+unchecked. Extra rules go in [Jumbo](Jumbo.md).
+
+**Why:** PERCS31 is meant to be the spec as written, so a project can adopt it without taking on anyone's preferences.
+
+---
+
+## Overview
+
+### Keywords
+
+**Issue:** The spec uses RFC 2119 keywords, but doesn't say how a tool should report each one.
+
+**Ruleset:**
+
+| Keyword                      | Reported as                                                 |
+| ---------------------------- | ----------------------------------------------------------- |
+| MUST, MUST NOT, REQUIRED     | An error, unless the rule defines a soft limit              |
+| SHOULD, SHOULD NOT           | A severity 5 warning, or severity 4 where noted on the page |
+| RECOMMENDED, NOT RECOMMENDED | A severity 5 warning                                        |
+| MAY, OPTIONAL                | Never reported; only the MUST in a conditional MAY is       |
+
+**Why:** Errors and warnings map naturally to MUST and SHOULD. RFC 2119 defines RECOMMENDED as SHOULD.
+
+---
+
+## 2.1 Basic Coding Standard
+
+### PascalCase and Runs of Capitals (PSR-1)
+
+**Issue:** PSR-1 requires class names in StudlyCaps, without defining it. It's unclear whether a run of capitals, as
+in `HTTPStatus`, qualifies.
+
+**Ruleset:**
+
+- StudlyCaps is read as PascalCase, with the first letter of every word capitalized and the rest lower case.
+- This applies to classes, interfaces, traits, enums and enum cases.
+- `FOO`, `OK`, `HTTPStatus`, `XMLParser` and `AClass` are errors.
+- A lone capital not next to another passes: `A`, `C2`, `H1`, `B2B`, `H2O`.
+
+**Why:** Section 2.7 RECOMMENDS treating acronyms as words, which is PascalCase. Section 4 uses "class" to cover all
+four kinds of class-like structure.
+
+---
+
+### Global Constants (PSR-1)
+
+**Issue:** PSR-1 says "Class constants MUST be declared in all upper case". It says nothing about global constants.
+
+**Ruleset:** Only class constants are checked for upper case. A global constant, from `const` or `define()`, is only
+checked by `PERCS31.NamingConventions.AcronymCasing`, and only if it has a lower-case letter.
+
+**Why:** The rule names class constants only.
+
+---
+
+## 2.3 Lines
+
+### Line Length
+
+**Issue:** "The soft limit on line length MUST be 120 characters" is a MUST that requires only a soft limit. "Lines
+SHOULD NOT be longer than 80 characters" is a SHOULD that's rarely followed.
+
+**Ruleset:**
+
+- A line over 120 characters is a severity 5 warning. There's no hard limit.
+- A line over 80 characters is a severity 4 warning, hidden by default.
+
+**Why:** A soft limit is a warning by definition. The 80-character SHOULD is kept, but out of sight unless asked for.
+See [Line Length](LineLength.md) to change the limit.
+
+---
+
+## 2.4 Indenting
+
+### PHP Inside Markup
+
+**Issue:** 2.4 sets the indent for code, but not for PHP blocks inside HTML or other markup.
+
+**Ruleset:** Code in a PHP block may be level with its tags, or one level past them. The indent of `?>` isn't checked.
+
+**Why:** Both styles are common, and the spec gives no reason to prefer one.
+
+---
+
+### Comments
+
+**Issue:** The spec doesn't say how a comment is indented.
+
+**Ruleset:** A comment is indented like code in the same body. Too little or too much is reported. Too much at the top
+level passes.
+
+**Why:** A comment belongs to the code around it, so it follows the same indent.
+
+---
+
+### Further Indents
+
+**Issue:** Several constructs need an indent the text doesn't spell out.
+
+**Ruleset:** Each is measured exactly, too little as well as too much:
+
+- A group `use`'s items: once past the `use` line, as section 3's example shows.
+- A value wrapped after `=>`: once past its key's line (11).
+- Dead code after a `break`: level with the statement that ends the case.
+- A statement in a closure, anonymous class or `switch`: the usual indent for its body.
+
+**Why:** Each follows the nearest example, or the general rule of one indent per level.
+
+---
+
+## 2.5 Keywords and Types
+
+### `|` in a Multi-catch
+
+**Issue:** PHP calls `catch (A|B $e)` a multi-catch, not a type declaration. It's unclear whether 2.5's rule on
+compound types covers it, or whether `|` is a binary operator there.
+
+**Ruleset:** It's read as a union type, so no space is allowed around the `|`.
+
+**Why:** `A|B` lists the exception types the variable can hold, which is what a union type does.
+
+---
+
+### Magic Constants
+
+**Issue:** 2.5 requires reserved keywords in lower case. PHP's list of reserved keywords includes the magic constants,
+such as `__DIR__`, which are conventionally upper case, and whose case PHP ignores.
+
+**Ruleset:** Their case isn't checked. Jumbo requires upper case.
+
+**Why:** Reading the rule as requiring `__dir__` would go against near-universal practice, and it's unlikely the spec
+means that.
+
+---
+
+### `(double)` and `(real)` Casts
+
+**Issue:** 2.5 requires the short form of a type keyword, "i.e. `bool` instead of `boolean`, `int` instead of
+`integer` etc." `(double)` and `(real)` are aliases for `(float)`, not longer spellings of it.
+
+**Ruleset:** They aren't reported. `(boolean)` and `(integer)`, which the text names, are.
+
+**Why:** "Short form" describes a longer spelling of the same word. It's unclear whether "etc." stretches to a
+different word.
+
+---
+
+## 2.6 Trailing Commas
+
+### Which Lists
+
+**Issue:** 2.6 lists the kinds of list it covers, but PHP has others the list doesn't name.
+
+**Ruleset:** A multi-line list needs a trailing comma, and a single-line list mustn't have one, for arguments,
+parameters, closure `use` lists, arrays, `match` arms, group `use`, `list()`, an anonymous class's arguments,
+`clone()`, `exit()`, `die()` and attribute blocks. `clone ($a)->c` is skipped, as its parentheses may only group the
+object.
+
+**Why:** The rule's purpose, cleaner diffs, applies equally to every comma-separated list split over lines.
+
+---
+
+### `match` Conditions
+
+**Issue:** 2.6 doesn't say whether a `match` arm's list of conditions is one of its lists. 5.2's example only has
+conditions on one line.
+
+**Ruleset:** A single-line list of conditions mustn't end in a comma. A split list may end in one or not. Jumbo
+disallows it.
+
+**Why:** A single-line list never takes a trailing comma. With no example of a split list, both forms are allowed.
+
+---
+
+### Which Line a Comma Goes On
+
+**Issue:** The spec doesn't say whether a comma may start a line, including after a heredoc's closing marker.
+
+**Ruleset:** Not checked.
+
+**Why:** No rule or example covers it.
+
+---
+
+## 2.7 Naming
+
+### Acronyms in Other Names
+
+**Issue:** 2.7 RECOMMENDS treating acronyms as words, but doesn't say which names it covers, or how to count a
+one-letter word.
+
+**Ruleset:** `PERCS31.NamingConventions.AcronymCasing` applies it to namespaces, functions, methods, properties,
+parameters, variables, and import and trait aliases, as a severity 5 warning.
+
+- A one-letter word before a capital is reported, so `getID` and `parseURL` are.
+- There's no plural rule, so `getIDs` reads as `get`, `I`, `Ds`, and is reported.
+- The advice to avoid abbreviations isn't checkable, so it isn't checked.
+
+**Why:** The recommendation isn't limited to class names. Splitting a name into words can only be a best effort, so a
+simple rule is applied consistently.
+
+---
+
+## 3. Declare Statements, Namespace, and Import Statements
+
+### Several Imports in One `use`
+
+**Issue:** The header has "One or more class-based `use` import statements", but the spec doesn't say whether one
+statement may import several names.
+
+**Ruleset:** `use A, B;` is allowed.
+
+**Why:** Nothing forbids it.
+
+---
+
+### Imports After Code
+
+**Issue:** The header's blocks end with "The remainder of the code in the file", but the spec doesn't say anything
+about an import after that.
+
+**Ruleset:** An import after the rest of the code is reported. A file with more than one namespace is skipped, as each
+namespace has its own imports.
+
+**Why:** An import after the code breaks the header's order.
+
+---
+
+### `declare` Statements
+
+**Issue:** "Declare statements MUST NOT contain any spaces inside the parentheses" doesn't say whether that includes
+after a comma between directives.
+
+**Ruleset:** It does, so `declare(ticks=1,strict_types=1);`. Several directives and string values are allowed. There
+are no blank lines between `declare` statements.
+
+**Why:** A space after the comma is still inside the parentheses.
+
+---
+
+### `strict_types` in a File With Markup
+
+**Issue:** In a file with markup outside PHP tags, the strict types declaration "MUST be on the first line of the
+file". The spec doesn't say how a shebang line fits in.
+
+**Ruleset:** It must be `<?php declare(strict_types=1) ?>` on the first line. A file with a shebang can't have that,
+so it isn't checked. `strict_types` isn't required.
+
+**Why:** The rule can't be met in a file with a shebang. PER doesn't require strict types, so neither does PERCS31.
+
+---
+
+## 4. Classes, Properties, and Methods
+
+### "Any Closing Brace"
+
+**Issue:** "Any closing brace MUST NOT be followed by any comment or statement on the same line" doesn't say which
+braces.
+
+**Ruleset:** It covers the closing brace of a class, interface, trait, enum, method, function, property hook list and
+hook body. Not an anonymous class, a closure or a control structure. Only a comment is reported.
+
+**Why:** It sits in the section on classes. An anonymous class, a closure or a control structure is part of a larger
+expression or statement, which often continues after the brace.
+
+---
+
+## 4.3 Properties and Constants
+
+### "A Space" After the Type
+
+**Issue:** 4.3 says a property's type is followed by "a space", but section 6 requires "at least one space" around
+operators.
+
+**Ruleset:** Exactly one, so `public int   $a` is reported.
+
+**Why:** "A space" means one. Section 6's wording is for operators only.
+
+---
+
+### A Double Underscore Prefix
+
+**Issue:** Names "MUST NOT be prefixed with a single underscore". It's unclear whether a double one is covered.
+
+**Ruleset:** `$__a`, `__A` and `__a()` pass.
+
+**Why:** "Single" excludes a double underscore, which PHP uses for magic methods. PSR-2's method sniff reads it the
+same way.
+
+---
+
+### Visibility on a Promoted Parameter
+
+**Issue:** 4.3 requires visibility on properties, but doesn't mention constructor promotion, where `readonly` alone
+makes a property.
+
+**Ruleset:** A promoted parameter with no visibility, such as `readonly int $a`, is reported. A set-visibility, as in
+`private(set)`, counts.
+
+**Why:** A promoted parameter declares a property, so the property rule applies.
+
+---
+
+## 4.4 Methods and Functions
+
+### Empty Bodies
+
+**Issue:** An empty method or function body SHOULD be `{}` (4.4), and an empty closure or anonymous class body MUST be
+(7 and 8). It's unclear whether a body with only a comment is empty.
+
+**Ruleset:** A class or function body is a warning, and a closure or anonymous class body an error. A body with only a
+comment isn't empty. An empty closure that SHOULD be an arrow function isn't checked.
+
+**Why:** A comment is content. Changing a closure to `fn() => null` changes its return value, so it isn't a style fix.
+
+---
+
+## 4.5 Method and Function Parameters
+
+### Blank Lines in Parameter Lists
+
+**Issue:** 2.3 allows blank lines "to indicate related blocks of code", without saying where. 12.2 allows a blank line
+between one parameter and the attributes of the next. Nothing covers other blank lines in a parameter list.
+
+**Ruleset:** A single blank line between parameters is allowed. Any other blank line in a parameter or closure `use`
+list is reported: two or more in a row, one before `)`, and one between `use` items.
+
+**Why:** 12.4's example shows one blank line between parameters. Nothing in the spec shows blank lines anywhere else in
+these lists.
+
+---
+
+### A Split Return Type
+
+**Issue:** A union return type can be split over lines (2.5). 4.5 puts `)` and `{` together in a split parameter list.
+It's unclear how the two combine.
+
+**Ruleset:**
+
+- `): A` then `|B {` on the next line is reported, as it separates `)` and `{`.
+- `function a(): int` then `|string` then `{` passes with a single-line parameter list. Each line has one type, as 2.5
+  requires, and the return type starts on the `)` line, as 4.5 requires.
+
+**Why:** Each rule is followed as written.
+
+---
+
+### A Split Array Default Value
+
+**Issue:** 4.7 lets a single argument, such as an array, split over lines without splitting the argument list. It's
+unclear whether the same applies to a parameter's default value.
+
+**Ruleset:** It doesn't. `$f = [` then `1,` then `]): void {` splits the parameter list.
+
+**Why:** 4.7's exemption is only for calls.
+
+---
+
+## 4.6 Modifier Keywords
+
+### Modifier Order on Constants
+
+**Issue:** 4.6 sets the order of modifier keywords for classes, properties and methods, not constants.
+
+**Ruleset:** A constant's modifier order isn't checked. Its spacing is.
+
+**Why:** The order rule names its targets. The single space between keywords applies everywhere.
+
+---
+
+## 4.7 Method and Function Calls
+
+### Blank Lines Between Arguments
+
+**Issue:** 4.7 doesn't forbid a blank line between a call's arguments.
+
+**Ruleset:** A blank line between arguments, or before the call's `)`, is reported.
+
+**Why:** 4.7 introduces its examples as "The following examples show correct argument usage", and none has a blank
+line.
+
+---
+
+### Method Chaining
+
+**Issue:** When a chain is split, "the first method MUST be on the next line", but the spec doesn't say what counts as
+the start of the chain.
+
+**Ruleset:** The first method call goes on the next line. Property accesses before it, as in `$this->em`, may stay.
+`Foo::create()` then `->run()` passes, with the static call as the receiver.
+
+**Why:** The rule is about methods. A property access or a static call is the object the chain starts from.
+
+---
+
+### Closures as Arguments
+
+**Issue:** 4.7 doesn't say whether a closure split over lines splits the argument list.
+
+**Ruleset:** It doesn't. A named argument's closure may keep its attribute inline, as in
+`callback: #[Pure] function () {`.
+
+**Why:** 4.7's examples pass a multi-line closure as one argument, and section 7 covers a closure in an argument list.
+
+---
+
+## 4.9 Property Hooks
+
+### Hook Layout
+
+**Issue:** 4.9 doesn't set the spacing around a by-reference `&` or a hook's own `{`.
+
+**Ruleset:**
+
+- One space before a hook's own `{`, as in `get {`.
+- No space after a by-reference hook's `&`, as in `&get`.
+- `{ get; set; }` on one line is one block, not two statements.
+
+**Why:** The first follows 4.9's examples. The second follows 4.5's rule for a by-reference parameter.
+
+---
+
+### `set` Hook Parameters
+
+**Issue:** 4.9's text doesn't set the spacing of a `set` hook's parameter list.
+
+**Ruleset:** No space after `set`, and none just inside the parentheses. `set (string $value)` and
+`set( string $value )` are reported, and fixed to `set(string $value)`.
+
+**Why:** 4.9's example writes `set(string $value)`, which matches the rule for a method's parameters (4.4). A hook is
+declared like a method, so it isn't read as a call.
+
+---
+
+## 4.10 Interface and Abstract Properties
+
+### `get` Before `set`
+
+**Issue:** 4.10 requires `get` before `set` for an abstract or interface property, whose hooks have no bodies. It says
+nothing about other hook lists.
+
+**Ruleset:** `get` comes first in every hook list.
+
+**Why:** Every example in 4.9 has `get` first too, and one order everywhere is easier to read.
+
+---
+
+## 5. Control Structures
+
+### "Indented at Least Once"
+
+**Issue:** A split condition's "subsequent line is indented at least once", but the spec doesn't say how far is too
+far, or how it applies to a `case`.
+
+**Ruleset:** It applies to a split condition in a control structure's parentheses, including a `case` condition. Any
+indent of at least one level passes. `case (` with the first condition on the same line is reported.
+
+**Why:** "At least once" sets a minimum. Each control structure says "the first condition MUST be on the next line".
+
+---
+
+## 5.2 `switch`, `case`, `match`
+
+### Single-line `match`
+
+**Issue:** 2.6 names "`match()` statement branches" among the lists that take a trailing comma, which suggests a
+single-line `match` is possible. Section 5 puts a control structure's body on the line after its opening brace.
+
+**Ruleset:** A `match` on one line is reported.
+
+**Why:** 2.6 sets the trailing comma rule for a `match`'s arms, and doesn't say a `match` may be on one line. 5.2 is
+more specific about how a `match` is written, and its example has each arm on its own line.
+
+---
+
+### The `match` Example
+
+**Issue:** 5.2's `match` example shows spacing and layout its text doesn't state.
+
+**Ruleset:** One space around `=>` and after each comma, no alignment, one arm per line, a trailing comma after each
+arm, and `}` on its own line. The comma spacing is also applied to lists with no example, such as `echo`, `global` and
+a group `use`.
+
+**Why:** The example is the template for a `match`. One space after a comma is the spec's pattern everywhere it shows
+one.
+
+---
+
+### The `case` Line
+
+**Issue:** The `case` line "MUST consist only of" the label, but it's unclear whether that includes a comment.
+
+**Ruleset:** It does, so a comment there is reported and moved to the next line. A phpcs annotation is allowed.
+
+**Why:** "Only" excludes anything else. An annotation is needed there for phpcs to read it.
+
+---
+
+### Blank Line After a `case` Label
+
+**Issue:** 5.2 doesn't forbid a blank line straight after a `case` or `default` label.
+
+**Ruleset:** It's reported.
+
+**Why:** 5.2's example, introduced as a template for its rules, has none.
+
+---
+
+### Fall-through and Braces
+
+**Issue:** 5.2 requires a comment when a non-empty `case` falls through, but doesn't mention `default`, or braces
+around a `case` body.
+
+**Ruleset:** A non-empty `default` that falls through needs a comment too. A braced `case` body is reported.
+
+**Why:** A `default` can fall through just like a `case`. The example has no braces.
+
+---
+
+## 5.4 `for` and 5.5 `foreach`
+
+### Spacing
+
+**Issue:** The text doesn't set the spacing around `;`, `=>` and `as`. The examples do.
+
+**Ruleset:** The examples' spacing is required. A `foreach` split inside its parentheses only gets section 5's general
+spacing.
+
+**Why:** The examples are the only guide. No example splits a `foreach`.
+
+---
+
+## 6. Operators
+
+### Operators Not Listed
+
+**Issue:** Section 6 lists operators by kind, but leaves out unary `-`, `!`, `@`, `~`, a reference `&`, spread, `->`,
+`?->` and `::`.
+
+**Ruleset:** They aren't checked.
+
+**Why:** The spec leaves them undefined, and there's no consistent practice to infer a rule from.
+
+---
+
+## 6.2 Binary Operators
+
+### `=>` in an Array or `yield`
+
+**Issue:** `=>` isn't one of 6.2's operators. Section 11's array example, which "shows correct array usage", has one
+space each side, but there are too few examples to rule out lining arrows up.
+
+**Ruleset:** An array's `=>` needs at least one space each side. More is allowed. Jumbo requires exactly one. A
+`yield`'s `=>` isn't checked.
+
+**Why:** The spec always shows a space each side, and never none. It gives too little to forbid alignment.
+
+---
+
+### `=&`
+
+**Issue:** It's unclear whether `=&` is one operator or `=` followed by a reference `&`.
+
+**Ruleset:** It's one operator, so `$x =& $a` passes. `$x=&$a` and `$x =&$a` are fixed to `$x = &$a`.
+
+**Why:** Both readings are common, so both spaced forms pass. The unspaced forms break the rule either way.
+
+---
+
+### A Default Value's `=`
+
+**Issue:** It's unclear whether a parameter's default value `=` is an assignment operator.
+
+**Ruleset:** It is, so it needs at least one space each side, and alignment is allowed.
+
+**Why:** It looks and reads like an assignment. 6.2 requires "at least one space" around a binary operator, which
+leaves room for alignment.
+
+---
+
+## 6.3 Ternary Operators
+
+### `?:`
+
+**Issue:** 6.3 doesn't say whether a short ternary's `?` and `:` may be apart, as in `$a ? : $b`.
+
+**Ruleset:** They may not. The fix joins them into `?:`.
+
+**Why:** 6.3 says the short ternary follows the rules for other binary operators, and its examples write `?:`.
+
+---
+
+## 6.4 Operator's Placement
+
+### Where a Wrapped Operator Goes
+
+**Issue:** 6.4 says a wrapped operator starts the next line, without saying whether that covers expressions inside a
+list item, a `match` arm or parentheses.
+
+**Ruleset:** It applies wherever an expression is split. The operator starts the line, indented once. This covers
+assignment operators, `.`, and an arrow function's `=>`.
+
+**Why:** The rule is about expressions, not statements.
+
+---
+
+### When a Ternary Is Split
+
+**Issue:** 6.4 sets the layout of a split ternary, but not what counts as split.
+
+**Ruleset:** A ternary is split only when a line break is right before or after its `?` or `:`, ignoring comments. Then
+it takes the three-line form. A nested ternary is indented once more. A short ternary may be on two lines, with `?:`
+starting the second.
+
+**Why:** A value or condition split over lines doesn't change the ternary's structure.
+
+---
+
+### Heredoc After a Wrapped `=`
+
+**Issue:** 6.4 lets `=` start a wrapped line. Section 10 puts a heredoc on its context's line.
+
+**Ruleset:** `$x` then `= <<<` on the next line is reported.
+
+**Why:** Section 10 is more specific.
+
+---
+
+## 7.1 Short Closures
+
+### Arrow Functions
+
+**Issue:** 7.1 gives arrow functions few rules of their own.
+
+**Ruleset:** No space after `fn`. A split parameter list follows the closure rules. No space before the closing
+semicolon. A wrapped `=>` is indented once past the line `fn` starts on.
+
+**Why:** An arrow function is a closure, so the closure rules fill the gaps.
+
+---
+
+## 8. Anonymous Classes
+
+### The Opening Brace
+
+**Issue:** "The opening brace MAY be on the same line as the `class` keyword so long as the list of `implements`
+interfaces does not wrap." The spec doesn't say whether the next line is allowed then.
+
+**Ruleset:** Both are allowed.
+
+**Why:** "MAY" doesn't forbid the other placement.
+
+---
+
+## 9. Enumerations
+
+### Enum Case Names
+
+**Issue:** PSR-1 requires upper case for class constants, but section 9 allows PascalCase or UPPER_CASE for enum
+cases, and RECOMMENDS PascalCase.
+
+**Ruleset:** PascalCase passes, UPPER_CASE gets a severity 5 warning, and anything else, such as `camelCase` or
+`HTTPStatus`, is an error.
+
+**Why:** Section 9 is more specific than PSR-1.
+
+---
+
+## 10. Heredoc and Nowdoc
+
+### Placement and Indent
+
+**Issue:** Section 10 puts a heredoc on its context's line, but some contexts, such as an argument list, already start
+new lines.
+
+**Ruleset:** A `<<<` must be on its context's line, except after `(`, `,`, `[` or a binary operator. The body and
+closing marker are indented once past the `<<<` line. A heredoc with no interpolation or escape sequence gets a
+warning, as it SHOULD be a nowdoc.
+
+**Why:** After those tokens, a new line is the context's own layout.
+
+---
+
+## 11. Arrays
+
+### The Opening Bracket
+
+**Issue:** The opening bracket of a split array "MUST NOT be placed on its own line". Section 11's own example puts a
+nested array's bracket at the start of a line.
+
+**Ruleset:** The rule is read literally, so `foo([`. The exceptions are an element of a multi-line array, as in the
+example, and a destructuring assignment.
+
+**Why:** The example shows the elements exception. A destructuring assignment is a list, not an array value.
+
+---
+
+### Spacing and the Closing Bracket
+
+**Issue:** The text doesn't set comma spacing or space inside the brackets.
+
+**Ruleset:** One space after a comma, no space inside the brackets, and no blank line before a multi-line array's `]`.
+
+**Why:** Section 11 introduces its example as showing "correct array usage".
+
+---
+
+### A Closure Attribute in an Array Element
+
+**Issue:** 12.2 doesn't say where a closure's attribute goes when the closure is an array element.
+
+**Ruleset:** It may be on the closure's line or the line before.
+
+**Why:** The attribute is part of the value, and neither placement breaks a rule.
+
+---
+
+## 12.2 Placement
+
+### Targets 12.2 Doesn't List
+
+**Issue:** 12.2 sets the placement for classes, methods, functions, constants, properties and parameters. It doesn't
+mention enum cases, property hooks, or closures.
+
+**Ruleset:**
+
+- An enum case or a hook: the attribute may be on its line, followed by a single space.
+- A closure as a call's argument follows the parameter rule. Elsewhere, it isn't checked.
+
+**Why:** A hook looks like a method, but it isn't one in PHP. The single space follows 12.2's rule for a parameter in
+a single-line list.
+
+---
+
+### Two Blocks in a Single-line List
+
+**Issue:** Two attribute blocks "in a multi-line context" go on separate lines. The spec doesn't say whether two blocks
+may share a single-line parameter list, as in `function a(#[A] #[B] int $b)`.
+
+**Ruleset:** They may not. Two or more blocks always go on separate lines, so the list has to be split.
+
+**Why:** It keeps one layout for several blocks everywhere.
+
+---
+
+### Comments Between an Attribute and Its Target
+
+**Issue:** 12.2 says attributes go "immediately prior to" most structures, but only "prior to" a parameter.
+
+**Ruleset:** A comment on its own line between an attribute and its target is reported, including before a parameter.
+A comment at the end of the attribute's line, or between blocks, passes.
+
+**Why:** The missing "immediately" is taken as incidental. Nothing suggests a parameter's attributes should be treated
+differently.
+
+---
+
+## See Also
+
+- [PERCS31](PERCS31.md): the sniffs that apply these calls.
+- [Jumbo](Jumbo.md): PERCS31 plus extra rules.
+- [PER Coding Style 3.1](https://www.php-fig.org/per/coding-style/)

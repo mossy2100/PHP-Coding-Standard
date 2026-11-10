@@ -112,6 +112,8 @@ sniffs are listed only where PERCS31 changes or replaces them.
   sniffs, for PER Coding Style 3.1.
 - [Jumbo](docs/Jumbo.md): what Jumbo changes in PERCS31, and the Generic, Squiz, PHPCSExtra, Slevomat and Zend sniffs and custom sniffs
   it adds as extra rules.
+- [PER-CS 3.1 Judgement Calls](docs/PER-CS_3.1_Judgement_Calls.md): how PERCS31 reads the points PER Coding Style 3.1
+  leaves unclear, contradicts or leaves out, and why.
 
 ---
 
@@ -127,10 +129,10 @@ for which sniff checks each kind of name, and why the standard uses camelCase.
 A **Yoda condition** puts the constant on the left of a comparison (`true === $x` instead of `$x === true`), so an
 accidental `=` when `==` was meant becomes a parse error instead of a silent, always-truthy assignment.
 
-Opinion on Yoda conditions is split:
+Opinion on Yoda conditions is divided:
 
 - [Symfony](https://symfony.com/doc/current/contributing/code/standards.html#structure) requires them.
-- WordPress required them, but is [phasing them out](https://make.wordpress.org/core/2022/06/14/upcoming-disallow-assignments-in-conditions-and-remove-the-yoda-condition-requirement-for-php/) in favor of tooling that catches accidental assignments.
+- WordPress required them, but is [phasing them out](https://make.wordpress.org/core/2022/06/14/upcoming-disallow-assignments-in-conditions-and-remove-the-yoda-condition-requirement-for-php/) in favour of tooling that catches accidental assignments.
 - Drupal disallows them, for left-to-right readability. Its `drupal/coder` ruleset has a [`DisallowYodaConditions`](https://www.drupal.org/project/coding_standards/issues/2372543) sniff.
 - Laravel doesn't use them, and [Laravel Pint](https://laravel.com/docs/pint) rewrites them to the usual order.
 - Slevomat, which this standard borrows from, disallows them with `DisallowYodaComparison` (not included here).
