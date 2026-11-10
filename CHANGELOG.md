@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **A backed enum's type in lower case (breaking).** `PERCS31.Classes.ClassDeclaration` now reports `enum Suit: STRING`,
+  as PER Coding Style 3.1 requires types in lower case, and `Generic.PHP.LowerCaseType` doesn't check a backing type.
+  Auto-fixable.
 - **`PERCS31.TypeHints.NullType` (breaking).** `null` must be the last type in a union everywhere a type can appear,
   as PER Coding Style 3.1 requires: a type with an intersection, such as `null|(A&B)`, a typed constant, and a `set`
   hook's parameter are now checked, and `null|int` is an error, not just the `?T` warning. A warning recommends `?T` in

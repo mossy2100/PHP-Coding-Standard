@@ -23,3 +23,17 @@ final class  BadSpacing extends Exception {}
 final class Split extends Exception
 {
 }
+
+// === Backed enum types ===
+
+enum Lower: string
+{
+    case A = 'a';
+}
+
+enum Upper: STRING
+{
+    case A = 'a';
+}
+
+enum Mixed: Int {}

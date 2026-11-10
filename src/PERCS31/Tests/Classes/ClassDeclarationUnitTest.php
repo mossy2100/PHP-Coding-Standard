@@ -23,6 +23,9 @@ class ClassDeclarationUnitTest extends AbstractSniffTestCase
             17 => 1,
             // Two spaces after the class keyword.
             21 => 1,
+            // A backing type not in lower case.
+            34 => 1,
+            39 => 1,
         ];
     }
 

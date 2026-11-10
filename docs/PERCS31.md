@@ -543,7 +543,10 @@ Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properti
 skips that case, and leaves everything else to the parent. For an empty body, the checks on `extends` and `implements`
 still run. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
 
-**Auto-fixable:** yes, as the parent.
+It also requires a backed enum's type in lower case, as in `enum Suit: string`, as [Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says all types MUST be in
+lower case. `Generic.PHP.LowerCaseType` doesn't check a backing type.
+
+**Auto-fixable:** yes.
 
 ---
 
