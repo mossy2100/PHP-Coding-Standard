@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\Formatting;
 
 use PERCS31\Helpers\EmptyBodyHelper;
+use PERCS31\Helpers\FixerHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
@@ -86,9 +87,7 @@ class EmptyBodySniff implements Sniff
         }
 
         $phpcsFile->fixer->beginChangeset();
-        for ($i = ($previous + 1); $i <= $closer; $i++) {
-            $phpcsFile->fixer->replaceToken($i, '');
-        }
+        FixerHelper::blankBetween($phpcsFile, $previous, ($closer + 1));
 
         $phpcsFile->fixer->addContent($previous, ' {}');
         $phpcsFile->fixer->endChangeset();

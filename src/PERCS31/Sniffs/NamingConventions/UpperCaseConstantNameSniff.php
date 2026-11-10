@@ -7,7 +7,6 @@ namespace PERCS31\Sniffs\NamingConventions;
 use PERCS31\Helpers\NamingHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\Generic\Sniffs\NamingConventions\UpperCaseConstantNameSniff as GenericSniff;
-use PHP_CodeSniffer\Util\Tokens;
 use PHPCSUtils\Utils\Scopes;
 
 /**
@@ -84,18 +83,12 @@ class UpperCaseConstantNameSniff extends GenericSniff
             return;
         }
 
-        $namePtr = $this->findConstantName($phpcsFile, $stackPtr);
-        if ($namePtr === null) {
-            return;
-        }
-
-        if ($isEnum) {
-            $this->checkEnumConstant($phpcsFile, $namePtr);
-            return;
-        }
-
-        if ($this->checkGlobalConstants) {
-            $this->checkGlobalConstant($phpcsFile, $namePtr);
+        foreach (NamingHelper::findConstantNames($phpcsFile, $stackPtr) as $namePtr) {
+            if ($isEnum) {
+                $this->checkEnumConstant($phpcsFile, $namePtr);
+            } elseif ($this->checkGlobalConstants) {
+                $this->checkGlobalConstant($phpcsFile, $namePtr);
+            }
         }
     }
 
@@ -116,26 +109,6 @@ class UpperCaseConstantNameSniff extends GenericSniff
                 [strtoupper($name), $name],
             );
         }
-    }
-
-    /**
-     * Find a `const` statement's name: the last token before the `=`, after any type.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $constPtr The position of `const`.
-     * @return int|null The position of the name, or null if the statement is incomplete.
-     */
-    private function findConstantName(File $phpcsFile, int $constPtr): ?int
-    {
-        $tokens = $phpcsFile->getTokens();
-        $equals = $phpcsFile->findNext([T_EQUAL, T_SEMICOLON], ($constPtr + 1));
-        if ($equals === false || $tokens[$equals]['code'] !== T_EQUAL) {
-            return null;
-        }
-
-        $namePtr = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($equals - 1), ($constPtr + 1), true);
-
-        return $namePtr === false ? null : $namePtr;
     }
 
     /**

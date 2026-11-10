@@ -99,11 +99,12 @@ class PropertyHookLayoutSniff implements Sniff
             return;
         }
 
-        $opener = PropertyHookHelper::findHookListOpener($phpcsFile, $stackPtr);
-        $closer = $opener === false ? null : ($phpcsFile->getTokens()[$opener]['bracket_closer'] ?? null);
-        if ($opener === false || !is_int($closer)) {
+        $hookList = PropertyHookHelper::findHookList($phpcsFile, $stackPtr);
+        if ($hookList === null) {
             return;
         }
+
+        [$opener, $closer] = $hookList;
 
         $this->checkOpener($phpcsFile, $opener);
         if ($this->checkReferenceSpacing) {

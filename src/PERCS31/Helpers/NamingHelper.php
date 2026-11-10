@@ -98,6 +98,46 @@ class NamingHelper
     }
 
     /**
+     * Find the names in a `const` statement: each token before an `=` at the statement's own level, not one inside a
+     * value. A statement can declare several, as in `const A = 1, B = 2;`.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $constPtr The position of `const`.
+     * @return list<int> The positions of the names, or none if the statement is incomplete.
+     */
+    public static function findConstantNames(File $phpcsFile, int $constPtr): array
+    {
+        $tokens = $phpcsFile->getTokens();
+        $endPtr = $phpcsFile->findNext(T_SEMICOLON, ($constPtr + 1));
+        if ($endPtr === false) {
+            return [];
+        }
+
+        $names = [];
+        $level = count($tokens[$constPtr]['nested_parenthesis'] ?? []);
+        $bracketDepth = 0;
+        for ($i = ($constPtr + 1); $i < $endPtr; $i++) {
+            $code = $tokens[$i]['code'];
+            if ($code === T_OPEN_SHORT_ARRAY || $code === T_OPEN_SQUARE_BRACKET) {
+                $bracketDepth++;
+            } elseif ($code === T_CLOSE_SHORT_ARRAY || $code === T_CLOSE_SQUARE_BRACKET) {
+                $bracketDepth--;
+            }
+
+            if ($code !== T_EQUAL || $bracketDepth !== 0 || count($tokens[$i]['nested_parenthesis'] ?? []) !== $level) {
+                continue;
+            }
+
+            $namePtr = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($i - 1), $constPtr, true);
+            if ($namePtr !== false) {
+                $names[] = $namePtr;
+            }
+        }
+
+        return $names;
+    }
+
+    /**
      * Find the alias of a constant after an `as`, as in `use const Foo\BAR as BAZ;`.
      *
      * @param File $phpcsFile The file being scanned.

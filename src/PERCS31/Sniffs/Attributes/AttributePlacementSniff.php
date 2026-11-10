@@ -584,11 +584,7 @@ class AttributePlacementSniff implements Sniff
             return;
         }
 
-        if ($indent === 0) {
-            $phpcsFile->fixer->addContentBefore($stackPtr, str_repeat(' ', $expected));
-        } else {
-            $phpcsFile->fixer->replaceToken(($stackPtr - 1), str_repeat(' ', $expected));
-        }
+        FixerHelper::setIndent($phpcsFile, $stackPtr, $expected);
     }
 
     /**

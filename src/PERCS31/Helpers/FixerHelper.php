@@ -43,4 +43,22 @@ class FixerHelper
         $phpcsFile->fixer->addContent($from, $content);
         $phpcsFile->fixer->endChangeset();
     }
+
+    /**
+     * Set the indent of a token that starts its line, replacing the whitespace before it or adding some.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $ptr The position of the token.
+     * @param int $spaces The number of spaces to indent it by.
+     */
+    public static function setIndent(File $phpcsFile, int $ptr, int $spaces): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $before = $ptr - 1;
+        if ($tokens[$before]['code'] === T_WHITESPACE && $tokens[$before]['line'] === $tokens[$ptr]['line']) {
+            $phpcsFile->fixer->replaceToken($before, str_repeat(' ', $spaces));
+        } else {
+            $phpcsFile->fixer->addContentBefore($ptr, str_repeat(' ', $spaces));
+        }
+    }
 }

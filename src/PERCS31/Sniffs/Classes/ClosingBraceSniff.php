@@ -98,12 +98,13 @@ class ClosingBraceSniff extends Psr12Sniff
             return;
         }
 
-        $opener = PropertyHookHelper::findHookListOpener($phpcsFile, $varPtr);
-        $tokens = $phpcsFile->getTokens();
-        $closer = $opener === false ? null : ($tokens[$opener]['bracket_closer'] ?? null);
-        if ($opener === false || !is_int($closer)) {
+        $hookList = PropertyHookHelper::findHookList($phpcsFile, $varPtr);
+        if ($hookList === null) {
             return;
         }
+
+        [$opener, $closer] = $hookList;
+        $tokens = $phpcsFile->getTokens();
 
         foreach (PropertyHookHelper::parseHooks($phpcsFile, $opener, $closer) ?? [] as $hook) {
             $bodyOpener = $hook['bodyOpener'];

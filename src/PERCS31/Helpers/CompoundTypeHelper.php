@@ -116,7 +116,7 @@ class CompoundTypeHelper
     public static function findTypeBounds(File $phpcsFile, int $stackPtr, bool $isHook): array
     {
         $tokens = $phpcsFile->getTokens();
-        $limit = $isHook ? self::findHookListOpener($phpcsFile, $stackPtr) : -1;
+        $limit = $isHook ? self::findHookParameterListOpener($phpcsFile, $stackPtr) : -1;
 
         $start = $stackPtr;
         while (($start - 1) > $limit && self::isTypeToken($tokens[($start - 1)]['code'], $isHook)) {
@@ -151,7 +151,7 @@ class CompoundTypeHelper
      * @param int $stackPtr The position of the token.
      * @return int The position of the parenthesis, or -1 if there isn't one.
      */
-    private static function findHookListOpener(File $phpcsFile, int $stackPtr): int
+    private static function findHookParameterListOpener(File $phpcsFile, int $stackPtr): int
     {
         $nested = $phpcsFile->getTokens()[$stackPtr]['nested_parenthesis'] ?? [];
         foreach (array_reverse(array_keys($nested)) as $opener) {

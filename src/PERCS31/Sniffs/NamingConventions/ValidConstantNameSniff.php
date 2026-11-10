@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\NamingConventions;
 
+use PERCS31\Helpers\NamingHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
-use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Disallows a constant name that starts with an underscore.
@@ -38,28 +38,8 @@ class ValidConstantNameSniff implements Sniff
     public function process(File $phpcsFile, int $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
-        $endPtr = $phpcsFile->findNext(T_SEMICOLON, ($stackPtr + 1));
-        if ($endPtr === false) {
-            return;
-        }
-
-        // Each constant's name is the token before its '=' at the statement's own level, not one inside a value.
-        $level = count($tokens[$stackPtr]['nested_parenthesis'] ?? []);
-        $bracketDepth = 0;
-        for ($i = ($stackPtr + 1); $i < $endPtr; $i++) {
-            $code = $tokens[$i]['code'];
-            if ($code === T_OPEN_SHORT_ARRAY || $code === T_OPEN_SQUARE_BRACKET) {
-                $bracketDepth++;
-            } elseif ($code === T_CLOSE_SHORT_ARRAY || $code === T_CLOSE_SQUARE_BRACKET) {
-                $bracketDepth--;
-            }
-
-            if ($code !== T_EQUAL || $bracketDepth !== 0 || count($tokens[$i]['nested_parenthesis'] ?? []) !== $level) {
-                continue;
-            }
-
-            $namePtr = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($i - 1), $stackPtr, true);
-            if ($namePtr === false || !str_starts_with($tokens[$namePtr]['content'], '_')) {
+        foreach (NamingHelper::findConstantNames($phpcsFile, $stackPtr) as $namePtr) {
+            if (!str_starts_with($tokens[$namePtr]['content'], '_')) {
                 continue;
             }
 

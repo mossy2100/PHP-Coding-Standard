@@ -386,11 +386,7 @@ class OperatorPlacementSniff implements Sniff
             return;
         }
 
-        if ($found === 0) {
-            $phpcsFile->fixer->addContentBefore($stackPtr, str_repeat(' ', $expected));
-        } else {
-            $phpcsFile->fixer->replaceToken(($stackPtr - 1), str_repeat(' ', $expected));
-        }
+        FixerHelper::setIndent($phpcsFile, $stackPtr, $expected);
     }
 
     /**

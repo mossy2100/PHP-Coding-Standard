@@ -30,6 +30,8 @@ class UpperCaseConstantNameUnitTest extends AbstractSniffTestCase
             61 => 1,
             77 => 1,
             78 => 1,
+            // The second constant in a statement declaring several.
+            85 => 1,
         ];
     }
 

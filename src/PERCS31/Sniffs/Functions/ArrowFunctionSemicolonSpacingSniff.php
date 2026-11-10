@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Functions;
 
+use PERCS31\Helpers\FixerHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
@@ -63,10 +64,12 @@ class ArrowFunctionSemicolonSpacingSniff implements Sniff
         }
 
         $expressionEnd = $phpcsFile->findPrevious(T_WHITESPACE, ($closer - 1), null, true);
-        $phpcsFile->fixer->beginChangeset();
-        for ($i = ($closer - 1); $i > $expressionEnd; $i--) {
-            $phpcsFile->fixer->replaceToken($i, '');
+        if ($expressionEnd === false) {
+            return;
         }
+
+        $phpcsFile->fixer->beginChangeset();
+        FixerHelper::blankBetween($phpcsFile, $expressionEnd, $closer);
 
         $phpcsFile->fixer->endChangeset();
     }

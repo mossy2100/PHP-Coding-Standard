@@ -85,11 +85,12 @@ class PropertyDeclarationSniff extends Psr2Sniff
      */
     private function checkHookOrder(File $phpcsFile, int $stackPtr, array $tokens): void
     {
-        $opener = PropertyHookHelper::findHookListOpener($phpcsFile, $stackPtr);
-        $closer = $opener === false ? null : ($tokens[$opener]['bracket_closer'] ?? null);
-        if (!is_int($opener) || !is_int($closer)) {
+        $hookList = PropertyHookHelper::findHookList($phpcsFile, $stackPtr);
+        if ($hookList === null) {
             return;
         }
+
+        [$opener, $closer] = $hookList;
 
         $hooks = PropertyHookHelper::parseHooks($phpcsFile, $opener, $closer);
         if ($hooks === null) {

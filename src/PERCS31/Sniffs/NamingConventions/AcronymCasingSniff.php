@@ -75,11 +75,20 @@ class AcronymCasingSniff implements Sniff
      */
     public function process(File $phpcsFile, int $stackPtr): void
     {
-        $namePtr = $this->findName($phpcsFile, $stackPtr);
-        if ($namePtr === false) {
-            return;
+        foreach ($this->findNames($phpcsFile, $stackPtr) as $namePtr) {
+            $this->checkName($phpcsFile, $stackPtr, $namePtr);
         }
+    }
 
+    /**
+     * Check a name for an acronym in capitals.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the token the sniff was called for.
+     * @param int $namePtr The position of the name.
+     */
+    private function checkName(File $phpcsFile, int $stackPtr, int $namePtr): void
+    {
         $tokens = $phpcsFile->getTokens();
         $name = $tokens[$namePtr]['content'];
         assert(is_string($name));
@@ -142,6 +151,29 @@ class AcronymCasingSniff implements Sniff
     }
 
     /**
+     * Find the tokens holding the names to check. A global `const` statement can declare several.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the keyword or variable.
+     * @return list<int> The names' positions.
+     */
+    private function findNames(File $phpcsFile, int $stackPtr): array
+    {
+        if ($phpcsFile->getTokens()[$stackPtr]['code'] === T_CONST) {
+            // A class constant is checked by PERCS31.NamingConventions.UpperCaseConstantName.
+            if (Scopes::isOOConstant($phpcsFile, $stackPtr)) {
+                return [];
+            }
+
+            return NamingHelper::findConstantNames($phpcsFile, $stackPtr);
+        }
+
+        $namePtr = $this->findName($phpcsFile, $stackPtr);
+
+        return $namePtr === false ? [] : [$namePtr];
+    }
+
+    /**
      * Find the token holding the name to check.
      *
      * @param File $phpcsFile The file being scanned.
@@ -163,10 +195,6 @@ class AcronymCasingSniff implements Sniff
 
         if ($code === T_AS) {
             return $this->findAlias($phpcsFile, $stackPtr);
-        }
-
-        if ($code === T_CONST) {
-            return $this->findGlobalConstantName($phpcsFile, $stackPtr);
         }
 
         if ($code === T_STRING || $code === T_NAME_FULLY_QUALIFIED) {
@@ -214,28 +242,6 @@ class AcronymCasingSniff implements Sniff
         }
 
         return $namePtr;
-    }
-
-    /**
-     * Find the name in a global `const` statement.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $stackPtr The position of `const`.
-     * @return int|false The name's position, or false if there's nothing to check.
-     */
-    private function findGlobalConstantName(File $phpcsFile, int $stackPtr): int|false
-    {
-        if (Scopes::isOOConstant($phpcsFile, $stackPtr)) {
-            return false;
-        }
-
-        $equals = $phpcsFile->findNext(T_EQUAL, ($stackPtr + 1));
-
-        if ($equals === false) {
-            return false;
-        }
-
-        return $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($equals - 1), $stackPtr, true);
     }
 
     /**

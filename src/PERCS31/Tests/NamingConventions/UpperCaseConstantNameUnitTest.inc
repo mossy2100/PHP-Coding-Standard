@@ -77,3 +77,10 @@ class CheckedTrait
 use const Foo\BAR as checkedAlias;
 use Foo\{const BAZ as checkedGroupAlias, Qux};
 // phpcs:set PERCS31.NamingConventions.UpperCaseConstantName checkGlobalConstants false
+
+enum SeveralConstants
+{
+    case A;
+
+    public const Valid = 1, not_valid = 2;
+}

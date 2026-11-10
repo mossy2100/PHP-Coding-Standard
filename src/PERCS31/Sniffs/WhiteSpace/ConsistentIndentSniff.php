@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\WhiteSpace;
 
+use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\LayoutHelper;
 use PERCS31\Helpers\OperatorHelper;
 use PERCS31\Helpers\TokenHelper;
@@ -442,12 +443,6 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
             return;
         }
 
-        $tokens = $phpcsFile->getTokens();
-        $before = $ptr - 1;
-        if ($tokens[$before]['code'] === T_WHITESPACE && $tokens[$before]['line'] === $tokens[$ptr]['line']) {
-            $phpcsFile->fixer->replaceToken($before, str_repeat(' ', $expected));
-        } else {
-            $phpcsFile->fixer->addContentBefore($ptr, str_repeat(' ', $expected));
-        }
+        FixerHelper::setIndent($phpcsFile, $ptr, $expected);
     }
 }

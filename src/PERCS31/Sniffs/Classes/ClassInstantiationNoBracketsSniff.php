@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Classes;
 
+use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
@@ -115,13 +116,8 @@ class ClassInstantiationNoBracketsSniff implements Sniff
         }
 
         $phpcsFile->fixer->beginChangeset();
-        for ($i = $stackPtr; $i < $newPtr; $i++) {
-            $phpcsFile->fixer->replaceToken($i, '');
-        }
-
-        for ($i = ($end + 1); $i <= $closer; $i++) {
-            $phpcsFile->fixer->replaceToken($i, '');
-        }
+        FixerHelper::blankBetween($phpcsFile, ($stackPtr - 1), $newPtr);
+        FixerHelper::blankBetween($phpcsFile, $end, ($closer + 1));
 
         $phpcsFile->fixer->endChangeset();
     }

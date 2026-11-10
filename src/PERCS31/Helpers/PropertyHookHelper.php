@@ -258,6 +258,22 @@ class PropertyHookHelper
     }
 
     /**
+     * Find the braces of a property's hook list.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $varPtr The position of the property's T_VARIABLE token.
+     * @return array{int, int}|null The positions of the opening and closing braces, or null if the property has no
+     *     hooks.
+     */
+    public static function findHookList(File $phpcsFile, int $varPtr): ?array
+    {
+        $opener = self::findHookListOpener($phpcsFile, $varPtr);
+        $closer = $opener === false ? null : ($phpcsFile->getTokens()[$opener]['bracket_closer'] ?? null);
+
+        return $opener === false || !is_int($closer) ? null : [$opener, $closer];
+    }
+
+    /**
      * Find the opening brace of a property's hook list.
      *
      * @param File $phpcsFile The file being scanned.
