@@ -59,3 +59,13 @@ $long = array(
 $commented = [ /* A comment. */ 1,
     2,
 ];
+
+// A value after an arrow function, whose scope ends at the comma.
+$arrow = [
+    fn($x) => $x, 2,
+    3,
+];
+
+$arrowFirst = [fn($x) => $x,
+    2,
+];

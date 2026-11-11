@@ -439,6 +439,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A value after an arrow function in a multi-line array.** `PERCS31.Arrays.ValuePerLine` missed a value on the same
+  line as an arrow function before it, as in `fn($x) => $x, 2,`, and an arrow function on the opening bracket's line.
+  Both are now reported. Auto-fixable.
 - **A closure in a constant's value.** With PHP 8.5's closure in a constant expression, as in
   `const Handler = static function () { $total = 1; ... };`, a variable assigned in the closure was reported as a badly
   named constant, by `PERCS31.NamingConventions.UpperCaseConstantName` and `ValidConstantName`. A constant's name is now

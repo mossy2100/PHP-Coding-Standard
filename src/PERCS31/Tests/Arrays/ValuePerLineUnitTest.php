@@ -27,6 +27,9 @@ class ValuePerLineUnitTest extends AbstractSniffTestCase
             56 => 1,
             // The first value after a comment on the bracket's line.
             59 => 1,
+            // A value after an arrow function, and an arrow function as the first value.
+            65 => 1,
+            69 => 1,
         ];
     }
 

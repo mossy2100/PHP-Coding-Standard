@@ -116,8 +116,9 @@ class ValuePerLineSniff implements Sniff
                 continue;
             }
 
-            // Skip anything nested, so only this array's commas and arrows count.
-            $i = TokenHelper::findCloser($tokens[$i]) ?? $tokens[$i]['scope_closer'] ?? $i;
+            // Skip anything in brackets, so only this array's commas and arrows count. A scope closer isn't followed:
+            // a closure's body is in braces, and an arrow function's is the comma that ends it, which is this array's.
+            $i = TokenHelper::findCloser($tokens[$i]) ?? $i;
         }
 
         return $values;
