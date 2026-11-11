@@ -257,6 +257,28 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a trailing comma after a single argument split over lines is removed, as section 4.7 says that doesn't
+     * split the argument list, and that a split list keeps its comma.
+     */
+    public function testNoTrailingCommaAfterSingleArgumentSplitOverLines(): void
+    {
+        $split = "\$b = sum(\n    [1, 2],\n    \$precision,\n);\n";
+        $file = $this->copyToTempFile(null, "<?php\n\n\$a = sum([\n    1,\n    2,\n],);\n$split");
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame(1, substr_count($result['output'], 'DisallowTrailingCommaInCall.DisallowedTrailingComma'));
+        $this->assertSame(1, substr_count($result['output'], 'error - '), $result['output']);
+        $this->assertSame("<?php\n\n\$a = sum([\n    1,\n    2,\n]);\n$split", $fixed);
+    }
+
+    /**
      * Test that a loop with no body passes, as there's no body for section 5 to require braces around.
      */
     public function testLoopWithNoBodyPasses(): void

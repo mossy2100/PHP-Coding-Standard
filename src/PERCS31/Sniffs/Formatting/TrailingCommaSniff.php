@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Formatting;
 
+use PERCS31\Helpers\LayoutHelper;
 use PERCS31\Helpers\MatchHelper;
 use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
@@ -92,7 +93,7 @@ class TrailingCommaSniff implements Sniff
             $this->checkMatchConditions($phpcsFile, $opener, $closer);
         }
 
-        $this->checkList($phpcsFile, $opener, $closer, $kind);
+        $this->checkList($phpcsFile, $opener, $closer, $kind, $tokens[$opener]['line'] !== $tokens[$closer]['line']);
     }
 
     /**
@@ -125,17 +126,15 @@ class TrailingCommaSniff implements Sniff
             }
         }
 
-        // As in a call, a closing parenthesis straight after a multi-line last argument isn't a split list.
+        // As in a call, a single argument split over lines, as in `clone($a, [` ... `]);`, doesn't split the list. A
+        // closing parenthesis after the last argument of a badly split list is left to the layout sniff.
+        $isSplit = LayoutHelper::isSplitList($phpcsFile, $opener, $closer);
         $last = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($closer - 1), $opener, true);
-        if (
-            $last !== false
-            && $tokens[$opener]['line'] !== $tokens[$closer]['line']
-            && $tokens[$last]['line'] === $tokens[$closer]['line']
-        ) {
+        if ($isSplit && $last !== false && $tokens[$last]['line'] === $tokens[$closer]['line']) {
             return;
         }
 
-        $this->checkList($phpcsFile, $opener, $closer, $kind);
+        $this->checkList($phpcsFile, $opener, $closer, $kind, $isSplit);
     }
 
     /**
@@ -171,15 +170,16 @@ class TrailingCommaSniff implements Sniff
     }
 
     /**
-     * Checks the last item of a list: it needs a trailing comma if the list is on several lines, and can't have one if
-     * it's on one.
+     * Checks the last item of a list: it needs a trailing comma if the list is split across lines, and can't have one
+     * if it isn't.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $opener The position of the list's opening bracket.
      * @param int $closer The position of the list's closing bracket.
      * @param string $kind The kind of list, for the error message.
+     * @param bool $isSplit Whether the list is split across lines.
      */
-    private function checkList(File $phpcsFile, int $opener, int $closer, string $kind): void
+    private function checkList(File $phpcsFile, int $opener, int $closer, string $kind, bool $isSplit): void
     {
         $tokens = $phpcsFile->getTokens();
         $last = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($closer - 1), $opener, true);
@@ -188,7 +188,7 @@ class TrailingCommaSniff implements Sniff
         }
 
         $hasComma = $tokens[$last]['code'] === T_COMMA;
-        if ($tokens[$opener]['line'] !== $tokens[$closer]['line']) {
+        if ($isSplit) {
             if (!$hasComma) {
                 $fix = $phpcsFile->addFixableError(
                     'The last item in a multi-line %s must have a trailing comma',
@@ -205,12 +205,10 @@ class TrailingCommaSniff implements Sniff
         }
 
         if ($hasComma) {
-            $fix = $phpcsFile->addFixableError(
-                'The last item in a single-line %s must not have a trailing comma',
-                $last,
-                self::CODE_DISALLOWED,
-                [$kind],
-            );
+            $error = $tokens[$opener]['line'] === $tokens[$closer]['line']
+                ? 'The last item in a single-line %s must not have a trailing comma'
+                : 'The last item in the %s must not have a trailing comma, as the list isn\'t split across lines';
+            $fix = $phpcsFile->addFixableError($error, $last, self::CODE_DISALLOWED, [$kind]);
             if ($fix) {
                 $phpcsFile->fixer->replaceToken($last, '');
             }

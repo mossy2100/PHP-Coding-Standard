@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PERCS31\Helpers;
 
 use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Helper class for indentation and line layout.
@@ -43,5 +44,30 @@ class LayoutHelper
         $previous = $phpcsFile->findPrevious(T_WHITESPACE, ($ptr - 1), null, true);
 
         return $previous === false || $tokens[$previous]['line'] !== $tokens[$ptr]['line'];
+    }
+
+    /**
+     * Check whether a list in brackets is split across lines: its first item starts on a line after the opening
+     * bracket, or its closing bracket is on a line after the last item.
+     *
+     * A list on one line isn't split. Nor is one whose only line breaks are inside an item, as in `foo([` ... `]);`, as
+     * PER Coding Style 3.1, section 4.7, says a single argument split across lines doesn't split the argument list.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the opening bracket.
+     * @param int $closer The position of the closing bracket.
+     * @return bool True if the list is split.
+     */
+    public static function isSplitList(File $phpcsFile, int $opener, int $closer): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $first = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($opener + 1), $closer, true);
+        $last = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($closer - 1), $opener, true);
+        if ($first === false || $last === false) {
+            return false;
+        }
+
+        return $tokens[$first]['line'] !== $tokens[$opener]['line']
+            || $tokens[$last]['line'] !== $tokens[$closer]['line'];
     }
 }

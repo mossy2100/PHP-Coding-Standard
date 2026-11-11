@@ -410,6 +410,21 @@ object.
 
 ---
 
+### One Argument Split Over Lines
+
+**Issue:** 2.6 requires a trailing comma in a list "split across multiple lines", and forbids one in a list "contained
+on a single line". 4.7 says a single argument split across lines, such as an array or a closure, "does not constitute
+splitting the argument list itself". So `foo([` ... `],);` isn't split, and isn't on a single line either.
+
+**Ruleset:** An argument list is split when its first argument starts on the line after the `(`, or its `)` is on a
+line of its own. Any other list mustn't have a trailing comma, so `],);` is reported. This covers the arguments of a
+call, an attribute, an anonymous class, `clone()`, `exit()` and `die()`.
+
+**Why:** 2.6's two cases are read as "split" and "not split". 4.7's own examples of this shape, `], $baz);` and `});`,
+have no comma.
+
+---
+
 ### `match` Conditions
 
 **Issue:** 2.6 doesn't say whether a `match` arm's list of conditions is one of its lists. 5.2's example only has

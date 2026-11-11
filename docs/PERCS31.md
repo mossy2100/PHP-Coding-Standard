@@ -173,8 +173,8 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
   excluded, as `PSR12.Traits.UseDeclaration` reports the same.
 - **Functions.ArrowFunctionDeclaration**: Requires no space after `fn`, e.g. `fn($x) => $x`. The expression may be on
   the next line (7.1).
-- **Functions.DisallowTrailingCommaInCall**, **...InClosureUse** and **...InDeclaration**: Disallow a trailing comma in
-  a single-line list (2.6).
+- **Functions.DisallowTrailingCommaInClosureUse** and **...InDeclaration**: Disallow a trailing comma in a single-line
+  list (2.6). For a call, [`PERCS31.Functions.DisallowTrailingCommaInCall`](#percs31functionsdisallowtrailingcommaincall) replaces `...InCall`.
 - **Functions.NamedArgumentSpacing**: Requires no space before a named argument's colon, and one after (4.7).
 - **Functions.RequireTrailingCommaInClosureUse** and **...InDeclaration**: Require a trailing comma in a multi-line
   list (2.6). For a call, [`PERCS31.Functions.RequireTrailingCommaInCall`](#percs31functionsrequiretrailingcommaincall) replaces `...InCall`.
@@ -224,6 +224,7 @@ section gives the reason.
 | `PERCS31.Formatting.EmptyBody`                          | An empty class, function, closure or anonymous class body is `{}`   | Yes     |
 | `PERCS31.Formatting.MethodChaining`                     | The first method of a split chain on the next line                  | Yes     |
 | `PERCS31.Formatting.TrailingComma`                      | Trailing commas in `match`, group `use`, `list()` and some calls    | Yes     |
+| `PERCS31.Functions.DisallowTrailingCommaInCall`         | No trailing comma in a call, unless the argument list is split      | Yes     |
 | `PERCS31.Functions.ArrowFunctionSemicolonSpacing`       | No space before the `;` that ends an arrow function                 | Yes     |
 | `PERCS31.Functions.FunctionCallLayout`                  | A call's argument list, including `clone()`'s                       | Yes     |
 | `PERCS31.Functions.MultiLineFunctionDeclaration`        | Function, closure and `fn` declarations, allowing `{}` bodies       | Yes     |
@@ -1376,8 +1377,9 @@ and the last item of a list on one line MUST NOT. Slevomat's trailing comma snif
 `use` lists, and Slevomat's array sniff covers arrays and short lists, but none covers `match`, group `use`,
 `new class (`, `list()`, `clone()`, `exit()` or `die()`. `PhpCollective.PHP.DisallowTrailingCommaInSingleLine` reports a
 comma in a single-line `list()`, `new class (`, `clone()` or `exit()`, but it goes by the comma's line, not the list's,
-so it also reports a comma PER requires in a split list. Like Slevomat's call sniffs, it doesn't require a comma when
-the closing parenthesis follows the last argument on its line.
+so it also reports a comma PER requires in a split list. A single argument split over lines, as in `clone($a, [` ...
+`]);`, doesn't split the argument list, so a comma after it is reported, as
+[`PERCS31.Functions.DisallowTrailingCommaInCall`](#percs31functionsdisallowtrailingcommaincall) does for a call.
 
 **Auto-fixable:** yes. A missing comma goes after the last item, before any comment.
 
@@ -1451,6 +1453,51 @@ $double = fn(int $x): int => $x * 2;
 
 ```php
 $double = fn(int $x): int => $x * 2 ;
+```
+
+---
+
+### PERCS31.Functions.DisallowTrailingCommaInCall
+
+Disallows a trailing comma after the last argument of a call, unless the argument list is split across lines. This
+replaces `SlevomatCodingStandard.Functions.DisallowTrailingCommaInCall`, which it extends.
+
+**Why:** [PER Coding Style 3.1, Section 2.6](https://www.php-fig.org/per/coding-style/#26-trailing-commas) says the last item of a list MUST NOT have a trailing comma unless the list
+is split across lines. [Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) says a single argument split across lines, such as an array or a closure, doesn't
+split the argument list. So in `foo([` ... `],);` the list isn't split, and the comma isn't allowed.
+
+An argument list is split when its first argument starts on the line after the `(`, or its `)` is on a line of its own.
+
+The Slevomat sniff checks every call, or with its `onlySingleLine` property, only one whose parentheses are on the same
+line, which misses `],);`. This subclass skips a split list, and leaves the rest to the parent, with `onlySingleLine`
+off. [`PERCS31.Formatting.TrailingComma`](#percs31formattingtrailingcomma) applies the same rule to the arguments of an anonymous class, `clone()`,
+`exit()` and `die()`.
+
+**Auto-fixable:** yes, as the parent.
+
+**Good:**
+
+```php
+$total = sum([
+    1,
+    2,
+]);
+
+$total = sum(
+    [1, 2],
+    $precision,
+);
+```
+
+**Bad:**
+
+```php
+$total = sum([
+    1,
+    2,
+],);
+
+$total = sum($first, $second,);
 ```
 
 ---

@@ -146,11 +146,9 @@
     <!-- ====== COMMAS (2.6) ====== -->
 
     <!-- Trailing commas: disallowed on single-line lists, required on multi-line ones (2.6) -->
-    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInCall">
-        <properties>
-            <property name="onlySingleLine" value="true"/>
-        </properties>
-    </rule>
+    <!-- The PERCS31 version also disallows one after a single argument split over lines, as in foo([ ... ],);, as that
+         doesn't split the argument list (4.7) -->
+    <rule ref="PERCS31.Functions.DisallowTrailingCommaInCall"/>
     <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInClosureUse">
         <properties>
             <property name="onlySingleLine" value="true"/>

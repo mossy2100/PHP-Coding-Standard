@@ -146,3 +146,20 @@ exit(
 die(
     1
 );
+
+// === ONE ARGUMENT SPLIT OVER LINES ===
+
+// It doesn't split the argument list, so no trailing comma is allowed.
+$b = clone($a, [
+    'c' => 1,
+]);
+$d = new class ([
+    1,
+]) {};
+
+$b = clone($a, [
+    'c' => 1,
+],);
+$d = new class ([
+    1,
+],) {};

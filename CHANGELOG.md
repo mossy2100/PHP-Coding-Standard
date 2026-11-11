@@ -10,6 +10,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **No trailing comma after a single argument split over lines (breaking).** `foo([` ... `],);` is now reported, as
+  PER Coding Style 3.1 says a single argument split across lines doesn't split the argument list, and only a split list
+  takes a trailing comma. The new `PERCS31.Functions.DisallowTrailingCommaInCall` replaces
+  `SlevomatCodingStandard.Functions.DisallowTrailingCommaInCall`, so a `phpcs:ignore` for the Slevomat code needs
+  updating. `PERCS31.Formatting.TrailingComma` applies the same rule to an anonymous class's arguments, `clone()`,
+  `exit()` and `die()`. Auto-fixable.
 - **An empty control structure body as `{}`.** PERCS31 now allows `catch (Exception $e) {}`, `while (next($a)) {}` and
   the like, which were errors, as PER Coding Style 3.1 has no rule for a control structure's empty body, and writes
   every other empty body as `{}`. The braces on separate lines still pass. The new

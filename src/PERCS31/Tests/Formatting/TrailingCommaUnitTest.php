@@ -55,6 +55,9 @@ class TrailingCommaUnitTest extends AbstractSniffTestCase
             142 => 1,
             144 => 1,
             147 => 1,
+            // A comma after a single argument split over lines, in clone() and an anonymous class.
+            162 => 1,
+            165 => 1,
         ];
     }
 
