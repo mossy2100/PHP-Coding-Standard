@@ -47,3 +47,21 @@ final class Hooks
         set( string $value ) => trim($value);
     }
 }
+
+// A first-class callable has no whitespace around its ..., so it can't be split over lines.
+$a = strlen(...);
+$a = $b->c(...);
+$a = strlen(
+    ...
+);
+$a = $b->c(
+    ...
+);
+$a = D::e(
+    ...);
+
+// A comment in the way stops the fix.
+$a = strlen(
+    // Why.
+    ...
+);

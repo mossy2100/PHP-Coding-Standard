@@ -144,7 +144,9 @@
             <property name="onlySingleLine" value="true"/>
         </properties>
     </rule>
-    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInCall"/>
+    <!-- The PERCS31 version skips a first-class callable, where the Slevomat sniff's fix adds a comma after the ...,
+         which is a parse error (4.8) -->
+    <rule ref="PERCS31.Functions.RequireTrailingCommaInCall"/>
     <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInClosureUse"/>
     <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInDeclaration"/>
 

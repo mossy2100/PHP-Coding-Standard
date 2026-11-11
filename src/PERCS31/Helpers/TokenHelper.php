@@ -9,7 +9,7 @@ use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Helper class for moving between tokens: a bracket's partner, the bracket a token is inside, the end of a `new`
- * expression, and the argument list of `clone`.
+ * expression, the argument list of `clone`, and the `...` of a first-class callable.
  */
 class TokenHelper
 {
@@ -173,5 +173,29 @@ class TokenHelper
         }
 
         return [$opener, $closer];
+    }
+
+    /**
+     * Find the `...` of a first-class callable, as in `foo(...)`, which makes a closure of the function. It's the only
+     * thing in the parentheses.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the `(`.
+     * @return int|null The position of the `...`, or null if the parentheses hold anything else.
+     */
+    public static function findCallableEllipsis(File $phpcsFile, int $opener): ?int
+    {
+        $tokens = $phpcsFile->getTokens();
+        $closer = $tokens[$opener]['parenthesis_closer'] ?? null;
+        if (!is_int($closer)) {
+            return null;
+        }
+
+        $ellipsis = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($opener + 1), $closer, true);
+        if ($ellipsis === false || $tokens[$ellipsis]['code'] !== T_ELLIPSIS) {
+            return null;
+        }
+
+        return $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($ellipsis + 1), $closer, true) === false ? $ellipsis : null;
     }
 }

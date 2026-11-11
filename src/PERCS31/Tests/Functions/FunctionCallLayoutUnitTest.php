@@ -28,6 +28,12 @@ class FunctionCallLayoutUnitTest extends AbstractSniffTestCase
             31 => 1,
             // Indented twice.
             34 => 1,
+            // A first-class callable split over lines.
+            55 => 1,
+            58 => 1,
+            61 => 1,
+            // One with a comment, reported but not fixed.
+            66 => 1,
         ];
     }
 

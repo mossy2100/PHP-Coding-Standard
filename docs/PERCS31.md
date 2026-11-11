@@ -166,8 +166,8 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Functions.DisallowTrailingCommaInCall**, **...InClosureUse** and **...InDeclaration**: Disallow a trailing comma in
   a single-line list (2.6).
 - **Functions.NamedArgumentSpacing**: Requires no space before a named argument's colon, and one after (4.7).
-- **Functions.RequireTrailingCommaInCall**, **...InClosureUse** and **...InDeclaration**: Require a trailing comma in a
-  multi-line list (2.6).
+- **Functions.RequireTrailingCommaInClosureUse** and **...InDeclaration**: Require a trailing comma in a multi-line
+  list (2.6). For a call, [`PERCS31.Functions.RequireTrailingCommaInCall`](#percs31functionsrequiretrailingcommaincall) replaces `...InCall`.
 - **TypeHints.DNFTypeHintFormat**: Requires no spaces inside the parentheses (2.5). Its check for spaces around `|` and
   `&` is replaced by [`PERCS31.TypeHints.CompoundTypeOperatorSpacing`](#percs31typehintscompoundtypeoperatorspacing), which allows a split type. Its
   checks for `null` last and for `?T` are replaced by [`PERCS31.TypeHints.NullType`](#percs31typehintsnulltype), which covers every type.
@@ -216,6 +216,7 @@ section gives the reason.
 | `PERCS31.Functions.FunctionCallLayout`                  | A call's argument list, including `clone()`'s                       | Yes     |
 | `PERCS31.Functions.MultiLineFunctionDeclaration`        | Function, closure and `fn` declarations, allowing `{}` bodies       | Yes     |
 | `PERCS31.Functions.NullableTypeDeclaration`             | No space after the `?` of a nullable type, in any position          | Yes     |
+| `PERCS31.Functions.RequireTrailingCommaInCall`          | A trailing comma in a split call, but not after `foo(...)`'s `...`  | Yes     |
 | `PERCS31.NamingConventions.AcronymCasing`               | A warning for an acronym in capitals in a name                      | No      |
 | `PERCS31.NamingConventions.UpperCaseConstantName`       | Constants in UPPER_CASE, or PascalCase in an enum                   | No      |
 | `PERCS31.NamingConventions.ValidClassName`              | Classes, interfaces, traits and enums in PascalCase                 | No      |
@@ -1351,6 +1352,10 @@ gaps:
   [`PERCS31.PHP.RequireCloneParentheses`](#percs31phprequirecloneparentheses) reports.
 - It reads a `set` hook's parameter list, as in `set (string $value)`, as a call to `set()`. That list is part of the
   hook's declaration, so this sniff skips it, and [`PERCS31.Classes.PropertyHookLayout`](#percs31classespropertyhooklayout) checks it instead.
+- It reads the `...` of a first-class callable split over lines, as in `foo(` then `...` then `)`, as an argument on a
+  line of its own, which is how a split argument list is written. [Section 4.8](https://www.php-fig.org/per/coding-style/#48-function-callable-references) says the `...` MUST NOT have whitespace
+  before or after it, so this sniff reports it as `SplitFirstClassCallable`, and fixes it to `foo(...)`. With a comment
+  in the parentheses, it's reported but not fixed. On one line, the parent already reports `foo( ... )`.
 
 It's named Layout, not Signature like its parent, as a function's signature is its declaration. PSR-12 turns off the
 parent's `SpaceAfterCloseBracket` and `OpeningIndent` codes, so they're off here too. A blank line between arguments,
@@ -1365,6 +1370,8 @@ have none.
 $copy = clone($original, [
     'name' => 'Copy',
 ]);
+
+$length = strlen(...);
 ```
 
 **Bad:**
@@ -1373,6 +1380,10 @@ $copy = clone($original, [
 $copy = clone( $original );
 $copy = clone($original,
     ['name' => 'Copy'],
+);
+
+$length = strlen(
+    ...
 );
 ```
 
@@ -1446,6 +1457,39 @@ class Counter
         set(? int $value) => $value;
     }
 }
+```
+
+---
+
+### PERCS31.Functions.RequireTrailingCommaInCall
+
+Requires a trailing comma after the last argument of a call split across lines, but not after the `...` of a first-class
+callable. This replaces `SlevomatCodingStandard.Functions.RequireTrailingCommaInCall`, which it extends.
+
+**Why:** [PER Coding Style 3.1, Section 2.6](https://www.php-fig.org/per/coding-style/#26-trailing-commas) says the last item of a list split across lines MUST have a trailing comma.
+The Slevomat sniff checks that, but reads the `...` of a first-class callable as the last argument. So for one split
+over lines, its fix adds a comma, giving `...,`, which is a parse error. It has no property to turn that off, so this
+subclass skips a first-class callable, and leaves everything else to the parent.
+[`PERCS31.Functions.FunctionCallLayout`](#percs31functionsfunctioncalllayout) reports the split, and fixes it to `foo(...)`.
+
+**Auto-fixable:** yes, as the parent.
+
+**Good:**
+
+```php
+$largest = max(
+    $first,
+    $second,
+);
+```
+
+**Bad:**
+
+```php
+$largest = max(
+    $first,
+    $second
+);
 ```
 
 ---

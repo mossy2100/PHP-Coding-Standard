@@ -1,0 +1,39 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Vendor\Package;
+
+// Valid: a trailing comma in a split call, and none needed on one line.
+$a = strlen($b);
+$a = max(
+    $b,
+    $c,
+);
+
+// A split call with no trailing comma.
+$a = max(
+    $b,
+    $c
+);
+$a = $d->e(
+    $b
+);
+
+// A first-class callable isn't an argument list, so its ... never takes a comma.
+$a = strlen(...);
+$a = strlen(
+    ...
+);
+$a = $d->e(
+    ...
+);
+$a = F::g(
+    // Why.
+    ...
+);
+
+// A spread argument is an argument.
+$a = max(
+    ...$b
+);

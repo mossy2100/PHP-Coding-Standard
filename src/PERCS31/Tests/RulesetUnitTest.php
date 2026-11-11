@@ -117,6 +117,28 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a first-class callable split over lines is fixed to `foo(...)`, as section 4.8 requires, with no comma
+     * added after the `...`, which Slevomat's trailing comma sniff did. With a comment in the way, it's left alone.
+     */
+    public function testSplitFirstClassCallableIsJoinedWithNoComma(): void
+    {
+        $commented = "\$b = strlen(\n    // Why.\n    ...\n);\n";
+        $file = $this->copyToTempFile(null, "<?php\n\n\$a = strlen(\n    ...\n);\n$commented");
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame(2, substr_count($result['output'], 'FunctionCallLayout.SplitFirstClassCallable'));
+        $this->assertStringNotContainsString('MissingTrailingComma', $result['output']);
+        $this->assertSame("<?php\n\n\$a = strlen(...);\n$commented", $fixed);
+    }
+
+    /**
      * Test that a one-line block declare is fixed with no stray blank line, which two fixes for its brace would add.
      */
     public function testOneLineBlockDeclareIsFixedWithNoBlankLine(): void
