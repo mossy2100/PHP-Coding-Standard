@@ -4,17 +4,20 @@
 
 class Foo {}
 
-class A {}
-
-class C2 {}
-
-class B2B {}
-
-class H2O {}
-
 class Http2 {}
 
 class X509Certificate {}
+
+// A single capital is an initial, and can end a name, or come before a digit or another word.
+class ClassA {}
+
+class Vector3D {}
+
+class AClass {}
+
+interface IAnimal {}
+
+enum EDayOfWeek {}
 
 interface JsonParser {}
 
@@ -26,27 +29,26 @@ enum Suit: string {}
 
 $anonymous = new class {};
 
-// === INVALID ===
-
-class bar {}
-
-class Foo_Bar {}
-
+// An acronym in capitals is still PascalCase. AcronymCasing warns about it.
 class HTTPClient {}
 
 class XMLParser {}
-
-class AClass {}
-
-class FOO {}
-
-class HTTP2 {}
 
 class IDs {}
 
 interface XMLReader {}
 
 trait JSONable {}
+
+enum HTTPStatus {}
+
+enum HTTPCode: int {}
+
+// === INVALID ===
+
+class bar {}
+
+class Foo_Bar {}
 
 interface lowerName {}
 
@@ -56,8 +58,17 @@ enum foo {}
 
 enum foo_bar {}
 
-enum HTTPStatus {}
+// No lower-case letter.
+class A {}
 
-enum HTTPCode: int {}
+class C2 {}
+
+class B2B {}
+
+class H2O {}
+
+class FOO {}
+
+class HTTP2 {}
 
 enum OK {}

@@ -6,10 +6,17 @@ class HttpClient
 {
     public function getHttpResponse(): void {}
 
-    // A single capital that isn't followed by another.
+    // A single capital is an initial, not an acronym, wherever it is in the name.
     public function getX(): void {}
 
     public function getX2Value(): void {}
+
+    public function getXAxis(): void {}
+
+    public function whenXIs(): void {}
+
+    // This is `get`, `I` and `Ds`.
+    public function getIDs(): array {}
 
     public function __construct() {}
 
@@ -20,6 +27,8 @@ function HttpStatus(): void {}
 
 function A(): void {}
 
+function AStatus(): void {}
+
 function parseJson(): void {}
 
 function parse_url2(): void {}
@@ -27,31 +36,59 @@ function parse_url2(): void {}
 $anonymous = new class {};
 $closure = function (): void {};
 
-// === NOT CHECKED HERE ===
+// === CLASSES AND ENUMS, VALID ===
 
-// PascalCase is required of these and enums, so ValidClassName reports a run of capitals.
-class HTTPClientTwo {}
+// A single capital is an initial, not an acronym.
+class ClassA {}
 
-interface XMLParser {}
+interface IAnimal {}
 
-trait JSONable {}
-
-// As are enum cases and constants, which ValidEnumCaseName and UpperCaseConstantName report.
-enum HTTPReported
+enum EDayOfWeek
 {
-    case HTTPOk;
-    const HTTPCode = 1;
-    const string XMLType = 'xml';
-    const HTTP_OK = 200;
-    const OK = 2;
+    case OptionA;
+    const VersionB = 1;
 }
 
+// No lower-case letter, so there's no acronym to write like a word. ValidClassName and ValidEnumCaseName report these,
+// and UPPER_CASE is allowed for an enum constant.
+class FOO {}
+
+enum HTTP
+{
+    case OK;
+    const HTTP_OK = 200;
+    const ID = 2;
+}
+
+// A class constant outside an enum must be in UPPER_CASE, so it isn't checked here.
 class Constants
 {
     const HTTP_OK = 200;
 }
 
 const HTTP_OK = 200;
+
+// A class where it's used isn't checked, as it may belong to a package we don't control.
+$client = new HTTPClient();
+
+// === CLASSES AND ENUMS, INVALID ===
+
+class HTTPClientTwo {}
+
+interface XMLParser {}
+
+trait JSONable {}
+
+class AICodingStandard {}
+
+class IHeartAI {}
+
+enum HTTPReported
+{
+    case HTTPOk;
+    const HTTPCode = 1;
+    const string XMLType = 'xml';
+}
 
 // === FUNCTIONS AND METHODS, INVALID ===
 
@@ -64,18 +101,9 @@ class Invalid
     public function getID(): void {}
 
     public function &getURLs(): array {}
-
-    // A one-letter word before a capital isn't allowed.
-    public function getIDs(): array {}
-
-    public function getXAxis(): void {}
-
-    public function whenXIs(): void {}
 }
 
 function ID(): void {}
-
-function AStatus(): void {}
 
 function HTTPStatus(): void {}
 
@@ -182,6 +210,15 @@ use Foo\Bar as HTTPBarTwo;
 
 function XMLHTTPRequest(): void {}
 
+// The lists apply to a class, an enum, an enum case and an enum constant too.
+class HTTPKernel {}
+
+enum XMLFormat
+{
+    case HTTPPost;
+    const XMLVersion = 1;
+}
+
 // A plural isn't an acronym, a different acronym, a longer one, and a name with an excluded and another.
 function loadHTTPs(): void {}
 
@@ -191,13 +228,7 @@ function HTTPSClient(): void {}
 
 function HTTPClientForURL(): void {}
 
-// A single letter can be excluded too, such as a prefix.
-// phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms T, O
-function TTypeTwo(): void {}
-
-function OAuthTwo(): void {}
-
-function ATypeTwo(): void {}
+class URLKernel {}
 
 // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms HTTP, HTTPS, ID, URL
 // The last capital before a lower-case letter starts a word, so these are `HTTP`, `HTTPS` and `HTTPS`.
@@ -207,14 +238,15 @@ function HTTPSClientTwo(): void {}
 
 function getHTTPS(): void {}
 
-// These are `HTT` and `Pz`, `I` and `Ds`, `I` and `Dea`, and `UR` and `Ls`, none of which is approved.
+// These are `HTT` and `Pz`, and `UR` and `Ls`, neither of which is approved.
 function loadHTTPz(): void {}
 
+function getURLs(): array {}
+
+// These are `I` and `Ds`, and `I` and `Dea`. A single capital isn't an acronym, so they need no approval.
 function getIDs(): array {}
 
 function IDea(): void {}
-
-function getURLs(): array {}
 
 // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms HTTPS
 // This is `HTTP` and `Security`, and only `HTTPS` is approved.
@@ -290,5 +322,5 @@ register(new class {
     }
 });
 
-foreach ($callIDs as $callId) {
+foreach ($callURLs as $callId) {
 }

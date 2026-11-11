@@ -19,7 +19,9 @@ use PHPCSUtils\Utils\Scopes;
  *   ClassConstantNotUpperCase code, and this sniff reports it as `define()` is reported, with ConstantNotUpperCase.
  * - PER Coding Style 3.1, section 9, says constants in an enum MAY use either PascalCase or UPPER_CASE, and PascalCase
  *   is RECOMMENDED. So for an enum constant, this sniff allows PascalCase, reports UPPER_CASE with a warning, and
- *   anything else, such as camelCase or `HTTPStatus`, with an error, as a run of capitals isn't PascalCase.
+ *   anything else, such as camelCase or `Default_Colour`, with an error. A name with no lower-case letter, such as
+ *   `OK` or `A`, is UPPER_CASE. An acronym in capitals in a PascalCase name, as in `HTTPStatus`, isn't reported here.
+ *   AcronymCasing warns about it.
  */
 class UpperCaseConstantNameSniff extends GenericSniff
 {

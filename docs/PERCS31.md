@@ -80,8 +80,8 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   `switch` rules.
 - **PSR2.Methods.FunctionCallSignature**, by [`PERCS31.Functions.FunctionCallLayout`](#percs31functionsfunctioncalllayout), which also checks `clone()`, and
   skips a `set` hook's parameter list, which isn't a call.
-- **Squiz.Classes.ValidClassName**, from PSR-1, by [`PERCS31.NamingConventions.ValidClassName`](#percs31namingconventionsvalidclassname), which also reports a run
-  of capitals.
+- **Squiz.Classes.ValidClassName**, from PSR-1, by [`PERCS31.NamingConventions.ValidClassName`](#percs31namingconventionsvalidclassname), which also reports a name
+  with no lower-case letter.
 
 `Squiz.Functions.FunctionDeclarationArgumentSpacing`'s `SpaceBeforeEquals` and `SpaceAfterEquals` are excluded, as a
 default value's `=` is a binary operator, which section 6.2 allows more than one space around.
@@ -1678,8 +1678,8 @@ $largest = max(
 
 ### PERCS31.NamingConventions.AcronymCasing
 
-Warns about an acronym in capitals in a name: a namespace, function, method, property, parameter, variable, global
-constant, import alias or trait alias.
+Warns about an acronym in capitals in a name: a class, interface, trait, enum, enum case, enum constant, namespace,
+function, method, property, parameter, variable, global constant, import alias or trait alias.
 
 **Why:** [PER Coding Style 3.1, Section 2.7](https://www.php-fig.org/per/coding-style/#27-naming) RECOMMENDS treating acronyms like regular words.
 
@@ -1690,21 +1690,21 @@ The sniff splits a name into words, working back from its last character:
 - If it's upper-case, the word goes back to the first character that isn't a capital, which isn't included.
 - A digit stays with the word on its left, and separates capitals, so `B2B` is `B2` and `B`.
 
-It reports an upper-case word of two or more capitals, and a single capital directly before another word. One-letter
-words aren't allowed there, as `parseURL` could otherwise be read as `parse`, `U`, `R` and `L`. So `getID`, `getIDs`,
-`getURLs`, `getTType`, `getOAuthToken` and `whenXIs` are all reported.
+An acronym is a word of two or more capitals. So `HTTPClient`, `parseURL`, `getID`, `getURLs` and `IHeartAI` are all
+reported.
 
 It doesn't report:
 
-- A single capital that ends the name, or that's followed by a digit, as in `getX` or `getX2Value`.
-- A class, interface, trait, enum or enum case. PascalCase is required of these, so [`ValidClassName`](#percs31namingconventionsvalidclassname) and
-  [`ValidEnumCaseName`](#percs31namingconventionsvalidenumcasename) report a run of capitals as an error.
-- An enum constant, which [`UpperCaseConstantName`](#percs31namingconventionsuppercaseconstantname) reports.
-- A class constant, as UPPER_CASE is required.
-- A global constant or an alias of one with no lower-case letters, as UPPER_CASE is allowed for it.
+- A single capital, which is an initial, not an acronym, as in `ClassA`, `EDayOfWeek`, `getX` or `getTType`. So `getIDs`
+  passes, as it's `get`, `I` and `Ds`.
+- A class, interface, trait, enum, enum case or constant with no lower-case letter, such as `FOO` or `HTTP_OK`. That's
+  UPPER_CASE, not an acronym in a name. It's allowed for a global or enum constant, and [`ValidClassName`](#percs31namingconventionsvalidclassname) and
+  [`ValidEnumCaseName`](#percs31namingconventionsvalidenumcasename) report it for the others.
+- A class constant outside an enum, as UPPER_CASE is required.
 - PHP's reserved variables, such as `$_SERVER`.
 - A property where it's used, such as `$this->userID` or `self::$userID`, as it may belong to a class you don't control.
   It's reported where it's declared.
+- A class where it's used, such as `new HTTPClient()`, for the same reason.
 
 A name you can't change, such as a method overriding a parent's, is reported too. A variable is reported at each use.
 
@@ -1713,13 +1713,11 @@ Two properties allow exceptions, each a comma-separated list. Matching is case-s
 - `excludedNames` allows whole names. Each part of a namespace counts as a name of its own, so `PERCS31` allows
   `PERCS31\Sniffs`, but not `PERCS31\HTTP`.
 - `excludedAcronyms` allows acronyms in any name this sniff checks. An acronym must match a whole upper-case word. So
-  `HTTP` allows `getHTTPClient` and `getHTTPSecurity`, but not `getHTTPSClient`. `T` allows a prefix, as in `getTType`.
-  Listing several lets them combine, as in `getXMLHTTPRequest`.
+  `HTTP` allows `getHTTPClient` and `getHTTPSecurity`, but not `getHTTPSClient`. Listing several lets them combine, as
+  in `getXMLHTTPRequest`.
 
 There's no plural rule, as that would only suit some languages. `getHTTPs` ends in `HTT` and `Ps`, and `getURLs` in `UR`
 and `Ls`, so `HTTP` and `URL` don't allow them. Use `excludedNames` for those.
-
-Neither list applies to a name that must be in PascalCase, such as a class.
 
 ```xml
 <rule ref="PERCS31.NamingConventions.AcronymCasing">
@@ -1735,7 +1733,7 @@ Neither list applies to a name that must be in PascalCase, such as a class.
 **Good:**
 
 ```php
-class Client
+class HttpClient
 {
     private int $userId = 0;
 
@@ -1746,7 +1744,7 @@ class Client
 **Bad:**
 
 ```php
-class Client
+class HTTPClient
 {
     private int $userID = 0;
 
@@ -1765,9 +1763,12 @@ replaces `Generic.NamingConventions.UpperCaseConstantName`.
 that to every constant. [PER Coding Style 3.1, Section 9](https://www.php-fig.org/per/coding-style/#9-enumerations) says constants in an enum MAY use either PascalCase or
 UPPER_CASE, and PascalCase is RECOMMENDED. So for an enum constant:
 
-- PascalCase passes. A run of capitals isn't PascalCase, as [`ValidClassName`](#percs31namingconventionsvalidclassname) explains.
-- UPPER_CASE gets an `EnumConstantNotPascalCase` warning.
-- Anything else, such as camelCase or `HTTPStatus`, gets an `EnumConstantInvalidCase` error.
+- PascalCase passes, as [`ValidClassName`](#percs31namingconventionsvalidclassname) defines it.
+- UPPER_CASE gets an `EnumConstantNotPascalCase` warning. A name with no lower-case letter, such as `OK` or `A`, is
+  UPPER_CASE.
+- Anything else, such as camelCase or `Default_Colour`, gets an `EnumConstantInvalidCase` error.
+
+An acronym in capitals in a PascalCase name, as in `HTTPStatus`, passes here. [`AcronymCasing`](#percs31namingconventionsacronymcasing) warns about it.
 
 A global constant, from `const` or `define()`, isn't checked by default, as neither PSR-1 nor PER has a rule for it. Set
 `checkGlobalConstants` to require UPPER_CASE of these, and of an alias of a constant, as in `use const Foo\BAR as BAZ;`.
@@ -1825,17 +1826,18 @@ enum Suit: string
 ### PERCS31.NamingConventions.ValidClassName
 
 Requires class, interface, trait and enum names to be in PascalCase: a capital first letter, only letters and digits,
-and no run of capitals. This replaces `Squiz.Classes.ValidClassName`.
+and at least one lower-case letter. This replaces `Squiz.Classes.ValidClassName`.
 
 **Why:** PSR-1 says class names MUST be in `StudlyCaps`, and [PER Coding Style 3.1, Section 2.1](https://www.php-fig.org/per/coding-style/#21-basic-coding-standard) reads that as PascalCase,
-with the first letter of every word capitalized. [Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says "class" covers classes, interfaces, traits and enums. If
-a word could be one letter, any name in capitals would qualify, so a run of capitals isn't PascalCase, even if it's an
-acronym. The Squiz sniff allows one, and this sniff extends it to report one.
+with the first letter of every word capitalized. [Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says "class" covers classes, interfaces, traits and enums.
+PascalCase mixes upper and lower case, so a name with no lower-case letter isn't in it. The Squiz sniff allows one, and
+this sniff extends it to report one.
 
-- **Passes:** `Client`, `HttpClient`, `C2`, `Http2`, `B2B`, `H2O`, `X509Certificate` and a lone `A`.
-- **Fails:** `HTTPClient`, `XMLParser`, `AClass`, `IDs`, `FOO`, `HTTP2`, `client` and `Foo_Bar`.
+- **Passes:** `Client`, `HttpClient`, `Http2`, `ClassA`, `Vector3D`, `X509Certificate` and `IAnimal`.
+- **Fails:** `FOO`, `A`, `C2`, `B2B`, `HTTP2`, `client` and `Foo_Bar`.
 
-`AcronymCasing`'s lists don't apply here, so a name that fails can only be allowed with a `phpcs:ignore` comment.
+An acronym in capitals, as in `HTTPClient` or `XMLParser`, is still PascalCase, so it passes here.
+[`AcronymCasing`](#percs31namingconventionsacronymcasing) reports it as a warning, as section 2.7 only RECOMMENDS writing an acronym like a word.
 
 **Auto-fixable:** no. Renaming a class would break references to it in other files.
 
@@ -1850,9 +1852,9 @@ interface JsonParser {}
 **Bad:**
 
 ```php
-class HTTPClient {}
+class http_client {}
 
-interface JSONParser {}
+interface JSON {}
 ```
 
 ---
@@ -1889,16 +1891,18 @@ final class Config
 
 ### PERCS31.NamingConventions.ValidEnumCaseName
 
-Requires enum case names to be in PascalCase: a capital first letter, only letters and digits, and no run of capitals.
+Requires enum case names to be in PascalCase: a capital first letter, only letters and digits, and at least one
+lower-case letter.
 
 **Why:** [PER Coding Style 3.1, Section 9](https://www.php-fig.org/per/coding-style/#9-enumerations) says enum case declarations MUST use PascalCase. This replaces
 `PhpCollective.Classes.EnumCaseCasing`, from php-collective/code-sniffer, which skips a name with no capitals, such as
-`hearts`, and allows a run of capitals, such as `HTTPStatus`.
+`hearts`, and allows a single capital, such as `A`.
 
 PascalCase is as [`ValidClassName`](#percs31namingconventionsvalidclassname) describes:
 
-- **Passes:** `Hearts`, `C2`, `H1`, `Http2`, `B2B`, `H2O` and a lone `A`.
-- **Fails:** `FOO`, `OK`, `HTTP`, `HTTPStatus`, `XMLParser`, `AClass`, `IDs`, `hearts` and `Foo_Bar`.
+- **Passes:** `Hearts`, `BigJoker`, `Http2`, `ClassA`, `Vector3D` and `HTTPStatus`. [`AcronymCasing`](#percs31namingconventionsacronymcasing) warns about the
+  acronym in the last one.
+- **Fails:** `FOO`, `OK`, `A`, `C2`, `B2B`, `hearts`, `bigJoker` and `Foo_Bar`.
 
 **Auto-fixable:** no. Renaming a case would break references to it in other files.
 

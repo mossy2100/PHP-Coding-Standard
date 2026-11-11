@@ -17,22 +17,23 @@ class NamingHelper
     /**
      * Check whether a name is in PascalCase.
      *
-     * Section 2.1 of PER Coding Style 3.1 says the first letter of every word is capitalized. If a word could be one
-     * letter, any name in capitals would qualify, so a run of capitals isn't PascalCase, even if it's an acronym.
+     * Section 2.1 of PER Coding Style 3.1 says the first letter of every word is capitalized. PascalCase mixes upper
+     * and lower case, so a name with no lower-case letter, such as `FOO`, `A` or `B2B`, isn't in it. An acronym in
+     * capitals in a PascalCase name, as in `HTTPClient`, is a separate matter, which hasAcronym() checks.
      *
      * @param string $name The name.
-     * @return bool True if it starts with a capital, has only letters and digits, and has no run of capitals.
+     * @return bool True if it starts with a capital, has only letters and digits, and has a lower-case letter.
      */
     public static function isPascalCase(string $name): bool
     {
-        return preg_match('/^[A-Z][A-Za-z0-9]*$/', $name) === 1 && !self::hasAcronym($name);
+        return preg_match('/^[A-Z][A-Za-z0-9]*$/', $name) === 1 && preg_match('/[a-z]/', $name) === 1;
     }
 
     /**
-     * Check whether a name has an upper-case word that isn't made up of approved acronyms.
+     * Check whether a name has an acronym in capitals that isn't made up of approved acronyms.
      *
-     * Words of two or more capitals need approval, as does a single capital directly before another word, as in
-     * `AClass`. A single capital that ends the name, or that's followed by a digit, doesn't, as in `getX` or `B2B`.
+     * An acronym is a word of two or more capitals, as splitWords() finds them, so `AICodingStandard` and `IHeartAI`
+     * each have one. A single capital is an initial, not an acronym, as in `ClassA`, `EDayOfWeek` or `B2B`.
      *
      * @param string $name The name, which can include underscores or a variable's `$`.
      * @param list<string> $approved The approved acronyms. Matching is case-sensitive.
@@ -41,15 +42,10 @@ class NamingHelper
     public static function hasAcronym(string $name, array $approved = []): bool
     {
         foreach (explode('_', ltrim($name, '$')) as $part) {
-            $words = self::splitWords($part);
-            foreach ($words as $index => $word) {
+            foreach (self::splitWords($part) as $word) {
                 $letters = rtrim($word, '0123456789');
-                if (!ctype_upper($letters)) {
-                    continue;
-                }
-
-                $isLoneCapital = strlen($letters) === 1 && ($word !== $letters || $index === array_key_last($words));
-                if (!$isLoneCapital && !self::isMadeOfAcronyms($letters, $approved)) {
+                $isAcronym = strlen($letters) >= 2 && ctype_upper($letters);
+                if ($isAcronym && !self::isMadeOfAcronyms($letters, $approved)) {
                     return true;
                 }
             }

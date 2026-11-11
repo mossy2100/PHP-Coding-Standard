@@ -25,13 +25,13 @@ class UpperCaseConstantNameUnitTest extends AbstractSniffTestCase
             45 => 1,
             48 => 1,
             // Global constants and aliases not in UPPER_CASE, with checkGlobalConstants set.
-            59 => 1,
-            60 => 1,
             61 => 1,
-            77 => 1,
-            78 => 1,
+            62 => 1,
+            63 => 1,
+            79 => 1,
+            80 => 1,
             // The second constant in a statement declaring several.
-            85 => 1,
+            87 => 1,
         ];
     }
 
@@ -46,6 +46,8 @@ class UpperCaseConstantNameUnitTest extends AbstractSniffTestCase
             // An enum constant in UPPER_CASE, as PascalCase is recommended.
             21 => 1,
             51 => 1,
+            52 => 1,
+            53 => 1,
         ];
     }
 }

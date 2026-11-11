@@ -18,33 +18,40 @@ use PHPCSUtils\Utils\Variables;
  * Warns about an acronym in capitals in a name.
  *
  * PER Coding Style 3.1, section 2.7, RECOMMENDS treating abbreviations, acronyms and initialisms like regular words, so
- * `getHttpClient`, not `getHTTPClient`. This sniff checks a namespace, function, method, property, parameter, variable,
- * global constant, import alias or trait alias. NamingHelper splits each name into words. A word of two or more
- * capitals is reported, and so is a single capital directly before another word, so `parseURL`, `getID`, `getIDs`,
- * `getURLs` and `whenXIs` are all reported. A single capital that ends the name, or that's followed by a digit, as in
- * `getX` or `getX2Value`, isn't.
+ * `getHttpClient`, not `getHTTPClient`. This sniff checks a class, interface, trait, enum, enum case, enum constant,
+ * namespace, function, method, property, parameter, variable, global constant, import alias or trait alias.
+ *
+ * NamingHelper splits each name into words. An acronym is a word of two or more capitals, so `HTTPClient`, `parseURL`,
+ * `getID`, `getURLs` and `IHeartAI` are all reported. A single capital is an initial, not an acronym, so `ClassA`,
+ * `EDayOfWeek`, `getX`, `getIDs` and `whenXIs` aren't.
  *
  * It doesn't check:
- * - A class, interface, trait, enum or enum case. PascalCase is required of these, and a run of capitals isn't
- *   PascalCase, so ValidClassName and ValidEnumCaseName report it as an error, with no exceptions.
- * - An enum constant, as PascalCase or UPPER_CASE is required, so UpperCaseConstantName reports it.
- * - A class constant, as UPPER_CASE is required.
- * - A global constant or an alias of one with no lower-case letters, as UPPER_CASE is allowed for it.
+ * - A class, interface, trait, enum, enum case or constant with no lower-case letter, such as `FOO` or `HTTP_OK`. It's
+ *   in UPPER_CASE, which is allowed for a global or enum constant, and which ValidClassName and ValidEnumCaseName
+ *   report for the others.
+ * - A class constant outside an enum, as UPPER_CASE is required.
  * - PHP's reserved variables, such as `$_SERVER`, which aren't ours to name.
  * - A property where it's used, such as `$this->userID` or `self::$userID`, as it may belong to a class we don't
  *   control. It's checked where it's declared.
+ * - A class where it's used, such as `new HTTPClient()`, for the same reason.
  *
  * Set excludedNames to allow whole names, and excludedAcronyms to allow acronyms in any name it checks, as
  * comma-separated lists. Each part of a namespace is checked as a name of its own. An acronym must match a whole
  * upper-case word. So excluding `HTTP` allows `getHTTPClient`, but not `getHTTPSClient` or `getHTTPs`, which ends in
- * `HTT` and `Ps`. Excluding `T` allows a prefix, as in `getTType`. Listing several lets them combine, as in
- * `getXMLHTTPRequest`.
+ * `HTT` and `Ps`. Listing several lets them combine, as in `getXMLHTTPRequest`.
  *
  * The warning isn't fixable, as references to the name elsewhere wouldn't change.
  */
 class AcronymCasingSniff implements Sniff
 {
     public const string CODE_ACRONYM_NOT_LIKE_WORD = 'AcronymNotLikeWord';
+
+    /**
+     * The tokens that declare a class, interface, trait, enum or enum case.
+     *
+     * @var list<int|string>
+     */
+    private const array CLASS_LIKE_TOKENS = [T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM, T_ENUM_CASE];
 
     /**
      * Names to allow, as a comma-separated list, e.g. `PERCS31,legacyID`. Matching is case-sensitive, and a variable's
@@ -65,7 +72,16 @@ class AcronymCasingSniff implements Sniff
      */
     public function register(): array
     {
-        return [T_NAMESPACE, T_FUNCTION, T_VARIABLE, T_AS, T_CONST, T_STRING, T_NAME_FULLY_QUALIFIED];
+        return [
+            ...self::CLASS_LIKE_TOKENS,
+            T_NAMESPACE,
+            T_FUNCTION,
+            T_VARIABLE,
+            T_AS,
+            T_CONST,
+            T_STRING,
+            T_NAME_FULLY_QUALIFIED,
+        ];
     }
 
     /**
@@ -99,7 +115,10 @@ class AcronymCasingSniff implements Sniff
             $name = end($parts);
         }
 
-        if ($this->isConstant($phpcsFile, $stackPtr) && strtoupper($name) === $name) {
+        // A name with no lower-case letter is in UPPER_CASE, so it has no acronym to write like a word. UPPER_CASE is
+        // allowed for a constant, and ValidClassName and ValidEnumCaseName report it for a class or an enum case.
+        $isClassLike = in_array($tokens[$stackPtr]['code'], self::CLASS_LIKE_TOKENS, true);
+        if (($isClassLike || $this->isConstant($phpcsFile, $stackPtr)) && strtoupper($name) === $name) {
             return;
         }
 
@@ -161,8 +180,10 @@ class AcronymCasingSniff implements Sniff
     private function findNames(File $phpcsFile, int $stackPtr): array
     {
         if ($phpcsFile->getTokens()[$stackPtr]['code'] === T_CONST) {
-            // A class constant is checked by PERCS31.NamingConventions.UpperCaseConstantName.
-            if (Scopes::isOOConstant($phpcsFile, $stackPtr)) {
+            // A class constant must be in UPPER_CASE, which PERCS31.NamingConventions.UpperCaseConstantName checks.
+            // Only an enum's can be in PascalCase.
+            $isClassConstant = Scopes::isOOConstant($phpcsFile, $stackPtr);
+            if ($isClassConstant && Scopes::validDirectScope($phpcsFile, $stackPtr, T_ENUM) === false) {
                 return [];
             }
 

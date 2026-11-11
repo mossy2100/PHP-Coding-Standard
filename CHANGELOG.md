@@ -87,12 +87,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   MUST be in braces. It was only reported as a spacing error before. Auto-fixable, including in a file that mixes PHP
   and HTML.
 - **`PERCS31.NamingConventions.AcronymCasing`.** A warning for an acronym in capitals in a name, e.g. `getID()` or
-  `$userID`, as PER Coding Style 3.1 recommends writing acronyms like words. It covers namespaces, functions, methods,
-  properties, parameters, variables, import aliases, trait aliases, and global constants with a lower-case letter. Set
-  `excludedNames` or `excludedAcronyms`, as comma-separated lists, to allow exceptions.
+  `$userID`, as PER Coding Style 3.1 recommends writing acronyms like words. It covers classes, interfaces, traits,
+  enums, enum cases, namespaces, functions, methods, properties, parameters, variables, import aliases, trait aliases,
+  and enum and global constants with a lower-case letter. An acronym is a word of two or more capitals, so a single
+  capital, as in `ClassA` or `getX`, isn't reported. Set `excludedNames` or `excludedAcronyms`, as comma-separated
+  lists, to allow exceptions.
 - **`PERCS31.NamingConventions.ValidClassName` (breaking).** Replaces `Squiz.Classes.ValidClassName`. Class, interface,
-  trait and enum names must be in PascalCase, which a run of capitals isn't, so `HTTPClient` and `AClass` are now
-  errors. Not auto-fixable.
+  trait and enum names must be in PascalCase: a capital first, only letters and digits, and at least one lower-case
+  letter. So `FOO`, `A` and `B2B` are now errors. An acronym in capitals, as in `HTTPClient`, gets the `AcronymCasing`
+  warning instead. Not auto-fixable.
 - **`Jumbo.TypeHints.DeclareStrictTypes` writes `strict_types=1`.** Its fix wrote `strict_types = 1`, which PER Coding
   Style 3.1 forbids. For a file starting with a block `declare`, it adds a separate statement on the line above, as
   `strict_types` in one is a fatal error.
@@ -290,9 +293,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`PERCS31.Classes.EnumMemberVisibility` (breaking).** Requires a non-public method or constant in an enum to be
   `private`, not `protected`, as PER Coding Style 3.1 requires. Auto-fixable.
 - **`PERCS31.NamingConventions.ValidEnumCaseName` (breaking).** Requires enum case names to be in PascalCase, as PER
-  Coding Style 3.1 requires, e.g. `case BigJoker;`, not `case BIG_JOKER;`, `case bigJoker;` or `case HTTPStatus;`.
-  `case C2;` and `case B2B;` are allowed. An enum constant must be in PascalCase, by the same rule, or UPPER_CASE. Not
-  auto-fixable.
+  Coding Style 3.1 requires, e.g. `case BigJoker;`, not `case BIG_JOKER;`, `case bigJoker;` or `case A;`. An enum
+  constant must be in PascalCase, by the same rule, or UPPER_CASE. Not auto-fixable.
 - **No whitespace after a prefix unary operator (breaking).** A space or line break between a prefix operator and its
   operand is now an error for `!` (`Generic.Formatting.SpaceAfterNot`, with `spacing` set to 0), and for `+`, `~` and
   `@` (`Jumbo.Operators.UnaryOperatorSpacing`, a new sniff). `-`, `++`, `--`, `&` and `...` were already checked.

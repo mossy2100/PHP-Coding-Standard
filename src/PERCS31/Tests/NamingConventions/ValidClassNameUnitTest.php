@@ -19,23 +19,21 @@ class ValidClassNameUnitTest extends AbstractSniffTestCase
     protected function getErrorList(): array
     {
         return [
-            31 => 1,
-            33 => 1,
-            35 => 1,
-            37 => 1,
-            39 => 1,
-            41 => 1,
-            43 => 1,
-            45 => 1,
-            47 => 1,
+            // Not a capital first, or an underscore.
             49 => 1,
             51 => 1,
             53 => 1,
             55 => 1,
             57 => 1,
             59 => 1,
-            61 => 1,
-            63 => 1,
+            // No lower-case letter.
+            62 => 1,
+            64 => 1,
+            66 => 1,
+            68 => 1,
+            70 => 1,
+            72 => 1,
+            74 => 1,
         ];
     }
 

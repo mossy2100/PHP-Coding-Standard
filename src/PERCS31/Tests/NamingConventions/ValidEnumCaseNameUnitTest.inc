@@ -6,16 +6,19 @@ enum Valid
 {
     case Hearts;
     case BigJoker;
-    case A;
     case Option2;
-    case C2;
-    case H1;
-    case V8;
-    case X10;
     case Http2;
-    case B2B;
-    case H2O;
     case X509Certificate;
+
+    // A single capital is an initial, and can end a name, or come before a digit or another word.
+    case ClassA;
+    case Vector3D;
+    case AClass;
+
+    // An acronym in capitals is still PascalCase. AcronymCasing warns about it.
+    case HTTPStatus;
+    case XMLParser;
+    case IDs;
 }
 
 // === INVALID ===
@@ -28,9 +31,9 @@ enum Invalid: string
     case Big_Joker = 'J';
     case bigJoker = 'b';
     case OK = 'o';
-    case HTTPStatus = 's';
-    case XMLParser = 'x';
-    case AClass = 'a';
-    case IDs = 'i';
     case HTTP2 = '2';
+    case A = 'a';
+    case C2 = 'c';
+    case B2B = 'b2';
+    case H2O = 'w';
 }

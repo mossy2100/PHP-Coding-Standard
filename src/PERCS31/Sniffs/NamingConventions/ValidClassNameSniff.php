@@ -15,11 +15,11 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * PSR-1 says class names MUST be in StudlyCaps, which PER Coding Style 3.1, section 2.1, reads as PascalCase, with the
  * first letter of every word capitalized. Section 4 says the term "class" refers to all classes, interfaces, traits and
- * enums. If a word could be one letter, any name in capitals would qualify, so a run of capitals isn't PascalCase, even
- * if it's an acronym.
+ * enums. PascalCase mixes upper and lower case, so a name must have a lower-case letter.
  *
- * It extends Squiz.Classes.ValidClassName, which allows a run of capitals, and also reports one, such as `HTTPClient`,
- * `AClass` or `FOO`.
+ * It extends Squiz.Classes.ValidClassName, which allows a name with no lower-case letter, and also reports one, such
+ * as `FOO`, `A` or `B2B`. An acronym in capitals in a PascalCase name, as in `HTTPClient`, isn't reported here.
+ * AcronymCasing warns about it.
  */
 class ValidClassNameSniff extends SquizSniff
 {
@@ -41,7 +41,7 @@ class ValidClassNameSniff extends SquizSniff
             return;
         }
 
-        // The parent reports any other problem with the name, so only report a run of capitals here.
+        // The parent reports any other problem with the name, so only report one with no lower-case letter here.
         $name = $tokens[$namePtr]['content'];
         if (!Common::isCamelCaps($name, true, true, false) || NamingHelper::isPascalCase($name)) {
             return;

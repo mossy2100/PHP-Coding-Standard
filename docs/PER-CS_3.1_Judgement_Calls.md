@@ -249,20 +249,23 @@ unchecked. Extra rules go in [Jumbo](Jumbo.md).
 
 ## 2.1 Basic Coding Standard
 
-### PascalCase and Runs of Capitals (PSR-1)
+### PascalCase (PSR-1)
 
-**Issue:** PSR-1 requires class names in StudlyCaps, without defining it. It's unclear whether a run of capitals, as
-in `HTTPStatus`, qualifies.
+**Issue:** PSR-1 requires class names in StudlyCaps, without defining it. 2.1 reads it as PascalCase, "where the first
+letter of each word is capitalized". That doesn't settle whether `FOO`, `A` or `HTTPStatus` qualifies.
 
 **Ruleset:**
 
-- StudlyCaps is read as PascalCase, with the first letter of every word capitalized and the rest lower case.
-- This applies to classes, interfaces, traits, enums and enum cases.
-- Any name with sequential capitals, such as `FOO`, `OK`, `HTTPStatus`, `XMLParser`, and `TClass`, are errors.
-- A lone capital not next to another passes: `A`, `C2`, `H1`, `B2B`, `H2O`.
+- A PascalCase name starts with a capital, has only letters and digits, and has at least one lower-case letter.
+- This applies to classes, interfaces, traits, enums and enum cases, as an error. An enum constant may be in PascalCase
+  or UPPER_CASE (9).
+- A name with no lower-case letter fails: `FOO`, `OK`, `A`, `C2`, `B2B`.
+- An acronym or an initial in capitals is still PascalCase: `HTTPStatus`, `XMLParser`, `ClassA`, `IAnimal`. The acronym
+  gets a warning instead (2.7).
 
-**Why:** Section 2.7 RECOMMENDS treating acronyms as words, which is PascalCase. Section 4 uses "class" to cover all
-four kinds of class-like structure.
+**Why:** PascalCase mixes upper and lower case, so a name with no lower-case letter isn't in it. The MUST says nothing
+about acronyms, which 2.7 covers as a RECOMMENDS. Section 4 uses "class" to cover all four kinds of class-like
+structure.
 
 ---
 
@@ -449,20 +452,24 @@ disallows it.
 
 ## 2.7 Naming
 
-### Acronyms in Other Names
+### Acronyms
 
-**Issue:** 2.7 RECOMMENDS treating acronyms as words, but doesn't say which names it covers, or how to count a
-one-letter word.
+**Issue:** 2.7 RECOMMENDS treating acronyms as words, but doesn't say which names it covers, or what counts as an
+acronym.
 
-**Ruleset:** `PERCS31.NamingConventions.AcronymCasing` applies it to namespaces, functions, methods, properties,
-parameters, variables, and import and trait aliases, as a severity 5 warning.
+**Ruleset:** `PERCS31.NamingConventions.AcronymCasing` applies it to classes, interfaces, traits, enums, enum cases,
+enum constants, namespaces, functions, methods, properties, parameters, variables, and import and trait aliases, as a
+severity 5 warning.
 
-- A one-letter word before a capital is reported, so `getID` and `parseURL` are.
-- There's no plural rule, so `getIDs` reads as `get`, `I`, `Ds`, and is reported.
+- An acronym is a word of two or more capitals, so `HTTPClient`, `getID`, `parseURL` and `IHeartAI` are reported.
+- A single capital is an initial, not an acronym, so `ClassA`, `EDayOfWeek` and `getX` pass.
+- There's no plural rule. `getURLs` reads as `get`, `UR`, `Ls`, and is reported. `getIDs` reads as `get`, `I`, `Ds`,
+  and passes.
+- A name with no lower-case letter, such as `HTTP_OK`, is UPPER_CASE, and isn't checked.
 - The advice to avoid abbreviations isn't checkable, so it isn't checked.
 
-**Why:** The recommendation isn't limited to class names. Splitting a name into words can only be a best effort, so a
-simple rule is applied consistently.
+**Why:** The recommendation isn't limited to one kind of name. Splitting a name into words can only be a best effort,
+so a simple rule is applied consistently.
 
 ---
 
@@ -976,7 +983,7 @@ examples show both.
 cases, and RECOMMENDS PascalCase.
 
 **Ruleset:** PascalCase passes, UPPER_CASE gets a severity 5 warning, and anything else, such as `camelCase` or
-`HTTPStatus`, is an error.
+`Foo_Bar`, is an error.
 
 **Why:** Section 9 is more specific than PSR-1.
 

@@ -474,7 +474,8 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test the naming rules, in both standards: approved acronyms only apply to the names AcronymCasing checks.
+     * Test the naming rules, in both standards: an approved acronym is allowed in any name, and a name with no
+     * lower-case letter isn't in PascalCase.
      */
     #[DataProvider('standardProvider')]
     public function testNamingRules(string $standard): void
@@ -517,12 +518,9 @@ class RulesetUnitTest extends TestCase
         preg_match_all($pattern, $result['output'], $matches, PREG_SET_ORDER);
         $reports = array_map(static fn(array $match): string => "$match[1] $match[2] $match[3]", $matches);
         $expected = [
-            '4 error NotPascalCase',
             '6 error NotPascalCase',
-            '8 error NotPascalCase',
-            '10 error NotPascalCase',
+            '10 warning AcronymNotLikeWord',
             '12 error NotPascalCase',
-            '14 error EnumConstantInvalidCase',
             '15 warning EnumConstantNotPascalCase',
             '18 warning AcronymNotLikeWord',
             '22 warning AcronymNotLikeWord',
