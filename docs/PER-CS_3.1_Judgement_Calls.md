@@ -818,14 +818,15 @@ brace (4). PHP_CodeSniffer reads the same PSR-12 rule this way.
 
 ---
 
-### Fall-through and Braces
+### `default`
 
-**Issue:** 5.2 requires a comment when a non-empty `case` falls through, but doesn't mention `default`, or braces
-around a `case` body.
+**Issue:** 5.2 requires a comment when a non-empty `case` falls through, and says a `case` body MUST NOT be wrapped in
+`{}`. It doesn't say whether either rule covers `default`.
 
-**Ruleset:** A non-empty `default` that falls through needs a comment too. A braced `case` body is reported.
+**Ruleset:** Both do. A non-empty `default` that falls through needs a comment, and a braced `default` body is
+reported.
 
-**Why:** A `default` can fall through just like a `case`. The example has no braces.
+**Why:** A `default` is a `case` in all but name. It can fall through, and take braces, just as a `case` can.
 
 ---
 
