@@ -130,11 +130,6 @@
     <!-- final before the visibility on a constant, the order PER sets for classes, properties and methods (4.6) -->
     <rule ref="Universal.Constants.ModifierKeywordOrder"/>
     <rule ref="SlevomatCodingStandard.Classes.RequireSelfReference"/>
-    <!-- No blank line between trait use statements; PSR12.Traits.UseDeclaration, in PERCS31, checks the rest -->
-    <rule ref="SlevomatCodingStandard.Classes.TraitUseSpacing">
-        <exclude name="SlevomatCodingStandard.Classes.TraitUseSpacing.IncorrectLinesCountBeforeFirstUse"/>
-        <exclude name="SlevomatCodingStandard.Classes.TraitUseSpacing.IncorrectLinesCountAfterLastUse"/>
-    </rule>
 
     <!-- Global constants in UPPER_CASE too, which PER doesn't require -->
     <rule ref="PERCS31.NamingConventions.UpperCaseConstantName">

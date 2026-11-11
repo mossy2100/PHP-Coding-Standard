@@ -10,6 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **Blank lines around trait `use` statements, in PERCS31 (breaking).** PERCS31 now reports a blank line between two
+  trait `use` statements, which only Jumbo did, and more than one after the last, as PER Coding Style 3.1's examples
+  show none between them and one after. `SlevomatCodingStandard.Classes.TraitUseSpacing` makes these checks, so
+  `PSR12.Traits.UseDeclaration.NoBlankLineAfterUse` and `BlankLineAfterLastUse` are now
+  `SlevomatCodingStandard.Classes.TraitUseSpacing.IncorrectLinesCountAfterLastUse`. Auto-fixable.
 - **A property hook's name in lower case (breaking).** `GET => 1;` and `Set(int $value) => $value;` are now reported,
   as PER Coding Style 3.1 requires keywords in lower case, and calls a hook's name "the hook keyword". The new
   `PERCS31.PHP.LowerCaseKeyword` replaces `Generic.PHP.LowerCaseKeyword`, and checks it too, so a `phpcs:ignore` for
@@ -425,7 +430,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     `PERCS31.Functions.NullableTypeDeclaration` reports a space after a nullable type's `?`.
 - **Four Slevomat checks that PERCS31 already covers.** `SlevomatCodingStandard.Classes.TraitUseDeclaration`,
   `SlevomatCodingStandard.Namespaces.NamespaceSpacing`,
-  `SlevomatCodingStandard.Namespaces.UseDoesNotStartWithBackslash`, and the before-first and after-last checks of
+  `SlevomatCodingStandard.Namespaces.UseDoesNotStartWithBackslash`, and the before-first check of
   `SlevomatCodingStandard.Classes.TraitUseSpacing`. The same cases are reported by PSR-12's
   `PSR12.Traits.UseDeclaration`, `PSR12.Files.FileHeader` and `PSR12.Files.ImportStatement`. Update any `phpcs:ignore`
   comments or `<exclude>` rules that name the old codes.

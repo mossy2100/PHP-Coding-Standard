@@ -205,6 +205,35 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test the blank lines around trait use statements: none between two, exactly one after the last, and none before
+     * the class's closing brace, each reported once, and fixed.
+     */
+    public function testBlankLinesAroundTraitUse(): void
+    {
+        $header = "<?php\n\nnamespace Vendor\\Package;\n\n";
+        $source = $header . "class Between\n{\n    use First;\n\n    use Second;\n\n\n    public int \$a = 1;\n}\n";
+        $file = $this->copyToTempFile(null, $source);
+        $last = $this->copyToTempFile(null, $header . "class Last\n{\n    use First;\n    public int \$a = 1;\n}\n");
+        $args = ['-s', '--standard=PERCS31', '--report=emacs'];
+
+        try {
+            $result = $this->runTool('phpcs', [...$args, $file]);
+            $lastResult = $this->runTool('phpcs', [...$args, $last]);
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+            unlink($last);
+        }
+
+        $this->assertSame(1, substr_count($result['output'], 'TraitUseSpacing.IncorrectLinesCountBetweenUses'));
+        $this->assertSame(1, substr_count($result['output'], 'TraitUseSpacing.IncorrectLinesCountAfterLastUse'));
+        $this->assertSame(1, substr_count($lastResult['output'], 'error - '), $lastResult['output']);
+        $expected = $header . "class Between\n{\n    use First;\n    use Second;\n\n    public int \$a = 1;\n}\n";
+        $this->assertSame($expected, $fixed);
+    }
+
+    /**
      * Test that a one-line block declare is fixed with no stray blank line, which two fixes for its brace would add.
      */
     public function testOneLineBlockDeclareIsFixedWithNoBlankLine(): void

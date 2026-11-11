@@ -40,6 +40,10 @@
         <exclude name="Generic.PHP.LowerCaseType"/>
         <!-- Replaced by a PERCS31 version that also checks a property hook's name (2.5) -->
         <exclude name="Generic.PHP.LowerCaseKeyword"/>
+        <!-- Replaced by SlevomatCodingStandard.Classes.TraitUseSpacing, which also reports more than one blank line
+             after the last trait use statement (4.2) -->
+        <exclude name="PSR12.Traits.UseDeclaration.NoBlankLineAfterUse"/>
+        <exclude name="PSR12.Traits.UseDeclaration.BlankLineAfterLastUse"/>
         <!-- A default value's = is a binary operator, so it needs at least one space, not exactly one (6.2). Checked by
              PERCS31.Operators.OperatorSpacing -->
         <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpaceBeforeEquals"/>
@@ -202,6 +206,18 @@
 
     <!-- A warning for new Foo() wrapped in parentheses before ->, ?-> or :: (4) -->
     <rule ref="PERCS31.Classes.ClassInstantiationNoBrackets"/>
+
+    <!-- No blank line between trait use statements, exactly one after the last, and none before the class's closing
+         brace, as the examples in 4.2 show. The use on the line after the opening brace is checked by
+         PSR12.Traits.UseDeclaration. -->
+    <rule ref="SlevomatCodingStandard.Classes.TraitUseSpacing">
+        <exclude name="SlevomatCodingStandard.Classes.TraitUseSpacing.IncorrectLinesCountBeforeFirstUse"/>
+        <properties>
+            <property name="linesCountBetweenUses" value="0"/>
+            <property name="linesCountAfterLastUse" value="1"/>
+            <property name="linesCountAfterLastUseWhenLastInClass" value="0"/>
+        </properties>
+    </rule>
 
     <!-- abstract or final before readonly on a class (4.6) -->
     <rule ref="SlevomatCodingStandard.Classes.ClassKeywordOrder"/>

@@ -64,6 +64,9 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 - **PSR12.Functions.NullableTypeDeclaration**, by [`PERCS31.Functions.NullableTypeDeclaration`](#percs31functionsnullabletypedeclaration), which also checks a `set`
   hook's parameter.
 - **PSR12.Operators.OperatorSpacing**, by [`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing), which also covers the pipe operator `|>`.
+- **PSR12.Traits.UseDeclaration** is kept, but its `NoBlankLineAfterUse` and `BlankLineAfterLastUse` codes are replaced
+  by `SlevomatCodingStandard.Classes.TraitUseSpacing`, which also reports more than one blank line after the last trait
+  `use` statement.
 - **PSR12.Properties.ConstantVisibility** is kept, but a constant with no visibility is an error, not a warning, as
   [Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says MUST.
 - **PSR2.Classes.ClassDeclaration**, **Squiz.Functions.MultiLineFunctionDeclaration** and
@@ -163,6 +166,9 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
   including on promoted properties (4.3, 4.6). Its check for a space after a nullable type's `?` is replaced by
   [`PERCS31.Functions.NullableTypeDeclaration`](#percs31functionsnullabletypedeclaration), which is more complete: it checks every place a type can appear,
   including a `set` hook's parameter, not just a property.
+- **Classes.TraitUseSpacing**: Requires no blank line between trait `use` statements, exactly one after the last, and
+  none before the class's closing brace, as section 4.2's examples show (4.2). Its check before the first `use` is
+  excluded, as `PSR12.Traits.UseDeclaration` reports the same.
 - **Functions.ArrowFunctionDeclaration**: Requires no space after `fn`, e.g. `fn($x) => $x`. The expression may be on
   the next line (7.1).
 - **Functions.DisallowTrailingCommaInCall**, **...InClosureUse** and **...InDeclaration**: Disallow a trailing comma in

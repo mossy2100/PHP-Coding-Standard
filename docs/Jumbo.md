@@ -131,8 +131,6 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Classes.RequireSelfReference**: Requires `self::` instead of `ClassName::` for self-references.
 - **Classes.RequireSingleLineMethodSignature**: Requires single-line format for short method signatures. Used through
   [`Jumbo.Classes.RequireSingleLineMethodSignature`](#jumboclassesrequiresinglelinemethodsignature), which skips a method with a hook on a promoted parameter.
-- **Classes.TraitUseSpacing**: Disallows a blank line between trait `use` statements. Its checks before the first and
-  after the last are excluded, as `PSR12.Traits.UseDeclaration`, in PERCS31, covers them.
 - **Commenting.AnnotationName**: Enforces correct annotation names.
 - **Commenting.DeprecatedAnnotationDeclaration**: Enforces the `@deprecated` annotation format.
 - **Commenting.EmptyComment**: Disallows empty comments.

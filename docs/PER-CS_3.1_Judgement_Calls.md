@@ -515,6 +515,21 @@ expression or statement, which often continues after the brace.
 
 ---
 
+## 4.2 Using Traits
+
+### Blank Lines Around `use`
+
+**Issue:** 4.2 says a class with more in it "MUST have a blank line after the `use` import statement". It doesn't say
+exactly one, or whether a blank line may come between two `use` statements.
+
+**Ruleset:** No blank line between trait `use` statements, and exactly one after the last, so two or more are
+reported.
+
+**Why:** "A blank line" is read as one, as "a space" is in 4.3. 4.2's examples show no blank line between `use`
+statements, and one after the last.
+
+---
+
 ## 4.3 Properties and Constants
 
 ### "A Space" After the Type
