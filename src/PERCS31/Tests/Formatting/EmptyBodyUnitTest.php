@@ -37,6 +37,14 @@ class EmptyBodyUnitTest extends AbstractSniffTestCase
             96 => 1,
             // Closure after a line comment, reported but not fixed.
             99 => 1,
+            // With checkControlStructures on: a catch, a finally, a while and a do with the braces on separate lines.
+            113 => 1,
+            114 => 1,
+            117 => 1,
+            120 => 1,
+            // An if with a space inside the braces, and one with no space before them.
+            123 => 1,
+            124 => 1,
         ];
     }
 

@@ -100,3 +100,31 @@ function commentedClosures(): array
         },
     ];
 }
+
+// A control structure's empty body isn't checked by default.
+try {
+    run();
+} catch (Exception $e) {
+}
+
+// phpcs:set PERCS31.Formatting.EmptyBody checkControlStructures true
+try {
+    run();
+} catch (Exception $e) {
+} finally {
+}
+
+while (next($items)) {
+}
+
+do {
+} while (next($items));
+
+if ($first) { }
+if ($first){}
+
+// Already abbreviated, and a body with a comment, which isn't empty.
+if ($first) {} else {
+    // Why.
+}
+// phpcs:set PERCS31.Formatting.EmptyBody checkControlStructures false

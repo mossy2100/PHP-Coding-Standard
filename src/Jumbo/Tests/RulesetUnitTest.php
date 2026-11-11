@@ -152,6 +152,30 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a control structure's empty body with the braces on separate lines passes in PERCS31, which has no rule
+     * for it, and is an error in Jumbo, whose fix writes it as `{}`.
+     */
+    public function testEmptyControlStructureBodyMustBeAbbreviatedInJumbo(): void
+    {
+        $header = "<?php\n\ndeclare(strict_types=1);\n\nnamespace Vendor\\Package;\n\n";
+        $file = $this->copyToTempFile(null, $header . "while (next(\$items)) {\n}\n");
+        $sniff = '--sniffs=PERCS31.Formatting.EmptyBody';
+
+        try {
+            $per = $this->runTool('phpcs', ['--standard=PERCS31', $sniff, '-s', '--report=emacs', $file])['output'];
+            $jumbo = $this->runTool('phpcs', ['--standard=Jumbo', $sniff, '-s', '--report=emacs', $file])['output'];
+            $this->runTool('phpcbf', ['--standard=Jumbo', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertStringNotContainsString('EmptyBody', $per);
+        $this->assertStringContainsString('error - An empty while body must be written as {}', $jumbo);
+        $this->assertSame($header . "while (next(\$items)) {}\n", $fixed);
+    }
+
+    /**
      * Test that a blank line after a case label, and a comment on its line, are reported in both standards.
      */
     public function testLabelLineInBothStandards(): void

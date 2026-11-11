@@ -40,6 +40,8 @@
         <exclude name="Generic.PHP.LowerCaseType"/>
         <!-- Replaced by a PERCS31 version that also checks a property hook's name (2.5) -->
         <exclude name="Generic.PHP.LowerCaseKeyword"/>
+        <!-- Replaced by PERCS31.ControlStructures.BodyOnNextLine, which allows an empty body as {} (5) -->
+        <exclude name="Squiz.ControlStructures.ControlSignature.NewlineAfterOpenBrace"/>
         <!-- Replaced by SlevomatCodingStandard.Classes.TraitUseSpacing, which also reports more than one blank line
              after the last trait use statement (4.2) -->
         <exclude name="PSR12.Traits.UseDeclaration.NoBlankLineAfterUse"/>
@@ -300,6 +302,9 @@
 
     <!-- A structure's body in braces, not the alternative syntax, e.g. if (): ... endif; (5) -->
     <rule ref="Universal.ControlStructures.DisallowAlternativeSyntax"/>
+
+    <!-- A structure's body on the line after its opening brace, allowing an empty body as {} (5) -->
+    <rule ref="PERCS31.ControlStructures.BodyOnNextLine"/>
 
     <!-- A control structure's parentheses, without PSR-12's rules for a multi-line foreach (5, 5.5) -->
     <rule ref="PERCS31.ControlStructures.ControlStructureSpacing"/>

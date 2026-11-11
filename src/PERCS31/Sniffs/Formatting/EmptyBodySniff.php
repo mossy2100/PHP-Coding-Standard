@@ -21,10 +21,20 @@ use PHPCSUtils\Utils\MessageHelper;
  *
  * A body after a `//` or `#` comment, as in `function a() // Why.` then `{` and `}`, is reported but not fixed, as the
  * `{}` can't go on the comment's line.
+ *
+ * Section 5 says nothing about a control structure's empty body, so PERCS31 allows it as `{}` or with the braces on
+ * separate lines, and it isn't checked here. With checkControlStructures on, as in the Jumbo standard, `{}` is required
+ * there too, as an error.
  */
 class EmptyBodySniff implements Sniff
 {
     public const string CODE_NOT_ABBREVIATED = 'NotAbbreviated';
+
+    /**
+     * Whether to require an empty control structure body as `{}` too, as in `catch (Exception $e) {}`. PER Coding Style
+     * 3.1 has no rule on it, so it's off by default.
+     */
+    public bool $checkControlStructures = false;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -33,7 +43,7 @@ class EmptyBodySniff implements Sniff
      */
     public function register(): array
     {
-        return EmptyBodyHelper::OWNER_TOKENS;
+        return [...EmptyBodyHelper::OWNER_TOKENS, ...EmptyBodyHelper::CONTROL_STRUCTURE_TOKENS];
     }
 
     /**
@@ -44,11 +54,16 @@ class EmptyBodySniff implements Sniff
      */
     public function process(File $phpcsFile, int $stackPtr): void
     {
+        $tokens = $phpcsFile->getTokens();
+        $isControlStructure = in_array($tokens[$stackPtr]['code'], EmptyBodyHelper::CONTROL_STRUCTURE_TOKENS, true);
+        if ($isControlStructure && !$this->checkControlStructures) {
+            return;
+        }
+
         if (!EmptyBodyHelper::isEmpty($phpcsFile, $stackPtr)) {
             return;
         }
 
-        $tokens = $phpcsFile->getTokens();
         $opener = $tokens[$stackPtr]['scope_opener'];
         $closer = $tokens[$stackPtr]['scope_closer'];
         $previous = $phpcsFile->findPrevious(T_WHITESPACE, ($opener - 1), null, true);
@@ -63,11 +78,11 @@ class EmptyBodySniff implements Sniff
         $fixable = !$this->isLineComment($phpcsFile, $previous);
         $message = 'An empty %s body %s be written as {} on the same line as the declaration, after a single space.';
         $code = $tokens[$stackPtr]['code'];
-        $isMust = $code === T_CLOSURE || $code === T_ANON_CLASS;
+        $isMust = $code === T_CLOSURE || $code === T_ANON_CLASS || $isControlStructure;
         $data = match ($code) {
             T_CLOSURE => ['closure', 'must'],
             T_ANON_CLASS => ['anonymous class', 'must'],
-            default => [strtolower($tokens[$stackPtr]['content']), 'should'],
+            default => [strtolower($tokens[$stackPtr]['content']), $isMust ? 'must' : 'should'],
         };
 
         if (!$fixable) {

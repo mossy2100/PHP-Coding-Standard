@@ -13,8 +13,9 @@ use PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\ScopeClosingBraceSniff as 
  *
  * Squiz.WhiteSpace.ScopeClosingBrace reports the `}` of `class Foo {}`, `function foo(): void {}` and
  * `function () {}`. PER Coding Style 3.1, sections 4, 4.4 and 7, says an empty class or function body should, and an
- * empty closure body must, be written that way. This sniff skips an empty body on one line, and leaves everything else
- * to the parent.
+ * empty closure body must, be written that way. Section 5 says nothing about a control structure's empty body, so
+ * `catch (Exception $e) {}` is allowed too. This sniff skips an empty body on one line, and leaves everything else to
+ * the parent.
  */
 class ScopeClosingBraceSniff extends SquizSniff
 {

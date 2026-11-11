@@ -723,6 +723,18 @@ needs, as in `while (next($items));`.
 
 ---
 
+### An Empty Body
+
+**Issue:** "The body MUST be on the next line after the opening brace", but the spec doesn't say how an empty body is
+written. It gives `{}` to an empty class (4), function (4.4) and closure (7), and doesn't mention control structures.
+
+**Ruleset:** An empty body may be written as `{}`, as in `catch (Exception $e) {}`, or with the braces on separate
+lines. Jumbo requires `{}`.
+
+**Why:** With no body, there's nothing to put on the next line. `{}` is how the spec writes every other empty body.
+
+---
+
 ### "Indented at Least Once"
 
 **Issue:** A split condition's "subsequent line is indented at least once", but the spec doesn't say how far is too

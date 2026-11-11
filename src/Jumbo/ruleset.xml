@@ -187,6 +187,14 @@
 
     <!-- ====== CONTROL STRUCTURES (5) ====== -->
 
+    <!-- An empty control structure body as {}, as in catch (Exception $e) {}, where PERCS31 also allows the braces on
+         separate lines -->
+    <rule ref="PERCS31.Formatting.EmptyBody">
+        <properties>
+            <property name="checkControlStructures" value="true"/>
+        </properties>
+    </rule>
+
     <rule ref="Generic.CodeAnalysis.AssignmentInCondition"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.DisallowContinueWithoutIntegerOperandInSwitch"/>
     <!-- One space after a language construct such as return, echo or throw, with no line break. The Jumbo version of

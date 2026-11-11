@@ -10,6 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **An empty control structure body as `{}`.** PERCS31 now allows `catch (Exception $e) {}`, `while (next($a)) {}` and
+  the like, which were errors, as PER Coding Style 3.1 has no rule for a control structure's empty body, and writes
+  every other empty body as `{}`. The braces on separate lines still pass. The new
+  `PERCS31.ControlStructures.BodyOnNextLine` replaces `Squiz.ControlStructures.ControlSignature.NewlineAfterOpenBrace`,
+  so a `phpcs:ignore` for that code needs updating.
+- **`{}` required for an empty control structure body, in Jumbo (breaking).** `PERCS31.Formatting.EmptyBody` has a new
+  `checkControlStructures` property, which Jumbo turns on. An empty `catch`, `while`, `if` or other body with the
+  braces on separate lines is an error there. Auto-fixable.
 - **Blank lines around trait `use` statements, in PERCS31 (breaking).** PERCS31 now reports a blank line between two
   trait `use` statements, which only Jumbo did, and more than one after the last, as PER Coding Style 3.1's examples
   show none between them and one after. `SlevomatCodingStandard.Classes.TraitUseSpacing` makes these checks, so

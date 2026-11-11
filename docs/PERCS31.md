@@ -74,6 +74,8 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   [`PERCS31.Formatting.EmptyBody`](#percs31formattingemptybody).
 - **PSR2.Classes.PropertyDeclaration** and **Generic.WhiteSpace.ScopeIndent**, by [`PERCS31.Classes.PropertyDeclaration`](#percs31classespropertydeclaration)
   and [`PERCS31.WhiteSpace.ScopeIndent`](#percs31whitespacescopeindent), which support property hooks (PHP 8.4).
+- **Squiz.ControlStructures.ControlSignature** is kept, but its `NewlineAfterOpenBrace` code is replaced by
+  [`PERCS31.ControlStructures.BodyOnNextLine`](#percs31controlstructuresbodyonnextline), which allows an empty body as `{}`.
 - **PSR2.ControlStructures.SwitchDeclaration**, by [`PERCS31.ControlStructures.SwitchDeclaration`](#percs31controlstructuresswitchdeclaration), which adds PER's
   `switch` rules.
 - **PSR2.Methods.FunctionCallSignature**, by [`PERCS31.Functions.FunctionCallLayout`](#percs31functionsfunctioncalllayout), which also checks `clone()`, and
@@ -210,6 +212,7 @@ section gives the reason.
 | `PERCS31.Classes.PromotedPropertyHooks`                 | A hook on a promoted parameter is a single short hook on one line   | No      |
 | `PERCS31.Classes.PropertyDeclaration`                   | No leading `_`, no `var`, a visibility, and `get` before `set`      | Partly  |
 | `PERCS31.Classes.PropertyHookLayout`                    | A hook list's and hook body's braces, and a short hook's `=>`       | Partly  |
+| `PERCS31.ControlStructures.BodyOnNextLine`              | A structure's body on the line after its `{`, allowing `{}`         | Yes     |
 | `PERCS31.ControlStructures.ControlStructureSpacing`     | A control structure's parentheses, with no split rule for `foreach` | Yes     |
 | `PERCS31.ControlStructures.MatchArmPlacement`           | Each `match` arm starts on a new line                               | Yes     |
 | `PERCS31.ControlStructures.MultiLineTernaryOperator`    | A multi-line ternary takes three lines, `?` and `:` leading         | Yes     |
@@ -906,6 +909,46 @@ interface Named
 
 ---
 
+### PERCS31.ControlStructures.BodyOnNextLine
+
+Requires a control structure's body to start on the line after its opening brace, allowing an empty body as `{}`. This
+replaces the `NewlineAfterOpenBrace` check of `Squiz.ControlStructures.ControlSignature`.
+
+**Why:** [PER Coding Style 3.1, Section 5](https://www.php-fig.org/per/coding-style/#5-control-structures) says the body MUST be on the next line after the opening brace. It says nothing
+about an empty body, which has nothing to put on the next line, so `catch (Exception $e) {}` is allowed, as `{}` is for
+an empty class, function or closure. The braces on separate lines are allowed too.
+
+The Squiz check reports `{}`. It's in the middle of that sniff's `process()`, with no property to change it, so a
+subclass can't skip it for one case. So the ruleset excludes its code, and this sniff makes the same check, copied from
+PHP_CodeSniffer 4.0.4 with its message and code. It changes one thing: a `}` straight after the `{` isn't reported. No
+other installed sniff makes the check with that exception.
+
+A comment after the brace on its line is allowed, as by the Squiz check. A space between the braces, `{ }`, isn't `{}`,
+so it's reported. The [Jumbo standard](Jumbo.md) requires `{}` for an empty body.
+
+**Auto-fixable:** yes.
+
+**Good:**
+
+```php
+try {
+    run();
+} catch (Exception $e) {}
+
+while (next($items)) {
+    count();
+}
+```
+
+**Bad:**
+
+```php
+while (next($items)) { count();
+}
+```
+
+---
+
 ### PERCS31.ControlStructures.ControlStructureSpacing
 
 Checks the layout of a control structure's parentheses, as `PSR12.ControlStructures.ControlStructureSpacing` does,
@@ -1235,6 +1278,10 @@ including a constructor that only promotes properties. [Section 7](https://www.p
 an anonymous class MUST follow the same rules as a closure. No inherited sniff checks any of these. A body containing a
 comment isn't empty.
 
+Section 5 has no rule for a control structure's empty body, so it isn't checked: `catch (Exception $e) {}` passes, and
+so does the same with the braces on separate lines. Set `checkControlStructures` to require `{}` there too, as an error,
+as the [Jumbo standard](Jumbo.md) does.
+
 **Auto-fixable:** yes. After a block comment, the fix puts `{}` after it, as in `function a() /* Why. */ {}`. A body
 after a `//` or `#` comment is reported but not fixed, as `{}` can't go on the comment's line.
 
@@ -1272,6 +1319,12 @@ final class Point
 $noop = static function (): void {
 };
 ```
+
+**Configuration:**
+
+| Property                 | Type | Default | Description                                                     |
+| ------------------------ | ---- | ------- | --------------------------------------------------------------- |
+| `checkControlStructures` | bool | false   | Require `{}` for a control structure's empty body, as an error. |
 
 ---
 
@@ -2382,10 +2435,10 @@ function total(array $items): int
 Checks that a scope's closing brace is on a line by itself, and indented to match, except in an empty body written as
 `{}` on one line, e.g. `class Foo {}` or `function () {}`. This replaces `Squiz.WhiteSpace.ScopeClosingBrace`.
 
-**Why:** `Squiz.WhiteSpace.ScopeClosingBrace` rejects an empty body written as `{}` on one line, which [PER Coding Style
-3.1, Sections 4, 4.4 and 7](https://www.php-fig.org/per/coding-style/#7-closures) requires for a closure and recommends
-for a class or function. This sniff skips that case, and leaves everything else to the parent. See
-[PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
+**Why:** `Squiz.WhiteSpace.ScopeClosingBrace` rejects an empty body written as `{}` on one line, which
+[PER Coding Style 3.1, Sections 4, 4.4 and 7](https://www.php-fig.org/per/coding-style/#7-closures) requires for a closure and recommends for a class or function. This sniff
+skips that case, and leaves everything else to the parent. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody). It skips a control
+structure's empty body written as `{}` too, which [PERCS31.ControlStructures.BodyOnNextLine](#percs31controlstructuresbodyonnextline) allows.
 
 **Auto-fixable:** yes, as the parent.
 

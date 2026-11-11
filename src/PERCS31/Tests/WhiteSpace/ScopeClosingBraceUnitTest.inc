@@ -29,3 +29,10 @@ function anonymous(): object
 {
     return new class {};
 }
+
+// A control structure's empty body as {} is allowed too.
+try {
+    run();
+} catch (Exception $e) {} finally {}
+
+while (next($items)) {}

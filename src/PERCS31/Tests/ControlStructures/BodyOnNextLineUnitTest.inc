@@ -1,0 +1,53 @@
+<?php
+
+// Valid: the body on the next line, and an empty body as {} or with the braces on separate lines.
+if ($first) {
+    run();
+}
+
+try {
+    run();
+} catch (Exception $e) {} finally {}
+
+while (next($items)) {}
+
+do {} while (next($items));
+
+for ($i = 0; $i < 3; $i++) {}
+
+foreach ($items as $item) {}
+
+if ($first) {} elseif ($second) {} else {}
+
+switch ($first) {}
+
+$matched = match (true) {};
+
+if ($first) {
+}
+
+// A comment after the brace is allowed, as by the Squiz check this replaces.
+while ($first) { // Why.
+    run();
+}
+
+// The body on the brace's line.
+if ($first) { run();
+}
+
+foreach ($items as $item) { run(); }
+
+do { run();
+} while ($first);
+
+try { run();
+} catch (Exception $e) { report($e);
+} finally { stop();
+}
+
+// A space between the braces isn't `{}`.
+if ($first) { }
+
+// A function's body isn't checked here.
+function first(): void { run();
+}

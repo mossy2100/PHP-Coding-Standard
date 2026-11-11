@@ -234,6 +234,29 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a control structure's empty body passes as `{}`, and with the braces on separate lines, as section 5
+     * has no rule for it. A space between the braces, and a body on the brace's line, are still reported.
+     */
+    public function testEmptyControlStructureBodyMayBeAbbreviated(): void
+    {
+        $valid = "<?php\n\ntry {\n    run();\n} catch (Exception \$e) {} finally {\n}\n\nwhile (next(\$items)) {}\n";
+        $file = $this->copyToTempFile(null, $valid);
+        $invalid = $this->copyToTempFile(null, "<?php\n\nwhile (next(\$items)) { }\n\nif (\$first) { run();\n}\n");
+        $args = ['-s', '--standard=PERCS31', '--report=emacs'];
+
+        try {
+            $result = $this->runTool('phpcs', [...$args, $file]);
+            $invalidResult = $this->runTool('phpcs', [...$args, $invalid]);
+        } finally {
+            unlink($file);
+            unlink($invalid);
+        }
+
+        $this->assertSame(0, $result['exitCode'], $result['output']);
+        $this->assertSame(2, substr_count($invalidResult['output'], 'BodyOnNextLine.NewlineAfterOpenBrace'));
+    }
+
+    /**
      * Test that a loop with no body passes, as there's no body for section 5 to require braces around.
      */
     public function testLoopWithNoBodyPasses(): void
