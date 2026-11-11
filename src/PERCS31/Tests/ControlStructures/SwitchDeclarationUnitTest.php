@@ -30,16 +30,10 @@ class SwitchDeclarationUnitTest extends AbstractSniffTestCase
                 39 => 1,
                 // Code on the label's line.
                 47 => 1,
-                // A comment on the label's line.
-                49 => 1,
-                52 => 1,
-                55 => 1,
-                // A comment then code: the comment's error isn't fixable, but the parent's for the code is.
-                58 => 2,
-                // A comment on the line, and a blank line after it.
-                60 => 2,
-                // A default's.
-                66 => 1,
+                // Code after a comment on the label's line.
+                58 => 1,
+                // A blank line after a comment on the label's line.
+                60 => 1,
             ];
         }
 

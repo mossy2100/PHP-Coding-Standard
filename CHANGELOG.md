@@ -513,8 +513,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   a `//` or `#` comment, it's reported but not fixed.
 - **`PERCS31.ControlStructures.SwitchDeclaration` and the `case` line (breaking).** A blank line straight after a `case`
   or `default` label is reported, as PER Coding Style 3.1's example has none, with the code for code on the label's
-  line, `BodyOnNextLineCASE` or `BodyOnNextLineDEFAULT`. A comment on the label's line is now an error, as
-  `CommentOnCaseLine`, as PER says the line consists only of the label. Auto-fixable.
+  line, `BodyOnNextLineCASE` or `BodyOnNextLineDEFAULT`. A comment on the label's line is still allowed. Auto-fixable.
 - **`PERCS31.WhiteSpace.ConsistentIndent` checks closures, anonymous classes and `switch` bodies.** A later line
   indented too far in one wasn't reported, in either standard. Auto-fixable.
 - **A ternary with a multi-line value.** `PERCS31.ControlStructures.MultiLineTernaryOperator` no longer reports a

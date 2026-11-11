@@ -176,7 +176,7 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that a blank line after a case label, and a comment on its line, are reported in both standards.
+     * Test that a blank line after a case label is reported in both standards, and a comment on its line isn't.
      */
     public function testLabelLineInBothStandards(): void
     {
@@ -196,8 +196,8 @@ class RulesetUnitTest extends TestCase
 
         $this->assertStringContainsString('SwitchDeclaration.BodyOnNextLineCASE', $perBlank);
         $this->assertStringContainsString('SwitchDeclaration.BodyOnNextLineCASE', $jumboBlank);
-        $this->assertStringContainsString('SwitchDeclaration.CommentOnCaseLine', $perComment);
-        $this->assertStringContainsString('SwitchDeclaration.CommentOnCaseLine', $jumboComment);
+        $this->assertStringNotContainsString('SwitchDeclaration', $perComment);
+        $this->assertStringNotContainsString('SwitchDeclaration', $jumboComment);
     }
 
     /**

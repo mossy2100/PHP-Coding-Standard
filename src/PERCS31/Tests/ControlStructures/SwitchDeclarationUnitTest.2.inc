@@ -1,7 +1,7 @@
 <?php
 
 // The parent's BodyOnNextLine codes report code on a label's line, and a blank line straight after a label.
-// This sniff's CommentOnCaseLine code reports a comment on a label's line.
+// A comment on a label's line is allowed.
 
 // A blank line straight after a label is reported, and removed by the fix.
 switch ($a) {
@@ -42,7 +42,7 @@ switch ($a) {
         break;
 }
 
-// Code or a comment on the label's line.
+// Code on the label's line is reported. A comment there isn't, but code or a blank line after it is.
 switch ($a) {
     case 1: foo();
         break;

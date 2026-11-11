@@ -24,16 +24,14 @@ use PHP_CodeSniffer\Util\Tokens;
  *   indented at least once. The fix moves the first condition, or indents the line once past the `case`.
  * - A non-empty case that continues into the next one MUST have a comment saying so. The parent only checks a `case`,
  *   so this also checks a `default` that isn't last.
- * - The `case` line MUST consist only of the keyword, the condition and a colon. The parent's BodyOnNextLine check
- *   reports code there, and a blank line straight after the label, which section 5.2's example doesn't have. It allows
- *   a comment there, so this sniff reports one (CommentOnCaseLine), and the fix moves it to the next line. A phpcs
- *   annotation is left alone, as it only works on that line.
  *
  * To find a terminating statement nested in if/else, try/catch or another switch, it calls the parent's private
  * findNestedTerminator() through Closure::bind, rather than copying it. After a PHP_CodeSniffer upgrade, check that
  * the method still exists with the same signature, as a private method can change without notice.
  *
- * Everything else is left to the parent.
+ * Everything else is left to the parent. That includes the `case` line, which MUST consist only of the keyword, the
+ * condition and a colon. The parent's BodyOnNextLine check reports code there, and a blank line straight after the
+ * label, which section 5.2's example doesn't have. A comment on the line is allowed.
  */
 class SwitchDeclarationSniff extends Psr2Sniff
 {
@@ -48,8 +46,6 @@ class SwitchDeclarationSniff extends Psr2Sniff
     public const string CODE_MULTI_LINE_CONDITION_INDENT = 'MultiLineConditionIndent';
 
     public const string CODE_TERMINATING_COMMENT = 'TerminatingComment';
-
-    public const string CODE_COMMENT_ON_CASE_LINE = 'CommentOnCaseLine';
 
     /**
      * Tokens that end a case, as the tokenizer and the parent define them.
@@ -77,8 +73,6 @@ class SwitchDeclarationSniff extends Psr2Sniff
 
         $cases = $this->findCases($phpcsFile, $stackPtr, $closer);
         foreach ($cases as $index => $case) {
-            $this->checkLabelLine($phpcsFile, $case);
-
             if ($tokens[$case]['code'] === T_CASE) {
                 $this->checkMultiLineCondition($phpcsFile, $case);
             } elseif (isset($cases[($index + 1)])) {
@@ -89,46 +83,6 @@ class SwitchDeclarationSniff extends Psr2Sniff
         if ($cases !== []) {
             $this->checkLastCase($phpcsFile, end($cases), $closer);
         }
-    }
-
-    /**
-     * Report a comment on the line a `case` or `default` label ends on, and fix it by moving it to the next line. The
-     * parent reports code there.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $case The position of `case` or `default`.
-     */
-    private function checkLabelLine(File $phpcsFile, int $case): void
-    {
-        $tokens = $phpcsFile->getTokens();
-        $opener = $tokens[$case]['scope_opener'] ?? null;
-        $next = is_int($opener) ? $phpcsFile->findNext(T_WHITESPACE, ($opener + 1), null, true) : false;
-        if (!is_int($opener) || $next === false || $tokens[$next]['line'] !== $tokens[$opener]['line']) {
-            return;
-        }
-
-        // A phpcs annotation only works on the label's line, so it stays.
-        if (isset(Tokens::PHPCS_ANNOTATION_TOKENS[$tokens[$next]['code']])) {
-            return;
-        }
-
-        if (!isset(Tokens::COMMENT_TOKENS[$tokens[$next]['code']])) {
-            return;
-        }
-
-        $error = 'A %s line must consist only of the label; move the comment to the next line';
-        $data = [strtoupper($tokens[$case]['content'])];
-
-        // Code after the comment on its line would end up on the comment's new line, so the parent's fix moves both.
-        $afterComment = $phpcsFile->findNext(T_WHITESPACE, ($next + 1), null, true);
-        $isFixable = $afterComment === false || $tokens[$afterComment]['line'] !== $tokens[$next]['line'];
-        $errorCode = self::CODE_COMMENT_ON_CASE_LINE;
-        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $next, $errorCode, $data)) {
-            return;
-        }
-
-        $padding = str_repeat(' ', ($tokens[$case]['column'] - 1 + $this->indent));
-        FixerHelper::replaceBetween($phpcsFile, $opener, $next, $phpcsFile->eolChar . $padding);
     }
 
     /**

@@ -800,9 +800,10 @@ one.
 
 **Issue:** The `case` line "MUST consist only of" the label, but it's unclear whether that includes a comment.
 
-**Ruleset:** It does, so a comment there is reported and moved to the next line. A phpcs annotation is allowed.
+**Ruleset:** It doesn't. A comment is allowed there, as in `case 1: // The first.` Code is reported.
 
-**Why:** "Only" excludes anything else. An annotation is needed there for phpcs to read it.
+**Why:** The rule describes the code on the line. Where the spec bans a comment, it says so, as it does after a closing
+brace (4). PHP_CodeSniffer reads the same PSR-12 rule this way.
 
 ---
 
