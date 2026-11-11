@@ -90,6 +90,33 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a `static|null` return type is fixed to `?static`, with null in either position, and still parses.
+     * Slevomat's fix for it left `?` and `?null`, so PERCS31.TypeHints.NullType makes the check instead.
+     */
+    public function testStaticOrNullReturnTypeIsFixedToShortNullable(): void
+    {
+        $source = "<?php\n\nnamespace Vendor\\Package;\n\nclass Fluent\n{\n"
+            . "    public function next(): static|null\n    {\n        return null;\n    }\n\n"
+            . "    public function back(): null|static\n    {\n        return null;\n    }\n}\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+            $after = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame(2, substr_count($result['output'], 'warning - A union of one type and null'));
+        $this->assertSame(1, substr_count($result['output'], 'PERCS31.TypeHints.NullType.NullNotLast'));
+        $this->assertStringNotContainsString('SlevomatCodingStandard.TypeHints.DNFTypeHintFormat', $result['output']);
+        $this->assertSame(str_replace(['static|null', 'null|static'], '?static', $source), $fixed);
+        $this->assertSame(0, $after['exitCode'], $after['output']);
+    }
+
+    /**
      * Test that a one-line block declare is fixed with no stray blank line, which two fixes for its brace would add.
      */
     public function testOneLineBlockDeclareIsFixedWithNoBlankLine(): void

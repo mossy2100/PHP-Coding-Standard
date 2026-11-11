@@ -168,10 +168,9 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Functions.NamedArgumentSpacing**: Requires no space before a named argument's colon, and one after (4.7).
 - **Functions.RequireTrailingCommaInCall**, **...InClosureUse** and **...InDeclaration**: Require a trailing comma in a
   multi-line list (2.6).
-- **TypeHints.DNFTypeHintFormat**: Requires no spaces inside the parentheses (2.5). It warns about `T|null`, which
-  SHOULD be `?T`. Its check for spaces around `|` and `&` is replaced by
-  [`PERCS31.TypeHints.CompoundTypeOperatorSpacing`](#percs31typehintscompoundtypeoperatorspacing), which allows a split type, and its check
-  for `null` last by [`PERCS31.TypeHints.NullType`](#percs31typehintsnulltype), which covers every type.
+- **TypeHints.DNFTypeHintFormat**: Requires no spaces inside the parentheses (2.5). Its check for spaces around `|` and
+  `&` is replaced by [`PERCS31.TypeHints.CompoundTypeOperatorSpacing`](#percs31typehintscompoundtypeoperatorspacing), which allows a split type. Its
+  checks for `null` last and for `?T` are replaced by [`PERCS31.TypeHints.NullType`](#percs31typehintsnulltype), which covers every type.
 
 ### PhpCollective
 
@@ -2028,18 +2027,19 @@ function reflect(
 
 ### PERCS31.TypeHints.NullType
 
-Requires `null` to be the last type in a union, wherever a type can appear. Recommends `?T` for a union of one type with
-`null` in a typed constant or a `set` hook's parameter.
+Requires `null` to be the last type in a union, and recommends `?T` for a union of one type with `null`, wherever a
+type can appear. This replaces the `NullTypeHintNotOnLastPosition` and `RequiredShortNullable` checks of
+`SlevomatCodingStandard.TypeHints.DNFTypeHintFormat`.
 
 **Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says `null` MUST be the last item, and that a union of a single
-simple type with `null` SHOULD be written `?T`. `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat` misses some cases:
+simple type with `null` SHOULD be written `?T`. The Slevomat sniff gets some cases wrong:
 
 - It skips the `null` position in a type with an intersection, such as `null|(A&B)`.
 - For `null|int`, it only gives the `?T` warning, so the MUST is lost below warning level.
 - It doesn't check a typed constant, or a `set` hook's parameter, which PHP_CodeSniffer reads as an expression.
+- Its `?T` fix deletes `static` from a return type, so `static|null` becomes `?`, which is a parse error.
 
-So this sniff checks `null` last everywhere, replacing the Slevomat check. It only checks `?T` where the Slevomat sniff
-doesn't. The `?T` warning is a SHOULD, so a warning.
+So this sniff makes both checks everywhere. `?T` is a SHOULD, so a warning.
 
 **Auto-fixable:** yes. A type split across lines, or with a comment in it, is reported but not fixed.
 

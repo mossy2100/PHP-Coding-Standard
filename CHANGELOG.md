@@ -439,6 +439,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **`phpcbf` no longer breaks a `static|null` return type (breaking).** The `?T` fix from
+  `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat` changed `static|null` to `?`, a parse error, and `null|static` to
+  `?null`. `PERCS31.TypeHints.NullType` now makes the `?T` check for every type, as `ShortNullable`, and fixes both to
+  `?static`. A `phpcs:ignore` for `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.RequiredShortNullable` needs
+  updating.
 - **`PERCS31.Formatting.EmptyBody` and a comment before the brace (breaking).** An empty body after a comment, as in
   `function () /* Why. */ {` then `};`, was not reported. It now is, and the fix puts `{}` after a block comment. After
   a `//` or `#` comment, it's reported but not fixed.

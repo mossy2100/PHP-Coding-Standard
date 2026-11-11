@@ -44,9 +44,6 @@
     <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHintSpacing"/>
     <rule ref="SlevomatCodingStandard.TypeHints.LongTypeHints"/>
     <!-- ?T for a nullable type is an error here, not PERCS31's warning -->
-    <rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.RequiredShortNullable">
-        <type>error</type>
-    </rule>
     <rule ref="PERCS31.TypeHints.NullType.ShortNullable">
         <type>error</type>
     </rule>

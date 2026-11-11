@@ -48,8 +48,7 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
   operator. PERCS31 allows at least once (`requireExactConditionIndent` set to `true`).
 - `PERCS31.Formatting.TrailingComma` disallows a comma before a `match` arm's `=>` when its conditions are split over
   lines, which PERCS31 doesn't check (`disallowInSplitMatchConditions` set to `true`).
-- `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat` and `PERCS31.TypeHints.NullType` report `T|null`, which should
-  be `?T`, as an error, not a warning.
+- `PERCS31.TypeHints.NullType` reports `T|null`, which should be `?T`, as an error, not a warning.
 - `Squiz.Arrays.ArrayDeclaration` also runs the checks PERCS31 leaves out. See [Squiz](#squiz).
 - `PERCS31.Operators.OperatorSpacing` also reports more than one space around an operator, with `ignoreNewlines` on and
   `ignoreSpacingBeforeAssignments` off. See [Squiz](#squiz).

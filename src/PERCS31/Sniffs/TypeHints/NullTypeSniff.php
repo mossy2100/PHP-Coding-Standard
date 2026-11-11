@@ -18,15 +18,15 @@ use PHP_CodeSniffer\Util\Tokens;
  * PER Coding Style 3.1, section 2.5, says that if one of the ORed conditions is `null`, it MUST be the last item, and
  * that a union of a single simple type with `null` SHOULD be written `?T`.
  *
- * SlevomatCodingStandard.TypeHints.DNFTypeHintFormat checks both, but misses some cases:
+ * SlevomatCodingStandard.TypeHints.DNFTypeHintFormat checks both, but gets some cases wrong:
  * - It skips the `null` position in any type with an intersection, such as `null|(A&B)`.
  * - For `null|int`, it only reports the `?T` warning, so the MUST is lost below warning level.
  * - It doesn't check a typed constant (PHP 8.3), or a `set` hook's parameter, which PHP_CodeSniffer reads as an
  *   expression.
+ * - Its `?T` fix deletes `static` from a return type, so `static|null` becomes `?`, which is a parse error.
  *
- * So this sniff checks the `null` position in every type, and the PERCS31 ruleset excludes Slevomat's
- * NullTypeHintNotOnLastPosition code. It only checks `?T` in a typed constant and a `set` hook's parameter, where
- * Slevomat's RequiredShortNullable doesn't.
+ * So this sniff makes both checks in every type, and the PERCS31 ruleset doesn't use Slevomat's
+ * NullTypeHintNotOnLastPosition or RequiredShortNullable codes.
  *
  * A type split across lines, or with a comment in it, is reported but not fixed.
  */
@@ -80,9 +80,7 @@ class NullTypeSniff implements Sniff
             $this->reportNullNotLast($phpcsFile, $members, $nullIndex, $type, $fixable);
         }
 
-        $before = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($start - 1), null, true);
-        $isConstant = $before !== false && $tokens[$before]['code'] === T_CONST;
-        if (($isHook || $isConstant) && count($members) === 2) {
+        if (count($members) === 2) {
             $other = $members[(1 - $nullIndex)];
             if ($other[0] === $other[1]) {
                 // Fix it once null is last, so the two fixes don't clash.

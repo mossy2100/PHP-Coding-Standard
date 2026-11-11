@@ -38,6 +38,8 @@ class NullTypeUnitTest extends AbstractSniffTestCase
             75 => 1,
             // An arrow function's parameter.
             81 => 1,
+            // null before static in a return type.
+            95 => 1,
         ];
     }
 
@@ -49,11 +51,21 @@ class NullTypeUnitTest extends AbstractSniffTestCase
     protected function getWarningList(): array
     {
         return [
+            // ?T for null|int.
+            19 => 1,
             // ?T in a typed constant, and in a set hook's parameter.
             34 => 1,
             35 => 1,
             42 => 1,
             48 => 1,
+            // ?T in a property, a promoted parameter, parameters and a static return type.
+            86 => 1,
+            88 => 1,
+            90 => 3,
+            95 => 1,
+            // ?T in a closure and an arrow function.
+            107 => 2,
+            110 => 2,
         ];
     }
 }

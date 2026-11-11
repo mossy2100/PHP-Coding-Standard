@@ -79,3 +79,32 @@ function commented(null/* why */|int|string $a): void
 // Not a type.
 $g = $a | $b & $c;
 $h = fn(null|(A&B) $x): int => 1;
+
+// ?T is recommended everywhere, not only in a typed constant or a set hook's parameter.
+final class Fluent
+{
+    public int|null $count = null;
+
+    public function __construct(public Fluent|null $next = null) {}
+
+    public function chain(self|null $a, \Vendor\Other|null $b): static|null
+    {
+        return $this;
+    }
+
+    public function back(): null|static
+    {
+        return $this;
+    }
+
+    // Not a single simple type, so these pass.
+    public function passes((A&B)|null $a, int|string|null $b): ?static
+    {
+        return $this;
+    }
+}
+
+$i = function (int|null $a): string|null {
+    return null;
+};
+$j = fn(int|null $a): string|null => null;

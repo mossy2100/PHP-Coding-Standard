@@ -40,7 +40,7 @@ class SpecExamplesUnitTest extends TestCase
         // has no trailing comma, and its ) and { on different lines (4.5).
         '02-2.5.inc' => [
             '13 SlevomatCodingStandard.Functions.RequireTrailingCommaInDeclaration.MissingTrailingComma',
-            '14 SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.RequiredShortNullable',
+            '14 PERCS31.TypeHints.NullType.ShortNullable',
             '26 SlevomatCodingStandard.Functions.RequireTrailingCommaInDeclaration.MissingTrailingComma',
             '26 PERCS31.Functions.MultiLineFunctionDeclaration.CloseBracketLine',
             '27 PERCS31.Functions.MultiLineFunctionDeclaration.NewlineBeforeOpenBrace',

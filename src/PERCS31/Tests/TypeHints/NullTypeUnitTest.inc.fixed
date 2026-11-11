@@ -16,7 +16,7 @@ function dnf((A&B)|null $a, (A&B)|C|null $b): void
 }
 
 // null first in a union of two, which Slevomat only reports as ?T.
-function two(int|null $a): void
+function two(?int $a): void
 {
 }
 
@@ -79,3 +79,32 @@ function commented(null/* why */|int|string $a): void
 // Not a type.
 $g = $a | $b & $c;
 $h = fn((A&B)|null $x): int => 1;
+
+// ?T is recommended everywhere, not only in a typed constant or a set hook's parameter.
+final class Fluent
+{
+    public ?int $count = null;
+
+    public function __construct(public ?Fluent $next = null) {}
+
+    public function chain(?self $a, ?\Vendor\Other $b): ?static
+    {
+        return $this;
+    }
+
+    public function back(): ?static
+    {
+        return $this;
+    }
+
+    // Not a single simple type, so these pass.
+    public function passes((A&B)|null $a, int|string|null $b): ?static
+    {
+        return $this;
+    }
+}
+
+$i = function (?int $a): ?string {
+    return null;
+};
+$j = fn(?int $a): ?string => null;
