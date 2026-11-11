@@ -371,13 +371,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- **PERCS31 reports a `(double)` or `(binary)` cast (breaking).** PER Coding Style 3.1 requires the short form of a
-  type keyword, and PHP 8.5 deprecates both, just as it does `(boolean)` and `(integer)`. PERCS31 now reports all four
-  with `SlevomatCodingStandard.PHP.TypeCast`, replacing `PSR12.Keywords.ShortFormTypeKeywords.LongFound`, so update any
-  `phpcs:ignore` comments or `<exclude>` rules that name it. Auto-fixable, except for `(binary)`.
-- **A `(binary)` cast is no longer deleted by the fixer.** `SlevomatCodingStandard.PHP.TypeCast`'s fix removed it, as
-  the sniff says it has no effect. It's an alias of `(string)`, so `(binary) 5` is `'5'`, and removing it could change
-  what the code does. It's still reported, now with the advice to use `(string)`.
+- **`PERCS31.PHP.TypeCast` (breaking).** PER Coding Style 3.1 requires the short form of a type keyword, and PHP 8.5
+  deprecates `(double)` and `(binary)` just as it does `(boolean)` and `(integer)`. Both standards now report all four
+  with this sniff's `InvalidCastUsed` code. It replaces `PSR12.Keywords.ShortFormTypeKeywords` in PERCS31, and
+  `SlevomatCodingStandard.PHP.TypeCast`, which it extends, in Jumbo, so update any `phpcs:ignore` comments or
+  `<exclude>` rules that name them. Auto-fixable.
+- **A `(binary)` cast is fixed to `(string)`, not deleted.** `SlevomatCodingStandard.PHP.TypeCast`'s fix removed it, as
+  that sniff says it has no effect. It's an alias of `(string)`, so `(binary) 5` is `'5'`, and removing it could change
+  what the code does.
 - **Comma spacing in a call is reported by `Universal.WhiteSpace.CommaSpacing` (breaking).** The codes are now
   `SpaceBeforeInFunctionCall`, `NoSpaceAfterInFunctionCall` and `TooMuchSpaceAfterInFunctionCall`. They replace
   `SpaceBeforeComma`, `NoSpaceAfterComma` and `TooMuchSpaceAfterComma`, from both

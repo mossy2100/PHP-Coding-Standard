@@ -82,8 +82,7 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   skips a `set` hook's parameter list, which isn't a call.
 - **Squiz.Classes.ValidClassName**, from PSR-1, by [`PERCS31.NamingConventions.ValidClassName`](#percs31namingconventionsvalidclassname), which also reports a name
   with no lower-case letter.
-- **PSR12.Keywords.ShortFormTypeKeywords**, by `SlevomatCodingStandard.PHP.TypeCast`, which also reports `(double)`
-  and `(binary)`.
+- **PSR12.Keywords.ShortFormTypeKeywords**, by [`PERCS31.PHP.TypeCast`](#percs31phptypecast), which also reports `(double)` and `(binary)`.
 
 `Squiz.Functions.FunctionDeclarationArgumentSpacing`'s `SpaceBeforeEquals` and `SpaceAfterEquals` are excluded, as a
 default value's `=` is a binary operator, which section 6.2 allows more than one space around.
@@ -183,10 +182,6 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Functions.NamedArgumentSpacing**: Requires no space before a named argument's colon, and one after (4.7).
 - **Functions.RequireTrailingCommaInClosureUse** and **...InDeclaration**: Require a trailing comma in a multi-line
   list (2.6). For a call, [`PERCS31.Functions.RequireTrailingCommaInCall`](#percs31functionsrequiretrailingcommaincall) replaces `...InCall`.
-- **PHP.TypeCast**: Requires the canonical form of a type in a cast: `(bool)`, `(int)`, `(float)` and `(string)`, not
-  `(boolean)`, `(integer)`, `(double)` or `(binary)` (2.5). The sniff says a `(binary)` cast has no effect, and its fix
-  deletes it. It's an alias of `(string)`, so deleting it can change what the code does. PERCS31 reports it with the
-  message "use `(string)` instead", and switches that fix off.
 - **TypeHints.DNFTypeHintFormat**: Requires no spaces inside the parentheses (2.5). Its check for spaces around `|` and
   `&` is replaced by [`PERCS31.TypeHints.CompoundTypeOperatorSpacing`](#percs31typehintscompoundtypeoperatorspacing), which allows a split type. Its checks for `null`
   last and for `?T` are replaced by [`PERCS31.TypeHints.NullType`](#percs31typehintsnulltype), which covers every type.
@@ -249,6 +244,7 @@ section gives the reason.
 | `PERCS31.PHP.LowerCaseKeyword`                          | Keywords in lower case, including a property hook's `get` or `set`  | Yes     |
 | `PERCS31.PHP.LowerCaseType`                             | Types in lower case, including a `set` hook's parameter type        | Yes     |
 | `PERCS31.PHP.RequireCloneParentheses`                   | A warning for `clone $a`, not `clone($a)`                           | Yes     |
+| `PERCS31.PHP.TypeCast`                                  | `(bool)`, `(int)`, `(float)` and `(string)` in a cast               | Yes     |
 | `PERCS31.Strings.HeredocIndentation`                    | Where a heredoc or nowdoc begins, and its indentation               | Yes     |
 | `PERCS31.TypeHints.CompoundTypeLayout`                  | One type, or one DNF union segment, per line of a split type        | Yes     |
 | `PERCS31.TypeHints.CompoundTypeOperatorSpacing`         | No space around `\|` or `&` in a type, but a split before one       | Yes     |
@@ -2186,6 +2182,41 @@ $copy = clone($original);
 ```php
 $copy = clone $original;
 $copy = clone ($original);
+```
+
+---
+
+### PERCS31.PHP.TypeCast
+
+Requires the canonical form of a type in a cast: `(bool)`, `(int)`, `(float)` and `(string)`, not `(boolean)`,
+`(integer)`, `(double)` or `(binary)`. This replaces `PSR12.Keywords.ShortFormTypeKeywords`, and extends
+`SlevomatCodingStandard.PHP.TypeCast`.
+
+**Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the short form of a type keyword MUST be used, "i.e. `bool`
+instead of `boolean`, `int` instead of `integer` etc." PHP 8.5 deprecates all four long forms alike, as non-canonical
+casts. The PSR-12 sniff only knows `(boolean)` and `(integer)`. The Slevomat sniff knows all four, with one bug:
+
+- It says a `(binary)` cast has no effect, and its fix deletes it. It's an alias of `(string)`, so `(binary) 5` is
+  `'5'`, and deleting it can change what the code does. This sniff reports it with the `InvalidCastUsed` code, as the
+  other three are, and fixes it to `(string)`.
+
+A sniff's fix can't be changed from a ruleset, so this needs a subclass. A binary string's prefix, as in `b'abc'`,
+isn't a cast, and isn't reported.
+
+**Auto-fixable:** yes.
+
+**Good:**
+
+```php
+$total = (float) $input;
+$name = (string) $input;
+```
+
+**Bad:**
+
+```php
+$total = (double) $input;
+$name = (binary) $input;
 ```
 
 ---

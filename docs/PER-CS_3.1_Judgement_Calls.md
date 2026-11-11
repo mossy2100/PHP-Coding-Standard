@@ -392,11 +392,11 @@ MUST be all lower-case".
 `integer` etc." `(double)` is an alias for `(float)`, and `(binary)` for `(string)`. Neither is a longer spelling of
 the same word, so it's unclear whether "etc." covers them.
 
-**Ruleset:** It does. Both are reported, as `(boolean)` and `(integer)` are. `(double)` is fixed to `(float)`.
-`(binary)` isn't fixed.
+**Ruleset:** It does. Both are reported, as `(boolean)` and `(integer)` are. `(double)` is fixed to `(float)`, and
+`(binary)` to `(string)`.
 
 **Why:** PHP treats the four alike. PHP 8.5 deprecates each as a "non-canonical cast", and names the form to use
-instead. The only fix available for `(binary)` deletes the cast, which can change what the code does.
+instead.
 
 ---
 

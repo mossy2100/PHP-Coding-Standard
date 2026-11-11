@@ -52,7 +52,7 @@
         <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpaceAfterEquals"/>
         <!-- Replaced by a PERCS31 version that also checks clone(), and skips a set hook's parameter list (4.7) -->
         <exclude name="PSR2.Methods.FunctionCallSignature"/>
-        <!-- Replaced by SlevomatCodingStandard.PHP.TypeCast, which also reports (double) and (binary) (2.5) -->
+        <!-- Replaced by PERCS31.PHP.TypeCast, which also reports (double) and (binary) (2.5) -->
         <exclude name="PSR12.Keywords.ShortFormTypeKeywords"/>
         <!-- Replaced by Universal.WhiteSpace.CommaSpacing's codes for a call, which also report a comma on the line
              after a heredoc's closing marker, and one in an array or a match inside a call's parentheses (4.7, 11) -->
@@ -122,13 +122,7 @@
 
     <!-- The canonical form of a type in a cast: (bool), (int), (float) and (string), not (boolean), (integer), (double)
          or (binary) (2.5) -->
-    <rule ref="SlevomatCodingStandard.PHP.TypeCast"/>
-    <!-- The sniff says a (binary) cast has no effect, and its fix deletes it. It's an alias of (string), so deleting it
-         can change what the code does. So it's reported with the right advice, and left for a person to fix. -->
-    <rule ref="SlevomatCodingStandard.PHP.TypeCast.ForbiddenCastUsed">
-        <message>Cast "(binary)" is forbidden, use "(string)" instead.</message>
-        <severity phpcbf-only="true">0</severity>
-    </rule>
+    <rule ref="PERCS31.PHP.TypeCast"/>
 
     <!-- No spaces inside the parentheses of a DNF type (2.5) -->
     <rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat">

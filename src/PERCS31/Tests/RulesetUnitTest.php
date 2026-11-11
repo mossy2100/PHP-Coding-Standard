@@ -334,8 +334,8 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that a non-canonical cast is reported once, and that each is fixed to its canonical form except `(binary)`.
-     * The inherited fix for that one deletes the cast, which can change what the code does, so it's switched off.
+     * Test that a non-canonical cast is reported once, and fixed to its canonical form. A `(binary)` cast becomes
+     * `(string)`, and isn't deleted, as the Slevomat sniff's fix would.
      */
     public function testNonCanonicalCastIsReportedOnce(): void
     {
@@ -352,9 +352,9 @@ class RulesetUnitTest extends TestCase
 
         preg_match_all('/:(\d+):\d+: error - .*\.(\w+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
         $reports = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
-        $expected = "<?php\n\n\$a = (float) \$x;\n\$b = (int) \$x;\n\$c = (bool) \$x;\n\$d = (binary) \$x;\n";
+        $expected = "<?php\n\n\$a = (float) \$x;\n\$b = (int) \$x;\n\$c = (bool) \$x;\n\$d = (string) \$x;\n";
 
-        $reported = ['3 InvalidCastUsed', '4 InvalidCastUsed', '5 InvalidCastUsed', '6 ForbiddenCastUsed'];
+        $reported = ['3 InvalidCastUsed', '4 InvalidCastUsed', '5 InvalidCastUsed', '6 InvalidCastUsed'];
 
         $this->assertSame($reported, $reports, $result['output']);
         $this->assertStringContainsString('Cast "(binary)" is forbidden, use "(string)" instead.', $result['output']);
