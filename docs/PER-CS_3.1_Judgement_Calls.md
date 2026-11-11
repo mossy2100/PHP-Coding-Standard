@@ -982,10 +982,10 @@ examples show both.
 
 ## 9. Enumerations
 
-### Enum Case Names
+### Enum Constant Names
 
-**Issue:** PSR-1 requires upper case for class constants, but section 9 allows PascalCase or UPPER_CASE for enum
-cases, and RECOMMENDS PascalCase.
+**Issue:** PSR-1 requires upper case for class constants, but section 9 allows PascalCase or UPPER_CASE for a
+constant in an enum, and RECOMMENDS PascalCase.
 
 **Ruleset:** PascalCase passes, UPPER_CASE gets a severity 5 warning, and anything else, such as `camelCase` or
 `Foo_Bar`, is an error.
