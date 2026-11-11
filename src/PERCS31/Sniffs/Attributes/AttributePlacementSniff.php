@@ -30,11 +30,13 @@ use PHPCSUtils\Utils\PassedParameters;
  * between the colon and the value, and PHP doesn't allow the attribute before the name. Elsewhere, such as in an
  * assignment or an array, PER says nothing, so it isn't checked.
  *
- * An enum case isn't in section 12.2's list either, so its attribute may be on the case's line. Nor is a property hook,
- * which isn't a method, so its attribute may be on the hook's line. A hook's parameter follows the parameter rule.
+ * An enum case isn't in section 12.2's list either, so its attribute may be on the case's line, or the line before. Nor
+ * is a property hook. A hook with a body in braces is laid out like a method, so its attribute goes on the line before,
+ * as a method's does. A short hook, as in `get => 1;`, or one with no body, as in `get;`, fits on a line, so its
+ * attribute may share it. A hook's parameter follows the parameter rule.
  *
- * Where an attribute may be on its target's line, on an enum case, a hook, or a closure outside a call, it's followed
- * by a single space, as section 12.2 requires for a parameter in a single-line list.
+ * Where an attribute may be on its target's line, on an enum case, such a hook, or a closure outside a call, it's
+ * followed by a single space, as section 12.2 requires for a parameter in a single-line list.
  *
  * It also reports a blank line or a comment between the last attribute and its target. That includes a comment before
  * a parameter, though section 12.2 says "immediately prior" only for the other targets. That replaces
@@ -142,8 +144,10 @@ class AttributePlacementSniff implements Sniff
             return;
         }
 
-        // An enum case or a hook can share a line with one attribute block, but not with two or more.
-        $isInlineTarget = $tokens[$targetPtr]['code'] === T_ENUM_CASE || $this->isHook($phpcsFile, $targetPtr);
+        // An enum case, or a hook with no body in braces, can share a line with one attribute block, but not with two
+        // or more.
+        $isInlineTarget = $tokens[$targetPtr]['code'] === T_ENUM_CASE
+            || $this->isHookWithoutBlock($phpcsFile, $targetPtr);
         if ($isInlineTarget && !$isGroup) {
             $this->checkSameLineSpacing($phpcsFile, $closerPtr, $targetPtr);
             return;
@@ -208,14 +212,16 @@ class AttributePlacementSniff implements Sniff
     }
 
     /**
-     * Check whether an attribute's target is a property hook.
+     * Check whether an attribute's target is a property hook that fits on a line: a short hook, as in `get => 1;`, or
+     * one with no body, as in `get;`. A hook with a body in braces is laid out like a method, so it isn't one.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $targetPtr The position of the first token after the attributes.
-     * @return bool True if it's a hook, with or without `final` or `&` before its name.
+     * @return bool True if it's such a hook, with or without `final` or `&` before its name.
      */
-    private function isHook(File $phpcsFile, int $targetPtr): bool
+    private function isHookWithoutBlock(File $phpcsFile, int $targetPtr): bool
     {
+        $tokens = $phpcsFile->getTokens();
         $skip = Tokens::EMPTY_TOKENS + [
             T_FINAL => T_FINAL,
             T_BITWISE_AND => T_BITWISE_AND,
@@ -223,8 +229,18 @@ class AttributePlacementSniff implements Sniff
             T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG => T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG,
         ];
         $namePtr = $phpcsFile->findNext($skip, $targetPtr, null, true);
+        if ($namePtr === false || !PropertyHookHelper::isHookName($phpcsFile, $namePtr)) {
+            return false;
+        }
 
-        return $namePtr !== false && PropertyHookHelper::isHookName($phpcsFile, $namePtr);
+        // A `set` hook can have a parameter list before its body.
+        $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($namePtr + 1), null, true);
+        if ($next !== false && $tokens[$next]['code'] === T_OPEN_PARENTHESIS) {
+            $closer = $tokens[$next]['parenthesis_closer'] ?? $next;
+            $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($closer + 1), null, true);
+        }
+
+        return $next === false || $tokens[$next]['code'] !== T_OPEN_CURLY_BRACKET;
     }
 
     /**

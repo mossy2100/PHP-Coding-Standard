@@ -64,6 +64,8 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             // A comment on its own line before a parameter.
             241 => 1,
             245 => 1,
+            // A hook with a body in braces, unlike a short hook.
+            270 => 1,
             // Two spaces after a closure's attribute outside a call.
             161 => 1,
             171 => 1,
@@ -95,6 +97,9 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             // A readonly anonymous class, with its attribute on the line of `new`, and on the line of `readonly`.
             417 => 1,
             421 => 1,
+            // A hook with a body in braces: one attribute block on its line, and two.
+            432 => 1,
+            445 => 1,
         ];
     }
 

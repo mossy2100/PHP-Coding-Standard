@@ -422,3 +422,33 @@ $invalid = new
     #[A] readonly class {
         public int $a;
     };
+
+// === A HOOK WITH A BODY IN BRACES ===
+
+// It's laid out like a method, so its attribute goes on the line before.
+class BlockHooks
+{
+    public string $a {
+        #[C] get {
+            return 'a';
+        }
+    }
+
+    public string $b {
+        #[C]
+        get {
+            return 'b';
+        }
+    }
+
+    public string $c {
+        #[A] #[B] final set(string $value) {
+            $this->c = $value;
+        }
+    }
+
+    // A short hook with a parameter list fits on a line, so its attribute may share it.
+    public string $d {
+        #[C] set(string $value) => strtolower($value);
+    }
+}

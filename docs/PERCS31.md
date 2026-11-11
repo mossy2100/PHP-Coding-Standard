@@ -396,8 +396,14 @@ name.
 Anywhere else, such as in an assignment or an array, PER says nothing, so it isn't checked.
 
 An enum case isn't in section 12.2's list either, so `#[Label] case Active;` passes, as does the attribute on the line
-before. Nor is a property hook, which isn't a method, so `#[Label] get => 'a';` passes too. A hook's parameter follows
-the parameter rule.
+before. Nor is a property hook:
+
+- **A hook with a body in braces** is laid out like a method, so its attribute goes on the line before. `#[Label] get {`
+  is reported, and fixed.
+- **A short hook, or one with no body,** fits on a line, so `#[Label] get => 'a';` and `#[Label] get;` pass, as does the
+  attribute on the line before.
+
+A hook's parameter follows the parameter rule.
 
 With two or more attribute blocks, the target goes on the line after them, as each block must be on its own line. So
 `#[A] #[B] case X;` becomes three lines. [`PERCS31.Attributes.DisallowMultipleAttributesPerLine`](#percs31attributesdisallowmultipleattributesperline) puts each block on
@@ -416,8 +422,9 @@ $pure = #[A]
     static fn($x) => $x;
 ```
 
-On an enum case, a hook, or a closure outside a call, an attribute on its target's line is followed by a single space,
-as section 12.2 requires for a parameter in a single-line list. So `#[Label]  case Active;` is reported, and fixed.
+On an enum case, a short hook, or a closure outside a call, an attribute on its target's line is followed by a single
+space, as section 12.2 requires for a parameter in a single-line list. So `#[Label]  case Active;` is reported, and
+fixed.
 
 **Why:** `SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing` covers some of this, but its only option for an
 attribute on its target's line, `allowOnSameLine`, is all or nothing, and its fix for a blank line deletes a comment
