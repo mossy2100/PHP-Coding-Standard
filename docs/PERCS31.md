@@ -2245,21 +2245,27 @@ for a class or function. This sniff skips that case, and leaves everything else 
 ### PERCS31.WhiteSpace.ScopeIndent
 
 Checks that code is indented correctly, including property hooks (PHP 8.4+), and an anonymous class with attributes.
-This is a fork of `Generic.WhiteSpace.ScopeIndent`.
+This is a fork of `Generic.WhiteSpace.ScopeIndent` from PHP_CodeSniffer 4.0.4. It isn't a subclass, as every change is
+inside `process()`, which is one long method with no smaller one to override.
 
-**Why:**
+**Why:** the original gets these wrong for PER Coding Style 3.1, so the fork changes them:
 
-- PHP_CodeSniffer's tokenizer doesn't treat property hook braces as scopes, so `Generic.WhiteSpace.ScopeIndent` doesn't
+- **Property hooks:** PHP_CodeSniffer's tokenizer doesn't treat property hook braces as scopes, so the original doesn't
   check the indentation inside a hook.
-- [PER Coding Style 3.1, Section 8](https://www.php-fig.org/per/coding-style/#8-anonymous-classes) indents an anonymous class with attributes once from the line with `new`, and its body
-  from `class`. The parent expects `class` at the statement's indent. See [PERCS31.Attributes.AttributePlacement](#percs31attributesattributeplacement).
+- **An anonymous class with attributes:** [Section 8](https://www.php-fig.org/per/coding-style/#8-anonymous-classes) indents it once from the line with `new`, and its body from
+  `class`. The original expects `class` at the statement's indent. See
+  [PERCS31.Attributes.AttributePlacement](#percs31attributesattributeplacement).
+- **A `match` arm:** a line starting an arm must be indented exactly once past the line the `match`'s `{` is on, as
+  section 5.2 shows. PER says nothing about a later condition in an arm, split over lines, so that isn't checked. The
+  original only reports indentation that's too small, so nothing else reports an arm indented too far.
+- **A body's first line:** it must be indented exactly once, past the line its `{` is on, or past the line a `)` before
+  the `{` opens on. This includes closures, `case` bodies and property hooks.
+- **PHP in markup:** the code in a PHP block may be level with its opening tag, or indented once past it, and the indent
+  of `?>` isn't checked, as PER has no rule on either. The original reports a `?>` that isn't level with its `<?php`.
+- **`phpcs:set`:** a `phpcs:set` comment for this sniff's own code sets its `exact` property, as one for the original's
+  code does there.
 
-A line starting a `match` arm must be indented exactly once past the line the `match`'s `{` is on, as section 5.2 shows.
-PER says nothing about a later condition in an arm, split over lines, so that isn't checked. The parent only reports
-indentation that's too small, so nothing else reports an arm indented too far.
-
-A body's first line must also be indented exactly once, past the line its `{` is on, or past the line a `)` before the
-`{` opens on. This includes closures, `case` bodies and property hooks.
+Every change is marked with a `PERCS31:` comment in the source, so a diff against the original shows only these.
 
 **Auto-fixable:** yes.
 
@@ -2294,9 +2300,14 @@ class User
 
 **Configuration:**
 
-| Property | Type | Default | Description                             |
-| -------- | ---- | ------- | --------------------------------------- |
-| `indent` | int  | 4       | Number of spaces per indentation level. |
+These are the original's properties. PER Coding Style 3.1 needs their defaults, so the ruleset sets none.
+
+| Property                  | Type  | Default | Description                                                             |
+| ------------------------- | ----- | ------- | ----------------------------------------------------------------------- |
+| `indent`                  | int   | 4       | Number of spaces per indentation level.                                 |
+| `exact`                   | bool  | false   | Require exactly the expected indent on every line, not at least it.     |
+| `tabIndent`               | bool  | false   | Fix with tabs, not spaces. PER requires spaces.                         |
+| `ignoreIndentationTokens` | array | `[]`    | Tokens whose indent isn't checked. PSR-12 sets two, for comments.       |
 
 ```xml
 <rule ref="PERCS31.WhiteSpace.ScopeIndent">

@@ -14,9 +14,9 @@
  *   follows (sections 2.4 and 5).
  * - A `phpcs:set` for this sniff's own code sets its `exact` property, as one for the original's code does.
  *
- * Apart from the namespace, every change from upstream is marked with a "PERCS31:" comment, so a diff against the
- * upstream file shows only these. To update the fork to a new PHP_CodeSniffer release, copy the new upstream file,
- * re-apply the marked changes, and run the tests.
+ * Apart from the namespace and the import of PropertyHookHelper, every change from upstream is marked with a "PERCS31:"
+ * comment, so a diff against the upstream file shows only these. To update the fork to a new PHP_CodeSniffer release,
+ * copy the new upstream file, re-apply the marked changes, and run the tests.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2023 Squiz Pty Ltd (ABN 77 084 670 600)
