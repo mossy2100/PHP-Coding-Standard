@@ -440,13 +440,15 @@ disallows it.
 
 ---
 
-### Which Line a Comma Goes On
+### A Comma That Starts a Line
 
-**Issue:** The spec doesn't say whether a comma may start a line, including after a heredoc's closing marker.
+**Issue:** 4.5 and 4.7 say there MUST NOT be a space before a comma in a parameter or argument list. The spec doesn't
+say whether a line break counts, or cover other lists.
 
-**Ruleset:** Not checked.
+**Ruleset:** A comma may not start a line, in any list, including after a heredoc's closing marker.
 
-**Why:** No rule or example covers it.
+**Why:** A line break before a comma is space before it, and every split list in the spec ends its lines with the
+comma. Section 10's example puts the comma straight after a heredoc's closing marker.
 
 ---
 

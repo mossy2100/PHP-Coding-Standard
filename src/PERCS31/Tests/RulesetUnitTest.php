@@ -334,6 +334,32 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a comma starting a line in a call's arguments is reported once, including after a heredoc's closing
+     * marker, as is a space before a comma in an array inside the call, and that the fix puts each comma back.
+     */
+    public function testSpaceBeforeCommaInCallIsReportedOnceAndFixed(): void
+    {
+        $heredoc = "    <<<'EOT'\n        x\n        EOT";
+        $source = "<?php\n\nfoo(\n$heredoc\n    ,\n    \$a\n    ,\n    [1 , 2],\n);\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        preg_match_all('/:(\d+):\d+: error - .*\.(\w+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
+        $reports = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
+        $expected = ['7 SpaceBeforeInFunctionCall', '9 SpaceBeforeInFunctionCall', '10 SpaceBeforeInFunctionCall'];
+
+        $this->assertSame($expected, $reports, $result['output']);
+        $this->assertSame("<?php\n\nfoo(\n$heredoc,\n    \$a,\n    [1, 2],\n);\n", $fixed);
+    }
+
+    /**
      * Test that a trailing comma in an attribute block on one line is an error, and that one in a split block of one
      * attribute isn't, as section 2.6 of PER requires it. Universal.Attributes.TrailingComma forbids it by default.
      */
