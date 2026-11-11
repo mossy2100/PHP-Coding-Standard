@@ -2329,5 +2329,9 @@ class User
   covering classes, methods, functions and property hooks only. After a block `declare` in the file header, a statement
   is still reported, as section 3 wants a blank line after the block. The [Jumbo standard](Jumbo.md) reports a statement after a
   control structure's closing brace.
+- **The space before an anonymous class's opening brace, and code after it (8).** `new class extends Foo{` and
+  `new class { public int $a;` pass. Section 8's examples show one space before the brace, and the body on the next
+  line, but no installed sniff checks either for an anonymous class. `PSR12.Classes.AnonClassDeclaration` only checks
+  which line the brace is on.
 - **The pipe operator `|>` on PHP 8.4.** It's only checked when PHP_CodeSniffer runs on PHP 8.5. On PHP 8.4, where `|>`
   is a parse error, PHP_CodeSniffer reads it as `|` and `>`, and reports them.
