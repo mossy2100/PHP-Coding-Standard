@@ -712,6 +712,17 @@ nothing about other hook lists.
 
 ## 5. Control Structures
 
+### A Loop With No Body
+
+**Issue:** "The body of each structure MUST be enclosed by braces." The spec doesn't say what a loop with no body
+needs, as in `while (next($items));`.
+
+**Ruleset:** It's allowed. No braces are required.
+
+**Why:** There's no body to enclose. PHP_CodeSniffer reads the same PSR-12 rule this way.
+
+---
+
 ### "Indented at Least Once"
 
 **Issue:** A split condition's "subsequent line is indented at least once", but the spec doesn't say how far is too

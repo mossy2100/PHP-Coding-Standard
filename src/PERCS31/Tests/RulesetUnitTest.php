@@ -234,6 +234,22 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a loop with no body passes, as there's no body for section 5 to require braces around.
+     */
+    public function testLoopWithNoBodyPasses(): void
+    {
+        $file = $this->copyToTempFile(null, "<?php\n\nwhile (next(\$items));\n\nfor (\$i = 0; \$i < 10; \$i++);\n");
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame(0, $result['exitCode'], $result['output']);
+    }
+
+    /**
      * Test that a one-line block declare is fixed with no stray blank line, which two fixes for its brace would add.
      */
     public function testOneLineBlockDeclareIsFixedWithNoBlankLine(): void
