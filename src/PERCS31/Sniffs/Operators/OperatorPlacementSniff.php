@@ -47,7 +47,9 @@ use PHPCSUtils\Utils\Parentheses;
  * variable it's set against.
  *
  * PhpCollective.Operators.OperatorPosition covers some of this, but only about 14 operators, and doesn't check the
- * indent.
+ * indent. This sniff doesn't extend it, as only the report and fix for an operator at the end of a line could be left
+ * to it, about 30 lines. The exceptions before that, and the indent check, would stay here, and the codes would be
+ * the parent's Incorrect and IncorrectWithComment.
  *
  * A short ternary must be written `?:`, with nothing between the `?` and `:`, as SplitShortTernary. Section 6.3 says it
  * follows the rules for other binary operators, and its examples write it as one, `?:`.
