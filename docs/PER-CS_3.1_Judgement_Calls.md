@@ -1018,6 +1018,18 @@ array that starts its conditions does. A destructuring assignment is a list, not
 
 ---
 
+### One Value Split Over Lines
+
+**Issue:** Section 11's rules apply "when an array declaration is split across multiple lines". It's unclear whether an
+array is split when it only spans lines because its one value does, as in `[function () {` ... `}]`. 4.7 says a single
+argument split over lines doesn't split an argument list.
+
+**Ruleset:** It's split. The value goes on the line after `[`, and `]` on the line after the value.
+
+**Why:** 4.7's exemption is only for calls, and section 11 has nothing like it.
+
+---
+
 ### Spacing and the Closing Bracket
 
 **Issue:** The text doesn't set comma spacing or space inside the brackets.
