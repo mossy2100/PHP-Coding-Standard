@@ -108,23 +108,21 @@ class NamingHelper
     public static function findConstantNames(File $phpcsFile, int $constPtr): array
     {
         $tokens = $phpcsFile->getTokens();
-        $endPtr = $phpcsFile->findNext(T_SEMICOLON, ($constPtr + 1));
-        if ($endPtr === false) {
-            return [];
-        }
-
         $names = [];
-        $level = count($tokens[$constPtr]['nested_parenthesis'] ?? []);
-        $bracketDepth = 0;
-        for ($i = ($constPtr + 1); $i < $endPtr; $i++) {
-            $code = $tokens[$i]['code'];
-            if ($code === T_OPEN_SHORT_ARRAY || $code === T_OPEN_SQUARE_BRACKET) {
-                $bracketDepth++;
-            } elseif ($code === T_CLOSE_SHORT_ARRAY || $code === T_CLOSE_SQUARE_BRACKET) {
-                $bracketDepth--;
+        for ($i = ($constPtr + 1); $i < $phpcsFile->numTokens; $i++) {
+            if ($tokens[$i]['code'] === T_SEMICOLON) {
+                return $names;
             }
 
-            if ($code !== T_EQUAL || $bracketDepth !== 0 || count($tokens[$i]['nested_parenthesis'] ?? []) !== $level) {
+            // Skip anything in brackets, such as an array, a call's arguments or the body of a closure (PHP 8.5), so
+            // only the statement's own `=` and `;` count.
+            $closer = TokenHelper::findCloser($tokens[$i]);
+            if ($closer !== null && $closer > $i) {
+                $i = $closer;
+                continue;
+            }
+
+            if ($tokens[$i]['code'] !== T_EQUAL) {
                 continue;
             }
 
@@ -134,7 +132,7 @@ class NamingHelper
             }
         }
 
-        return $names;
+        return [];
     }
 
     /**

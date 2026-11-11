@@ -439,6 +439,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A closure in a constant's value.** With PHP 8.5's closure in a constant expression, as in
+  `const Handler = static function () { $total = 1; ... };`, a variable assigned in the closure was reported as a badly
+  named constant, by `PERCS31.NamingConventions.UpperCaseConstantName` and `ValidConstantName`. A constant's name is now
+  only looked for outside the value's brackets.
 - **A template starting with a PHP tag and a statement.** A file with markup whose only PHP tag is on the first line,
   as in `<?php require 'header.php'; ?>`, was reported by `PERCS31.Files.FileHeader` as `SpacingAfterTagBlock`, and the
   fix split the tag over three lines. It now passes, as PER Coding Style 3.1 lets the tag share its line in a file with

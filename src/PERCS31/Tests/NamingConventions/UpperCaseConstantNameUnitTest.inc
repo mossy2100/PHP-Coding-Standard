@@ -84,3 +84,16 @@ enum SeveralConstants
 
     public const Valid = 1, not_valid = 2;
 }
+
+// A closure in a constant's value (PHP 8.5) has statements of its own, which aren't constants.
+enum HoldsClosure
+{
+    case A;
+
+    public const Handler = static function (int $a): int {
+        $total = $a + 1;
+
+        return $total;
+    };
+    public const Lookup = ['a' => 1, 'b' => [2, 3]], Other = self::A;
+}
