@@ -82,6 +82,7 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   skips a `set` hook's parameter list, which isn't a call.
 - **Squiz.Classes.ValidClassName**, from PSR-1, by [`PERCS31.NamingConventions.ValidClassName`](#percs31namingconventionsvalidclassname), which also reports a name
   with no lower-case letter.
+- **PSR12.Keywords.ShortFormTypeKeywords**, by `SlevomatCodingStandard.PHP.TypeCast`, which also reports `(double)`.
 
 `Squiz.Functions.FunctionDeclarationArgumentSpacing`'s `SpaceBeforeEquals` and `SpaceAfterEquals` are excluded, as a
 default value's `=` is a binary operator, which section 6.2 allows more than one space around.
@@ -181,6 +182,9 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Functions.NamedArgumentSpacing**: Requires no space before a named argument's colon, and one after (4.7).
 - **Functions.RequireTrailingCommaInClosureUse** and **...InDeclaration**: Require a trailing comma in a multi-line
   list (2.6). For a call, [`PERCS31.Functions.RequireTrailingCommaInCall`](#percs31functionsrequiretrailingcommaincall) replaces `...InCall`.
+- **PHP.TypeCast**: Requires the short form of a type in a cast: `(bool)`, `(int)` and `(float)`, not `(boolean)`,
+  `(integer)` or `(double)` (2.5). Only its `InvalidCastUsed` code is used. Its `ForbiddenCastUsed` code, for a
+  `(binary)` cast, isn't a PER rule.
 - **TypeHints.DNFTypeHintFormat**: Requires no spaces inside the parentheses (2.5). Its check for spaces around `|` and
   `&` is replaced by [`PERCS31.TypeHints.CompoundTypeOperatorSpacing`](#percs31typehintscompoundtypeoperatorspacing), which allows a split type. Its checks for `null`
   last and for `?T` are replaced by [`PERCS31.TypeHints.NullType`](#percs31typehintsnulltype), which covers every type.
@@ -2592,8 +2596,6 @@ These are the original's properties. PER Coding Style 3.1 needs their defaults, 
 - **Whether a fall-through comment is clear (5.2).** Any comment just before the next `case` or `default` passes, as the
   spec doesn't set any wording.
 - **Avoiding abbreviations (2.7).** Whether a name could avoid an abbreviation can't be judged by a sniff.
-- **A `(double)` cast (2.5).** Section 2.5's short form rule is checked for the long forms PSR-12 knows, `(boolean)` and
-  `(integer)`. `(double)` is left to the [Jumbo standard](Jumbo.md), whose `SlevomatCodingStandard.PHP.TypeCast` requires `(float)`.
 - **A comment or statement after an anonymous class's, closure's or control structure's closing brace (4).** Section 4
   says "any closing brace", but each of these is part of a larger expression or statement, so this standard reads it as
   covering classes, methods, functions and property hooks only. After a block `declare` in the file header, a statement

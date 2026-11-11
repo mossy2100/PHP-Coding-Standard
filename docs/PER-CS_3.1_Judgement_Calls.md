@@ -389,12 +389,13 @@ MUST be all lower-case".
 ### The `(double)` Cast
 
 **Issue:** 2.5 requires the short form of a type keyword, "i.e. `bool` instead of `boolean`, `int` instead of
-`integer` etc." `(double)` is an alias for `(float)`, not a longer spelling of it.
+`integer` etc." `(double)` is an alias for `(float)`, not a longer spelling of it, so it's unclear whether "etc."
+covers it.
 
-**Ruleset:** It isn't reported. `(boolean)` and `(integer)`, which the text names, are.
+**Ruleset:** It does. `(double)` is reported, as `(boolean)` and `(integer)` are, and fixed to `(float)`.
 
-**Why:** "Short form" describes a longer spelling of the same word. It's unclear whether "etc." stretches to a
-different word.
+**Why:** PHP treats the three alike. PHP 8.5 deprecates each as a "non-canonical cast", and names the form to use
+instead.
 
 ---
 

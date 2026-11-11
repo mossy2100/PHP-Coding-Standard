@@ -12,8 +12,6 @@
 
     <!-- PER Coding Style 3.1, on PSR-12. Everything below is an extra rule. -->
     <rule ref="PERCS31">
-        <!-- SlevomatCodingStandard.PHP.TypeCast, below, reports the same long-form casts, and more -->
-        <exclude name="PSR12.Keywords.ShortFormTypeKeywords"/>
         <!-- Zend.Files.ClosingTag, below, reports the same closing tags, and more -->
         <exclude name="PSR2.Files.ClosingTag"/>
     </rule>
@@ -256,7 +254,9 @@
 
     <!-- ====== OPERATORS (6) ====== -->
 
-    <rule ref="SlevomatCodingStandard.PHP.TypeCast"/>
+    <!-- No (binary) cast, which has no effect. PERCS31 already requires the short form of a cast, with this sniff's
+         InvalidCastUsed code. -->
+    <rule ref="SlevomatCodingStandard.PHP.TypeCast.ForbiddenCastUsed"/>
     <rule ref="SlevomatCodingStandard.PHP.ReferenceSpacing"/>
     <rule ref="SlevomatCodingStandard.Operators.NegationOperatorSpacing"/>
     <rule ref="SlevomatCodingStandard.Operators.RequireCombinedAssignmentOperator"/>

@@ -58,8 +58,6 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
 - `Squiz.Functions.FunctionDeclarationArgumentSpacing` requires exactly one space around a default value's `=`, using
   the `SpaceBeforeEquals` and `SpaceAfterEquals` codes PERCS31 excludes (`PERCS31.Operators.OperatorSpacing` has
   `checkDefaultValues` set to `false`).
-- `PSR12.Keywords.ShortFormTypeKeywords` is excluded, as `SlevomatCodingStandard.PHP.TypeCast` reports the same casts.
-  See [Slevomat](#slevomat).
 - `PSR2.Files.ClosingTag` is excluded, as `Zend.Files.ClosingTag` reports the same closing tags, and more. See [Zend](#zend).
 - `PERCS31.NamingConventions.UpperCaseConstantName` has `checkGlobalConstants` set to `true`, so a global constant, from
   `const` or `define()`, and an alias of a constant, must be in UPPER_CASE. PERCS31 doesn't check this, as PER doesn't
@@ -181,9 +179,9 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **PHP.DisallowDirectMagicInvokeCall**: Disallows direct `__invoke()` calls.
 - **PHP.ReferenceSpacing**: Enforces spacing around reference operator.
 - **PHP.ShortList**: Requires short list syntax `[]`.
-- **PHP.TypeCast**: Requires `(int)`, `(bool)` and `(float)` instead of `(integer)`, `(boolean)`, `(double)` or
-  `(real)`, and forbids `(binary)` and `(unset)`. It replaces PERCS31's `PSR12.Keywords.ShortFormTypeKeywords`, which
-  only checks `(int)` and `(bool)`, so a long-form cast is reported once.
+- **PHP.TypeCast**: Forbids a `(binary)` cast, with its `ForbiddenCastUsed` code. PERCS31 already uses its
+  `InvalidCastUsed` code, which requires `(int)`, `(bool)` and `(float)` instead of `(integer)`, `(boolean)` or
+  `(double)`.
 - **PHP.UselessSemicolon**: Disallows useless semicolons.
 - **Strings.DisallowVariableParsing**: Disallows variable parsing in strings.
 - **TypeHints.ClassConstantTypeHint**: Requires class constant type hints.

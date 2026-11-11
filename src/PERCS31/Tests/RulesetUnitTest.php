@@ -334,6 +334,31 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a long-form cast is reported once, including `(double)`, and fixed to its short form, and that a
+     * `(binary)` cast, which PER has no rule for, isn't reported.
+     */
+    public function testLongFormCastIsReportedOnceAndFixed(): void
+    {
+        $source = "<?php\n\n\$a = (double) \$x;\n\$b = (integer) \$x;\n\$c = (boolean) \$x;\n\$d = (binary) \$x;\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        preg_match_all('/:(\d+):\d+: error - .*\.(\w+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
+        $reports = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
+        $expected = "<?php\n\n\$a = (float) \$x;\n\$b = (int) \$x;\n\$c = (bool) \$x;\n\$d = (binary) \$x;\n";
+
+        $this->assertSame(['3 InvalidCastUsed', '4 InvalidCastUsed', '5 InvalidCastUsed'], $reports, $result['output']);
+        $this->assertSame($expected, $fixed);
+    }
+
+    /**
      * Test that a comma starting a line in a call's arguments is reported once, including after a heredoc's closing
      * marker, as is the spacing around a comma in an array inside the call, and that the fix corrects each one.
      */

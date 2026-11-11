@@ -371,6 +371,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- **PERCS31 reports a `(double)` cast (breaking).** PER Coding Style 3.1 requires the short form of a type keyword, and
+  PHP 8.5 deprecates `(double)` just as it does `(boolean)` and `(integer)`. PERCS31 now reports all three with
+  `SlevomatCodingStandard.PHP.TypeCast.InvalidCastUsed`, replacing `PSR12.Keywords.ShortFormTypeKeywords.LongFound`,
+  so update any `phpcs:ignore` comments or `<exclude>` rules that name it. Jumbo already used that sniff, so nothing
+  changes there. Auto-fixable.
 - **Comma spacing in a call is reported by `Universal.WhiteSpace.CommaSpacing` (breaking).** The codes are now
   `SpaceBeforeInFunctionCall`, `NoSpaceAfterInFunctionCall` and `TooMuchSpaceAfterInFunctionCall`. They replace
   `SpaceBeforeComma`, `NoSpaceAfterComma` and `TooMuchSpaceAfterComma`, from both
