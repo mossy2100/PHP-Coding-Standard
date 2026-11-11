@@ -15,11 +15,11 @@ use SlevomatCodingStandard\Sniffs\Attributes\DisallowMultipleAttributesPerLineSn
 /**
  * Requires separate attribute blocks on separate lines.
  *
- * PER Coding Style 3.1, section 12.2, says two separate attribute blocks MUST be on separate lines. This extends
- * SlevomatCodingStandard.Attributes.DisallowMultipleAttributesPerLine, and changes three things:
- * - It skips blocks on a parameter or argument in a single-line list. The parent's fix would put each block at the
- *   start of a line and leave the list half split, so PERCS31.Attributes.AttributePlacement reports that case, and
- *   splits the whole list.
+ * PER Coding Style 3.1, section 12.2, says two separate attribute blocks in a multi-line context MUST be on separate
+ * lines. This extends SlevomatCodingStandard.Attributes.DisallowMultipleAttributesPerLine, and changes three things:
+ * - It skips blocks on a parameter or argument in a single-line list, which isn't a multi-line context. Section 12.2
+ *   requires a parameter's attribute inline there. PERCS31.Attributes.AttributePlacement checks the single space after
+ *   each block.
  * - It reports blocks on a property hook, which the parent misses, as PHP_CodeSniffer doesn't know about hooks.
  * - When code comes before the blocks on their line, as in `$f = #[A] #[B] fn() => 1;`, the fix indents the next block
  *   one level past that line, as a continuation of the statement. The parent's fix lines it up with the line.

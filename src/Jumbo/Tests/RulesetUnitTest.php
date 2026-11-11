@@ -566,8 +566,8 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that two or more attribute blocks go on separate lines in both standards, splitting a single-line list,
-     * with the target on the next line, and that phpcbf gives the same result in each.
+     * Test that two or more attribute blocks go on separate lines in both standards, with the target on the next
+     * line, except in a single-line list, where they stay inline, and that phpcbf gives the same result in each.
      */
     #[DataProvider('standardProvider')]
     public function testSeparateAttributeBlocksAreSplit(string $standard): void
@@ -605,18 +605,9 @@ class RulesetUnitTest extends TestCase
                 #[A, B] case Z;
             }
 
-            function f(
-                #[A]
-                #[B]
-                int $c,
-            ): void {}
+            function f(#[A] #[B] int $c): void {}
 
-            usort(
-                $items,
-                #[A]
-                #[B]
-                static fn($x) => $x,
-            );
+            usort($items, #[A] #[B] static fn($x) => $x);
 
             $pure = #[A]
                 #[B]

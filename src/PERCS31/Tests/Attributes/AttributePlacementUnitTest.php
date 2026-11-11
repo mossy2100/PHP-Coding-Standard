@@ -82,18 +82,19 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             // Two spaces after an attribute on an enum case, and on a closure outside a call.
             369 => 1,
             372 => 1,
-            // Two or more attribute blocks: on an enum case, one not fixable, on a hook, and in single-line lists.
+            // Two or more attribute blocks: on an enum case, one not fixable, and on a hook.
             378 => 1,
             381 => 1,
             385 => 1,
             391 => 1,
-            395 => 1,
-            397 => 1,
+            // Two spaces between inline blocks in a single-line parameter list, and three in an argument list.
+            402 => 1,
+            404 => 1,
             // Code before the blocks.
-            403 => 1,
+            408 => 1,
             // A readonly anonymous class, with its attribute on the line of `new`, and on the line of `readonly`.
-            412 => 1,
-            416 => 1,
+            417 => 1,
+            421 => 1,
         ];
     }
 

@@ -459,7 +459,7 @@
          or comment between them, and the layout of an anonymous class's attributes (8, 12.2) -->
     <rule ref="PERCS31.Attributes.AttributePlacement"/>
 
-    <!-- Separate attribute blocks on separate lines (12.2) -->
+    <!-- Separate attribute blocks on separate lines, except in a single-line parameter or argument list (12.2) -->
     <rule ref="PERCS31.Attributes.DisallowMultipleAttributesPerLine"/>
 
     <!-- Several attributes may share a block on one line, but not one split over lines (12.3) -->

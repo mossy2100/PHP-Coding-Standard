@@ -392,11 +392,16 @@ class MultipleBlockHooks
     }
 }
 
+// In a single-line list, blocks stay inline, each followed by a single space.
 function multipleBlocks(#[A] #[B] int $c, int $d = 1): void {}
 
 usort($items, #[A] #[B] fn($x) => $x);
 
 function oneBlock(#[A, B] int $c): void {}
+
+function blockSpacing(#[A]  #[B] int $c): void {}
+
+usort($items, #[A]   #[B] fn($x) => $x);
 
 // Code before the blocks, so the target is indented one level more.
 $pure = #[A]

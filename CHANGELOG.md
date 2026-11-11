@@ -129,8 +129,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   an earlier value. The new `PERCS31.Arrays.ValuePerLine` replaces that check.
 - **Two or more attribute blocks put their target on the next line (breaking).** As each block must be on its own line,
   `#[A] #[B] case X;` is now an error in both standards, as is `#[A] #[B]` on a property hook, which was missed. In a
-  single-line parameter or argument list, the fix splits the list, one item per line with a trailing comma. One block
-  holding several attributes, as in `#[A, B] case X;`, can stay inline. Uses
+  single-line parameter or argument list, blocks stay inline, each followed by a single space. One block holding
+  several attributes, as in `#[A, B] case X;`, can stay inline. Uses
   `PERCS31.Attributes.DisallowMultipleAttributesPerLine`, which replaces the Slevomat sniff of the same name.
   Auto-fixable.
 - **One space after an attribute on its target's line (breaking).** On an enum case, a property hook or a closure

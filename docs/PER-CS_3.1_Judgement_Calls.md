@@ -1079,9 +1079,11 @@ a single-line list.
 **Issue:** Two attribute blocks "in a multi-line context" go on separate lines. The spec doesn't say whether two blocks
 may share a single-line parameter list, as in `function a(#[A] #[B] int $b)`.
 
-**Ruleset:** They may not. Two or more blocks always go on separate lines, so the list has to be split.
+**Ruleset:** They may. The blocks stay inline, each followed by exactly one space. The same goes for a closure in a
+single-line argument list.
 
-**Why:** It keeps one layout for several blocks everywhere.
+**Why:** A single-line list isn't a multi-line context, and 12.2 requires a parameter's attribute inline there. The
+single space follows 12.2's rule for an attribute and its parameter.
 
 ---
 

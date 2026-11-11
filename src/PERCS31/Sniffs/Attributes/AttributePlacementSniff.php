@@ -8,7 +8,6 @@ use PERCS31\Helpers\AttributeHelper;
 use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\LayoutHelper;
 use PERCS31\Helpers\PropertyHookHelper;
-use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -49,6 +48,9 @@ use PHPCSUtils\Utils\PassedParameters;
  * Section 12.2 also says there MUST NOT be a blank line between a docblock and the attributes after it, or between two
  * attribute blocks, and that an attribute inline with its parameter is separated from it by a single space. Both are
  * checked here too.
+ *
+ * Section 12.2 only puts two attribute blocks on separate lines "in a multi-line context". So in a single-line
+ * parameter or argument list, two or more blocks stay inline, each followed by a single space.
  */
 class AttributePlacementSniff implements Sniff
 {
@@ -70,7 +72,7 @@ class AttributePlacementSniff implements Sniff
 
     public const string CODE_SAME_LINE_SPACING = 'SameLineSpacing';
 
-    public const string CODE_SINGLE_LINE_LIST = 'SingleLineList';
+    public const string CODE_BLOCK_SPACING = 'BlockSpacing';
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -118,17 +120,18 @@ class AttributePlacementSniff implements Sniff
             return;
         }
 
-        // Another attribute follows, so the last one in the group is checked against the target.
+        // Another attribute follows, so the last one in the group is checked against the target. In a single-line
+        // list, the blocks stay inline, each followed by a single space.
         if ($tokens[$targetPtr]['code'] === T_ATTRIBUTE) {
+            if (AttributeHelper::findSingleLineListOpener($phpcsFile, $stackPtr) !== null) {
+                $error = 'Expected 1 space between attribute blocks in a single-line list';
+                $this->checkInlineSpacing($phpcsFile, $closerPtr, $targetPtr, $error, self::CODE_BLOCK_SPACING);
+            }
+
             return;
         }
 
         $isGroup = AttributeHelper::findFirstAttribute($phpcsFile, $stackPtr) !== $stackPtr;
-        $listOpener = $isGroup ? AttributeHelper::findSingleLineListOpener($phpcsFile, $stackPtr) : null;
-        if ($listOpener !== null) {
-            $this->processSingleLineList($phpcsFile, $stackPtr, $listOpener);
-            return;
-        }
 
         if ($this->isClosure($phpcsFile, $targetPtr)) {
             $this->processClosure($phpcsFile, $stackPtr, $closerPtr, $targetPtr);
@@ -175,60 +178,6 @@ class AttributePlacementSniff implements Sniff
         // Indent the target as the first token on the attribute's line is indented.
         $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $stackPtr));
         $phpcsFile->fixer->replaceToken($nextPtr, $phpcsFile->eolChar . $indent);
-    }
-
-    /**
-     * Report two or more attribute blocks in a single-line parameter or argument list, as section 12.2 says separate
-     * blocks MUST be on separate lines. The fix splits the list, with each item on its own line and a trailing comma,
-     * and the blocks then go on lines of their own.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $stackPtr The position of the last attribute block's opener.
-     * @param int $opener The position of the list's opening parenthesis.
-     */
-    private function processSingleLineList(File $phpcsFile, int $stackPtr, int $opener): void
-    {
-        $fix = $phpcsFile->addFixableError(
-            'Separate attribute blocks must be on separate lines, so the list they\'re in must be split',
-            $stackPtr,
-            self::CODE_SINGLE_LINE_LIST,
-        );
-        if (!$fix) {
-            return;
-        }
-
-        $tokens = $phpcsFile->getTokens();
-        $closer = $tokens[$opener]['parenthesis_closer'];
-        $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $opener));
-        $itemIndent = $phpcsFile->eolChar . $indent . str_repeat(' ', LayoutHelper::INDENT);
-
-        // The commas between items, skipping anything nested in brackets, braces or attributes.
-        $commas = [];
-        for ($i = ($opener + 1); $i < $closer; $i++) {
-            $i = TokenHelper::findCloser($tokens[$i]) ?? $i;
-            if ($tokens[$i]['code'] === T_COMMA) {
-                $commas[] = $i;
-            }
-        }
-
-        $last = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($closer - 1), $opener, true);
-        $first = $phpcsFile->findNext(T_WHITESPACE, ($opener + 1), $closer, true);
-        if ($last === false || $first === false) {
-            return;
-        }
-
-        $phpcsFile->fixer->beginChangeset();
-        FixerHelper::setBetween($phpcsFile, $opener, $first, $itemIndent);
-        foreach ($commas as $comma) {
-            $next = $phpcsFile->findNext(T_WHITESPACE, ($comma + 1), $closer, true);
-            if ($next !== false && $next !== $closer) {
-                FixerHelper::setBetween($phpcsFile, $comma, $next, $itemIndent);
-            }
-        }
-
-        $comma = $tokens[$last]['code'] === T_COMMA ? '' : ',';
-        FixerHelper::setBetween($phpcsFile, $last, $closer, $comma . $phpcsFile->eolChar . $indent);
-        $phpcsFile->fixer->endChangeset();
     }
 
     /**

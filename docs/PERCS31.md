@@ -400,19 +400,12 @@ before. Nor is a property hook, which isn't a method, so `#[Label] get => 'a';` 
 the parameter rule.
 
 With two or more attribute blocks, the target goes on the line after them, as each block must be on its own line. So
-`#[A] #[B] case X;` becomes three lines. In a single-line parameter or argument list, the fix splits the list, one item
-per line with a trailing comma, so `function f(#[A] #[B] int $c) {}` becomes:
+`#[A] #[B] case X;` becomes three lines. [`PERCS31.Attributes.DisallowMultipleAttributesPerLine`](#percs31attributesdisallowmultipleattributesperline) puts each block on
+its own line. One block holding several attributes, as in `#[A, B] case X;`, can stay inline.
 
-```php
-function f(
-    #[A]
-    #[B]
-    int $c,
-) {}
-```
-
-[`PERCS31.Attributes.DisallowMultipleAttributesPerLine`](#percs31attributesdisallowmultipleattributesperline) then puts each block on its own line. One block holding several
-attributes, as in `#[A, B] case X;`, can stay inline.
+A single-line parameter or argument list is the exception, as section 12.2 only separates blocks "in a multi-line
+context". There, two or more blocks stay inline, each followed by a single space, so `function f(#[A] #[B] int $c) {}`
+passes, and `function f(#[A]  #[B] int $c) {}` is reported and fixed.
 
 When code comes before the blocks on their line, the blocks after the first, and the target, are indented one level
 more, as a continuation of the statement:
@@ -542,8 +535,9 @@ Requires separate attribute blocks on separate lines. This replaces
 **Why:** [PER Coding Style 3.1, Section 12.2](https://www.php-fig.org/per/coding-style/#122-placement) says two separate attribute blocks MUST be on separate lines. The Slevomat
 sniff checks this, with three problems:
 
-- In a single-line parameter or argument list, its fix puts each block at the start of a line and leaves the list half
-  split. This sniff skips that case, and [`AttributePlacement`](#percs31attributesattributeplacement) splits the whole list instead.
+- It reports blocks in a single-line parameter or argument list, as in `function f(#[A] #[B] int $c) {}`. Section 12.2
+  only separates blocks "in a multi-line context", and requires a parameter's attribute inline in a single-line list,
+  so this sniff skips that case. [`AttributePlacement`](#percs31attributesattributeplacement) checks the single space after each block.
 - It misses blocks on a property hook, as PHP_CodeSniffer doesn't know about hooks. This sniff reports them.
 - When code comes before the blocks on their line, as in `$pure = #[A] #[B]`, its fix lines the next block up with the
   line. This sniff indents it one level more, as a continuation of the statement.
