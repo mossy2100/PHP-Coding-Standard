@@ -195,6 +195,7 @@ section gives the reason.
 | `PERCS31.Attributes.AttributePlacement`                 | An attribute is on its own line, except on a parameter              | Yes     |
 | `PERCS31.Attributes.DisallowMultiLineAttributesJoining` | One attribute per block when a block spans lines                    | Yes     |
 | `PERCS31.Attributes.DisallowMultipleAttributesPerLine`  | Separate attribute blocks on separate lines                         | Yes     |
+| `PERCS31.Classes.AnonClassOpeningBrace`                 | One space before an anonymous class's `{`, and nothing after it     | Yes     |
 | `PERCS31.Classes.ClassDeclaration`                      | Class declarations, allowing an empty body as `{}`                  | Yes     |
 | `PERCS31.Classes.ClassInstantiationNoBrackets`          | A warning for `(new Foo())->bar()`                                  | Yes     |
 | `PERCS31.Classes.ClosingBrace`                          | No comment or statement after a class's, function's or hook's `}`   | No      |
@@ -537,6 +538,43 @@ final class Marker {}
 ```php
 #[A] #[B]
 final class Marker {}
+```
+
+---
+
+### PERCS31.Classes.AnonClassOpeningBrace
+
+Requires one space before an anonymous class's opening brace when it's on the declaration's line, and nothing after the
+brace on its line. This extends `Generic.Classes.OpeningBraceSameLine`.
+
+**Why:** [PER Coding Style 3.1, Section 8](https://www.php-fig.org/per/coding-style/#8-anonymous-classes) says anonymous classes MUST follow the same guidelines as closures, and its
+examples show one space before the brace, and the body on the next line. `PSR12.Classes.AnonClassDeclaration` only
+checks which line the brace is on. The Generic sniff makes both checks, but only for a class, interface, trait or enum,
+and has no property to add to those. So this subclass changes one thing: it registers an anonymous class instead.
+
+The parent also requires the brace on the declaration's line, as `BraceOnNewLine`. Section 8 allows the next line, and
+requires it after a wrapped list of interfaces, so the ruleset excludes that code. An empty body, `{}`, is left to
+[PERCS31.Formatting.EmptyBody](#percs31formattingemptybody). A comment after the brace is reported too, as it is for a closure.
+
+**Auto-fixable:** yes, as the parent.
+
+**Good:**
+
+```php
+$counter = new class extends Base {
+    public int $count = 0;
+};
+```
+
+**Bad:**
+
+```php
+$counter = new class extends Base{
+    public int $count = 0;
+};
+
+$counter = new class { public int $count = 0;
+};
 ```
 
 ---
@@ -2392,9 +2430,5 @@ These are the original's properties. PER Coding Style 3.1 needs their defaults, 
   covering classes, methods, functions and property hooks only. After a block `declare` in the file header, a statement
   is still reported, as section 3 wants a blank line after the block. The [Jumbo standard](Jumbo.md) reports a statement after a
   control structure's closing brace.
-- **The space before an anonymous class's opening brace, and code after it (8).** `new class extends Foo{` and
-  `new class { public int $a;` pass. Section 8's examples show one space before the brace, and the body on the next
-  line, but no installed sniff checks either for an anonymous class. `PSR12.Classes.AnonClassDeclaration` only checks
-  which line the brace is on.
 - **The pipe operator `|>` on PHP 8.4.** It's only checked when PHP_CodeSniffer runs on PHP 8.5. On PHP 8.4, where `|>`
   is a parse error, PHP_CodeSniffer reads it as `|` and `>`, and reports them.

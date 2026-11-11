@@ -1,0 +1,41 @@
+<?php // phpcs:disable PERCS31.Classes.AnonClassOpeningBrace.BraceOnNewLine
+
+// Valid: one space before a brace on the declaration's line, or the brace on the next line.
+$valid = new class {
+    public int $a = 1;
+};
+$valid = new class ($a) extends Base implements \Countable {
+    public int $a = 1;
+};
+$valid = new class extends Base implements
+    \Countable,
+    \Stringable
+{
+    public int $a = 1;
+};
+$valid = new class {};
+foo(new class {
+    public int $a = 1;
+});
+
+// No space, and two spaces, before the brace.
+$invalid = new class extends Base {
+    public int $a = 1;
+};
+$invalid = new class ($a) {
+    public int $a = 1;
+};
+
+// Code, and a comment, after the brace.
+$invalid = new class {
+ public int $a = 1;
+};
+$invalid = new class
+{
+ // Why.
+    public int $a = 1;
+};
+
+// A named class isn't checked here.
+class Named{
+}

@@ -890,6 +890,19 @@ interfaces does not wrap." The spec doesn't say whether the next line is allowed
 
 ---
 
+### Around the Opening Brace
+
+**Issue:** Section 8's text doesn't say how many spaces go before the opening brace, or whether the body may start on
+its line.
+
+**Ruleset:** One space before a brace on the declaration's line, and nothing after the brace on its line, not even a
+comment. An empty body, `{}`, is unaffected.
+
+**Why:** Section 8 says anonymous classes follow the same guidelines as closures, where both are required, and its
+examples show both.
+
+---
+
 ## 9. Enumerations
 
 ### Enum Case Names

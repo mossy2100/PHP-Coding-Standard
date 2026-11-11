@@ -339,6 +339,12 @@
     <!-- No () on an anonymous class without arguments (8) -->
     <rule ref="Universal.Classes.DisallowAnonClassParentheses"/>
 
+    <!-- One space before an anonymous class's opening brace on the declaration's line, and nothing after the brace, as
+         the examples in 8 show. The brace may be on the next line, so the parent's code for that is excluded. -->
+    <rule ref="PERCS31.Classes.AnonClassOpeningBrace">
+        <exclude name="PERCS31.Classes.AnonClassOpeningBrace.BraceOnNewLine"/>
+    </rule>
+
     <!-- ====== ENUMS (9) ====== -->
 
     <!-- No space before a backed enum's colon (9). One after it is checked by PERCS31.Classes.ClassDeclaration, as the
