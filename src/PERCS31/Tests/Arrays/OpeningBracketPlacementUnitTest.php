@@ -19,20 +19,16 @@ class OpeningBracketPlacementUnitTest extends AbstractSniffTestCase
     protected function getErrorList(): array
     {
         return [
-            // The only argument of a call, with a trailing comma.
-            35 => 1,
-            // The only argument of a call, without a trailing comma.
-            42 => 1,
             // After =>.
-            49 => 1,
+            85 => 1,
             // After return.
-            55 => 1,
-            // After another argument (not fixable).
-            61 => 1,
-            // Before another argument (not fixable).
-            67 => 1,
+            91 => 1,
+            // After =.
+            96 => 1,
+            // In a control structure's condition.
+            102 => 1,
             // After a comment (not fixable).
-            74 => 1,
+            110 => 1,
         ];
     }
 

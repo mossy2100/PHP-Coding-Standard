@@ -29,32 +29,13 @@ foo([
     2,
 ]);
 
-// === INVALID ===
-
+// An argument in an argument list has to start its line, when the list has one argument per line.
 foo(
     [
         1,
         2,
     ],
 );
-
-foo(
-    [
-        1,
-    ]
-);
-
-$map = [
-    'key' =>
-        [
-            1,
-        ],
-];
-
-return
-    [
-        1,
-    ];
 
 bar(
     $a,
@@ -75,3 +56,57 @@ baz( // Why.
         1,
     ],
 );
+
+$object = new Collection(
+    [
+        1,
+    ],
+    $b,
+);
+
+#[Route(
+    [
+        'GET',
+    ],
+)]
+function routed(): void {}
+
+$copy = clone(
+    $object,
+    [
+        'name' => 'Copy',
+    ],
+);
+
+// === INVALID ===
+
+$map = [
+    'key' =>
+        [
+            1,
+        ],
+];
+
+return
+    [
+        1,
+    ];
+
+$assigned =
+    [
+        1,
+    ];
+
+// A control structure's condition isn't an argument list.
+foreach (
+    [
+        1,
+    ] as $value
+) {
+}
+
+// After a comment (not fixable).
+$commented = // Why.
+    [
+        1,
+    ];

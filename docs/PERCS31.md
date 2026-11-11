@@ -199,7 +199,7 @@ section gives the reason.
 | Sniff                                                   | Checks                                                              | Fixable |
 | ------------------------------------------------------- | ------------------------------------------------------------------- | ------- |
 | `PERCS31.Arrays.ArrayBracketSpacing`                    | No blank line before a multi-line array's `]`                       | Yes     |
-| `PERCS31.Arrays.OpeningBracketPlacement`                | A multi-line array's `[` isn't on a line of its own                 | Yes     |
+| `PERCS31.Arrays.OpeningBracketPlacement`                | A multi-line array's `[` isn't on a line of its own, outside a list | Yes     |
 | `PERCS31.Arrays.ValuePerLine`                           | One value per line in a multi-line array, the first on the next     | Yes     |
 | `PERCS31.Attributes.AttributePlacement`                 | An attribute is on its own line, except on a parameter              | Yes     |
 | `PERCS31.Attributes.DisallowMultiLineAttributesJoining` | One attribute per block when a block spans lines                    | Yes     |
@@ -283,16 +283,19 @@ $values = [
 
 ### PERCS31.Arrays.OpeningBracketPlacement
 
-Disallows the opening bracket of a multi-line array on a line of its own, e.g. as a function call's argument. An array
-that's an element of a multi-line array is allowed, as is a destructuring assignment such as `[$a, $b] = pair();` split
-over lines.
+Disallows the opening bracket of a multi-line array on a line of its own, e.g. after `=` or `return`. These are
+allowed, as each has to start a line:
+
+- An element of a multi-line array.
+- An argument in an argument list, including an attribute's.
+- A destructuring assignment such as `[$a, $b] = pair();` split over lines.
 
 **Why:** [PER Coding Style 3.1, Section 11](https://www.php-fig.org/per/coding-style/#11-arrays) says the opening bracket of a multi-line array MUST NOT be on its own line.
-PER's own example puts a nested array's `[` on its own line, hence that exception. No inherited sniff checks it.
+PER's own example puts a nested array's `[` on its own line, hence the first exception. [Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) puts each
+argument of a split argument list on its own line, hence the second. No inherited sniff checks it.
 
 **Auto-fixable:** yes. The fix moves the `[` to the end of the previous line, and `Generic.Arrays.ArrayIndent` then
-re-indents the elements. For a call's only argument, it also moves the `)` up after the `]`, giving `foo([` ... `]);`.
-It's left to a person when the array is next to another argument, or after a comment.
+re-indents the elements. After a comment, it's left to a person.
 
 **Good:**
 
@@ -302,6 +305,15 @@ $response = $client->post([
     'email' => $customer->primaryEmailAddress(),
     'message' => 'Thanks for signing up. Your account is now active.',
 ]);
+
+$response = $client->post(
+    '/customers/welcome',
+    [
+        'name' => $customer->fullName(),
+        'email' => $customer->primaryEmailAddress(),
+        'message' => 'Thanks for signing up. Your account is now active.',
+    ],
+);
 
 $rows = [
     [
@@ -317,13 +329,12 @@ $rows = [
 **Bad:**
 
 ```php
-$response = $client->post(
+$payload =
     [
         'name' => $customer->fullName(),
         'email' => $customer->primaryEmailAddress(),
         'message' => 'Thanks for signing up. Your account is now active.',
-    ],
-);
+    ];
 ```
 
 ---

@@ -1002,12 +1002,18 @@ warning, as it SHOULD be a nowdoc.
 ### The Opening Bracket
 
 **Issue:** The opening bracket of a split array "MUST NOT be placed on its own line". Section 11's own example puts a
-nested array's bracket at the start of a line.
+nested array's bracket at the start of a line. So does 4.7, for an array that's an argument in a split argument list,
+as each argument there goes on its own line.
 
-**Ruleset:** The rule is read literally, so `foo([`. The exceptions are an element of a multi-line array, as in the
-example, and a destructuring assignment.
+**Ruleset:** The rule is applied after `=`, `=>`, `return` and the like, so `$a = [`. The exceptions are:
 
-**Why:** The example shows the elements exception. A destructuring assignment is a list, not an array value.
+- An element of a multi-line array, as in the example.
+- An argument in an argument list, so `foo(` then `[` on the next line is allowed, as is `foo([`.
+- A destructuring assignment.
+
+**Why:** The example shows the elements exception. An argument list split one per line leaves an array argument nowhere
+else to start, short of assigning it to a variable first, which PER doesn't ask for. A destructuring assignment is a
+list, not an array value.
 
 ---
 

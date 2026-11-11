@@ -67,7 +67,11 @@ class TokenHelper
      */
     public static function findOpener(array $token): ?int
     {
-        $opener = $token['parenthesis_opener'] ?? $token['bracket_opener'] ?? $token['attribute_opener'] ?? null;
+        // Every token inside an attribute has its opener, so only the attribute's `]` counts.
+        $opener = $token['parenthesis_opener'] ?? $token['bracket_opener'] ?? null;
+        if ($opener === null && $token['code'] === T_ATTRIBUTE_END) {
+            $opener = $token['attribute_opener'] ?? null;
+        }
 
         return is_int($opener) ? $opener : null;
     }

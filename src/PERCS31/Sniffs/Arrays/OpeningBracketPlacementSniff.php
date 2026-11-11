@@ -9,18 +9,21 @@ use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Tokens\Collections;
 
 /**
- * Disallows the opening bracket of a multi-line array on a line of its own, e.g. as a function call's argument.
+ * Disallows the opening bracket of a multi-line array on a line of its own, e.g. after `=` or `return`, unless the
+ * array is an item in a list.
  *
  * PER Coding Style 3.1, section 11, says that when an array declaration is split across multiple lines, the opening
- * bracket MUST NOT be placed on its own line. PER's own example puts a nested array's `[` on its own line, so an array
- * that's an element of a multi-line array is allowed. So is a destructuring assignment that starts a statement, which
- * isn't an array declaration.
+ * bracket MUST NOT be placed on its own line. Two kinds of array have to start a line, so they're allowed:
+ * - An element of a multi-line array, as PER's own example shows.
+ * - An argument in an argument list, as section 4.7 puts each argument of a split list on a line of its own.
  *
- * The fix moves the `[` up to the end of the previous line, e.g. `foo([`, and Generic.Arrays.ArrayIndent then
- * re-indents the elements. For a call's only argument, it also moves the call's `)` up after the `]`, and drops the
- * trailing comma. When the array follows a comma, as in a call with several arguments, it's left to a person.
+ * So is a destructuring assignment that starts a statement, which isn't an array declaration.
+ *
+ * The fix moves the `[` up to the end of the previous line, e.g. `return [`, and Generic.Arrays.ArrayIndent then
+ * re-indents the elements. After a comment, it's left to a person.
  */
 class OpeningBracketPlacementSniff implements Sniff
 {
@@ -69,78 +72,51 @@ class OpeningBracketPlacementSniff implements Sniff
         }
 
         $code = $tokens[$previous]['code'];
-        if (in_array($code, self::STATEMENT_ENDS, true) || $this->isArrayElement($phpcsFile, $stackPtr, $previous)) {
+        if (in_array($code, self::STATEMENT_ENDS, true) || $this->isListItem($phpcsFile, $stackPtr)) {
             return;
         }
 
         $error = 'The opening bracket of a multi-line array must not be on a line of its own';
-        $onlyArgumentCloser = $this->findOnlyArgumentCloser($phpcsFile, $previous, $closer);
-        $isFixable = !isset(Tokens::COMMENT_TOKENS[$code])
-            && $code !== T_COMMA
-            && ($code !== T_OPEN_PARENTHESIS || $onlyArgumentCloser !== null);
+        $isFixable = !isset(Tokens::COMMENT_TOKENS[$code]) && $code !== T_COMMA;
         if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $stackPtr, self::CODE_OWN_LINE)) {
             return;
         }
 
-        $phpcsFile->fixer->beginChangeset();
-        FixerHelper::blankBetween($phpcsFile, $previous, $stackPtr);
-
-        if ($code === T_OPEN_PARENTHESIS) {
-            if (is_int($onlyArgumentCloser)) {
-                FixerHelper::blankBetween($phpcsFile, $closer, $onlyArgumentCloser);
-            }
-        } else {
-            $phpcsFile->fixer->addContent($previous, ' ');
-        }
-
-        $phpcsFile->fixer->endChangeset();
+        FixerHelper::replaceBetween($phpcsFile, $previous, $stackPtr, $code === T_OPEN_PARENTHESIS ? '' : ' ');
     }
 
     /**
-     * Check whether an array is an element of a multi-line array, which PER allows to start on its own line.
+     * Check whether an array is an item in a list: an element of an array, or an argument in an argument list. Each
+     * item of a split list starts a line, so its `[` has to.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $opener The position of the array's `[`.
-     * @param int $previous The position of the token before it.
-     * @return bool True if the token before is the enclosing array's `[`, or a comma in it.
+     * @return bool True if the array follows the list's opening bracket, or a comma in it.
      */
-    private function isArrayElement(File $phpcsFile, int $opener, int $previous): bool
+    private function isListItem(File $phpcsFile, int $opener): bool
     {
         $tokens = $phpcsFile->getTokens();
-        if ($tokens[$previous]['code'] !== T_COMMA && $tokens[$previous]['code'] !== T_OPEN_SHORT_ARRAY) {
+        $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($opener - 1), null, true);
+        $starts = [T_COMMA, T_OPEN_SHORT_ARRAY, T_OPEN_PARENTHESIS];
+        if ($previous === false || !in_array($tokens[$previous]['code'], $starts, true)) {
             return false;
         }
 
         // The innermost bracket or parenthesis around the array decides what the comma belongs to.
         $container = TokenHelper::findContainer($phpcsFile, $opener);
-
-        return $container !== null && $tokens[$container]['code'] === T_OPEN_SHORT_ARRAY;
-    }
-
-    /**
-     * Find the closing parenthesis of a call whose only argument is the array.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $previous The position of the token before the array's `[`.
-     * @param int $closer The position of the array's `]`.
-     * @return int|null The position of the `)`, or null if the array isn't the only argument.
-     */
-    private function findOnlyArgumentCloser(File $phpcsFile, int $previous, int $closer): ?int
-    {
-        $tokens = $phpcsFile->getTokens();
-        if ($tokens[$previous]['code'] !== T_OPEN_PARENTHESIS) {
-            return null;
+        if ($container === null || $tokens[$container]['code'] === T_OPEN_SHORT_ARRAY) {
+            return $container !== null;
         }
 
-        $next = $phpcsFile->findNext(T_WHITESPACE, ($closer + 1), null, true);
-        if ($next !== false && $tokens[$next]['code'] === T_COMMA) {
-            $next = $phpcsFile->findNext(T_WHITESPACE, ($next + 1), null, true);
+        // Parentheses hold an argument list when they follow something that takes arguments, such as a function's
+        // name. A control structure's condition, as in `foreach (`, isn't one.
+        $name = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($container - 1), null, true);
+        if ($tokens[$container]['code'] !== T_OPEN_PARENTHESIS || $name === false) {
+            return false;
         }
 
-        if ($next === false || ($tokens[$previous]['parenthesis_closer'] ?? null) !== $next) {
-            return null;
-        }
+        $code = $tokens[$name]['code'];
 
-        return $next;
+        return $code === T_CLONE || isset(Collections::parameterPassingTokens()[$code]);
     }
 }
