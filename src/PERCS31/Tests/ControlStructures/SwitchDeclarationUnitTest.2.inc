@@ -1,7 +1,7 @@
 <?php
 
-// phpcs:disable PERCS31.ControlStructures.SwitchDeclaration.BodyOnNextLineCASE
-// phpcs:disable PERCS31.ControlStructures.SwitchDeclaration.BodyOnNextLineDEFAULT
+// The parent's BodyOnNextLine codes report code on a label's line, and a blank line straight after a label.
+// This sniff's CommentOnCaseLine code reports a comment on a label's line.
 
 // A blank line straight after a label is reported, and removed by the fix.
 switch ($a) {

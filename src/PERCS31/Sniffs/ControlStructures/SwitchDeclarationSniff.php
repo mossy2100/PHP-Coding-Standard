@@ -24,12 +24,10 @@ use PHP_CodeSniffer\Util\Tokens;
  *   indented at least once. The fix moves the first condition, or indents the line once past the `case`.
  * - A non-empty case that continues into the next one MUST have a comment saying so. The parent only checks a `case`,
  *   so this also checks a `default` that isn't last.
- * - The `case` line MUST consist only of the keyword, the condition and a colon. So code or a comment there is
- *   reported, and the fix moves it to the next line. A phpcs annotation is left alone, as it only works on that line.
- *
- * The parent also requires the body on the very next line (BodyOnNextLine), but its fix can't handle a comment on the
- * label's line. So the PERCS31 ruleset excludes those codes, and this sniff reports code or a comment on the label's
- * line, and a blank line straight after it (BlankLineAfterLabel), as section 5.2's example has none.
+ * - The `case` line MUST consist only of the keyword, the condition and a colon. The parent's BodyOnNextLine check
+ *   reports code there, and a blank line straight after the label, which section 5.2's example doesn't have. It allows
+ *   a comment there, so this sniff reports one (CommentOnCaseLine), and the fix moves it to the next line. A phpcs
+ *   annotation is left alone, as it only works on that line.
  *
  * To find a terminating statement nested in if/else, try/catch or another switch, it calls the parent's private
  * findNestedTerminator() through Closure::bind, rather than copying it. After a PHP_CodeSniffer upgrade, check that
@@ -51,11 +49,7 @@ class SwitchDeclarationSniff extends Psr2Sniff
 
     public const string CODE_TERMINATING_COMMENT = 'TerminatingComment';
 
-    public const string CODE_BODY_ON_CASE_LINE = 'BodyOnCaseLine';
-
     public const string CODE_COMMENT_ON_CASE_LINE = 'CommentOnCaseLine';
-
-    public const string CODE_BLANK_LINE_AFTER_LABEL = 'BlankLineAfterLabel';
 
     /**
      * Tokens that end a case, as the tokenizer and the parent define them.
@@ -98,7 +92,8 @@ class SwitchDeclarationSniff extends Psr2Sniff
     }
 
     /**
-     * Check the line a `case` or `default` label ends on, and the line after it.
+     * Report a comment on the line a `case` or `default` label ends on, and fix it by moving it to the next line. The
+     * parent reports code there.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $case The position of `case` or `default`.
@@ -108,73 +103,28 @@ class SwitchDeclarationSniff extends Psr2Sniff
         $tokens = $phpcsFile->getTokens();
         $opener = $tokens[$case]['scope_opener'] ?? null;
         $next = is_int($opener) ? $phpcsFile->findNext(T_WHITESPACE, ($opener + 1), null, true) : false;
-        if (!is_int($opener) || $next === false || $tokens[$next]['code'] === T_CLOSE_CURLY_BRACKET) {
-            return;
-        }
-
-        if ($tokens[$next]['line'] !== $tokens[$opener]['line']) {
-            if (($tokens[$next]['line'] - $tokens[$opener]['line']) > 1) {
-                $this->reportBlankLineAfterLabel($phpcsFile, $case, $opener, $next);
-            }
-
-            return;
-        }
-
-        if (isset(Tokens::PHPCS_ANNOTATION_TOKENS[$tokens[$next]['code']])) {
+        if (!is_int($opener) || $next === false || $tokens[$next]['line'] !== $tokens[$opener]['line']) {
             return;
         }
 
         $isComment = isset(Tokens::COMMENT_TOKENS[$tokens[$next]['code']]);
-        $error = $isComment
-            ? 'A %s line must consist only of the label; move the comment to the next line'
-            : 'The %s body must start on the line after the label';
-        $code = $isComment ? self::CODE_COMMENT_ON_CASE_LINE : self::CODE_BODY_ON_CASE_LINE;
+        if (!$isComment || isset(Tokens::PHPCS_ANNOTATION_TOKENS[$tokens[$next]['code']])) {
+            return;
+        }
+
+        $error = 'A %s line must consist only of the label; move the comment to the next line';
         $data = [strtoupper($tokens[$case]['content'])];
 
-        // Code after a comment on the line would end up on the comment's new line, so leave that to a person.
-        $afterComment = $isComment ? $phpcsFile->findNext(T_WHITESPACE, ($next + 1), null, true) : false;
+        // Code after the comment on its line would end up on the comment's new line, so the parent's fix moves both.
+        $afterComment = $phpcsFile->findNext(T_WHITESPACE, ($next + 1), null, true);
         $isFixable = $afterComment === false || $tokens[$afterComment]['line'] !== $tokens[$next]['line'];
-        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $next, $code, $data)) {
+        $errorCode = self::CODE_COMMENT_ON_CASE_LINE;
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $next, $errorCode, $data)) {
             return;
         }
 
         $padding = str_repeat(' ', ($tokens[$case]['column'] - 1 + $this->indent));
-        $phpcsFile->fixer->beginChangeset();
-        FixerHelper::blankBetween($phpcsFile, $opener, $next);
-
-        $phpcsFile->fixer->addContentBefore($next, $phpcsFile->eolChar . $padding);
-        $phpcsFile->fixer->endChangeset();
-    }
-
-    /**
-     * Report a blank line straight after a label, and fix it by removing it.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $case The position of `case` or `default`.
-     * @param int $opener The position of the label's colon.
-     * @param int $next The position of the first token on a later line.
-     */
-    private function reportBlankLineAfterLabel(File $phpcsFile, int $case, int $opener, int $next): void
-    {
-        $tokens = $phpcsFile->getTokens();
-        $fix = $phpcsFile->addFixableError(
-            'There must be no blank line after a %s label',
-            $case,
-            self::CODE_BLANK_LINE_AFTER_LABEL,
-            [strtoupper($tokens[$case]['content'])],
-        );
-        if (!$fix) {
-            return;
-        }
-
-        $phpcsFile->fixer->beginChangeset();
-        for ($i = ($opener + 1); $i < $next; $i++) {
-            if ($tokens[$i]['line'] > $tokens[$opener]['line'] && $tokens[$i]['line'] < $tokens[$next]['line']) {
-                $phpcsFile->fixer->replaceToken($i, '');
-            }
-        }
-
-        $phpcsFile->fixer->endChangeset();
+        FixerHelper::replaceBetween($phpcsFile, $opener, $next, $phpcsFile->eolChar . $padding);
     }
 
     /**

@@ -1031,12 +1031,14 @@ Checks `switch` statements. This replaces `PSR2.ControlStructures.SwitchDeclarat
 - The last non-empty case MUST end with a terminating statement, such as `break`, `return` or `throw`.
 - A multi-line case condition MUST be wrapped in parentheses, with `):` on a line of its own.
 - A non-empty `default` that continues into the next case MUST have a comment saying so, as a `case` must.
-- A `case` or `default` line MUST consist only of the label, so code or a comment there is reported. A phpcs annotation
-  is left alone, as it only works on that line.
-- No blank line straight after a label, as section 5.2's example, the template for its rules, has none.
+- A `case` or `default` line MUST consist only of the label, so a comment there is reported, as `CommentOnCaseLine`. A
+  phpcs annotation is left alone, as it only works on that line.
 
 **Why:** [PER Coding Style 3.1, Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) sets these rules. The parent only checks a case that's followed by another,
-and doesn't check multi-line conditions.
+doesn't check multi-line conditions, and allows a comment on a label's line.
+
+The parent's own `BodyOnNextLineCASE` and `BodyOnNextLineDEFAULT` codes report code on a label's line, and a blank line
+straight after a label, which section 5.2's example, the template for its rules, doesn't have.
 
 A multi-line `case` condition must also follow the rule for any expression split inside parentheses. The first condition
 must be on the line after `(`, and each line must be indented at least once past the `case`.

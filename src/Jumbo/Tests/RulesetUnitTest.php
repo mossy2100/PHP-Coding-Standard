@@ -170,8 +170,8 @@ class RulesetUnitTest extends TestCase
             unlink($comment);
         }
 
-        $this->assertStringContainsString('SwitchDeclaration.BlankLineAfterLabel', $perBlank);
-        $this->assertStringContainsString('SwitchDeclaration.BlankLineAfterLabel', $jumboBlank);
+        $this->assertStringContainsString('SwitchDeclaration.BodyOnNextLineCASE', $perBlank);
+        $this->assertStringContainsString('SwitchDeclaration.BodyOnNextLineCASE', $jumboBlank);
         $this->assertStringContainsString('SwitchDeclaration.CommentOnCaseLine', $perComment);
         $this->assertStringContainsString('SwitchDeclaration.CommentOnCaseLine', $jumboComment);
     }

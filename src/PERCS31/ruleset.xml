@@ -285,12 +285,7 @@
 
     <!-- switch rules, including a terminating statement in the last case, and parentheses around a multi-line case
          condition (5.2) -->
-    <rule ref="PERCS31.ControlStructures.SwitchDeclaration">
-        <!-- The sniff's own codes report code or a comment on a label's line, and a blank line after it, which these
-             can't fix -->
-        <exclude name="PERCS31.ControlStructures.SwitchDeclaration.BodyOnNextLineCASE"/>
-        <exclude name="PERCS31.ControlStructures.SwitchDeclaration.BodyOnNextLineDEFAULT"/>
-    </rule>
+    <rule ref="PERCS31.ControlStructures.SwitchDeclaration"/>
 
     <!-- Each match arm on a new line, as in the example in 5.2 -->
     <rule ref="PERCS31.ControlStructures.MatchArmPlacement"/>
