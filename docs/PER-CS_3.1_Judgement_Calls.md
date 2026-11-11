@@ -386,12 +386,12 @@ MUST be all lower-case".
 
 ---
 
-### `(double)` and `(real)` Casts
+### The `(double)` Cast
 
 **Issue:** 2.5 requires the short form of a type keyword, "i.e. `bool` instead of `boolean`, `int` instead of
-`integer` etc." `(double)` and `(real)` are aliases for `(float)`, not longer spellings of it.
+`integer` etc." `(double)` is an alias for `(float)`, not a longer spelling of it.
 
-**Ruleset:** They aren't reported. `(boolean)` and `(integer)`, which the text names, are.
+**Ruleset:** It isn't reported. `(boolean)` and `(integer)`, which the text names, are.
 
 **Why:** "Short form" describes a longer spelling of the same word. It's unclear whether "etc." stretches to a
 different word.
