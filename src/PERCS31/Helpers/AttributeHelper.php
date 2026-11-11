@@ -64,18 +64,30 @@ class AttributeHelper
             return null;
         }
 
-        $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($attributePtr - 1), null, true);
-        while ($previous !== false && $tokens[$previous]['code'] === T_ATTRIBUTE_END) {
-            $previous = $phpcsFile->findPrevious(
-                Tokens::EMPTY_TOKENS,
-                ($tokens[$previous]['attribute_opener'] - 1),
-                null,
-                true,
-            );
-        }
+        $first = self::findFirstAttribute($phpcsFile, $attributePtr);
+        $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($first - 1), null, true);
 
         return $previous === $opener || ($previous !== false && $tokens[$previous]['code'] === T_COMMA)
             ? $opener
             : null;
+    }
+
+    /**
+     * Find the first of a run of attribute blocks, from any block in it.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $attributePtr The position of an attribute block's opener.
+     * @return int The position of the first attribute block's opener.
+     */
+    public static function findFirstAttribute(File $phpcsFile, int $attributePtr): int
+    {
+        $tokens = $phpcsFile->getTokens();
+        $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($attributePtr - 1), null, true);
+        while ($previous !== false && $tokens[$previous]['code'] === T_ATTRIBUTE_END) {
+            $attributePtr = $tokens[$previous]['attribute_opener'];
+            $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($attributePtr - 1), null, true);
+        }
+
+        return $attributePtr;
     }
 }

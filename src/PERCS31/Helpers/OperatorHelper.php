@@ -52,6 +52,22 @@ class OperatorHelper
     private const array EXPRESSION_BODY_OWNERS = [T_MATCH, T_CLOSURE, T_ANON_CLASS];
 
     /**
+     * Check whether a closing brace ends a statement: it closes a block, such as an `if`'s or a function's, and not the
+     * body of a closure, anonymous class or `match`, which is part of an expression.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $closer The position of the closing brace.
+     * @return bool True if it closes a block that ends a statement.
+     */
+    public static function closesStatementBlock(File $phpcsFile, int $closer): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $owner = $tokens[$closer]['scope_condition'] ?? null;
+
+        return is_int($owner) && !in_array($tokens[$owner]['code'], self::EXPRESSION_BODY_OWNERS, true);
+    }
+
+    /**
      * Check whether a `+`, `-` or `&` is a prefix unary operator, judged by the token before it, such as an operator, a
      * `(` or `,`, or the end of a statement or block.
      *
@@ -71,9 +87,7 @@ class OperatorHelper
 
         // A block's closing brace ends a statement, but one closing a closure, match or `${...}` ends an expression.
         if ($previousCode === T_CLOSE_CURLY_BRACKET) {
-            $owner = $tokens[$previous]['scope_condition'] ?? null;
-
-            return $owner !== null && !in_array($tokens[$owner]['code'], self::EXPRESSION_BODY_OWNERS, true);
+            return self::closesStatementBlock($phpcsFile, $previous);
         }
 
         $isPlusMinus = in_array($tokens[$stackPtr]['code'], [T_PLUS, T_MINUS], true);

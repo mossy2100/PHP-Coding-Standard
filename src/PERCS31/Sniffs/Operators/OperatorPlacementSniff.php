@@ -81,13 +81,6 @@ class OperatorPlacementSniff implements Sniff
     private const array INDENT_EXEMPT_OWNERS = [T_IF, T_ELSEIF, T_WHILE, T_SWITCH, T_MATCH, T_FOR, T_FOREACH];
 
     /**
-     * Constructs whose body can be part of an expression.
-     *
-     * @var list<int|string>
-     */
-    private const array EXPRESSION_BODIES = [T_CLOSURE, T_ANON_CLASS, T_MATCH];
-
-    /**
      * Tokens that end the expression before an operator, when walking back from it.
      *
      * @var list<int|string>
@@ -400,8 +393,7 @@ class OperatorPlacementSniff implements Sniff
 
             if ($code === T_CLOSE_CURLY_BRACKET) {
                 // The end of a block ends the expression, but a body within it, such as a closure's, doesn't.
-                $condition = $tokens[$i]['scope_condition'] ?? null;
-                if ($condition !== null && !in_array($tokens[$condition]['code'], self::EXPRESSION_BODIES, true)) {
+                if (OperatorHelper::closesStatementBlock($phpcsFile, $i)) {
                     break;
                 }
 

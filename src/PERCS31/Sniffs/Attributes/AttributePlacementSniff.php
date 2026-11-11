@@ -123,7 +123,7 @@ class AttributePlacementSniff implements Sniff
             return;
         }
 
-        $isGroup = $this->findFirstAttribute($phpcsFile, $stackPtr) !== $stackPtr;
+        $isGroup = AttributeHelper::findFirstAttribute($phpcsFile, $stackPtr) !== $stackPtr;
         $listOpener = $isGroup ? AttributeHelper::findSingleLineListOpener($phpcsFile, $stackPtr) : null;
         if ($listOpener !== null) {
             $this->processSingleLineList($phpcsFile, $stackPtr, $listOpener);
@@ -491,7 +491,7 @@ class AttributePlacementSniff implements Sniff
     private function processClosure(File $phpcsFile, int $stackPtr, int $closerPtr, int $targetPtr): void
     {
         $tokens = $phpcsFile->getTokens();
-        $firstPtr = $this->findFirstAttribute($phpcsFile, $stackPtr);
+        $firstPtr = AttributeHelper::findFirstAttribute($phpcsFile, $stackPtr);
         $arguments = $this->findCallArguments($phpcsFile, $firstPtr);
         if ($arguments === null && $firstPtr !== $stackPtr) {
             if ($tokens[$targetPtr]['line'] === $tokens[$closerPtr]['line']) {
@@ -597,25 +597,6 @@ class AttributePlacementSniff implements Sniff
         if ($phpcsFile->addFixableError($error, $closerPtr, $code)) {
             FixerHelper::replaceBetween($phpcsFile, $closerPtr, $targetPtr, ' ');
         }
-    }
-
-    /**
-     * Find the first of a run of attribute blocks, from the last one.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $attributePtr The position of an attribute block's opener.
-     * @return int The position of the first attribute block's opener.
-     */
-    private function findFirstAttribute(File $phpcsFile, int $attributePtr): int
-    {
-        $tokens = $phpcsFile->getTokens();
-        $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($attributePtr - 1), null, true);
-        while ($previous !== false && $tokens[$previous]['code'] === T_ATTRIBUTE_END) {
-            $attributePtr = $tokens[$previous]['attribute_opener'];
-            $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($attributePtr - 1), null, true);
-        }
-
-        return $attributePtr;
     }
 
     /**

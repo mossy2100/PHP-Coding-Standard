@@ -182,11 +182,8 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
             return !isset($tokens[$ptr]['nested_parenthesis']) || $this->isOutsideOwnParentheses($phpcsFile, $ptr);
         }
 
-        $condition = $tokens[$ptr]['scope_condition'] ?? null;
-
         return $tokens[$ptr]['code'] === T_CLOSE_CURLY_BRACKET
-            && is_int($condition)
-            && !in_array($tokens[$condition]['code'], [T_CLOSURE, T_ANON_CLASS, T_MATCH], true);
+            && OperatorHelper::closesStatementBlock($phpcsFile, $ptr);
     }
 
     /**
