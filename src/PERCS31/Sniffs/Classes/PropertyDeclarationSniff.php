@@ -26,6 +26,10 @@ use PHP_CodeSniffer\Util\Tokens;
  * The ruleset excludes the parent's checks that Slevomat sniffs make: modifier order, and the spacing after the type,
  * by SlevomatCodingStandard.Classes.PropertyDeclaration, and several properties in one statement, by
  * SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition.
+ *
+ * The last of those, the parent's Multiple code, must stay excluded for a second reason. The parent reads a hook list
+ * as a second property, so it reports every property with hooks, and this sniff inherits that. The check is in the
+ * middle of the parent's processMemberVar(), so it can't be turned off from here.
  */
 class PropertyDeclarationSniff extends Psr2Sniff
 {

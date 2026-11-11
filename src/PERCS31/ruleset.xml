@@ -103,8 +103,8 @@
         <!-- Replaced by PERCS31.TypeHints.NullType, which also checks a type with an intersection, a typed constant and
              a set hook's parameter (2.5) -->
         <exclude name="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.NullTypeHintNotOnLastPosition"/>
-        <!-- ?T is checked by PERCS31.TypeHints.NullType too, as this sniff's fix turns a static|null return type into ?,
-             a parse error. Its shortNullable property is left unset, which turns the check off. -->
+        <!-- ?T is checked by PERCS31.TypeHints.NullType too, as this sniff's fix turns a static|null return type into
+             ?, a parse error. Its shortNullable property is left unset, which turns the check off. -->
         <properties>
             <property name="withSpacesAroundOperators" value="no"/>
             <property name="withSpacesInsideParentheses" value="no"/>
@@ -217,9 +217,12 @@
 
     <!-- Properties: no leading underscore, no var, a visibility, and get before set with no bodies (4.3, 4.10) -->
     <rule ref="PERCS31.Classes.PropertyDeclaration">
-        <!-- Modifier order and the spacing after the type are checked by SlevomatCodingStandard.Classes.PropertyDeclaration,
-             and several properties in one statement by SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition -->
+        <!-- Several properties in one statement are checked by
+             SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition. The parent's check also reports every
+             property with hooks, as it reads the hook list as a second property, so this code must stay excluded. -->
         <exclude name="PERCS31.Classes.PropertyDeclaration.Multiple"/>
+        <!-- Modifier order and the spacing after the type are checked by
+             SlevomatCodingStandard.Classes.PropertyDeclaration -->
         <exclude name="PERCS31.Classes.PropertyDeclaration.SpacingAfterType"/>
         <exclude name="PERCS31.Classes.PropertyDeclaration.StaticBeforeVisibility"/>
         <exclude name="PERCS31.Classes.PropertyDeclaration.ReadonlyBeforeVisibility"/>
