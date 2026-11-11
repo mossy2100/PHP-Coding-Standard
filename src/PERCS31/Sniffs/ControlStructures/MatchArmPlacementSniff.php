@@ -71,12 +71,8 @@ class MatchArmPlacementSniff implements Sniff
         }
 
         $error = 'Each match arm must start on a new line';
-        if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($comma + 1), $next) !== false) {
-            $phpcsFile->addError($error, $next, self::CODE_NOT_ON_OWN_LINE);
-            return;
-        }
-
-        if (!$phpcsFile->addFixableError($error, $next, self::CODE_NOT_ON_OWN_LINE)) {
+        $isFixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($comma + 1), $next) === false;
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $next, self::CODE_NOT_ON_OWN_LINE)) {
             return;
         }
 

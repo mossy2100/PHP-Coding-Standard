@@ -12,6 +12,34 @@ use PHP_CodeSniffer\Files\File;
 class FixerHelper
 {
     /**
+     * Report an error that can be fixed unless something is in the way, such as a comment that the fix would lose.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param bool $isFixable Whether the error can be fixed.
+     * @param string $error The error message.
+     * @param int $stackPtr The position of the token the error is on.
+     * @param string $code The error's code.
+     * @param array<int|string, mixed> $data The values for the message's placeholders.
+     * @return bool True if the error is to be fixed now.
+     */
+    public static function addFixableErrorIf(
+        File $phpcsFile,
+        bool $isFixable,
+        string $error,
+        int $stackPtr,
+        string $code,
+        array $data = [],
+    ): bool {
+        if (!$isFixable) {
+            $phpcsFile->addError($error, $stackPtr, $code, $data);
+
+            return false;
+        }
+
+        return $phpcsFile->addFixableError($error, $stackPtr, $code, $data);
+    }
+
+    /**
      * Empty every token between two tokens, not including them.
      *
      * It doesn't start a changeset, so it can be used inside one. PHP_CodeSniffer's beginChangeset() drops the changes

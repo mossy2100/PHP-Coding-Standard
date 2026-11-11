@@ -134,12 +134,8 @@ class SwitchDeclarationSniff extends Psr2Sniff
 
         // Code after a comment on the line would end up on the comment's new line, so leave that to a person.
         $afterComment = $isComment ? $phpcsFile->findNext(T_WHITESPACE, ($next + 1), null, true) : false;
-        if ($afterComment !== false && $tokens[$afterComment]['line'] === $tokens[$next]['line']) {
-            $phpcsFile->addError($error, $next, $code, $data);
-            return;
-        }
-
-        if (!$phpcsFile->addFixableError($error, $next, $code, $data)) {
+        $isFixable = $afterComment === false || $tokens[$afterComment]['line'] !== $tokens[$next]['line'];
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $next, $code, $data)) {
             return;
         }
 
@@ -294,13 +290,8 @@ class SwitchDeclarationSniff extends Psr2Sniff
         // The fix adds `break;` on a line of its own before the `}`, so the `}` must start its line.
         $error = 'The last case in a switch must end with a break, return or similar terminating statement';
         $beforeCloser = $phpcsFile->findPrevious(T_WHITESPACE, ($closer - 1), null, true);
-        if ($beforeCloser === false || $tokens[$beforeCloser]['line'] === $tokens[$closer]['line']) {
-            $phpcsFile->addError($error, $case, self::CODE_MISSING_TERMINATOR);
-            return;
-        }
-
-        $fix = $phpcsFile->addFixableError($error, $case, self::CODE_MISSING_TERMINATOR);
-        if (!$fix) {
+        $isFixable = $beforeCloser !== false && $tokens[$beforeCloser]['line'] !== $tokens[$closer]['line'];
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $case, self::CODE_MISSING_TERMINATOR)) {
             return;
         }
 

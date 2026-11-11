@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Attributes;
 
+use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\LayoutHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
@@ -61,13 +62,8 @@ class DisallowMultiLineAttributesJoiningSniff implements Sniff
 
         // A comment outside an attribute would be lost or misplaced by the fix, so leave that to a person.
         $error = 'Attributes in a block split over several lines must be in separate blocks';
-        if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, $stackPtr, $closer) !== false) {
-            $phpcsFile->addError($error, $stackPtr, self::CODE_JOINED);
-            return;
-        }
-
-        $fix = $phpcsFile->addFixableError($error, $stackPtr, self::CODE_JOINED);
-        if (!$fix) {
+        $isFixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, $stackPtr, $closer) === false;
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $stackPtr, self::CODE_JOINED)) {
             return;
         }
 

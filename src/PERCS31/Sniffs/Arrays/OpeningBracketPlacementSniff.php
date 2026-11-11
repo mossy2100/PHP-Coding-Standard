@@ -78,13 +78,7 @@ class OpeningBracketPlacementSniff implements Sniff
         $isFixable = !isset(Tokens::COMMENT_TOKENS[$code])
             && $code !== T_COMMA
             && ($code !== T_OPEN_PARENTHESIS || $onlyArgumentCloser !== null);
-        if (!$isFixable) {
-            $phpcsFile->addError($error, $stackPtr, self::CODE_OWN_LINE);
-            return;
-        }
-
-        $fix = $phpcsFile->addFixableError($error, $stackPtr, self::CODE_OWN_LINE);
-        if (!$fix) {
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $stackPtr, self::CODE_OWN_LINE)) {
             return;
         }
 

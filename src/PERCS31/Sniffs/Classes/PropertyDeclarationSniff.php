@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Classes;
 
+use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\PSR2\Sniffs\Classes\PropertyDeclarationSniff as Psr2Sniff;
@@ -114,13 +115,8 @@ class PropertyDeclarationSniff extends Psr2Sniff
         $error = 'The get hook must come before the set hook';
         $setHook = $hooks[$setIndex];
         $getHook = $hooks[$getIndex];
-        if ($this->hasCommentBetweenHooks($phpcsFile, $opener, $closer, $hooks)) {
-            $phpcsFile->addError($error, $setHook['namePtr'], 'HookOrder');
-            return;
-        }
-
-        $fix = $phpcsFile->addFixableError($error, $setHook['namePtr'], 'HookOrder');
-        if (!$fix) {
+        $isFixable = !$this->hasCommentBetweenHooks($phpcsFile, $opener, $closer, $hooks);
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $setHook['namePtr'], 'HookOrder')) {
             return;
         }
 

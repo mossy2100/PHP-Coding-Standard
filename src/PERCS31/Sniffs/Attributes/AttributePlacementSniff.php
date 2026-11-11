@@ -167,13 +167,8 @@ class AttributePlacementSniff implements Sniff
 
         // A comment between the attribute and its target would have to move too, so leave that to a person.
         $nextPtr = $closerPtr + 1;
-        if ($tokens[$nextPtr]['code'] !== T_WHITESPACE || ($nextPtr + 1) !== $targetPtr) {
-            $phpcsFile->addError($error, $stackPtr, self::CODE_SAME_LINE);
-            return;
-        }
-
-        $fix = $phpcsFile->addFixableError($error, $stackPtr, self::CODE_SAME_LINE);
-        if (!$fix) {
+        $isFixable = $tokens[$nextPtr]['code'] === T_WHITESPACE && ($nextPtr + 1) === $targetPtr;
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $stackPtr, self::CODE_SAME_LINE)) {
             return;
         }
 
@@ -455,13 +450,8 @@ class AttributePlacementSniff implements Sniff
             . 'the line after them';
 
         // A comment between them would be lost.
-        if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($newPtr + 1), $anonClassPtr) !== false) {
-            $phpcsFile->addError($error, $newPtr, self::CODE_ANON_CLASS);
-            return;
-        }
-
-        $fix = $phpcsFile->addFixableError($error, $newPtr, self::CODE_ANON_CLASS);
-        if (!$fix) {
+        $isFixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($newPtr + 1), $anonClassPtr) === false;
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $newPtr, self::CODE_ANON_CLASS)) {
             return;
         }
 

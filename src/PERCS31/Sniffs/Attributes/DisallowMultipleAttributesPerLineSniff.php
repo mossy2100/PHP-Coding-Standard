@@ -56,12 +56,8 @@ class DisallowMultipleAttributesPerLineSniff extends SlevomatSniff
         // A comment between the blocks would have to move too, so leave that to a person.
         $error = 'Multiple attributes per line are disallowed.';
         $code = self::CODE_DISALLOWED_MULTIPLE_ATTRIBUTES_PER_LINE;
-        if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($closerPtr + 1), $nextPtr) !== false) {
-            $phpcsFile->addError($error, $nextPtr, $code);
-            return;
-        }
-
-        if (!$phpcsFile->addFixableError($error, $nextPtr, $code)) {
+        $isFixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($closerPtr + 1), $nextPtr) === false;
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $nextPtr, $code)) {
             return;
         }
 

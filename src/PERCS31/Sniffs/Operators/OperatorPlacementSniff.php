@@ -204,12 +204,8 @@ class OperatorPlacementSniff implements Sniff
     private function reportSplitShortTernary(File $phpcsFile, int $thenPtr, int $elsePtr): void
     {
         $error = 'The short ternary operator must be written "?:", with nothing between "?" and ":"';
-        if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($thenPtr + 1), $elsePtr) !== false) {
-            $phpcsFile->addError($error, $thenPtr, self::CODE_SPLIT_SHORT_TERNARY);
-            return;
-        }
-
-        if (!$phpcsFile->addFixableError($error, $thenPtr, self::CODE_SPLIT_SHORT_TERNARY)) {
+        $isFixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($thenPtr + 1), $elsePtr) === false;
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $thenPtr, self::CODE_SPLIT_SHORT_TERNARY)) {
             return;
         }
 
