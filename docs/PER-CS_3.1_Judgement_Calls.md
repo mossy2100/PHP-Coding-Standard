@@ -49,19 +49,160 @@ one. A little extra strictness, consistent with the rest of the spec, is unlikel
 
 ### Spec Examples That Break the Spec
 
-**Issue:** Some examples break the spec's own rules:
+Several examples are shown in the spec that break its own rules. In these cases, the text is considered to overrule
+the example.
 
-- 2.5: `somethingWithReflection` has no trailing comma (2.6), and returns `object|null`, not `?object`.
-- 2.5: `veryComplex` has its `)` and `{` on different lines (4.5).
-- 4.4: a blank line has trailing whitespace (2.3).
-- 4.9: a promoted hook has no trailing comma (2.6).
-- 4.10: `abstract class Example {` has its brace on the class's line (4.1).
-- 8: an empty constructor body isn't written as `{}` (4.4).
-- 10: the `<<<COMPLIANT` heredoc has nothing to interpolate, so it SHOULD be a nowdoc.
+#### 2.5 Keywords and Types
 
-**Ruleset:** These are reported like any other code.
+This example is shown:
 
-**Why:** The rule text beats an example (see [Rule Text and Examples](#rule-text-and-examples)).
+```php
+function somethingWithReflection(
+    \ReflectionObject
+    |\ReflectionClass
+    |\ReflectionMethod
+    |\ReflectionParameter
+    |\ReflectionProperty $reflect
+): object|null {
+    // ...
+}
+```
+
+Two issues here:
+
+a. The parameter list has no trailing comma. This contradicts section 2.6, which says:
+
+> If the list is split across multiple lines, then the last item MUST have a trailing comma.
+
+b. The method returns `object|null`, not `?object`. This contradicts section 2.5, which says:
+
+> A union of a single simple type with `null` SHOULD be abbreviated using the `?` alternate syntax: `?T`.
+
+Another example:
+
+```php
+function veryComplex(
+    array
+    |(ArrayAccess&Traversable)
+    |(Traversable&Countable) $input): ArrayAccess&Traversable
+{
+    // ...
+}
+```
+
+The method has its `)` and `{` on different lines. This contradicts section 4.5, which says:
+
+> When the argument list is split across multiple lines, the closing parenthesis and opening brace MUST be placed
+> together on their own line with one space between them.
+
+#### 4.9 Property Hooks
+
+This example is shown:
+
+```php
+class Example
+{
+    public function __construct(
+        public string $name { set => ucfirst($value); }
+    ) {}
+}
+```
+
+This contradicts section 2.6, which says:
+
+> If the list is split across multiple lines, then the last item MUST have a trailing comma.
+
+#### 4.10 Interface and abstract properties
+
+This example is shown:
+
+```php
+abstract class Example {
+    abstract public string $name {
+        get => ucfirst($this->name);
+        set;
+    }
+}
+```
+
+This contradicts section 4.1, which says:
+
+> The opening brace for the class MUST go on its own line, and MUST NOT be preceded or followed by a blank line.
+
+#### 8. Anonymous Classes
+
+This example is shown:
+
+```php
+<?php
+
+// Brace on the same line
+// No arguments
+$instance = new class extends \Foo implements \HandleableInterface {
+    // ...
+};
+
+// Brace on the next line
+// Constructor arguments
+$instance = new class ($a) extends \Foo implements
+    \ArrayAccess,
+    \Countable,
+    \Serializable
+{
+    public function __construct(public int $a)
+    {
+    }
+    // ...
+};
+```
+
+The constructor's body is empty, but isn't written as `{}`. This contradicts section 4.4, which says:
+
+> If a function or method contains no statements or comments (such as an empty no-op implementation or when using
+> constructor property promotion), then the body SHOULD be abbreviated as `{}` and placed on the same line as the
+> previous symbol, separated by a space.
+
+#### 10. Heredoc and Nowdoc
+
+This example is shown:
+
+```php
+function allowed()
+{
+    $allowedHeredoc = <<<COMPLIANT
+        This
+        is
+        a
+        compliant
+        heredoc
+        COMPLIANT;
+
+    $allowedNowdoc = <<<'COMPLIANT'
+        This
+        is
+        a
+        compliant
+        nowdoc
+        COMPLIANT;
+
+    var_dump(
+        'foo',
+        <<<'COMPLIANT'
+            This
+            is
+            a
+            compliant
+            parameter
+            COMPLIANT,
+        'bar',
+    );
+}
+```
+
+The `$allowedHeredoc` heredoc has nothing to interpolate, so a nowdoc could be used. This contradicts section 10, which
+says:
+
+> A nowdoc SHOULD be used wherever possible.
 
 ---
 
@@ -117,7 +258,7 @@ in `HTTPStatus`, qualifies.
 
 - StudlyCaps is read as PascalCase, with the first letter of every word capitalized and the rest lower case.
 - This applies to classes, interfaces, traits, enums and enum cases.
-- `FOO`, `OK`, `HTTPStatus`, `XMLParser` and `AClass` are errors.
+- Any name with sequential capitals, such as `FOO`, `OK`, `HTTPStatus`, `XMLParser`, and `TClass`, are errors.
 - A lone capital not next to another passes: `A`, `C2`, `H1`, `B2B`, `H2O`.
 
 **Why:** Section 2.7 RECOMMENDS treating acronyms as words, which is PascalCase. Section 4 uses "class" to cover all
@@ -161,7 +302,21 @@ See [Line Length](LineLength.md) to change the limit.
 
 **Ruleset:** Code in a PHP block may be level with its tags, or one level past them. The indent of `?>` isn't checked.
 
-**Why:** Both styles are common, and the spec gives no reason to prefer one.
+**Why:** Both styles are common, and the spec shows both:
+
+- Every example that starts with `<?php` has its code level with the tag.
+- Section 3's example of a file with markup has `// ...`, standing in for code, one level past its `<?php`:
+
+```php
+<?php declare(strict_types=1) ?>
+<html>
+<body>
+    <?php
+        // ...
+    ?>
+</body>
+</html>
+```
 
 ---
 
