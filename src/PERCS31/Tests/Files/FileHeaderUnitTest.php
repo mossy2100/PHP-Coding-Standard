@@ -40,6 +40,12 @@ class FileHeaderUnitTest extends AbstractSniffTestCase
             return $testFile === 'FileHeaderUnitTest.13.inc' ? [7 => 1] : [9 => 1];
         }
 
+        if ($testFile === 'FileHeaderUnitTest.12.inc' || $testFile === 'FileHeaderUnitTest.18.inc') {
+            // An import in a file that starts with markup, so it can't be at the top of the file. The rest of the
+            // header in file 12 isn't checked.
+            return [4 => 1];
+        }
+
         if ($testFile === 'FileHeaderUnitTest.2.inc') {
             // A blank line between a declare statement and a block declare.
             return [3 => 1];

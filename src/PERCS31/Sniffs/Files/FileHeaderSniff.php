@@ -24,9 +24,10 @@ use PHPCSUtils\Utils\UseStatements;
  * header at a block declare, so it wants a blank line before one. This sniff counts one as a declare statement, so
  * there's no blank line between it and the declare statements before it.
  *
- * A file with markup before its first PHP opening tag, such as a template, has no file header, so it isn't checked.
- * The parent skips a file that mixes PHP and markup when it has several opening tags, but with only one, it reports
- * a declare after the markup as a misplaced header, and its spacing fixes then fight other sniffs.
+ * A file with markup before its first PHP opening tag, such as a template, has no file header, so its blocks and blank
+ * lines aren't checked. The parent skips a file that mixes PHP and markup when it has several opening tags, but with
+ * only one, it reports a declare after the markup as a misplaced header, and its spacing fixes then fight other sniffs.
+ * An import in such a file is still reported, as ImportAfterCode, as it can't be at the top of the file.
  *
  * Section 3 also says the opening tag on the first line MUST be on its own line "unless it is a file containing markup
  * outside of PHP opening and closing tags". So a template may start with `<?php require 'header.php'; ?>`. With only
@@ -62,7 +63,14 @@ class FileHeaderSniff extends Psr12Sniff
      */
     public function process(File $phpcsFile, int $stackPtr): ?int
     {
-        if (FileHeaderHelper::hasInlineDeclare($phpcsFile) || FileHeaderHelper::hasMarkupBeforeFirstTag($phpcsFile)) {
+        if (FileHeaderHelper::hasInlineDeclare($phpcsFile)) {
+            return $phpcsFile->numTokens;
+        }
+
+        // A file that starts with markup has no header, so every import in it is after the top of the file.
+        if (FileHeaderHelper::hasMarkupBeforeFirstTag($phpcsFile)) {
+            $this->checkImportsAfterCode($phpcsFile, $stackPtr, false);
+
             return $phpcsFile->numTokens;
         }
 
@@ -164,8 +172,9 @@ class FileHeaderSniff extends Psr12Sniff
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the first opening tag.
+     * @param bool $hasHeader Whether the opening tag starts a header. It doesn't in a file that starts with markup.
      */
-    private function checkImportsAfterCode(File $phpcsFile, int $stackPtr): void
+    private function checkImportsAfterCode(File $phpcsFile, int $stackPtr, bool $hasHeader = true): void
     {
         $tokens = $phpcsFile->getTokens();
         $namespaces = 0;
@@ -182,7 +191,7 @@ class FileHeaderSniff extends Psr12Sniff
             return;
         }
 
-        $lines = $this->getHeaderLines($phpcsFile, $stackPtr);
+        $lines = $hasHeader ? $this->getHeaderLines($phpcsFile, $stackPtr) : [];
         $last = end($lines);
         $headerEnd = $last === false ? $stackPtr : $last['end'];
         assert(is_int($headerEnd));
