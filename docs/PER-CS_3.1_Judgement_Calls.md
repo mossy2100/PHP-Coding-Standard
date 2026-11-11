@@ -482,7 +482,8 @@ statement may import several names.
 
 **Ruleset:** `use A, B;` is allowed.
 
-**Why:** Nothing forbids it.
+**Why:** PSR-2 required one `use` keyword per declaration. PSR-12 dropped that rule when it added group `use`, and PER
+doesn't have it either.
 
 ---
 
