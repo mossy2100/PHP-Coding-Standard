@@ -6,6 +6,7 @@ namespace PERCS31\Helpers;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\Scopes;
 use WeakReference;
 
 /**
@@ -395,8 +396,7 @@ class PropertyHookHelper
         }
 
         // Must be directly inside a class, trait or interface, not in a method body.
-        $conditions = $tokens[$stackPtr]['conditions'];
-        if ($conditions === [] || !isset(Tokens::OO_SCOPE_TOKENS[end($conditions)])) {
+        if (Scopes::validDirectScope($phpcsFile, $stackPtr, Tokens::OO_SCOPE_TOKENS) === false) {
             return false;
         }
 

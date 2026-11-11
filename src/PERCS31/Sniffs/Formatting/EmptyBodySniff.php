@@ -8,6 +8,7 @@ use PERCS31\Helpers\EmptyBodyHelper;
 use PERCS31\Helpers\FixerHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use PHPCSUtils\Utils\MessageHelper;
 
 /**
  * Reports an empty class, function, closure or anonymous class body that isn't written as `{}` after a single space.
@@ -70,19 +71,13 @@ class EmptyBodySniff implements Sniff
         };
 
         if (!$fixable) {
-            if ($isMust) {
-                $phpcsFile->addError($message, $opener, self::CODE_NOT_ABBREVIATED, $data);
-            } else {
-                $phpcsFile->addWarning($message, $opener, self::CODE_NOT_ABBREVIATED, $data);
-            }
+            MessageHelper::addMessage($phpcsFile, $message, $opener, $isMust, self::CODE_NOT_ABBREVIATED, $data);
 
             return;
         }
 
-        $fix = $isMust
-            ? $phpcsFile->addFixableError($message, $opener, self::CODE_NOT_ABBREVIATED, $data)
-            : $phpcsFile->addFixableWarning($message, $opener, self::CODE_NOT_ABBREVIATED, $data);
-        if (!$fix) {
+        $errorCode = self::CODE_NOT_ABBREVIATED;
+        if (!MessageHelper::addFixableMessage($phpcsFile, $message, $opener, $isMust, $errorCode, $data)) {
             return;
         }
 

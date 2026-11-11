@@ -8,6 +8,7 @@ use PERCS31\Helpers\NamingHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\Context;
 use PHPCSUtils\Utils\PassedParameters;
 use PHPCSUtils\Utils\Scopes;
 use PHPCSUtils\Utils\TextStrings;
@@ -230,8 +231,7 @@ class AcronymCasingSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        // A `foreach` is the only place an `as` is in parentheses.
-        if (isset($tokens[$stackPtr]['nested_parenthesis'])) {
+        if (Context::inForeachCondition($phpcsFile, $stackPtr) === 'as') {
             return false;
         }
 

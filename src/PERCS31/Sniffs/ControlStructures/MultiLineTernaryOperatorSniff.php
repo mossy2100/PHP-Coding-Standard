@@ -11,6 +11,7 @@ use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Tokens\Collections;
 use PHPCSUtils\Utils\Operators;
 use SlevomatCodingStandard\Helpers\TernaryOperatorHelper;
 
@@ -170,7 +171,6 @@ class MultiLineTernaryOperatorSniff implements Sniff
         ];
 
         // A ternary nested in another's branch starts after the enclosing ternary's `?` or `:`.
-        $ternaryOperators = [T_INLINE_THEN, T_INLINE_ELSE];
         $closers = [T_CLOSE_PARENTHESIS, T_CLOSE_SQUARE_BRACKET, T_CLOSE_SHORT_ARRAY];
         for ($i = ($inlineThenPointer - 1); $i >= $startPointer; $i--) {
             // Brackets before the `?` are part of the condition, whatever's inside them.
@@ -184,7 +184,7 @@ class MultiLineTernaryOperatorSniff implements Sniff
                 }
             }
 
-            $isTernary = in_array($code, $ternaryOperators, true);
+            $isTernary = isset(Collections::ternaryOperators()[$code]);
             $isEnclosingTernary = $isTernary && !Operators::isShortTernary($phpcsFile, $i);
             if ($isEnclosingTernary || in_array($code, $boundaries, true)) {
                 $first = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), $inlineThenPointer, true);

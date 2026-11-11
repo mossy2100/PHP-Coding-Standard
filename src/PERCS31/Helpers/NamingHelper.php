@@ -6,6 +6,7 @@ namespace PERCS31\Helpers;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\Context;
 use PHPCSUtils\Utils\UseStatements;
 
 /**
@@ -146,8 +147,7 @@ class NamingHelper
     {
         $tokens = $phpcsFile->getTokens();
 
-        // A `foreach` is the only place an `as` is in parentheses.
-        if (isset($tokens[$asPtr]['nested_parenthesis'])) {
+        if (Context::inForeachCondition($phpcsFile, $asPtr) === 'as') {
             return false;
         }
 

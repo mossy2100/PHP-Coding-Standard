@@ -282,3 +282,13 @@ define('parseURL', 14);
 \define("getID", 15);
 define('Foo\Bar\userID', 16);
 use const Foo\Bar as otherID;
+
+// A trait alias in an anonymous class that's a call's argument. Its `as` is in parentheses, but isn't a foreach's.
+register(new class {
+    use Greets {
+        hello as protected sayHTTPHello;
+    }
+});
+
+foreach ($callIDs as $callId) {
+}

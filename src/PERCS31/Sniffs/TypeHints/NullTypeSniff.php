@@ -10,6 +10,7 @@ use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\GetTokensAsString;
 
 /**
  * Requires `null` to be the last type in a union, and recommends `?T` for a union of one type with `null`, wherever a
@@ -172,7 +173,7 @@ class NullTypeSniff implements Sniff
     }
 
     /**
-     * Get a type's text for a message, without whitespace.
+     * Get a type's text for a message, without whitespace or comments.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $start The position of the type's first token.
@@ -181,7 +182,7 @@ class NullTypeSniff implements Sniff
      */
     private function typeText(File $phpcsFile, int $start, int $end): string
     {
-        return (string) preg_replace('/\s+/', '', $phpcsFile->getTokensAsString($start, ($end - $start + 1)));
+        return GetTokensAsString::noEmpties($phpcsFile, $start, $end);
     }
 
     /**

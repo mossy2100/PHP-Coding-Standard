@@ -193,14 +193,13 @@ class PropertyDeclarationSniff extends Psr2Sniff
     private function checkPromotedVisibility(File $phpcsFile, int $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
-        $visibilities = [T_PUBLIC, T_PROTECTED, T_PRIVATE, T_PUBLIC_SET, T_PROTECTED_SET, T_PRIVATE_SET];
         for ($i = ($stackPtr - 1); $i > 0; $i--) {
             $code = $tokens[$i]['code'];
             if (in_array($code, [T_OPEN_PARENTHESIS, T_COMMA, T_ATTRIBUTE_END], true)) {
                 break;
             }
 
-            if (in_array($code, $visibilities, true)) {
+            if (isset(Tokens::SCOPE_MODIFIERS[$code])) {
                 return;
             }
         }

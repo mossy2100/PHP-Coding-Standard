@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Arrays;
 
-use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\Arrays;
 use PHPCSUtils\Utils\Context;
+use PHPCSUtils\Utils\PassedParameters;
 
 /**
  * Requires each value of a multi-line array to start on a new line.
@@ -50,20 +51,13 @@ class ValuePerLineSniff implements Sniff
             return;
         }
 
-        $opener = $stackPtr;
-        if ($tokens[$stackPtr]['code'] === T_ARRAY) {
-            $opener = $tokens[$stackPtr]['parenthesis_opener'] ?? null;
-            if ($opener === null) {
-                return;
-            }
-        }
-
-        $closer = TokenHelper::findCloser($tokens[$opener]);
-        if ($closer === null || $tokens[$opener]['line'] === $tokens[$closer]['line']) {
+        // A short list counts too, as Squiz.Arrays.ArrayDeclaration's check did.
+        $bounds = Arrays::getOpenClose($phpcsFile, $stackPtr, true);
+        if ($bounds === false || $tokens[$bounds['opener']]['line'] === $tokens[$bounds['closer']]['line']) {
             return;
         }
 
-        $values = $this->findValues($phpcsFile, $opener, $closer);
+        $values = $this->findValues($phpcsFile, $stackPtr);
         if ($values === null) {
             return;
         }
@@ -93,35 +87,27 @@ class ValuePerLineSniff implements Sniff
      * Find the first token of each value, or of its key, including any attribute on it.
      *
      * @param File $phpcsFile The file being scanned.
-     * @param int $opener The position of the opening bracket or parenthesis.
-     * @param int $closer The position of the closing bracket or parenthesis.
+     * @param int $stackPtr The position of the array keyword or the opening bracket.
      * @return list<int>|null The positions, or null if every value has a key.
      */
-    private function findValues(File $phpcsFile, int $opener, int $closer): ?array
+    private function findValues(File $phpcsFile, int $stackPtr): ?array
     {
-        $tokens = $phpcsFile->getTokens();
         $values = [];
         $keys = 0;
-        $start = $opener + 1;
-        for ($i = $start; $i <= $closer; $i++) {
-            if ($i < $closer && $tokens[$i]['code'] === T_DOUBLE_ARROW) {
+        foreach (PassedParameters::getParameters($phpcsFile, $stackPtr, 0, true) as $item) {
+            $start = (int) $item['start'];
+            $end = (int) $item['end'];
+
+            // An empty slot in a list, as in `[, $b]`, has nothing to place.
+            $first = $start > $end ? false : $phpcsFile->findNext(Tokens::EMPTY_TOKENS, $start, ($end + 1), true);
+            if ($first === false) {
+                continue;
+            }
+
+            $values[] = $first;
+            if (Arrays::getDoubleArrowPtr($phpcsFile, $start, $end) !== false) {
                 $keys++;
-                continue;
             }
-
-            if ($i === $closer || $tokens[$i]['code'] === T_COMMA) {
-                $first = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, $start, $i, true);
-                if ($first !== false) {
-                    $values[] = $first;
-                }
-
-                $start = $i + 1;
-                continue;
-            }
-
-            // Skip anything in brackets, so only this array's commas and arrows count. A scope closer isn't followed:
-            // a closure's body is in braces, and an arrow function's is the comma that ends it, which is this array's.
-            $i = TokenHelper::findCloser($tokens[$i]) ?? $i;
         }
 
         // An array whose values all have keys is left to Squiz.Arrays.ArrayDeclaration.

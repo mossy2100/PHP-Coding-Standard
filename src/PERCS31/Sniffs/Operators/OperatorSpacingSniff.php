@@ -9,6 +9,7 @@ use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\OperatorSpacingSniff as SquizSniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Tokens\Collections;
 use PHPCSUtils\Utils\Parentheses;
 
 /**
@@ -145,7 +146,7 @@ class OperatorSpacingSniff extends SquizSniff
     private function isDefaultValueEquals(File $phpcsFile, int $stackPtr): bool
     {
         return $phpcsFile->getTokens()[$stackPtr]['code'] === T_EQUAL
-            && Parentheses::lastOwnerIn($phpcsFile, $stackPtr, [T_FUNCTION, T_CLOSURE, T_FN]) !== false;
+            && Parentheses::lastOwnerIn($phpcsFile, $stackPtr, Collections::functionDeclarationTokens()) !== false;
     }
 
     /**

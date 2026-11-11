@@ -11,6 +11,7 @@ use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
 use PhpCollective\Sniffs\WhiteSpace\ConsistentIndentSniff as PhpCollectiveSniff;
+use PHPCSUtils\Utils\Conditions;
 
 /**
  * Reports a line indented further than its scope, after a complete statement.
@@ -107,13 +108,9 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
             return null;
         }
 
-        foreach (array_reverse($tokens[$next]['conditions'], true) as $ptr => $code) {
-            if (is_int($ptr) && in_array($code, [T_CLOSURE, T_ANON_CLASS, T_SWITCH], true)) {
-                return $ptr;
-            }
-        }
+        $anchor = Conditions::getLastCondition($phpcsFile, $next, [T_CLOSURE, T_ANON_CLASS, T_SWITCH]);
 
-        return null;
+        return is_int($anchor) ? $anchor : null;
     }
 
     /**

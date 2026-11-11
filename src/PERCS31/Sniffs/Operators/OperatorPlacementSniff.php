@@ -260,9 +260,7 @@ class OperatorPlacementSniff implements Sniff
 
         // An operator directly in a control structure's condition follows section 5, not section 6.4.
         $innermost = Parentheses::getLastOpener($phpcsFile, $stackPtr);
-        $owner = $innermost === false ? false : Parentheses::getOwner($phpcsFile, $innermost);
-        $isCondition = $owner !== false && in_array($tokens[$owner]['code'], self::INDENT_EXEMPT_OWNERS, true);
-        if ($innermost !== false && $isCondition) {
+        if ($innermost !== false && Parentheses::isOwnerIn($phpcsFile, $innermost, self::INDENT_EXEMPT_OWNERS)) {
             $this->checkConditionIndent($phpcsFile, $stackPtr, $lastPtr, $innermost);
             return;
         }

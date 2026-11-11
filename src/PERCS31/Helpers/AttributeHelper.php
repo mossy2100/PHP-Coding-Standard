@@ -15,13 +15,6 @@ use PHPCSUtils\Utils\Parentheses;
 class AttributeHelper
 {
     /**
-     * Tokens that own a parameter list.
-     *
-     * @var list<int|string>
-     */
-    private const array FUNCTION_TOKENS = [T_FUNCTION, T_CLOSURE, T_FN];
-
-    /**
      * Find the opening parenthesis of the parameter list an attribute is in, if it is on a parameter.
      *
      * @param File $phpcsFile The file being scanned.
@@ -36,7 +29,7 @@ class AttributeHelper
             return null;
         }
 
-        $isFunction = Parentheses::isOwnerIn($phpcsFile, $opener, self::FUNCTION_TOKENS);
+        $isFunction = Parentheses::isOwnerIn($phpcsFile, $opener, Collections::functionDeclarationTokens());
 
         return $isFunction || PropertyHookHelper::isHookParameterList($phpcsFile, $opener) ? $opener : null;
     }

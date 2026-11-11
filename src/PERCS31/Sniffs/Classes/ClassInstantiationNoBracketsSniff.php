@@ -9,6 +9,7 @@ use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Tokens\Collections;
 
 /**
  * Warns about parentheses around a class instantiation that's immediately dereferenced, e.g. `(new Foo())->bar()`.
@@ -94,10 +95,7 @@ class ClassInstantiationNoBracketsSniff implements Sniff
         }
 
         $after = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($closer + 1), null, true);
-        if (
-            $after === false
-            || !in_array($tokens[$after]['code'], [T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR, T_DOUBLE_COLON], true)
-        ) {
+        if ($after === false || !isset(Collections::objectOperators()[$tokens[$after]['code']])) {
             return;
         }
 
