@@ -107,8 +107,12 @@ class SwitchDeclarationSniff extends Psr2Sniff
             return;
         }
 
-        $isComment = isset(Tokens::COMMENT_TOKENS[$tokens[$next]['code']]);
-        if (!$isComment || isset(Tokens::PHPCS_ANNOTATION_TOKENS[$tokens[$next]['code']])) {
+        // A phpcs annotation only works on the label's line, so it stays.
+        if (isset(Tokens::PHPCS_ANNOTATION_TOKENS[$tokens[$next]['code']])) {
+            return;
+        }
+
+        if (!isset(Tokens::COMMENT_TOKENS[$tokens[$next]['code']])) {
             return;
         }
 
