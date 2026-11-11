@@ -179,9 +179,6 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **PHP.DisallowDirectMagicInvokeCall**: Disallows direct `__invoke()` calls.
 - **PHP.ReferenceSpacing**: Enforces spacing around reference operator.
 - **PHP.ShortList**: Requires short list syntax `[]`.
-- **PHP.TypeCast**: Forbids a `(binary)` cast, with its `ForbiddenCastUsed` code. PERCS31 already uses its
-  `InvalidCastUsed` code, which requires `(int)`, `(bool)` and `(float)` instead of `(integer)`, `(boolean)` or
-  `(double)`.
 - **PHP.UselessSemicolon**: Disallows useless semicolons.
 - **Strings.DisallowVariableParsing**: Disallows variable parsing in strings.
 - **TypeHints.ClassConstantTypeHint**: Requires class constant type hints.

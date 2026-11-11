@@ -254,9 +254,6 @@
 
     <!-- ====== OPERATORS (6) ====== -->
 
-    <!-- No (binary) cast, which has no effect. PERCS31 already requires the short form of a cast, with this sniff's
-         InvalidCastUsed code. -->
-    <rule ref="SlevomatCodingStandard.PHP.TypeCast.ForbiddenCastUsed"/>
     <rule ref="SlevomatCodingStandard.PHP.ReferenceSpacing"/>
     <rule ref="SlevomatCodingStandard.Operators.NegationOperatorSpacing"/>
     <rule ref="SlevomatCodingStandard.Operators.RequireCombinedAssignmentOperator"/>

@@ -532,28 +532,6 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that a `(binary)` cast is reported in Jumbo only, and a long-form cast once in both standards.
-     */
-    public function testBinaryCastIsReportedInJumboOnly(): void
-    {
-        $file = $this->copyToTempFile(null, "<?php\n\n\$a = (double) \$x;\n\$b = (binary) \$x;\n");
-        $reports = [];
-
-        try {
-            foreach (['PERCS31', 'Jumbo'] as $standard) {
-                $output = $this->runTool('phpcs', ['-s', "--standard=$standard", '--report=emacs', $file])['output'];
-                preg_match_all('/:(\\d+):\\d+: \\w+ - .*\\.(\\w+CastUsed)\\)$/m', $output, $matches, PREG_SET_ORDER);
-                $reports[$standard] = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
-            }
-        } finally {
-            unlink($file);
-        }
-
-        $this->assertSame(['3 InvalidCastUsed'], $reports['PERCS31']);
-        $this->assertSame(['3 InvalidCastUsed', '4 ForbiddenCastUsed'], $reports['Jumbo']);
-    }
-
-    /**
      * Test that global constants must be in UPPER_CASE in Jumbo only, and that an acronym is only reported in a name
      * with a lower-case letter.
      */

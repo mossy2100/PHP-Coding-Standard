@@ -82,7 +82,8 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   skips a `set` hook's parameter list, which isn't a call.
 - **Squiz.Classes.ValidClassName**, from PSR-1, by [`PERCS31.NamingConventions.ValidClassName`](#percs31namingconventionsvalidclassname), which also reports a name
   with no lower-case letter.
-- **PSR12.Keywords.ShortFormTypeKeywords**, by `SlevomatCodingStandard.PHP.TypeCast`, which also reports `(double)`.
+- **PSR12.Keywords.ShortFormTypeKeywords**, by `SlevomatCodingStandard.PHP.TypeCast`, which also reports `(double)`
+  and `(binary)`.
 
 `Squiz.Functions.FunctionDeclarationArgumentSpacing`'s `SpaceBeforeEquals` and `SpaceAfterEquals` are excluded, as a
 default value's `=` is a binary operator, which section 6.2 allows more than one space around.
@@ -182,9 +183,10 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Functions.NamedArgumentSpacing**: Requires no space before a named argument's colon, and one after (4.7).
 - **Functions.RequireTrailingCommaInClosureUse** and **...InDeclaration**: Require a trailing comma in a multi-line
   list (2.6). For a call, [`PERCS31.Functions.RequireTrailingCommaInCall`](#percs31functionsrequiretrailingcommaincall) replaces `...InCall`.
-- **PHP.TypeCast**: Requires the short form of a type in a cast: `(bool)`, `(int)` and `(float)`, not `(boolean)`,
-  `(integer)` or `(double)` (2.5). Only its `InvalidCastUsed` code is used. Its `ForbiddenCastUsed` code, for a
-  `(binary)` cast, isn't a PER rule.
+- **PHP.TypeCast**: Requires the canonical form of a type in a cast: `(bool)`, `(int)`, `(float)` and `(string)`, not
+  `(boolean)`, `(integer)`, `(double)` or `(binary)` (2.5). The sniff says a `(binary)` cast has no effect, and its fix
+  deletes it. It's an alias of `(string)`, so deleting it can change what the code does. PERCS31 reports it with the
+  message "use `(string)` instead", and switches that fix off.
 - **TypeHints.DNFTypeHintFormat**: Requires no spaces inside the parentheses (2.5). Its check for spaces around `|` and
   `&` is replaced by [`PERCS31.TypeHints.CompoundTypeOperatorSpacing`](#percs31typehintscompoundtypeoperatorspacing), which allows a split type. Its checks for `null`
   last and for `?T` are replaced by [`PERCS31.TypeHints.NullType`](#percs31typehintsnulltype), which covers every type.

@@ -334,10 +334,10 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that a long-form cast is reported once, including `(double)`, and fixed to its short form, and that a
-     * `(binary)` cast, which PER has no rule for, isn't reported.
+     * Test that a non-canonical cast is reported once, and that each is fixed to its canonical form except `(binary)`.
+     * The inherited fix for that one deletes the cast, which can change what the code does, so it's switched off.
      */
-    public function testLongFormCastIsReportedOnceAndFixed(): void
+    public function testNonCanonicalCastIsReportedOnce(): void
     {
         $source = "<?php\n\n\$a = (double) \$x;\n\$b = (integer) \$x;\n\$c = (boolean) \$x;\n\$d = (binary) \$x;\n";
         $file = $this->copyToTempFile(null, $source);
@@ -354,7 +354,10 @@ class RulesetUnitTest extends TestCase
         $reports = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
         $expected = "<?php\n\n\$a = (float) \$x;\n\$b = (int) \$x;\n\$c = (bool) \$x;\n\$d = (binary) \$x;\n";
 
-        $this->assertSame(['3 InvalidCastUsed', '4 InvalidCastUsed', '5 InvalidCastUsed'], $reports, $result['output']);
+        $reported = ['3 InvalidCastUsed', '4 InvalidCastUsed', '5 InvalidCastUsed', '6 ForbiddenCastUsed'];
+
+        $this->assertSame($reported, $reports, $result['output']);
+        $this->assertStringContainsString('Cast "(binary)" is forbidden, use "(string)" instead.', $result['output']);
         $this->assertSame($expected, $fixed);
     }
 
