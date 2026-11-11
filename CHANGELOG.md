@@ -439,6 +439,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **An attribute on a `readonly` anonymous class.** `PERCS31.Attributes.AttributePlacement` didn't see the class
+  behind `readonly`, so `new #[A] readonly class {` was fixed to a layout PER Coding Style 3.1 doesn't allow, which
+  then passed. The attributes now go on the lines after `new`, with `readonly class` after them, as for any anonymous
+  class.
 - **An import in a file that starts with markup (breaking).** `PERCS31.Files.FileHeader` now reports a `use` import
   in a file with markup before its first `<?php`, as `ImportAfterCode`, as PER Coding Style 3.1 says the header's
   blocks MUST be at the top of the file. Such a file was skipped. Not auto-fixable.

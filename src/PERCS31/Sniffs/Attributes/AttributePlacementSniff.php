@@ -423,7 +423,7 @@ class AttributePlacementSniff implements Sniff
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $newPtr The position of `new`.
-     * @param int $anonClassPtr The position of `class`.
+     * @param int $anonClassPtr The position of `class`, or of `readonly` before it.
      */
     private function processAnonClass(File $phpcsFile, int $newPtr, int $anonClassPtr): void
     {
@@ -718,7 +718,8 @@ class AttributePlacementSniff implements Sniff
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $attributePtr The position of the attribute opener.
-     * @return int|null The position of `class`, or null if the attribute isn't on an anonymous class.
+     * @return int|null The position of `class`, or of `readonly` before it, where the rest of the declaration starts.
+     *   Null if the attribute isn't on an anonymous class.
      */
     private function findAnonClass(File $phpcsFile, int $attributePtr): ?int
     {
@@ -731,6 +732,12 @@ class AttributePlacementSniff implements Sniff
             }
         }
 
-        return $tokens[$next]['code'] === T_ANON_CLASS ? $next : null;
+        // `readonly` is the only modifier an anonymous class can have.
+        $class = $next;
+        if ($tokens[$class]['code'] === T_READONLY) {
+            $class = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($class + 1), null, true);
+        }
+
+        return $class !== false && $tokens[$class]['code'] === T_ANON_CLASS ? $next : null;
     }
 }

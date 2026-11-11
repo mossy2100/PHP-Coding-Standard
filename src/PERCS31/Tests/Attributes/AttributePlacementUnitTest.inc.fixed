@@ -426,3 +426,22 @@ function oneBlock(#[A, B] int $c): void {}
 $pure = #[A]
     #[B]
     fn($x) => $x;
+
+// A readonly anonymous class: `readonly class` goes on the line after the attributes.
+$valid = new
+    #[A]
+    readonly class {
+        public int $a;
+    };
+
+$invalid = new
+    #[A]
+    readonly class {
+    public int $a;
+};
+
+$invalid = new
+    #[A]
+    readonly class {
+        public int $a;
+    };

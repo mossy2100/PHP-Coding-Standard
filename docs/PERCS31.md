@@ -404,8 +404,8 @@ between the attribute and its target. So this sniff checks placement itself, and
 Slevomat sniff.
 
 An attribute on an anonymous class follows [PER Coding Style 3.1, Section 8](https://www.php-fig.org/per/coding-style/#8-anonymous-classes) instead. The attributes start on the line
-after `new`, indented once, with `class` on the line after them at the same indent. `PERCS31.WhiteSpace.ScopeIndent`
-then indents the class body from `class`.
+after `new`, indented once, with `class`, or `readonly class`, on the line after them at the same indent.
+`PERCS31.WhiteSpace.ScopeIndent` then indents the class body from `class`.
 
 It also reports a blank line between a docblock and the attributes after it, between two attribute blocks, or between
 the last attribute and its target, and anything but a single space between an attribute and its parameter on the same

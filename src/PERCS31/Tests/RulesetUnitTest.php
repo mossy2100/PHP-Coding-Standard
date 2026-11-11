@@ -165,6 +165,27 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that an attribute on a readonly anonymous class is fixed to section 8's layout, with `readonly class` on the
+     * line after the attributes, and the body indented from it.
+     */
+    public function testAttributeOnReadonlyAnonClassIsFixedToSectionEightLayout(): void
+    {
+        $file = $this->copyToTempFile(null, "<?php\n\n\$a = new #[A] readonly class {\n    public int \$b;\n};\n");
+
+        try {
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+        } finally {
+            unlink($file);
+        }
+
+        $expected = "<?php\n\n\$a = new\n    #[A]\n    readonly class {\n        public int \$b;\n    };\n";
+        $this->assertSame($expected, $fixed);
+        $this->assertSame(0, $result['exitCode'], $result['output']);
+    }
+
+    /**
      * Test that a one-line block declare is fixed with no stray blank line, which two fixes for its brace would add.
      */
     public function testOneLineBlockDeclareIsFixedWithNoBlankLine(): void

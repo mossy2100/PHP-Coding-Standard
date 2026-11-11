@@ -91,6 +91,9 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             397 => 1,
             // Code before the blocks.
             403 => 1,
+            // A readonly anonymous class, with its attribute on the line of `new`, and on the line of `readonly`.
+            412 => 1,
+            416 => 1,
         ];
     }
 
