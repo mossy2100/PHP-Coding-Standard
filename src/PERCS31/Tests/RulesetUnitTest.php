@@ -139,6 +139,32 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a template whose only PHP tag shares the first line with a statement passes, and isn't changed, as
+     * section 3 lets the tag share its line in a file with markup. A PHP file with no markup is still reported.
+     */
+    public function testTemplateFirstLineTagMayShareItsLine(): void
+    {
+        $template = "<?php require 'header.php'; ?>\n<main>\n    <p>Hello</p>\n</main>\n";
+        $file = $this->copyToTempFile(null, $template);
+        $phpOnly = $this->copyToTempFile(null, "<?php require 'header.php';\n");
+        $args = ['-s', '--standard=PERCS31', '--report=emacs'];
+
+        try {
+            $result = $this->runTool('phpcs', [...$args, $file]);
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+            $phpOnlyResult = $this->runTool('phpcs', [...$args, $phpOnly]);
+        } finally {
+            unlink($file);
+            unlink($phpOnly);
+        }
+
+        $this->assertSame(0, $result['exitCode'], $result['output']);
+        $this->assertSame($template, $fixed);
+        $this->assertStringContainsString('PERCS31.Files.FileHeader.SpacingAfterTagBlock', $phpOnlyResult['output']);
+    }
+
+    /**
      * Test that a one-line block declare is fixed with no stray blank line, which two fixes for its brace would add.
      */
     public function testOneLineBlockDeclareIsFixedWithNoBlankLine(): void

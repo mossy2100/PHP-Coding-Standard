@@ -439,6 +439,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A template starting with a PHP tag and a statement.** A file with markup whose only PHP tag is on the first line,
+  as in `<?php require 'header.php'; ?>`, was reported by `PERCS31.Files.FileHeader` as `SpacingAfterTagBlock`, and the
+  fix split the tag over three lines. It now passes, as PER Coding Style 3.1 lets the tag share its line in a file with
+  markup.
 - **`phpcbf` no longer breaks a first-class callable split over lines (breaking).**
   `SlevomatCodingStandard.Functions.RequireTrailingCommaInCall` added a comma after the `...` in `foo(` then `...` then
   `)`, a parse error. The new `PERCS31.Functions.RequireTrailingCommaInCall` replaces it, and skips a first-class

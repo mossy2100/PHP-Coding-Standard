@@ -28,6 +28,11 @@ use PHPCSUtils\Utils\UseStatements;
  * The parent skips a file that mixes PHP and markup when it has several opening tags, but with only one, it reports
  * a declare after the markup as a misplaced header, and its spacing fixes then fight other sniffs.
  *
+ * Section 3 also says the opening tag on the first line MUST be on its own line "unless it is a file containing markup
+ * outside of PHP opening and closing tags". So a template may start with `<?php require 'header.php'; ?>`. With only
+ * that one tag, the parent reads the line as a header, and wants a blank line after the tag, which splits it. This
+ * sniff skips the header's spacing checks in a file with markup whose first tag shares its line.
+ *
  * In a file with markup, a strict_types declare anywhere else is reported, as StrictTypesNotOnFirstLine. If the declare
  * is all that's in its PHP block, the fix collapses the block onto the first line. Otherwise, it adds the first-line
  * form at the top, and removes the declare statement and the blank line after it. A file starting with a shebang line
@@ -68,6 +73,11 @@ class FileHeaderSniff extends Psr12Sniff
 
         if ($phpcsFile->findPrevious(T_OPEN_TAG, ($stackPtr - 1)) === false) {
             $this->checkImportsAfterCode($phpcsFile, $stackPtr);
+        }
+
+        // In a file with markup, the first tag may share its line, so the header's blank lines don't apply.
+        if (FileHeaderHelper::tagSharesLine($phpcsFile, $stackPtr) && FileHeaderHelper::hasMarkup($phpcsFile)) {
+            return $phpcsFile->numTokens;
         }
 
         $result = parent::process($phpcsFile, $stackPtr);

@@ -71,6 +71,21 @@ class FileHeaderHelper
     }
 
     /**
+     * Check whether a PHP opening tag shares its line with anything else, such as a statement or a comment.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $tagPtr The position of the opening tag.
+     * @return bool True if it does.
+     */
+    public static function tagSharesLine(File $phpcsFile, int $tagPtr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $next = $phpcsFile->findNext(T_WHITESPACE, ($tagPtr + 1), null, true);
+
+        return $next !== false && $tokens[$next]['line'] === $tokens[$tagPtr]['line'];
+    }
+
+    /**
      * Find the file's first declare statement, if it sets strict_types to 1.
      *
      * @param File $phpcsFile The file being scanned.

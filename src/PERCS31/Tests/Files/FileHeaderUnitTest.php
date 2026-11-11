@@ -48,7 +48,8 @@ class FileHeaderUnitTest extends AbstractSniffTestCase
         if ($testFile !== 'FileHeaderUnitTest.1.inc') {
             // The other files use a declare statement between PHP tags on the first line, which is allowed, several
             // imports in one use statement, or markup with no declare statement, or start with markup, so have no
-            // file header.
+            // file header. Files 16 and 17 are templates whose only PHP tag shares the first line with a statement
+            // or a docblock, which section 3 allows in a file with markup.
             return [];
         }
 

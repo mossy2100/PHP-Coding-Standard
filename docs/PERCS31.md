@@ -1088,6 +1088,11 @@ A file with markup before its first `<?php`, such as a template, has no file hea
 already skips a file that mixes PHP and markup when it has several PHP tags, but with only one, it reported a `declare`
 after the markup as a misplaced header, and its fixes looped.
 
+Section 3 also says the opening tag on the first line MUST be on its own line "unless it is a file containing markup
+outside of PHP opening and closing tags". So a template may start with `<?php require 'header.php'; ?>`, or a docblock
+between tags. With only that one PHP tag in the file, the parent read the line as a header, and its fix split the tag
+over three lines. This sniff skips the header's spacing checks in a file with markup whose first tag shares its line.
+
 The parent ends a `use` statement at its first comma, so it reports `use A, B;` as missing a blank line before `B`.
 Section 3 doesn't forbid several imports in one statement, so this sniff reads the statement to its semicolon.
 
