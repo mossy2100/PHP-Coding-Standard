@@ -11,8 +11,8 @@ use PHPCSUtils\Utils\Lists;
 use PHPCSUtils\Utils\PassedParameters;
 
 /**
- * Requires exactly one space before and after the `=>` in a `match` arm, an array element and a `yield`. In an array,
- * at least one can be allowed instead.
+ * Requires exactly one space before and after the `=>` in a `match` arm and a `yield`, and at least one in an array
+ * element. In an array, exactly one can be required instead.
  *
  * PER Coding Style 3.1, section 6.2, doesn't list `=>` among the binary operators, so section 6 leaves its spacing
  * undefined, except where another section gives it a rule:
@@ -20,8 +20,8 @@ use PHPCSUtils\Utils\PassedParameters;
  *   braces". Although it doesn't say so explicitly, it appears to imply the same rule that sections 4.9 and 7.1 set
  *   for a property hook's and an arrow function's `=>`.
  * - An array element, including a destructuring assignment's: section 11's example, which "shows correct array usage",
- *   has a space each side, but too few examples to rule out lining arrows up. So the PERCS31 ruleset sets
- *   allowSeveralSpacesInArray, requiring at least one space. The Jumbo standard requires exactly one.
+ *   has a space each side, but too few examples to rule out lining arrows up. So at least one space is required, by
+ *   default. The Jumbo standard turns allowSeveralSpacesInArray off, to require exactly one.
  * - `yield $key => $value`: PER says nothing, but every `=>` it does set has one space each side, so this one does
  *   too.
  *
@@ -55,10 +55,10 @@ class ArrowSpacingSniff implements Sniff
     ];
 
     /**
-     * Whether to allow more than one space each side of an array's `=>`, so arrows can be lined up. With it off, an
-     * array's `=>` needs exactly one, as a `match` arm's does.
+     * Whether to allow more than one space each side of an array's `=>`, so arrows can be lined up, as PER Coding Style
+     * 3.1 does. With it off, an array's `=>` needs exactly one, as a `match` arm's does.
      */
-    public bool $allowSeveralSpacesInArray = false;
+    public bool $allowSeveralSpacesInArray = true;
 
     /**
      * Returns an array of tokens this test wants to listen for.

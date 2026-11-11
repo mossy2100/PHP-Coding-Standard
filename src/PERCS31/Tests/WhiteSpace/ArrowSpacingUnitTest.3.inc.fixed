@@ -1,7 +1,7 @@
 <?php
 
-// Arrays are checked by default.
-// phpcs:set PERCS31.WhiteSpace.ArrowSpacing allowSeveralSpacesInArray true
+// The default: at least one space each side of an array's =>, as PER Coding Style 3.1 requires no more.
+// The property isn't set here.
 
 // At least one space each side of an array's =>, so arrows may be lined up.
 $valid = [
@@ -19,4 +19,4 @@ $value = match ($x) {
 };
 
 // End of the arrays.
-// phpcs:set PERCS31.WhiteSpace.ArrowSpacing allowSeveralSpacesInArray false
+// End of the file.

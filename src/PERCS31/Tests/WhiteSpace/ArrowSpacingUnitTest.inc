@@ -1,5 +1,5 @@
 <?php
-
+// phpcs:set PERCS31.WhiteSpace.ArrowSpacing allowSeveralSpacesInArray false
 // Correct spacing.
 $label = match ($size) {
     1 => 'one',
@@ -45,3 +45,5 @@ function generate(): iterable
 {
     yield 'a'=>1;
 }
+
+// phpcs:set PERCS31.WhiteSpace.ArrowSpacing allowSeveralSpacesInArray true
