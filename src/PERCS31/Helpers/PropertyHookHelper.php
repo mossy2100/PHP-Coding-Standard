@@ -103,6 +103,13 @@ class PropertyHookHelper
     ];
 
     /**
+     * Tokens that can follow a hook's name: its body, its `=>`, its parameter list, or the `;` of one with no body.
+     *
+     * @var list<int|string>
+     */
+    private const array AFTER_HOOK_NAME = [T_OPEN_CURLY_BRACKET, T_DOUBLE_ARROW, T_OPEN_PARENTHESIS, T_SEMICOLON];
+
+    /**
      * The tokens PHP_CodeSniffer gives the symbols of a type in a `set` hook's parameter list, as it reads them as
      * operators: `|`, `&`, and the `?` of a nullable type.
      *
@@ -128,6 +135,48 @@ class PropertyHookHelper
      * @var array<int, int>
      */
     private static array $cachedScopes = [];
+
+    /**
+     * Check whether a token is a hook's name, `get` or `set` in any case, in a property's hook list.
+     *
+     * PHP_CodeSniffer reads a hook's name as a plain name, so this goes by its position: after the list's opening
+     * brace, the end of the previous hook, a modifier, an attribute or a by-reference `&`, and before the hook's body,
+     * `=>`, parameter list, or the `;` of a hook with no body.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the token.
+     * @return bool True if the token is a hook's name.
+     */
+    public static function isHookName(File $phpcsFile, int $stackPtr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $name = strtolower($tokens[$stackPtr]['content']);
+        if ($tokens[$stackPtr]['code'] !== T_STRING || ($name !== 'get' && $name !== 'set')) {
+            return false;
+        }
+
+        $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
+        if ($previous !== false && in_array($tokens[$previous]['code'], self::AMPERSANDS, true)) {
+            $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($previous - 1), null, true);
+        }
+
+        if ($previous === false || !in_array($tokens[$previous]['code'], self::BEFORE_HOOK_NAME, true)) {
+            return false;
+        }
+
+        $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
+        if ($next === false || !in_array($tokens[$next]['code'], self::AFTER_HOOK_NAME, true)) {
+            return false;
+        }
+
+        // A call to a function named `set` in a hook's body isn't a hook.
+        if ($tokens[$next]['code'] === T_OPEN_PARENTHESIS && !self::isHookParameterList($phpcsFile, $next)) {
+            return false;
+        }
+
+        // Scanning for hook scopes is the expensive part, so it comes last.
+        return self::isInsidePropertyHook($phpcsFile, $stackPtr);
+    }
 
     /**
      * Check whether a `&` marks a by-reference `get` hook, e.g. `&get => $this->items;`, rather than an operator.

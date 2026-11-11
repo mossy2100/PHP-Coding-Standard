@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **A property hook's name in lower case (breaking).** `GET => 1;` and `Set(int $value) => $value;` are now reported,
+  as PER Coding Style 3.1 requires keywords in lower case, and calls a hook's name "the hook keyword". The new
+  `PERCS31.PHP.LowerCaseKeyword` replaces `Generic.PHP.LowerCaseKeyword`, and checks it too, so a `phpcs:ignore` for
+  `Generic.PHP.LowerCaseKeyword.Found` needs updating. Auto-fixable.
 - **`PERCS31.Classes.AnonClassOpeningBrace` (breaking).** Requires one space before an anonymous class's opening brace
   when it's on the declaration's line, and nothing after the brace on its line, as PER Coding Style 3.1's examples show.
   `new class extends Foo{` and `new class { public int $a;` passed. Auto-fixable.

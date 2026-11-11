@@ -267,7 +267,6 @@ class AttributePlacementSniff implements Sniff
      */
     private function isHook(File $phpcsFile, int $targetPtr): bool
     {
-        $tokens = $phpcsFile->getTokens();
         $skip = Tokens::EMPTY_TOKENS + [
             T_FINAL => T_FINAL,
             T_BITWISE_AND => T_BITWISE_AND,
@@ -275,12 +274,8 @@ class AttributePlacementSniff implements Sniff
             T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG => T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG,
         ];
         $namePtr = $phpcsFile->findNext($skip, $targetPtr, null, true);
-        if ($namePtr === false || $tokens[$namePtr]['code'] !== T_STRING) {
-            return false;
-        }
 
-        return in_array(strtolower($tokens[$namePtr]['content']), ['get', 'set'], true)
-            && PropertyHookHelper::isInsidePropertyHook($phpcsFile, $namePtr);
+        return $namePtr !== false && PropertyHookHelper::isHookName($phpcsFile, $namePtr);
     }
 
     /**

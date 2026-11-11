@@ -48,6 +48,7 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   80 characters.
 - **Generic.Formatting.DisallowMultipleStatements**, by [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements), which allows
   `{ get; set; }` on an abstract or interface property.
+- **Generic.PHP.LowerCaseKeyword**, by [`PERCS31.PHP.LowerCaseKeyword`](#percs31phplowercasekeyword), which also checks a property hook's name.
 - **Generic.PHP.LowerCaseType**, by [`PERCS31.PHP.LowerCaseType`](#percs31phplowercasetype), which also checks a `set` hook's parameter type.
 - **Generic.NamingConventions.UpperCaseConstantName**, from PSR-1, by [`PERCS31.NamingConventions.UpperCaseConstantName`](#percs31namingconventionsuppercaseconstantname),
   which allows PascalCase for an enum constant.
@@ -226,6 +227,7 @@ section gives the reason.
 | `PERCS31.NamingConventions.ValidEnumCaseName`           | Enum cases in PascalCase                                            | No      |
 | `PERCS31.Operators.OperatorPlacement`                   | A wrapped binary operator starts the next line, indented once       | Yes     |
 | `PERCS31.Operators.OperatorSpacing`                     | At least one space around binary operators, including `\|>`         | Yes     |
+| `PERCS31.PHP.LowerCaseKeyword`                          | Keywords in lower case, including a property hook's `get` or `set`  | Yes     |
 | `PERCS31.PHP.LowerCaseType`                             | Types in lower case, including a `set` hook's parameter type        | Yes     |
 | `PERCS31.PHP.RequireCloneParentheses`                   | A warning for `clone $a`, not `clone($a)`                           | Yes     |
 | `PERCS31.Strings.HeredocIndentation`                    | Where a heredoc or nowdoc begins, and its indentation               | Yes     |
@@ -1954,6 +1956,46 @@ $slug = $title|>trim(...)|>strtolower(...);
 
 ---
 
+### PERCS31.PHP.LowerCaseKeyword
+
+Requires PHP's keywords in lower case, including a property hook's name. This replaces `Generic.PHP.LowerCaseKeyword`,
+which it extends.
+
+**Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says all PHP reserved keywords MUST be in lower case. The Generic sniff
+checks them, but not a hook's `get` or `set`, as in `GET => 1;`. They aren't on PHP's list of reserved keywords, as
+they're only keywords in a hook list, and PHP_CodeSniffer reads them as plain names. [Section 4.10](https://www.php-fig.org/per/coding-style/#410-interface-and-abstract-properties) calls one "the hook
+keyword", and every example writes it in lower case, so this subclass passes a hook's name to the parent's check too.
+
+A method named `get`, or a call to a function named `set`, isn't a hook, so it isn't checked.
+
+**Auto-fixable:** yes, as the parent.
+
+**Good:**
+
+```php
+class Counter
+{
+    public int $count {
+        get => $this->count;
+        set(int $value) => max(0, $value);
+    }
+}
+```
+
+**Bad:**
+
+```php
+class Counter
+{
+    public int $count {
+        GET => $this->count;
+        Set(int $value) => max(0, $value);
+    }
+}
+```
+
+---
+
 ### PERCS31.PHP.LowerCaseType
 
 Requires PHP's types in lower case, including in a `set` hook's parameter. This replaces `Generic.PHP.LowerCaseType`,
@@ -1964,7 +2006,7 @@ parameters, return types, properties, typed constants and casts, with two gaps:
 
 - It doesn't see the type of a `set` hook's parameter, as in `set(INT $value)`. PHP_CodeSniffer doesn't know about
   hooks, so it reads that type as an expression. This sniff checks it, with the parent's `ParamTypeFound` code. A type
-  read there as a keyword, such as `SELF` or `NULL`, is already reported by `Generic.PHP.LowerCaseKeyword` or
+  read there as a keyword, such as `SELF` or `NULL`, is already reported by `PERCS31.PHP.LowerCaseKeyword` or
   `Generic.PHP.LowerCaseConstant`.
 - After an attribute, as in `set(#[Sensitive] INT $value)`, it reads the parameter as a property, and reports its type
   twice. This sniff drops those two reports, and makes its own.

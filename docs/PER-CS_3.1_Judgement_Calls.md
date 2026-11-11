@@ -371,6 +371,18 @@ means that.
 
 ---
 
+### Hook Names
+
+**Issue:** 2.5 requires reserved keywords in lower case. A property hook's `get` and `set` aren't on PHP's list of
+reserved keywords, as they're only keywords inside a hook list.
+
+**Ruleset:** They must be in lower case, so `GET => 1;` is reported.
+
+**Why:** Section 4.10 calls one "the hook keyword", every example writes it in lower case, and 4.6 says "All keywords
+MUST be all lower-case".
+
+---
+
 ### `(double)` and `(real)` Casts
 
 **Issue:** 2.5 requires the short form of a type keyword, "i.e. `bool` instead of `boolean`, `int` instead of

@@ -17,7 +17,7 @@ use PHP_CodeSniffer\Util\Tokens;
  * - It checks the type of a `set` hook's parameter, as in `set(INT $value)`. PHP_CodeSniffer doesn't know about
  *   property hooks (PHP 8.4), so it reads that type as an expression, and the parent doesn't see it. Only a type read
  *   as a plain name is checked. One read as a keyword, such as `SELF` or `NULL`, is already reported there by
- *   Generic.PHP.LowerCaseKeyword or Generic.PHP.LowerCaseConstant.
+ *   PERCS31.PHP.LowerCaseKeyword or Generic.PHP.LowerCaseConstant.
  * - It drops the parent's reports for a `set` hook's parameter after an attribute, as in `set(#[A] INT $value)`. There,
  *   the parent reads the parameter as a property, and reports its type twice, as PropertyTypeFound.
  */

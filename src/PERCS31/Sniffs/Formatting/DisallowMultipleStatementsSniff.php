@@ -48,17 +48,8 @@ class DisallowMultipleStatementsSniff extends GenericSniff
      */
     private function endsHookOperation(File $phpcsFile, int $semicolonPtr): bool
     {
-        $tokens = $phpcsFile->getTokens();
         $keyword = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($semicolonPtr - 1), null, true);
-        if ($keyword === false || $tokens[$keyword]['code'] !== T_STRING) {
-            return false;
-        }
 
-        $name = strtolower($tokens[$keyword]['content']);
-        if ($name !== 'get' && $name !== 'set') {
-            return false;
-        }
-
-        return PropertyHookHelper::isInsidePropertyHook($phpcsFile, $semicolonPtr);
+        return $keyword !== false && PropertyHookHelper::isHookName($phpcsFile, $keyword);
     }
 }
