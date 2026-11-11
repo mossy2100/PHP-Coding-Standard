@@ -17,7 +17,7 @@
         <exclude name="Squiz.WhiteSpace.ScopeClosingBrace"/>
         <!-- Replaced by a PERCS31 version with the switch rules (5.2) -->
         <exclude name="PSR2.ControlStructures.SwitchDeclaration"/>
-        <!-- Replaced by a PERCS31 version that also checks an anonymous class (4) -->
+        <!-- Replaced by a PERCS31 version that also checks a property hook's closing braces (4) -->
         <exclude name="PSR12.Classes.ClosingBrace"/>
         <!-- Replaced by a PERCS31 version that also covers the pipe operator |> (6.2) -->
         <exclude name="PSR12.Operators.OperatorSpacing"/>

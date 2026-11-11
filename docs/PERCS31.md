@@ -711,10 +711,11 @@ Verifies that properties are declared correctly. This replaces `PSR2.Classes.Pro
 `$value` and `$this`, as property declarations, and reports false errors on them, so this sniff skips them. The ruleset
 excludes the parent's checks of modifier order, the spacing after the type, and several properties in one statement,
 which Slevomat sniffs make. The last of those, `Multiple`, must stay excluded for a second reason: the parent reads a
-hook list as a second property, so it reports every property with hooks. It also excludes the parent's `Underscore` warning, which this sniff replaces with a
-`LeadingUnderscore` error, as section 4.3 says MUST NOT. The parent doesn't check a promoted constructor
-property either, which [PER Coding Style 3.1, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants)'s rules on underscores and visibility cover. This sniff also
-checks that `get` comes before `set` in an abstract or interface property's hooks, which no inherited sniff does.
+hook list as a second property, so it reports every property with hooks. It also excludes the parent's `Underscore`
+warning, which this sniff replaces with a `LeadingUnderscore` error, as section 4.3 says MUST NOT. The parent doesn't
+check a promoted constructor property either, which [PER Coding Style 3.1, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants)'s rules on underscores and
+visibility cover. This sniff also checks that `get` comes before `set` in an abstract or interface property's hooks,
+which no inherited sniff does.
 
 A promoted constructor parameter with no visibility, such as `readonly int $a` or PHP 8.5's `final int $a`, is a
 `ScopeMissing` error too, as section 4.3 says visibility MUST be declared on all properties. A set-visibility alone, as
@@ -1051,6 +1052,9 @@ until PHP_CodeSniffer handles several directives.
 The original's fix for the space before a block declare's `{` never ends on `){`, with no space at all. The fork's fix
 removes whatever is between them, then adds one space.
 
+The original's check that a block declare's closing brace is on a new line is removed, as
+`PERCS31.WhiteSpace.ScopeClosingBrace` makes it. With both fixes, the result had a blank line before the brace.
+
 **Auto-fixable:** yes.
 
 **Good:**
@@ -1268,7 +1272,9 @@ conditions on a single line, e.g. `1, 2, => 'a'`.
 **Why:** [PER Coding Style 3.1, Section 2.6](https://www.php-fig.org/per/coding-style/#26-trailing-commas) says the last item of a list split across lines MUST have a trailing comma,
 and the last item of a list on one line MUST NOT. Slevomat's trailing comma sniffs cover calls, declarations and closure
 `use` lists, and Slevomat's array sniff covers arrays and short lists, but none covers `match`, group `use`,
-`new class (`, `list()`, `clone()`, `exit()` or `die()`. Like Slevomat's call sniffs, it doesn't require a comma when
+`new class (`, `list()`, `clone()`, `exit()` or `die()`. `PhpCollective.PHP.DisallowTrailingCommaInSingleLine` reports a
+comma in a single-line `list()`, `new class (`, `clone()` or `exit()`, but it goes by the comma's line, not the list's,
+so it also reports a comma PER requires in a split list. Like Slevomat's call sniffs, it doesn't require a comma when
 the closing parenthesis follows the last argument on its line.
 
 **Auto-fixable:** yes. A missing comma goes after the last item, before any comment.
@@ -1718,15 +1724,14 @@ final class Config
 
 Requires enum case names to be in PascalCase: a capital first letter, only letters and digits, and no run of capitals.
 
-**Why:** [PER Coding Style 3.1, Section 9](https://www.php-fig.org/per/coding-style/#9-enumerations) says enum case declarations MUST use PascalCase. No inherited sniff checks it.
+**Why:** [PER Coding Style 3.1, Section 9](https://www.php-fig.org/per/coding-style/#9-enumerations) says enum case declarations MUST use PascalCase. This replaces
+`PhpCollective.Classes.EnumCaseCasing`, from php-collective/code-sniffer, which skips a name with no capitals, such as
+`hearts`, and allows a run of capitals, such as `HTTPStatus`.
 
 PascalCase is as [`ValidClassName`](#percs31namingconventionsvalidclassname) describes:
 
 - **Passes:** `Hearts`, `C2`, `H1`, `Http2`, `B2B`, `H2O` and a lone `A`.
 - **Fails:** `FOO`, `OK`, `HTTP`, `HTTPStatus`, `XMLParser`, `AClass`, `IDs`, `hearts` and `Foo_Bar`.
-
-Based on `PhpCollective.Classes.EnumCaseCasing`, from php-collective/code-sniffer, which skips a name with no capitals,
-such as `hearts`.
 
 **Auto-fixable:** no. Renaming a case would break references to it in other files.
 
@@ -1775,12 +1780,15 @@ the start of the new line, and each subsequent line is indented once. Section 7.
 5.1 to 5.4 say a split condition is indented "at least once", which, being in section 5, applies to a control
 structure's parentheses only. Section 5.2's `case` example lines the operators up with the first condition.
 
-Only two inherited sniffs check the placement, each for one case: `Universal.Operators.ConcatPosition` for `.`, and
-`PSR12.ControlStructures.BooleanOperatorPlacement` for `&&` and `||` in a condition. This sniff covers every other
-binary operator: assignment, arithmetic, comparison, bitwise and logical operators, `??`, `instanceof`, the short
-ternary `?:`, the arrow function's `=>`, and the pipe operator `|>` (PHP 8.5). It checks the indent of all of them,
-including `.`. A full ternary is checked by `PERCS31.ControlStructures.MultiLineTernaryOperator`, and section 6.2
-doesn't list `=>`, so one in an array or `match` arm isn't checked.
+Two inherited sniffs check the placement here, each for one case: `Universal.Operators.ConcatPosition` for `.`, and
+`PSR12.ControlStructures.BooleanOperatorPlacement` for `&&` and `||` in a condition. Two more check part of it, but
+aren't used. `PhpCollective.Operators.OperatorPosition` misses `=`, the comparison operators, `|`, `instanceof`, an
+arrow function's `=>` and `|>`, and doesn't check the indent. `PEAR.Formatting.MultiLineAssignment` only checks `=`, and
+can't fix it. This sniff covers every other binary operator: assignment, arithmetic, comparison, bitwise and logical
+operators, `??`, `instanceof`, the short ternary `?:`, the arrow function's `=>`, and the pipe operator `|>` (PHP 8.5).
+It checks the indent of all of them, including `.`. A full ternary is checked by
+`PERCS31.ControlStructures.MultiLineTernaryOperator`, and section 6.2 doesn't list `=>`, so one in an array or `match`
+arm isn't checked.
 
 A short ternary must be written `?:`, with nothing between the `?` and `:`, as [section 6.3](https://www.php-fig.org/per/coding-style/#63-ternary-operators) says it follows the
 rules for other binary operators, and its examples write it as one. Anything between them, such as `$a ? : $b`, is
@@ -1857,6 +1865,9 @@ missing space before it. A unary operator is left undefined by section 6, so thi
 The parent skips an `=` directly followed by `&`, so this sniff checks it: `$x=&$a` and `$x =&$a` are reported, and
 fixed to `$x = &$a`. `$x =& $a` passes, as it has a space either side if `=&` is read as one operator, and PER doesn't
 say whether it is.
+
+Unlike the PSR-12 sniff, it doesn't check `=>`, which section 6.2 doesn't list. Each use of `=>` has its own sniff, such
+as [`PERCS31.WhiteSpace.ArrowSpacing`](#percs31whitespacearrowspacing) for a `match` arm's and an array's.
 
 It extends `Squiz.WhiteSpace.OperatorSpacing`, which requires exactly one space, and covers PSR-12's operators too. The
 ruleset excludes the codes for more than one space, `SpacingBefore` and `SpacingAfter` and their `Amp` versions, so only

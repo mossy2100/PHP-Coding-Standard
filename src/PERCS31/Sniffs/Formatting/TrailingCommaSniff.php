@@ -19,8 +19,10 @@ use PHP_CodeSniffer\Util\Tokens;
  * Slevomat's trailing comma sniffs cover function calls, declarations and closure `use` lists, but skip `new class (`,
  * and `clone`, `exit` and `die`, which PHP 8.4 and 8.5 made function-like.
  * Slevomat's array sniff covers arrays and short lists, as in `[$a, $b] = $c;`, but not `list()`, and
- * Universal.Attributes.TrailingComma covers attribute blocks. Nothing else covers these. A trailing comma in `list()`
- * is an empty slot at the end, which PHP ignores, so adding or removing one doesn't change the code.
+ * Universal.Attributes.TrailingComma covers attribute blocks. PhpCollective.PHP.DisallowTrailingCommaInSingleLine
+ * reports a comma in some of these on one line, but it goes by the comma's line, not the list's, so it also reports a
+ * comma PER requires in a split list. Nothing else covers these. A trailing comma in `list()` is an empty slot at the
+ * end, which PHP ignores, so adding or removing one doesn't change the code.
  *
  * Like Slevomat's call sniffs, this doesn't require a comma in an anonymous class's arguments, or `clone()`'s,
  * `exit()`'s or `die()`'s, when the closing parenthesis follows the last one on its line, as in
