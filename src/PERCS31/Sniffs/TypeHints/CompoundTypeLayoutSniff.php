@@ -161,10 +161,7 @@ class CompoundTypeLayoutSniff implements Sniff
             return;
         }
 
-        $phpcsFile->fixer->beginChangeset();
-        FixerHelper::blankBetween($phpcsFile, $prev, $symbol);
-
-        $phpcsFile->fixer->endChangeset();
+        FixerHelper::replaceBetween($phpcsFile, $prev, $symbol, '');
     }
 
     /**

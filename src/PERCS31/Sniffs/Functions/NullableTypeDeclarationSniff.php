@@ -76,9 +76,6 @@ class NullableTypeDeclarationSniff extends Psr12Sniff
             return;
         }
 
-        $phpcsFile->fixer->beginChangeset();
-        FixerHelper::blankBetween($phpcsFile, $stackPtr, $next);
-
-        $phpcsFile->fixer->endChangeset();
+        FixerHelper::replaceBetween($phpcsFile, $stackPtr, $next, '');
     }
 }

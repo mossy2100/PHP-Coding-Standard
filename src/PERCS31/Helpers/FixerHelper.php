@@ -57,6 +57,22 @@ class FixerHelper
     }
 
     /**
+     * Replace everything between two tokens with the given content.
+     *
+     * Like blankBetween(), it doesn't start a changeset, so several gaps can be set in one.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $from The token before the gap.
+     * @param int $to The token after the gap.
+     * @param string $content The content for the gap, such as whitespace.
+     */
+    public static function setBetween(File $phpcsFile, int $from, int $to, string $content): void
+    {
+        self::blankBetween($phpcsFile, $from, $to);
+        $phpcsFile->fixer->addContent($from, $content);
+    }
+
+    /**
      * Replace everything between two tokens with the given content, in a changeset of its own.
      *
      * @param File $phpcsFile The file being scanned.
@@ -67,8 +83,7 @@ class FixerHelper
     public static function replaceBetween(File $phpcsFile, int $from, int $to, string $content): void
     {
         $phpcsFile->fixer->beginChangeset();
-        self::blankBetween($phpcsFile, $from, $to);
-        $phpcsFile->fixer->addContent($from, $content);
+        self::setBetween($phpcsFile, $from, $to, $content);
         $phpcsFile->fixer->endChangeset();
     }
 

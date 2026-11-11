@@ -160,11 +160,7 @@ class HeredocIndentationSniff implements Sniff
             return;
         }
 
-        $phpcsFile->fixer->beginChangeset();
-        FixerHelper::blankBetween($phpcsFile, $from, $to);
-
-        $phpcsFile->fixer->addContent($from, ' ');
-        $phpcsFile->fixer->endChangeset();
+        FixerHelper::replaceBetween($phpcsFile, $from, $to, ' ');
     }
 
     /**

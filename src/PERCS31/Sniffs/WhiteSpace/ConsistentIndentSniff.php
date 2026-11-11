@@ -255,7 +255,7 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
             }
         }
 
-        return $tokens[$firstOnLine]['column'] - 1 + ($levels * 4);
+        return $tokens[$firstOnLine]['column'] - 1 + ($levels * LayoutHelper::INDENT);
     }
 
     /**

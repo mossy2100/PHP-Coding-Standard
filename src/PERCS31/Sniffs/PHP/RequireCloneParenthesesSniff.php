@@ -28,22 +28,6 @@ class RequireCloneParenthesesSniff implements Sniff
     public const string CODE_SPACE_BEFORE = 'SpaceBefore';
 
     /**
-     * Tokens that can start a simple operand.
-     *
-     * @var list<int|string>
-     */
-    private const array OPERAND_START = [
-        T_VARIABLE,
-        T_STRING,
-        T_NAME_QUALIFIED,
-        T_NAME_FULLY_QUALIFIED,
-        T_NAME_RELATIVE,
-        T_SELF,
-        T_STATIC,
-        T_PARENT,
-    ];
-
-    /**
      * Tokens that can follow a dereferencing operator.
      *
      * @var list<int|string>
@@ -127,10 +111,7 @@ class RequireCloneParenthesesSniff implements Sniff
             return;
         }
 
-        $phpcsFile->fixer->beginChangeset();
-        FixerHelper::blankBetween($phpcsFile, $stackPtr, $opener);
-
-        $phpcsFile->fixer->endChangeset();
+        FixerHelper::replaceBetween($phpcsFile, $stackPtr, $opener, '');
     }
 
     /**
@@ -145,7 +126,7 @@ class RequireCloneParenthesesSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
         if ($tokens[$start]['code'] === T_NEW) {
             $end = TokenHelper::findNewExpressionEnd($phpcsFile, $start);
-        } elseif (in_array($tokens[$start]['code'], self::OPERAND_START, true)) {
+        } elseif (in_array($tokens[$start]['code'], TokenHelper::CLASS_REFERENCE, true)) {
             $end = $start;
         } else {
             return null;

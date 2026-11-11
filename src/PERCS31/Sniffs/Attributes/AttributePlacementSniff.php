@@ -217,17 +217,17 @@ class AttributePlacementSniff implements Sniff
             return;
         }
 
-        // Each call is a changeset of its own.
-        FixerHelper::replaceBetween($phpcsFile, $opener, $first, $itemIndent);
+        $phpcsFile->fixer->beginChangeset();
+        FixerHelper::setBetween($phpcsFile, $opener, $first, $itemIndent);
         foreach ($commas as $comma) {
             $next = $phpcsFile->findNext(T_WHITESPACE, ($comma + 1), $closer, true);
             if ($next !== false && $next !== $closer) {
-                FixerHelper::replaceBetween($phpcsFile, $comma, $next, $itemIndent);
+                FixerHelper::setBetween($phpcsFile, $comma, $next, $itemIndent);
             }
         }
 
         $comma = $tokens[$last]['code'] === T_COMMA ? '' : ',';
-        FixerHelper::replaceBetween($phpcsFile, $last, $closer, $comma . $phpcsFile->eolChar . $indent);
+        FixerHelper::setBetween($phpcsFile, $last, $closer, $comma . $phpcsFile->eolChar . $indent);
         $phpcsFile->fixer->endChangeset();
     }
 
@@ -375,11 +375,7 @@ class AttributePlacementSniff implements Sniff
         }
 
         $indent = str_repeat(' ', ($tokens[$stackPtr]['column'] - 1));
-        $phpcsFile->fixer->beginChangeset();
-        FixerHelper::blankBetween($phpcsFile, $previous, $stackPtr);
-
-        $phpcsFile->fixer->addContent($previous, $phpcsFile->eolChar . $indent);
-        $phpcsFile->fixer->endChangeset();
+        FixerHelper::replaceBetween($phpcsFile, $previous, $stackPtr, $phpcsFile->eolChar . $indent);
     }
 
     /**
@@ -406,11 +402,7 @@ class AttributePlacementSniff implements Sniff
             return;
         }
 
-        $phpcsFile->fixer->beginChangeset();
-        FixerHelper::blankBetween($phpcsFile, $closerPtr, $targetPtr);
-
-        $phpcsFile->fixer->addContent($closerPtr, ' ');
-        $phpcsFile->fixer->endChangeset();
+        FixerHelper::replaceBetween($phpcsFile, $closerPtr, $targetPtr, ' ');
     }
 
     /**

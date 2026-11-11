@@ -77,10 +77,6 @@ class MatchArmPlacementSniff implements Sniff
         }
 
         $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $comma));
-        $phpcsFile->fixer->beginChangeset();
-        FixerHelper::blankBetween($phpcsFile, $comma, $next);
-
-        $phpcsFile->fixer->addContent($comma, $phpcsFile->eolChar . $indent);
-        $phpcsFile->fixer->endChangeset();
+        FixerHelper::replaceBetween($phpcsFile, $comma, $next, $phpcsFile->eolChar . $indent);
     }
 }

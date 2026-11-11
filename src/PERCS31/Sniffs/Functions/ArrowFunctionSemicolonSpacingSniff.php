@@ -69,9 +69,6 @@ class ArrowFunctionSemicolonSpacingSniff implements Sniff
             return;
         }
 
-        $phpcsFile->fixer->beginChangeset();
-        FixerHelper::blankBetween($phpcsFile, $expressionEnd, $closer);
-
-        $phpcsFile->fixer->endChangeset();
+        FixerHelper::replaceBetween($phpcsFile, $expressionEnd, $closer, '');
     }
 }

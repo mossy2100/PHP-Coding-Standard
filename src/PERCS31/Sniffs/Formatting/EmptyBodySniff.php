@@ -81,11 +81,7 @@ class EmptyBodySniff implements Sniff
             return;
         }
 
-        $phpcsFile->fixer->beginChangeset();
-        FixerHelper::blankBetween($phpcsFile, $previous, ($closer + 1));
-
-        $phpcsFile->fixer->addContent($previous, ' {}');
-        $phpcsFile->fixer->endChangeset();
+        FixerHelper::replaceBetween($phpcsFile, $previous, ($closer + 1), ' {}');
     }
 
     /**

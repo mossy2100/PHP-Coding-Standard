@@ -14,11 +14,12 @@ use PHP_CodeSniffer\Util\Tokens;
 class TokenHelper
 {
     /**
-     * Tokens that can name the class in a `new` expression.
+     * Tokens that can start a simple operand, such as the class in a `new` expression: a variable, a name, or `self`,
+     * `static` or `parent`.
      *
      * @var list<int|string>
      */
-    private const array CLASS_REFERENCE = [
+    public const array CLASS_REFERENCE = [
         T_STRING,
         T_NAME_QUALIFIED,
         T_NAME_FULLY_QUALIFIED,

@@ -252,8 +252,8 @@ class PropertyHookLayoutSniff implements Sniff
         );
         if ($fix) {
             $phpcsFile->fixer->beginChangeset();
-            FixerHelper::replaceBetween($phpcsFile, $name, $arrow, ' ');
-            FixerHelper::replaceBetween($phpcsFile, $arrow, $body, ' ');
+            FixerHelper::setBetween($phpcsFile, $name, $arrow, ' ');
+            FixerHelper::setBetween($phpcsFile, $arrow, $body, ' ');
             $phpcsFile->fixer->endChangeset();
         }
     }
@@ -364,9 +364,7 @@ class PropertyHookLayoutSniff implements Sniff
         }
 
         if ($phpcsFile->addFixableError($error, $after, $code)) {
-            $phpcsFile->fixer->beginChangeset();
-            FixerHelper::blankBetween($phpcsFile, $before, $after);
-            $phpcsFile->fixer->endChangeset();
+            FixerHelper::replaceBetween($phpcsFile, $before, $after, '');
         }
     }
 
@@ -472,8 +470,8 @@ class PropertyHookLayoutSniff implements Sniff
         );
         if ($fix) {
             $phpcsFile->fixer->beginChangeset();
-            FixerHelper::replaceBetween($phpcsFile, $opener, $first, ' ');
-            FixerHelper::replaceBetween($phpcsFile, $last, $closer, ' ');
+            FixerHelper::setBetween($phpcsFile, $opener, $first, ' ');
+            FixerHelper::setBetween($phpcsFile, $last, $closer, ' ');
             $phpcsFile->fixer->endChangeset();
         }
     }
@@ -511,11 +509,7 @@ class PropertyHookLayoutSniff implements Sniff
         }
 
         if ($phpcsFile->addFixableError($error, $opener, self::CODE_BODILESS_LAYOUT)) {
-            $phpcsFile->fixer->beginChangeset();
-            FixerHelper::blankBetween($phpcsFile, $opener, $closer);
-
-            $phpcsFile->fixer->addContent($opener, $expected);
-            $phpcsFile->fixer->endChangeset();
+            FixerHelper::replaceBetween($phpcsFile, $opener, $closer, $expected);
         }
     }
 

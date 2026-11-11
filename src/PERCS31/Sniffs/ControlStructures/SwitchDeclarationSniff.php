@@ -6,6 +6,7 @@ namespace PERCS31\Sniffs\ControlStructures;
 
 use Closure;
 use PERCS31\Helpers\FixerHelper;
+use PERCS31\Helpers\LayoutHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\PSR2\Sniffs\ControlStructures\SwitchDeclarationSniff as Psr2Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -38,8 +39,6 @@ use PHP_CodeSniffer\Util\Tokens;
  */
 class SwitchDeclarationSniff extends Psr2Sniff
 {
-    private const int CONDITION_INDENT = 4;
-
     public const string CODE_MISSING_TERMINATOR = 'MissingTerminator';
 
     public const string CODE_MULTI_LINE_CONDITION_PARENTHESES = 'MultiLineConditionParentheses';
@@ -409,7 +408,7 @@ class SwitchDeclarationSniff extends Psr2Sniff
         $phpcsFile->fixer->beginChangeset();
         FixerHelper::blankBetween($phpcsFile, $opener, $condition);
 
-        $phpcsFile->fixer->addContent($opener, $phpcsFile->eolChar . $indent . str_repeat(' ', self::CONDITION_INDENT));
+        $phpcsFile->fixer->addContent($opener, $phpcsFile->eolChar . $indent . str_repeat(' ', LayoutHelper::INDENT));
         $phpcsFile->fixer->endChangeset();
     }
 
@@ -424,7 +423,7 @@ class SwitchDeclarationSniff extends Psr2Sniff
     private function checkConditionIndent(File $phpcsFile, int $case, int $opener, int $closer): void
     {
         $tokens = $phpcsFile->getTokens();
-        $minimum = ($tokens[$case]['column'] - 1 + self::CONDITION_INDENT);
+        $minimum = ($tokens[$case]['column'] - 1 + LayoutHelper::INDENT);
         $skipped = Tokens::HEREDOC_TOKENS + Tokens::STRING_TOKENS + [T_WHITESPACE => T_WHITESPACE];
         for ($i = ($opener + 1); $i < $closer; $i++) {
             $isLineStart = $tokens[$i]['line'] !== $tokens[($i - 1)]['line'];
