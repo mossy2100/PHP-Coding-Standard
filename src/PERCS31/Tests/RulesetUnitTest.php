@@ -335,12 +335,13 @@ class RulesetUnitTest extends TestCase
 
     /**
      * Test that a comma starting a line in a call's arguments is reported once, including after a heredoc's closing
-     * marker, as is a space before a comma in an array inside the call, and that the fix puts each comma back.
+     * marker, as is the spacing around a comma in an array inside the call, and that the fix corrects each one.
      */
-    public function testSpaceBeforeCommaInCallIsReportedOnceAndFixed(): void
+    public function testCommaSpacingInCallIsReportedOnceAndFixed(): void
     {
         $heredoc = "    <<<'EOT'\n        x\n        EOT";
-        $source = "<?php\n\nfoo(\n$heredoc\n    ,\n    \$a\n    ,\n    [1 , 2],\n);\n";
+        $arrays = "    [1 , 2],\n    [3,4],\n    [5,  6],\n";
+        $source = "<?php\n\nfoo(\n$heredoc\n    ,\n    \$a\n    ,\n$arrays);\n";
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -353,10 +354,17 @@ class RulesetUnitTest extends TestCase
 
         preg_match_all('/:(\d+):\d+: error - .*\.(\w+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
         $reports = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
-        $expected = ['7 SpaceBeforeInFunctionCall', '9 SpaceBeforeInFunctionCall', '10 SpaceBeforeInFunctionCall'];
+        $expected = [
+            '7 SpaceBeforeInFunctionCall',
+            '9 SpaceBeforeInFunctionCall',
+            '10 SpaceBeforeInFunctionCall',
+            '11 NoSpaceAfterInFunctionCall',
+            '12 TooMuchSpaceAfterInFunctionCall',
+        ];
+        $fixedArrays = "    [1, 2],\n    [3, 4],\n    [5, 6],\n";
 
         $this->assertSame($expected, $reports, $result['output']);
-        $this->assertSame("<?php\n\nfoo(\n$heredoc,\n    \$a,\n    [1, 2],\n);\n", $fixed);
+        $this->assertSame("<?php\n\nfoo(\n$heredoc,\n    \$a,\n$fixedArrays);\n", $fixed);
     }
 
     /**

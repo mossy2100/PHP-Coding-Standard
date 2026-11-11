@@ -52,10 +52,12 @@
         <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpaceAfterEquals"/>
         <!-- Replaced by a PERCS31 version that also checks clone(), and skips a set hook's parameter list (4.7) -->
         <exclude name="PSR2.Methods.FunctionCallSignature"/>
-        <!-- Replaced by Universal.WhiteSpace.CommaSpacing.SpaceBeforeInFunctionCall, which also reports a comma on the
-             line after a heredoc's closing marker, and one in an array inside a call's parentheses (4.7, 11) -->
-        <exclude name="Generic.Functions.FunctionCallArgumentSpacing.SpaceBeforeComma"/>
+        <!-- Replaced by Universal.WhiteSpace.CommaSpacing's codes for a call, which also report a comma on the line
+             after a heredoc's closing marker, and one in an array or a match inside a call's parentheses (4.7, 11) -->
+        <exclude name="Generic.Functions.FunctionCallArgumentSpacing"/>
         <exclude name="PSR12.Classes.AnonClassDeclaration.SpaceBeforeComma"/>
+        <exclude name="PSR12.Classes.AnonClassDeclaration.NoSpaceAfterComma"/>
+        <exclude name="PSR12.Classes.AnonClassDeclaration.TooMuchSpaceAfterComma"/>
     </rule>
 
     <!-- Visibility on every constant is a MUST (4.3), but PSR12.Properties.ConstantVisibility only gives a warning -->
@@ -185,11 +187,13 @@
     </rule>
 
     <!-- A comma with no space before it and one after in any other list, such as an array, group use, match
-         conditions or clone(), as the examples show (3, 5.2, 11). Parameter, argument, closure use and declare lists
-         have their own codes, which other sniffs already cover, apart from the space before a comma inside a call's
-         parentheses. -->
+         conditions or clone(), as the examples show (3, 5.2, 11). The codes ending in InFunctionCall cover a comma
+         inside a call's parentheses (4.7). Parameter, closure use and declare lists have their own codes, which other
+         sniffs already cover. -->
     <rule ref="Universal.WhiteSpace.CommaSpacing.SpaceBefore"/>
     <rule ref="Universal.WhiteSpace.CommaSpacing.SpaceBeforeInFunctionCall"/>
+    <rule ref="Universal.WhiteSpace.CommaSpacing.NoSpaceAfterInFunctionCall"/>
+    <rule ref="Universal.WhiteSpace.CommaSpacing.TooMuchSpaceAfterInFunctionCall"/>
     <rule ref="Universal.WhiteSpace.CommaSpacing.NoSpaceAfter"/>
     <rule ref="Universal.WhiteSpace.CommaSpacing.TooMuchSpaceAfter"/>
     <rule ref="Universal.WhiteSpace.CommaSpacing.CommaAfterComment"/>

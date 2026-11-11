@@ -141,11 +141,11 @@ Reference: [PHPCSExtra repository and documentation](https://github.com/PHPCSSta
   (2.5).
 - **Universal.WhiteSpace.CommaSpacing**: Requires no space before a comma and one after, in an attribute block, e.g.
   `#[Foo, Bar]` (12.3), and in any other list, such as an array, group `use`, `match` conditions or `clone()`, as the
-  examples show (3, 5.2, 11). Its codes for parameter, argument, closure `use` and `declare` lists aren't used, as other
-  sniffs check those, with one exception. Its `SpaceBeforeInFunctionCall` code replaces
-  `Generic.Functions.FunctionCallArgumentSpacing.SpaceBeforeComma`, which misses a comma on the line after a heredoc's
-  closing marker, and one in an array inside a call's parentheses, as in `foo([1 , 2])` (4.7, 11). It also covers lists
-  with no example, such as `echo 1, 2;` and `global $a, $b;`.
+  examples show (3, 5.2, 11). Its codes ending in `InFunctionCall` check a comma inside a call's parentheses (4.7). They
+  replace `Generic.Functions.FunctionCallArgumentSpacing`, which misses a comma on the line after a heredoc's closing
+  marker, and one in an array or a `match` inside the call, as in `foo([1,2])`. Its codes for parameter, closure `use`
+  and `declare` lists aren't used, as other sniffs check those. It also covers lists with no example, such as
+  `echo 1, 2;` and `global $a, $b;`.
 
 ### Slevomat
 

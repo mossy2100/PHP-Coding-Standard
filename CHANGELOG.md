@@ -371,11 +371,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- **A space before a comma in a call is reported by `Universal.WhiteSpace.CommaSpacing` (breaking).** The code is now
-  `SpaceBeforeInFunctionCall`, replacing `Generic.Functions.FunctionCallArgumentSpacing.SpaceBeforeComma` and
-  `PSR12.Classes.AnonClassDeclaration.SpaceBeforeComma`, so update any `phpcs:ignore` comments or `<exclude>` rules that
-  name them. It also reports two cases those missed: a comma on the line after a heredoc's closing marker, and a space
-  before a comma in an array inside a call's parentheses, as in `foo([1 , 2])`. Auto-fixable.
+- **Comma spacing in a call is reported by `Universal.WhiteSpace.CommaSpacing` (breaking).** The codes are now
+  `SpaceBeforeInFunctionCall`, `NoSpaceAfterInFunctionCall` and `TooMuchSpaceAfterInFunctionCall`. They replace
+  `SpaceBeforeComma`, `NoSpaceAfterComma` and `TooMuchSpaceAfterComma`, from both
+  `Generic.Functions.FunctionCallArgumentSpacing` and `PSR12.Classes.AnonClassDeclaration`, so update any
+  `phpcs:ignore` comments or `<exclude>` rules that name them. They also report two cases those missed: a comma on the
+  line after a heredoc's closing marker, and the spacing around a comma in an array or a `match` inside a call's
+  parentheses, as in `foo([1,2])`. Auto-fixable.
 - **A class constant with no visibility is an error (breaking).** `PSR12.Properties.ConstantVisibility` only gives a
   warning, but PER Coding Style 3.1 says visibility MUST be declared on all constants, so PERCS31 makes it an error.
 - **Renamed the standard from `OceanMoon` to the Jumbo Coding Standard, and the package from `oceanmoon/coding-standard`
