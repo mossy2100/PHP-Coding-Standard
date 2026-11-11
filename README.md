@@ -112,8 +112,8 @@ sniffs are listed only where PERCS31 changes or replaces them.
   sniffs, for PER Coding Style 3.1.
 - [Jumbo](docs/Jumbo.md): what Jumbo changes in PERCS31, and the Generic, Squiz, PHPCSExtra, Slevomat and Zend sniffs and custom sniffs
   it adds as extra rules.
-- [PER-CS 3.1 Judgement Calls](docs/PER-CS_3.1_Judgement_Calls.md): how PERCS31 reads the points PER Coding Style 3.1
-  leaves unclear, contradicts or leaves out, and why.
+- [PER-CS 3.1 Judgement Calls](docs/PER-CS_3.1_Judgement_Calls.md): how PERCS31 reads the points PER Coding Style 3.1 leaves unclear, contradicts or leaves
+  out, and why.
 
 ---
 

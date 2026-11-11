@@ -8,8 +8,8 @@ PER rules wrong, such as rejecting an empty body written as `{}`, and don't yet 
 property hooks and the pipe operator. This standard fixes both, using sniffs from PHP_CodeSniffer, Slevomat, PHPCSExtra
 and php-collective where they fit, and custom sniffs where nothing did.
 
-Where the spec is unclear, contradicts itself or says nothing, [PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md)
-gives the reading PERCS31 takes, and why.
+Where the spec is unclear, contradicts itself or says nothing, [PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md) gives the reading PERCS31
+takes, and why.
 
 The [Jumbo standard](Jumbo.md) is PERCS31 plus extra rules. Use PERCS31 on its own to follow PER Coding Style without them.
 
@@ -59,8 +59,8 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   directives, such as `declare(ticks=1,strict_types=1);`, or a string value, such as `declare(encoding='UTF-8');`.
 - **PSR12.Files.FileHeader**, by [`PERCS31.Files.FileHeader`](#percs31filesfileheader), which allows `<?php declare(strict_types=1) ?>` on the
   first line of a file with markup.
-- **PSR12.Functions.NullableTypeDeclaration**, by [`PERCS31.Functions.NullableTypeDeclaration`](#percs31functionsnullabletypedeclaration), which also checks a
-  `set` hook's parameter.
+- **PSR12.Functions.NullableTypeDeclaration**, by [`PERCS31.Functions.NullableTypeDeclaration`](#percs31functionsnullabletypedeclaration), which also checks a `set`
+  hook's parameter.
 - **PSR12.Operators.OperatorSpacing**, by [`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing), which also covers the pipe operator `|>`.
 - **PSR12.Properties.ConstantVisibility** is kept, but a constant with no visibility is an error, not a warning, as
   [Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says MUST.
@@ -159,8 +159,8 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Classes.DisallowMultiPropertyDefinition**: Disallows several properties in one statement (4.3).
 - **Classes.PropertyDeclaration**: Requires the modifier order, and the spacing around the modifiers and the type,
   including on promoted properties (4.3, 4.6). Its check for a space after a nullable type's `?` is replaced by
-  [`PERCS31.Functions.NullableTypeDeclaration`](#percs31functionsnullabletypedeclaration), which is more complete: it checks every place a type can
-  appear, including a `set` hook's parameter, not just a property.
+  [`PERCS31.Functions.NullableTypeDeclaration`](#percs31functionsnullabletypedeclaration), which is more complete: it checks every place a type can appear,
+  including a `set` hook's parameter, not just a property.
 - **Functions.ArrowFunctionDeclaration**: Requires no space after `fn`, e.g. `fn($x) => $x`. The expression may be on
   the next line (7.1).
 - **Functions.DisallowTrailingCommaInCall**, **...InClosureUse** and **...InDeclaration**: Disallow a trailing comma in
@@ -169,8 +169,8 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Functions.RequireTrailingCommaInClosureUse** and **...InDeclaration**: Require a trailing comma in a multi-line
   list (2.6). For a call, [`PERCS31.Functions.RequireTrailingCommaInCall`](#percs31functionsrequiretrailingcommaincall) replaces `...InCall`.
 - **TypeHints.DNFTypeHintFormat**: Requires no spaces inside the parentheses (2.5). Its check for spaces around `|` and
-  `&` is replaced by [`PERCS31.TypeHints.CompoundTypeOperatorSpacing`](#percs31typehintscompoundtypeoperatorspacing), which allows a split type. Its
-  checks for `null` last and for `?T` are replaced by [`PERCS31.TypeHints.NullType`](#percs31typehintsnulltype), which covers every type.
+  `&` is replaced by [`PERCS31.TypeHints.CompoundTypeOperatorSpacing`](#percs31typehintscompoundtypeoperatorspacing), which allows a split type. Its checks for `null`
+  last and for `?T` are replaced by [`PERCS31.TypeHints.NullType`](#percs31typehintsnulltype), which covers every type.
 
 ### PhpCollective
 
@@ -544,10 +544,9 @@ final class Marker {}
 Checks the declaration of a class, interface, trait or enum, and the placement of its braces, except in an empty body
 written as `{}` on one line, e.g. `class Foo {}`. This replaces `PSR2.Classes.ClassDeclaration`.
 
-**Why:** `PSR2.Classes.ClassDeclaration` rejects an empty body written as `{}` on one line, which [PER Coding Style 3.1,
-Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff
-skips that case, and leaves everything else to the parent. For an empty body, the checks on `extends` and `implements`
-still run. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
+**Why:** `PSR2.Classes.ClassDeclaration` rejects an empty body written as `{}` on one line, which
+[PER Coding Style 3.1, Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the parent. For an
+empty body, the checks on `extends` and `implements` still run. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
 
 It also requires a backed enum's type in lower case, as in `enum Suit: string`, as [Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says all types MUST be in
 lower case. `Generic.PHP.LowerCaseType` doesn't check a backing type.
@@ -729,9 +728,9 @@ It reports:
   parameters. Section 4.3 says "a single underscore", so a double one, as in `$__a`, passes, as it does on a method.
 - The `var` keyword (`VarUsed`).
 - A property with no visibility (`ScopeMissing`).
-- `set` before `get` in a property's hooks (`HookOrder`). [PER Coding Style 3.1, Section 4.10](https://www.php-fig.org/per/coding-style/#410-interface-and-abstract-properties) requires `get` first for
-  an abstract or interface property with no hook bodies, e.g. `{ get; set; }`, and every example in section 4.9 has
-  `get` first too. So every hook list is checked, including ones with bodies, `&` or attributes.
+- `set` before `get` in a property's hooks (`HookOrder`). [PER Coding Style 3.1, Section 4.10](https://www.php-fig.org/per/coding-style/#410-interface-and-abstract-properties) requires `get` first for an
+  abstract or interface property with no hook bodies, e.g. `{ get; set; }`, and every example in section 4.9 has `get`
+  first too. So every hook list is checked, including ones with bodies, `&` or attributes.
 
 `SlevomatCodingStandard.Classes.PropertyDeclaration` checks modifier order and the spacing after the type, and
 `SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition` checks for several properties in one statement.
@@ -1358,9 +1357,8 @@ $double = fn(int $x): int => $x * 2 ;
 Checks the spacing and layout of a function call's argument list, including `clone()`'s. This replaces
 `PSR2.Methods.FunctionCallSignature`, which it extends.
 
-**Why:** [PER Coding Style 3.1, Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) sets the rules for a call: no space before or just inside the
-parentheses, and when split, the first argument on the next line and one per line. The parent checks those, with two
-gaps:
+**Why:** [PER Coding Style 3.1, Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) sets the rules for a call: no space before or just inside the parentheses,
+and when split, the first argument on the next line and one per line. The parent checks those, with two gaps:
 
 - It doesn't check `clone()`, which section 4.7 calls a function. This sniff does. Parentheses that may only group the
   object, as in `clone ($a)->b`, aren't an argument list. Nor are parentheses after a space, as in `clone ($a)`, which
@@ -1416,11 +1414,11 @@ recommends for a function. This sniff skips that case, and leaves everything els
 a single-line signature, the parent's `CloseBracketNewLine` check is skipped too, as it can't be run on its own. See
 [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
 
-The parent also reports every blank line in a multi-line parameter or `use` list, but [section 12.4](https://www.php-fig.org/per/coding-style/#124-example)'s example
-has one between two parameters, both before an attribute and before a parameter with none. So the ruleset excludes the
-parent's `EmptyLine` code, and this sniff reports blank lines itself, as `BlankLine`. A single blank line between
-parameters is allowed, as the example shows. Any other is reported, such as two in a row, one straight after `(` or
-before `)`, one after a parameter's attributes, or one between a closure's `use` items.
+The parent also reports every blank line in a multi-line parameter or `use` list, but [section 12.4](https://www.php-fig.org/per/coding-style/#124-example)'s example has one
+between two parameters, both before an attribute and before a parameter with none. So the ruleset excludes the parent's
+`EmptyLine` code, and this sniff reports blank lines itself, as `BlankLine`. A single blank line between parameters is
+allowed, as the example shows. Any other is reported, such as two in a row, one straight after `(` or before `)`, one
+after a parameter's attributes, or one between a closure's `use` items.
 
 The parent doesn't check an arrow function. [Section 7.1](https://www.php-fig.org/per/coding-style/#71-short-closures) says an arrow function follows the same rules as a closure, so
 this sniff checks its split parameter list too:
@@ -1790,9 +1788,9 @@ It checks the indent of all of them, including `.`. A full ternary is checked by
 `PERCS31.ControlStructures.MultiLineTernaryOperator`, and section 6.2 doesn't list `=>`, so one in an array or `match`
 arm isn't checked.
 
-A short ternary must be written `?:`, with nothing between the `?` and `:`, as [section 6.3](https://www.php-fig.org/per/coding-style/#63-ternary-operators) says it follows the
-rules for other binary operators, and its examples write it as one. Anything between them, such as `$a ? : $b`, is
-reported as `SplitShortTernary`, and the fix joins them where the `:` is.
+A short ternary must be written `?:`, with nothing between the `?` and `:`, as [section 6.3](https://www.php-fig.org/per/coding-style/#63-ternary-operators) says it follows the rules for
+other binary operators, and its examples write it as one. Anything between them, such as `$a ? : $b`, is reported as
+`SplitShortTernary`, and the fix joins them where the `:` is.
 
 **Auto-fixable:** yes, unless a comment follows an operator at the end of a line, or is between a short ternary's `?`
 and `:`.
@@ -2095,8 +2093,8 @@ Requires `null` to be the last type in a union, and recommends `?T` for a union 
 type can appear. This replaces the `NullTypeHintNotOnLastPosition` and `RequiredShortNullable` checks of
 `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat`.
 
-**Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says `null` MUST be the last item, and that a union of a single
-simple type with `null` SHOULD be written `?T`. The Slevomat sniff gets some cases wrong:
+**Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says `null` MUST be the last item, and that a union of a single simple type
+with `null` SHOULD be written `?T`. The Slevomat sniff gets some cases wrong:
 
 - It skips the `null` position in a type with an intersection, such as `null|(A&B)`.
 - For `null|int`, it only gives the `?T` warning, so the MUST is lost below warning level.
@@ -2263,9 +2261,8 @@ inside `process()`, which is one long method with no smaller one to override.
 
 - **Property hooks:** PHP_CodeSniffer's tokenizer doesn't treat property hook braces as scopes, so the original doesn't
   check the indentation inside a hook.
-- **An anonymous class with attributes:** [Section 8](https://www.php-fig.org/per/coding-style/#8-anonymous-classes) indents it once from the line with `new`, and its body from
-  `class`. The original expects `class` at the statement's indent. See
-  [PERCS31.Attributes.AttributePlacement](#percs31attributesattributeplacement).
+- **An anonymous class with attributes:** [Section 8](https://www.php-fig.org/per/coding-style/#8-anonymous-classes) indents it once from the line with `new`, and its body from `class`.
+  The original expects `class` at the statement's indent. See [PERCS31.Attributes.AttributePlacement](#percs31attributesattributeplacement).
 - **A `match` arm:** a line starting an arm must be indented exactly once past the line the `match`'s `{` is on, as
   section 5.2 shows. PER says nothing about a later condition in an arm, split over lines, so that isn't checked. The
   original only reports indentation that's too small, so nothing else reports an arm indented too far.

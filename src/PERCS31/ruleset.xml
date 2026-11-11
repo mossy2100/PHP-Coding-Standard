@@ -80,7 +80,8 @@
     </rule>
     <rule ref="PERCS31.WhiteSpace.ScopeClosingBrace"/>
 
-    <!-- An empty body as {}: a warning for a class or function (4, 4.4), an error for a closure or anonymous class (7, 8) -->
+    <!-- An empty body as {}: a warning for a class or function (4, 4.4), an error for a closure or anonymous class
+         (7, 8) -->
     <rule ref="PERCS31.Formatting.EmptyBody"/>
 
     <!-- Keywords in lower case (2.5): ::class, and function and const in a use statement -->
@@ -150,7 +151,8 @@
     <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInClosureUse"/>
     <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInDeclaration"/>
 
-    <!-- A trailing comma after the last element of a multi-line array, keyed or not, including after a heredoc (2.6) -->
+    <!-- A trailing comma after the last element of a multi-line array, keyed or not, including after a heredoc
+         (2.6) -->
     <rule ref="SlevomatCodingStandard.Arrays.TrailingArrayComma"/>
 
     <!-- A trailing comma in a multi-line match, group use, list(), or the arguments of an anonymous class, clone(),
@@ -229,8 +231,8 @@
         <exclude name="PERCS31.Classes.PropertyDeclaration.FinalAfterVisibility"/>
         <exclude name="PERCS31.Classes.PropertyDeclaration.AbstractAfterVisibility"/>
         <exclude name="PERCS31.Classes.PropertyDeclaration.AvizKeywordOrder"/>
-        <!-- The parent's warning for a leading underscore can't skip a double one, so the sniff's LeadingUnderscore error
-             replaces it (4.3) -->
+        <!-- The parent's warning for a leading underscore can't skip a double one, so the sniff's LeadingUnderscore
+             error replaces it (4.3) -->
         <exclude name="PERCS31.Classes.PropertyDeclaration.Underscore"/>
     </rule>
 
@@ -279,8 +281,8 @@
     <!-- switch rules, including a terminating statement in the last case, and parentheses around a multi-line case
          condition (5.2) -->
     <rule ref="PERCS31.ControlStructures.SwitchDeclaration">
-        <!-- The sniff's own codes report code or a comment on a label's line, and a blank line after it, which these can't
-             fix -->
+        <!-- The sniff's own codes report code or a comment on a label's line, and a blank line after it, which these
+             can't fix -->
         <exclude name="PERCS31.ControlStructures.SwitchDeclaration.BodyOnNextLineCASE"/>
         <exclude name="PERCS31.ControlStructures.SwitchDeclaration.BodyOnNextLineDEFAULT"/>
     </rule>
