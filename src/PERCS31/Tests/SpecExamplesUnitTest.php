@@ -13,8 +13,9 @@ use PHPUnit\Framework\TestCase;
  * that break it.
  *
  * Each file in SpecExamples is one `php` block from the spec (tag 3.1.0), numbered in order and named after its
- * section, with `<?php` added where the block has none. The attribute example in section 8 is left out, as its `...`
- * body isn't valid PHP. PSR-1's checks for a namespace and side effects are excluded, as the examples are fragments.
+ * section, with `<?php` added where the block has none, and invisible trailing whitespace removed. The attribute
+ * example in section 8 is left out, as its `...` body isn't valid PHP. PSR-1's checks for a namespace and side effects
+ * are excluded, as the examples are fragments.
  *
  * An example is expected to pass unless it's marked "not allowed" in the spec, or breaks one of the spec's own rules,
  * as the rule text beats an example. Messages below the default warning severity, such as a line over 80 characters,
@@ -49,8 +50,6 @@ class SpecExamplesUnitTest extends TestCase
         '06-3.inc' => ['5 PSR12.Namespaces.CompoundNamespaceDepth.TooDeep'],
         // SHOULD be avoided: (new Foo())->someMethod().
         '12-4.inc' => ['3 PERCS31.Classes.ClassInstantiationNoBrackets.NewWithUnnecessaryParentheses'],
-        // Trailing whitespace on a blank line (2.3).
-        '22-4.4.inc' => ['6 Squiz.WhiteSpace.SuperfluousWhitespace.EndLine'],
         // A promoted hook with no trailing comma (2.6).
         '41-4.9.inc' => ['6 SlevomatCodingStandard.Functions.RequireTrailingCommaInDeclaration.MissingTrailingComma'],
         // Not allowed: a promoted hook that's too complex. It has no trailing comma either (2.6).
