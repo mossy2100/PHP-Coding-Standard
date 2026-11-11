@@ -1474,6 +1474,12 @@ The parent would also indent every line of a promoted parameter's multi-line hoo
 [`PERCS31.WhiteSpace.ScopeIndent`](#percs31whitespacescopeindent) until `phpcbf` fails. [`PERCS31.Classes.PromotedPropertyHooks`](#percs31classespromotedpropertyhooks) already reports that
 code, which has to be rewritten, so this sniff leaves that parameter list alone.
 
+The parent's fix for a closure's `use` on the line after the closing parenthesis never finished. One of its fixes added
+a space before `use`, leaving it on its line, and another indented that line, each undoing the other until `phpcbf`
+failed. This sniff reports that `use` itself, with the parent's `SpaceBeforeUse` code, and joins it to the
+parenthesis's line, giving `) use ($var) {`. It's a workaround for a bug in `PEAR.Functions.FunctionDeclaration`, to
+remove once that's fixed.
+
 **Auto-fixable:** yes, as the parent.
 
 ---

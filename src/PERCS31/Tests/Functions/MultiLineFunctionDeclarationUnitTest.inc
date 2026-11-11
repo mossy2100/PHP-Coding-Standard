@@ -71,3 +71,26 @@ class PromotedOneLineHook
           public string $other,
     ) {}
 }
+
+// A closure's use on the line after the closing parenthesis is joined to it. The parent's two fixes for it undo each
+// other.
+$joined = function (
+    $longArgument,
+    $longerArgument,
+)
+use ($var1) {
+    return 1;
+};
+
+$joined = function ($arg)
+    use ($var1) {
+    return 1;
+};
+
+// A comment in the way stops the fix.
+$commented = function (
+    $longArgument,
+) // Why.
+use ($var1) {
+    return 1;
+};

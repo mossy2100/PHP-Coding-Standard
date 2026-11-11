@@ -186,6 +186,25 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a closure's `use` on the line after its parameter list's closing parenthesis is joined to that line.
+     * The two inherited fixes for it undid each other until phpcbf failed.
+     */
+    public function testClosureUseOnItsOwnLineIsJoined(): void
+    {
+        $file = $this->copyToTempFile(null, "<?php\n\n\$a = function (\n    \$b,\n)\nuse (\$c) {\n    return 1;\n};\n");
+
+        try {
+            $fixer = $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
+        $this->assertSame("<?php\n\n\$a = function (\n    \$b,\n) use (\$c) {\n    return 1;\n};\n", $fixed);
+    }
+
+    /**
      * Test that a one-line block declare is fixed with no stray blank line, which two fixes for its brace would add.
      */
     public function testOneLineBlockDeclareIsFixedWithNoBlankLine(): void

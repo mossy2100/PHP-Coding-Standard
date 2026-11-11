@@ -31,6 +31,10 @@ class MultiLineFunctionDeclarationUnitTest extends AbstractSniffTestCase
             52 => 1,
             // A parameter indented too far, after a valid one-line promoted hook.
             71 => 1,
+            // A closure's use on the line after the closing parenthesis, the last with a comment in the way.
+            81 => 1,
+            86 => 1,
+            94 => 1,
         ];
     }
 

@@ -442,6 +442,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **`phpcbf` no longer fails on a closure's `use` on its own line.** With `use` on the line after the parameter list's
+  closing parenthesis, two inherited fixes undid each other until `phpcbf` gave up. It's now joined to that line, as
+  `) use ($var) {`.
 - **A type's case in a `set` hook's parameter (breaking).** `set(INT $value)` passed, though PER Coding Style 3.1
   requires types in lower case. The new `PERCS31.PHP.LowerCaseType` replaces `Generic.PHP.LowerCaseType`, and checks it
   too, so a `phpcs:ignore` for a `Generic.PHP.LowerCaseType` code needs updating. Auto-fixable.

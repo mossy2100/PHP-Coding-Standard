@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\Functions;
 
 use PERCS31\Helpers\EmptyBodyHelper;
+use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\Squiz\Sniffs\Functions\MultiLineFunctionDeclarationSniff as SquizSniff;
@@ -33,6 +34,12 @@ use PHP_CodeSniffer\Util\Tokens;
  * The parent would also indent every line of a promoted parameter's multi-line hook list as a parameter, fighting
  * PERCS31.WhiteSpace.ScopeIndent until phpcbf fails. PERCS31.Classes.PromotedPropertyHooks already reports that code,
  * and it has to be rewritten, so this sniff leaves its parameter list alone.
+ *
+ * The parent's fix for a closure's `use` on the line after the closing parenthesis never finishes. Its SpaceBeforeUse
+ * fix reads the line break as no space, and adds one, leaving `use` on its line, and its Indent fix then indents that
+ * line. The two undo each other until phpcbf fails. So this sniff reports that `use` itself, with the parent's code,
+ * and joins it to the parenthesis's line. The parent's checks run on the next pass. This is a workaround for an
+ * upstream bug, in PEAR.Functions.FunctionDeclaration, to remove once it's fixed there.
  */
 class MultiLineFunctionDeclarationSniff extends SquizSniff
 {
@@ -61,7 +68,42 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
             return;
         }
 
+        if ($this->joinUseToParenthesis($phpcsFile, $stackPtr)) {
+            return;
+        }
+
         parent::process($phpcsFile, $stackPtr);
+    }
+
+    /**
+     * Report a closure's `use` on a line after its parameter list's closing parenthesis, and join it to that line.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the function keyword.
+     * @return bool True if it was reported, so the parent's checks, whose fixes for it undo each other, are skipped.
+     */
+    private function joinUseToParenthesis(File $phpcsFile, int $stackPtr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $closer = $tokens[$stackPtr]['parenthesis_closer'] ?? null;
+        $opener = $tokens[$stackPtr]['scope_opener'] ?? null;
+        if ($tokens[$stackPtr]['code'] !== T_CLOSURE || !is_int($closer) || !is_int($opener)) {
+            return false;
+        }
+
+        $use = $phpcsFile->findNext(T_USE, ($closer + 1), $opener);
+        if ($use === false || $tokens[$use]['line'] === $tokens[$closer]['line']) {
+            return false;
+        }
+
+        // A comment between them would be lost.
+        $isFixable = $phpcsFile->findNext(T_WHITESPACE, ($closer + 1), $use, true) === false;
+        $error = 'Expected 1 space before USE keyword; found newline';
+        if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $use, 'SpaceBeforeUse')) {
+            FixerHelper::replaceBetween($phpcsFile, $closer, $use, ' ');
+        }
+
+        return true;
     }
 
     /**
