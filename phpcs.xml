@@ -11,8 +11,7 @@
     <!-- The standard's name is deliberately in capitals, to match PSR12, and PHP is a sniff category's name -->
     <rule ref="PERCS31.NamingConventions.AcronymCasing">
         <properties>
-            <property name="excludedNames" value="PERCS31"/>
-            <property name="excludedAcronyms" value="PHP"/>
+            <property name="excludedNames" value="PERCS31,PHP"/>
         </properties>
     </rule>
 

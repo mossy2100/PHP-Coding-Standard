@@ -90,8 +90,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `$userID`, as PER Coding Style 3.1 recommends writing acronyms like words. It covers classes, interfaces, traits,
   enums, enum cases, namespaces, functions, methods, properties, parameters, variables, import aliases, trait aliases,
   and enum and global constants with a lower-case letter. An acronym is a word of two or more capitals, so a single
-  capital, as in `ClassA` or `getX`, isn't reported. Set `excludedNames` or `excludedAcronyms`, as comma-separated
-  lists, to allow exceptions.
+  capital, as in `ClassA` or `getX`, isn't reported. Set `excludedNames`, a comma-separated list, to allow whole names.
 - **`PERCS31.NamingConventions.ValidClassName` (breaking).** Replaces `Squiz.Classes.ValidClassName`. Class, interface,
   trait and enum names must be in PascalCase: a capital first, only letters and digits, and at least one lower-case
   letter. So `FOO`, `A` and `B2B` are now errors. An acronym in capitals, as in `HTTPClient`, gets the `AcronymCasing`

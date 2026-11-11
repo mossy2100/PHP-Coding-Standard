@@ -30,22 +30,20 @@ class NamingHelper
     }
 
     /**
-     * Check whether a name has an acronym in capitals that isn't made up of approved acronyms.
+     * Check whether a name has an acronym in capitals.
      *
      * An acronym is a word of two or more capitals, as splitWords() finds them, so `AICodingStandard` and `IHeartAI`
      * each have one. A single capital is an initial, not an acronym, as in `ClassA`, `EDayOfWeek` or `B2B`.
      *
      * @param string $name The name, which can include underscores or a variable's `$`.
-     * @param list<string> $approved The approved acronyms. Matching is case-sensitive.
      * @return bool True if it has one.
      */
-    public static function hasAcronym(string $name, array $approved = []): bool
+    public static function hasAcronym(string $name): bool
     {
         foreach (explode('_', ltrim($name, '$')) as $part) {
             foreach (self::splitWords($part) as $word) {
                 $letters = rtrim($word, '0123456789');
-                $isAcronym = strlen($letters) >= 2 && ctype_upper($letters);
-                if ($isAcronym && !self::isMadeOfAcronyms($letters, $approved)) {
+                if (strlen($letters) >= 2 && ctype_upper($letters)) {
                     return true;
                 }
             }
@@ -160,23 +158,5 @@ class NamingHelper
         $imports = UseStatements::splitImportUseStatement($phpcsFile, $usePtr);
 
         return isset($imports['const'][$tokens[$namePtr]['content']]) ? $namePtr : false;
-    }
-
-    /**
-     * Check whether a run of capitals is made up entirely of approved acronyms.
-     *
-     * @param string $run The run of capitals.
-     * @param list<string> $approved The approved acronyms.
-     * @return bool True if it is.
-     */
-    private static function isMadeOfAcronyms(string $run, array $approved): bool
-    {
-        if ($approved === []) {
-            return false;
-        }
-
-        $pattern = implode('|', array_map(static fn(string $acronym): string => preg_quote($acronym, '/'), $approved));
-
-        return preg_match('/^(?:' . $pattern . ')+$/', $run) === 1;
     }
 }

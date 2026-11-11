@@ -35,10 +35,8 @@ use PHPCSUtils\Utils\Variables;
  *   control. It's checked where it's declared.
  * - A class where it's used, such as `new HTTPClient()`, for the same reason.
  *
- * Set excludedNames to allow whole names, and excludedAcronyms to allow acronyms in any name it checks, as
- * comma-separated lists. Each part of a namespace is checked as a name of its own. An acronym must match a whole
- * upper-case word. So excluding `HTTP` allows `getHTTPClient`, but not `getHTTPSClient` or `getHTTPs`, which ends in
- * `HTT` and `Ps`. Listing several lets them combine, as in `getXMLHTTPRequest`.
+ * Set excludedNames to allow whole names, as a comma-separated list. Each part of a namespace is checked as a name of
+ * its own, so excluding `PERCS31` allows `PERCS31\Sniffs`.
  *
  * The warning isn't fixable, as references to the name elsewhere wouldn't change.
  */
@@ -58,12 +56,6 @@ class AcronymCasingSniff implements Sniff
      * `$` is optional. It's null if a `phpcs:set` comment clears it.
      */
     public ?string $excludedNames = '';
-
-    /**
-     * Acronyms to allow in any name, as a comma-separated list, e.g. `HTTP,URL`. Matching is case-sensitive. It's null
-     * if a `phpcs:set` comment clears it.
-     */
-    public ?string $excludedAcronyms = '';
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -154,7 +146,7 @@ class AcronymCasingSniff implements Sniff
             }
         }
 
-        return NamingHelper::hasAcronym($name, $this->splitList($this->excludedAcronyms));
+        return NamingHelper::hasAcronym($name);
     }
 
     /**

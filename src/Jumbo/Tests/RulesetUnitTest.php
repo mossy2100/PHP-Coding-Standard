@@ -474,8 +474,8 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test the naming rules, in both standards: an approved acronym is allowed in any name, and a name with no
-     * lower-case letter isn't in PascalCase.
+     * Test the naming rules, in both standards: an acronym is a warning unless the name is excluded, and a name with
+     * no lower-case letter isn't in PascalCase.
      */
     #[DataProvider('standardProvider')]
     public function testNamingRules(string $standard): void
@@ -483,7 +483,7 @@ class RulesetUnitTest extends TestCase
         $source = <<<'PHP'
             <?php
 
-            // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms HTTP
+            // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedNames HTTPClient,getHTTP
             class HTTPClient {}
 
             enum foo {}
@@ -519,8 +519,10 @@ class RulesetUnitTest extends TestCase
         $reports = array_map(static fn(array $match): string => "$match[1] $match[2] $match[3]", $matches);
         $expected = [
             '6 error NotPascalCase',
+            '8 warning AcronymNotLikeWord',
             '10 warning AcronymNotLikeWord',
             '12 error NotPascalCase',
+            '14 warning AcronymNotLikeWord',
             '15 warning EnumConstantNotPascalCase',
             '18 warning AcronymNotLikeWord',
             '22 warning AcronymNotLikeWord',

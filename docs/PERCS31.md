@@ -1708,25 +1708,19 @@ It doesn't report:
 
 A name you can't change, such as a method overriding a parent's, is reported too. A variable is reported at each use.
 
-Two properties allow exceptions, each a comma-separated list. Matching is case-sensitive:
-
-- `excludedNames` allows whole names. Each part of a namespace counts as a name of its own, so `PERCS31` allows
-  `PERCS31\Sniffs`, but not `PERCS31\HTTP`.
-- `excludedAcronyms` allows acronyms in any name this sniff checks. An acronym must match a whole upper-case word. So
-  `HTTP` allows `getHTTPClient` and `getHTTPSecurity`, but not `getHTTPSClient`. Listing several lets them combine, as
-  in `getXMLHTTPRequest`.
-
-There's no plural rule, as that would only suit some languages. `getHTTPs` ends in `HTT` and `Ps`, and `getURLs` in `UR`
-and `Ls`, so `HTTP` and `URL` don't allow them. Use `excludedNames` for those.
+The `excludedNames` property allows whole names, as a comma-separated list. Matching is case-sensitive, and a
+variable's `$` is optional. Each part of a namespace counts as a name of its own, so `PERCS31` allows `PERCS31\Sniffs`,
+but not `PERCS31\HTTP`. It suits a name used in many files, such as a namespace:
 
 ```xml
 <rule ref="PERCS31.NamingConventions.AcronymCasing">
     <properties>
         <property name="excludedNames" value="PERCS31,legacyID"/>
-        <property name="excludedAcronyms" value="HTTP,URL"/>
     </properties>
 </rule>
 ```
+
+For a name declared once, a `phpcs:ignore` comment on its line does the same job.
 
 **Auto-fixable:** no, as references to the name elsewhere wouldn't change.
 

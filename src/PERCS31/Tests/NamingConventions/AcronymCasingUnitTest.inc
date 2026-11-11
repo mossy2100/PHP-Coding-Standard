@@ -198,63 +198,35 @@ namespace PERCS31\HTTP;
 
 function OtherLegacyID(): void {}
 
-// phpcs:set PERCS31.NamingConventions.AcronymCasing excludedNames
-// phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms HTTP, XML
-function HTTPCode(): void {}
-
-$xmlValue = parseXML();
-
-function getHTTPResponse(): void {}
-
-use Foo\Bar as HTTPBarTwo;
-
-function XMLHTTPRequest(): void {}
-
-// The lists apply to a class, an enum, an enum case and an enum constant too.
+// A class, an enum case and an enum constant can be excluded too.
+// phpcs:set PERCS31.NamingConventions.AcronymCasing excludedNames HTTPKernel,HTTPPost,XMLVersion
 class HTTPKernel {}
 
-enum XMLFormat
+enum Format
 {
     case HTTPPost;
     const XMLVersion = 1;
 }
 
-// A plural isn't an acronym, a different acronym, a longer one, and a name with an excluded and another.
-function loadHTTPs(): void {}
+class HTTPKernelTwo {}
 
-function URLClient(): void {}
+// phpcs:set PERCS31.NamingConventions.AcronymCasing excludedNames
 
-function HTTPSClient(): void {}
+// === WORDS ===
 
-function HTTPClientForURL(): void {}
-
-class URLKernel {}
-
-// phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms HTTP, HTTPS, ID, URL
-// The last capital before a lower-case letter starts a word, so these are `HTTP`, `HTTPS` and `HTTPS`.
+// The last capital before a lower-case letter starts a word, so these have `HTTP`, `HTTPS`, `HTT` and `UR`.
 function HTTPSecurity(): void {}
-
-function HTTPSClientTwo(): void {}
 
 function getHTTPS(): void {}
 
-// These are `HTT` and `Pz`, and `UR` and `Ls`, neither of which is approved.
-function loadHTTPz(): void {}
+function loadHTTPs(): void {}
 
 function getURLs(): array {}
 
-// These are `I` and `Ds`, and `I` and `Dea`. A single capital isn't an acronym, so they need no approval.
+// These are `I` and `Ds`, and `I` and `Dea`. A single capital isn't an acronym.
 function getIDs(): array {}
 
 function IDea(): void {}
-
-// phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms HTTPS
-// This is `HTTP` and `Security`, and only `HTTPS` is approved.
-function OtherHTTPSecurity(): void {}
-
-function HTTPSecure(): void {}
-
-// phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms
 
 // A digit separates capitals, and stays with the word on its left.
 function B2B(): void {}
@@ -282,11 +254,11 @@ class TraitAliases
         eighth as final parseJSON;
     }
 
-    // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms XML
+    // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedNames parseXML
     use ThreeTrait {
         ninth as parseXML;
     }
-    // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedAcronyms
+    // phpcs:set PERCS31.NamingConventions.AcronymCasing excludedNames
 }
 
 // === GLOBAL CONSTANTS ===
