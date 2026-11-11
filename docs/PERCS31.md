@@ -395,8 +395,8 @@ name.
 
 Anywhere else, such as in an assignment or an array, PER says nothing, so it isn't checked.
 
-An enum case isn't in section 12.2's list either, so `#[Label] case Active;` passes, as does the attribute on the line
-before. Nor is a property hook:
+An enum case isn't in section 12.2's list either. It's treated as a constant, so its attribute goes on the line
+before, and `#[Label] case Active;` is reported, and fixed. Nor is a property hook:
 
 - **A hook with a body in braces** is laid out like a method, so its attribute goes on the line before. `#[Label] get {`
   is reported, and fixed.
@@ -407,7 +407,7 @@ A hook's parameter follows the parameter rule.
 
 With two or more attribute blocks, the target goes on the line after them, as each block must be on its own line. So
 `#[A] #[B] case X;` becomes three lines. [`PERCS31.Attributes.DisallowMultipleAttributesPerLine`](#percs31attributesdisallowmultipleattributesperline) puts each block on
-its own line. One block holding several attributes, as in `#[A, B] case X;`, can stay inline.
+its own line. One block holding several attributes can stay inline on a short hook, as in `#[A, B] get => 'a';`.
 
 A single-line parameter or argument list is the exception, as section 12.2 only separates blocks "in a multi-line
 context". There, two or more blocks stay inline, each followed by a single space, so `function f(#[A] #[B] int $c) {}`
@@ -422,9 +422,8 @@ $pure = #[A]
     static fn($x) => $x;
 ```
 
-On an enum case, a short hook, or a closure outside a call, an attribute on its target's line is followed by a single
-space, as section 12.2 requires for a parameter in a single-line list. So `#[Label]  case Active;` is reported, and
-fixed.
+On a short hook, or a closure outside a call, an attribute on its target's line is followed by a single space, as
+section 12.2 requires for a parameter in a single-line list. So `#[Label]  get => 'a';` is reported, and fixed.
 
 **Why:** `SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing` covers some of this, but its only option for an
 attribute on its target's line, `allowOnSameLine`, is all or nothing, and its fix for a blank line deletes a comment

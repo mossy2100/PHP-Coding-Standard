@@ -1067,14 +1067,16 @@ mention enum cases, property hooks, or closures.
 
 **Ruleset:**
 
-- An enum case: the attribute may be on its line, followed by a single space, or on the line before.
-- A hook with a body in braces, as in `get {`: the attribute goes on the line before.
-- A short hook, as in `get => 1;`, or one with no body, as in `get;`: as for an enum case.
+- An enum case: the attribute goes on the line before, as for a constant.
+- A hook with a body in braces, as in `get {`: the attribute goes on the line before, as for a method.
+- A short hook, as in `get => 1;`, or one with no body, as in `get;`: the attribute may be on its line, followed by a
+  single space, or on the line before.
 - A closure as a call's argument follows the parameter rule. Elsewhere, it isn't checked.
 
-**Why:** A hook with a body in braces is laid out like a method, so its attribute goes where a method's does. An enum
-case, a short hook or a hook with no body fits on a line, and nothing in the spec says the attribute can't share it.
-The single space follows 12.2's rule for a parameter in a single-line list.
+**Why:** Section 9 says enums follow the guidelines for class constants, and PHP itself treats an enum case's
+attribute as a constant's. A hook with a body in braces is laid out like a method, so its attribute goes where a
+method's does. A short hook or a hook with no body fits on a line, and a promoted property's hook has to (4.9), so the
+attribute may share it. The single space follows 12.2's rule for a parameter in a single-line list.
 
 ---
 

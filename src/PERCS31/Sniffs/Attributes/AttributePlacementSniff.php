@@ -30,13 +30,14 @@ use PHPCSUtils\Utils\PassedParameters;
  * between the colon and the value, and PHP doesn't allow the attribute before the name. Elsewhere, such as in an
  * assignment or an array, PER says nothing, so it isn't checked.
  *
- * An enum case isn't in section 12.2's list either, so its attribute may be on the case's line, or the line before. Nor
- * is a property hook. A hook with a body in braces is laid out like a method, so its attribute goes on the line before,
- * as a method's does. A short hook, as in `get => 1;`, or one with no body, as in `get;`, fits on a line, so its
- * attribute may share it. A hook's parameter follows the parameter rule.
+ * An enum case isn't in section 12.2's list either. It's treated as a constant, which is how PHP targets its
+ * attributes, so its attribute goes on the line before. Nor is a property hook. A hook with a body in braces is laid
+ * out like a method, so its attribute goes on the line before, as a method's does. A short hook, as in `get => 1;`, or
+ * one with no body, as in `get;`, fits on a line, so its attribute may share it. A hook's parameter follows the
+ * parameter rule.
  *
- * Where an attribute may be on its target's line, on an enum case, such a hook, or a closure outside a call, it's
- * followed by a single space, as section 12.2 requires for a parameter in a single-line list.
+ * Where an attribute may be on its target's line, on such a hook or a closure outside a call, it's followed by a single
+ * space, as section 12.2 requires for a parameter in a single-line list.
  *
  * It also reports a blank line or a comment between the last attribute and its target. That includes a comment before
  * a parameter, though section 12.2 says "immediately prior" only for the other targets. That replaces
@@ -144,10 +145,8 @@ class AttributePlacementSniff implements Sniff
             return;
         }
 
-        // An enum case, or a hook with no body in braces, can share a line with one attribute block, but not with two
-        // or more.
-        $isInlineTarget = $tokens[$targetPtr]['code'] === T_ENUM_CASE
-            || $this->isHookWithoutBlock($phpcsFile, $targetPtr);
+        // A hook with no body in braces can share a line with one attribute block, but not with two or more.
+        $isInlineTarget = $this->isHookWithoutBlock($phpcsFile, $targetPtr);
         if ($isInlineTarget && !$isGroup) {
             $this->checkSameLineSpacing($phpcsFile, $closerPtr, $targetPtr);
             return;

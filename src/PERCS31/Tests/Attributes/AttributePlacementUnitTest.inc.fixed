@@ -231,14 +231,17 @@ foo(callback: #[Pure] fn() => 1);
 
 enum AttributesOnCases
 {
-    #[Label] case Same;
+    #[Label]
+    case Same;
 
     #[Label]
     case Before;
 
-    #[Label, Other] case Compound;
+    #[Label, Other]
+    case Compound;
 
-    #[Label] case Reported;
+    #[Label]
+    case Reported;
 
     #[Label]
     case Allowed;
@@ -362,9 +365,11 @@ class SameLineSpacing
 
 enum SameLineSpacingEnum
 {
-    #[C] case A;
+    #[C]
+    case A;
 
-    #[C] case B;
+    #[C]
+    case B;
 
     #[C]
     case D;
@@ -381,7 +386,8 @@ $inArray = [
 
 enum SpacingCheckedEnum
 {
-    #[C] case A;
+    #[C]
+    case A;
 }
 
 $checked = #[Pure] fn(int $x): int => $x;
@@ -397,7 +403,8 @@ enum MultipleBlocks
     #[B]
     case Y;
 
-    #[A, B] case Z;
+    #[A, B]
+    case Z;
 
     #[A] #[B] /* A comment. */ case W;
 }

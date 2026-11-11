@@ -121,22 +121,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   it.
 - **A comment on its own line between an attribute and its parameter is an error (breaking).** Reported by
   `PERCS31.Attributes.AttributePlacement`. Not auto-fixable.
-- **An attribute can be on an enum case's or a property hook's line.** Section 12.2 of PER Coding Style 3.1 lists
-  neither, and a hook isn't a method. An attribute on a hook's parameter now follows the parameter rule, instead of being
-  reported.
+- **An attribute can be on a short property hook's line.** Section 12.2 of PER Coding Style 3.1 doesn't list a hook,
+  and a short hook, as in `#[A] get => 1;`, fits on a line. An attribute on a hook's parameter now follows the parameter
+  rule, instead of being reported.
 - **An attribute on a value in a multi-line array is allowed.** `#[Pure] static fn() => 1,` on a line of its own was
   reported as two values on one line, as `Squiz.Arrays.ArrayDeclaration`'s `ValueNoNewline` check read the attribute as
   an earlier value. The new `PERCS31.Arrays.ValuePerLine` replaces that check.
 - **Two or more attribute blocks put their target on the next line (breaking).** As each block must be on its own line,
   `#[A] #[B] case X;` is now an error in both standards, as is `#[A] #[B]` on a property hook, which was missed. In a
   single-line parameter or argument list, blocks stay inline, each followed by a single space. One block holding
-  several attributes, as in `#[A, B] case X;`, can stay inline. Uses
+  several attributes can stay inline on a short hook, as in `#[A, B] get => 1;`. Uses
   `PERCS31.Attributes.DisallowMultipleAttributesPerLine`, which replaces the Slevomat sniff of the same name.
   Auto-fixable.
-- **One space after an attribute on its target's line (breaking).** On an enum case, a short property hook or a
-  closure outside a call, `PERCS31.Attributes.AttributePlacement` requires a single space, as PER Coding Style 3.1 does
-  for a parameter in a single-line list. A hook with a body in braces, as in `get {`, is laid out like a method, so its
-  attribute must be on the line before. Auto-fixable.
+- **One space after an attribute on its target's line (breaking).** On a short property hook or a closure outside a
+  call, `PERCS31.Attributes.AttributePlacement` requires a single space, as PER Coding Style 3.1 does for a parameter
+  in a single-line list. An enum case is treated as a constant, and a hook with a body in braces, as in `get {`, as a
+  method, so the attribute on either must be on the line before. Auto-fixable.
 - **A default value's `=` can be aligned in PERCS31.** It's a binary operator, so PER Coding Style 3.1 only requires at
   least one space. `PERCS31.Operators.OperatorSpacing` now checks it, with the new property `checkDefaultValues`, in
   place of `Squiz.Functions.FunctionDeclarationArgumentSpacing`. The Jumbo standard still requires exactly one space.

@@ -59,7 +59,12 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             184 => 1,
             // A blank line after an attribute with a comment at the end of its line.
             199 => 1,
-            // A constant, unlike an enum case.
+            // An enum case, as for a constant: one attribute, several in a block, and one not fixable.
+            223 => 1,
+            228 => 1,
+            230 => 1,
+            235 => 1,
+            // A constant in an enum.
             237 => 1,
             // A comment on its own line before a parameter.
             241 => 1,
@@ -74,20 +79,25 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             309 => 1,
             // A method called get.
             316 => 1,
-            // Two spaces before a target on the same line.
+            // Two spaces before a short hook on the same line.
             322 => 1,
             327 => 1,
             331 => 1,
+            // An enum case on its attribute's line, after two spaces, and after one.
             350 => 1,
+            352 => 1,
+            // Two spaces before a closure outside a call.
             358 => 1,
             363 => 1,
-            // Two spaces after an attribute on an enum case, and on a closure outside a call.
+            // An enum case on its attribute's line, and two spaces after an attribute on a closure outside a call.
             369 => 1,
             372 => 1,
-            // Two or more attribute blocks: on an enum case, one not fixable, and on a hook.
+            // Two or more attribute blocks on an enum case, one block holding two attributes, and one not fixable.
             378 => 1,
             381 => 1,
+            383 => 1,
             385 => 1,
+            // Two attribute blocks on a short hook.
             391 => 1,
             // Two spaces between inline blocks in a single-line parameter list, and three in an argument list.
             402 => 1,

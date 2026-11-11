@@ -602,7 +602,8 @@ class RulesetUnitTest extends TestCase
                 #[B]
                 case X;
 
-                #[A, B] case Z;
+                #[A, B]
+                case Z;
             }
 
             function f(#[A] #[B] int $c): void {}
