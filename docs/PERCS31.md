@@ -48,6 +48,7 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   80 characters.
 - **Generic.Formatting.DisallowMultipleStatements**, by [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements), which allows
   `{ get; set; }` on an abstract or interface property.
+- **Generic.PHP.LowerCaseType**, by [`PERCS31.PHP.LowerCaseType`](#percs31phplowercasetype), which also checks a `set` hook's parameter type.
 - **Generic.NamingConventions.UpperCaseConstantName**, from PSR-1, by [`PERCS31.NamingConventions.UpperCaseConstantName`](#percs31namingconventionsuppercaseconstantname),
   which allows PascalCase for an enum constant.
 - **PSR12.Classes.ClosingBrace**, by [`PERCS31.Classes.ClosingBrace`](#percs31classesclosingbrace), which also checks a property hook's closing braces.
@@ -224,6 +225,7 @@ section gives the reason.
 | `PERCS31.NamingConventions.ValidEnumCaseName`           | Enum cases in PascalCase                                            | No      |
 | `PERCS31.Operators.OperatorPlacement`                   | A wrapped binary operator starts the next line, indented once       | Yes     |
 | `PERCS31.Operators.OperatorSpacing`                     | At least one space around binary operators, including `\|>`         | Yes     |
+| `PERCS31.PHP.LowerCaseType`                             | Types in lower case, including a `set` hook's parameter type        | Yes     |
 | `PERCS31.PHP.RequireCloneParentheses`                   | A warning for `clone $a`, not `clone($a)`                           | Yes     |
 | `PERCS31.Strings.HeredocIndentation`                    | Where a heredoc or nowdoc begins, and its indentation               | Yes     |
 | `PERCS31.TypeHints.CompoundTypeLayout`                  | One type, or one DNF union segment, per line of a split type        | Yes     |
@@ -1906,6 +1908,49 @@ $slug = $title|>trim(...)|>strtolower(...);
 
 ---
 
+### PERCS31.PHP.LowerCaseType
+
+Requires PHP's types in lower case, including in a `set` hook's parameter. This replaces `Generic.PHP.LowerCaseType`,
+which it extends.
+
+**Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says all PHP types MUST be in lower case. The Generic sniff checks
+parameters, return types, properties, typed constants and casts, with two gaps:
+
+- It doesn't see the type of a `set` hook's parameter, as in `set(INT $value)`. PHP_CodeSniffer doesn't know about
+  hooks, so it reads that type as an expression. This sniff checks it, with the parent's `ParamTypeFound` code. A type
+  read there as a keyword, such as `SELF` or `NULL`, is already reported by `Generic.PHP.LowerCaseKeyword` or
+  `Generic.PHP.LowerCaseConstant`.
+- After an attribute, as in `set(#[Sensitive] INT $value)`, it reads the parameter as a property, and reports its type
+  twice. This sniff drops those two reports, and makes its own.
+
+A backed enum's type is checked by [`PERCS31.Classes.ClassDeclaration`](#percs31classesclassdeclaration).
+
+**Auto-fixable:** yes, as the parent.
+
+**Good:**
+
+```php
+class Counter
+{
+    public int|string $count {
+        set(int|string $value) => (int) $value;
+    }
+}
+```
+
+**Bad:**
+
+```php
+class Counter
+{
+    public int|string $count {
+        set(INT|String $value) => (int) $value;
+    }
+}
+```
+
+---
+
 ### PERCS31.PHP.RequireCloneParentheses
 
 Warns about `clone` without parentheses, such as `clone $a`, or with a space before them, such as `clone ($a)`.
@@ -2342,8 +2387,6 @@ These are the original's properties. PER Coding Style 3.1 needs their defaults, 
 - **Avoiding abbreviations (2.7).** Whether a name could avoid an abbreviation can't be judged by a sniff.
 - **A `(double)` cast (2.5).** Section 2.5's short form rule is checked for the long forms PSR-12 knows, `(boolean)` and
   `(integer)`. `(double)` is left to the [Jumbo standard](Jumbo.md), whose `SlevomatCodingStandard.PHP.TypeCast` requires `(float)`.
-- **Keywords in lower case in a `set` hook's parameter type (2.5).** PHP_CodeSniffer reads the type as an expression, so
-  `Generic.PHP.LowerCaseType` doesn't see it. The other type rules are checked there.
 - **A comment or statement after an anonymous class's, closure's or control structure's closing brace (4).** Section 4
   says "any closing brace", but each of these is part of a larger expression or statement, so this standard reads it as
   covering classes, methods, functions and property hooks only. After a block `declare` in the file header, a statement

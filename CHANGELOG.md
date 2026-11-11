@@ -439,6 +439,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A type's case in a `set` hook's parameter (breaking).** `set(INT $value)` passed, though PER Coding Style 3.1
+  requires types in lower case. The new `PERCS31.PHP.LowerCaseType` replaces `Generic.PHP.LowerCaseType`, and checks it
+  too, so a `phpcs:ignore` for a `Generic.PHP.LowerCaseType` code needs updating. Auto-fixable.
 - **A trait alias in an anonymous class passed as an argument.** `PERCS31.NamingConventions.AcronymCasing` skipped an
   alias such as `hello as sayHTTPHello` there, as it took any `as` in parentheses for a `foreach`'s. It's now reported.
 - **An attribute on a `readonly` anonymous class.** `PERCS31.Attributes.AttributePlacement` didn't see the class
