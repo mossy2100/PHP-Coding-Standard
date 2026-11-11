@@ -250,9 +250,8 @@ class MultiLineTernaryOperatorSniff implements Sniff
      */
     private function startsLineWithIndentation(File $phpcsFile, int $operator, string $indentation): bool
     {
-        $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $operator, true);
-
-        return $firstOnLine === $operator && $phpcsFile->getTokens()[$operator]['column'] - 1 === strlen($indentation);
+        return LayoutHelper::startsLine($phpcsFile, $operator)
+            && $phpcsFile->getTokens()[$operator]['column'] - 1 === strlen($indentation);
     }
 
     /**

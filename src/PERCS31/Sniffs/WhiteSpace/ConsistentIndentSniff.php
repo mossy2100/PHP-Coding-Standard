@@ -341,7 +341,7 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
             $value === false
             || $tokens[$value]['line'] === $tokens[$arrowPtr]['line']
             || in_array($tokens[$value]['code'], [T_START_HEREDOC, T_START_NOWDOC], true)
-            || $phpcsFile->findFirstOnLine(T_WHITESPACE, $value, true) !== $value
+            || !LayoutHelper::startsLine($phpcsFile, $value)
             || !$this->isInArray($phpcsFile, $arrowPtr)
         ) {
             return;

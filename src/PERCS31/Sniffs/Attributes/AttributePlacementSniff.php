@@ -512,8 +512,7 @@ class AttributePlacementSniff implements Sniff
             return;
         }
 
-        $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $stackPtr, true);
-        $startsLine = $firstOnLine === $stackPtr;
+        $startsLine = LayoutHelper::startsLine($phpcsFile, $stackPtr);
         $indent = $tokens[$stackPtr]['column'] - 1;
         $hasComment = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($closerPtr + 1), $targetPtr) !== false;
 
