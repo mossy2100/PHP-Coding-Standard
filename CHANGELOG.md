@@ -321,9 +321,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`Jumbo.ControlStructures.RequireSingleLineHeader` (breaking).** Requires a multi-line `foreach`, `for`, `switch` or
   `match` header to be written on one line if it fits, as Slevomat's `RequireSingleLineCondition` does for `if` and
   `while`. Auto-fixable.
-- **`PERCS31.WhiteSpace.ArrowSpacing` (breaking).** Requires one space before and after `=>` in a `match` arm or a
-  `yield`, so arms aren't aligned, and at least one in an array. No stock sniff checks these. Jumbo requires exactly
-  one in an array too, so array arrows are never aligned. Auto-fixable.
+- **`PERCS31.WhiteSpace.ArrowSpacing` (breaking).** Requires one space before and after `=>` in a `match` arm, so arms
+  aren't aligned, and at least one in an array. No stock sniff checks these. Jumbo requires exactly one in an array
+  too, so array arrows are never aligned, and in a `yield`, which PER Coding Style 3.1 leaves undefined. Auto-fixable.
 - **`PERCS31.Classes.PromotedPropertyHooks` (breaking).** A hook on a promoted constructor parameter must be a single
   hook with a short `=>` body, on one line, as PER Coding Style 3.1 requires, e.g.
   `public function __construct(public string $name { set => trim($value); })`. Otherwise, declare the property in the

@@ -20,3 +20,10 @@ $value = match ($x) {
 
 // End of the arrays.
 // End of the file.
+
+// A yield's => isn't checked by default, as PER Coding Style 3.1 leaves it undefined.
+function generate(): iterable
+{
+    yield 'a'=>1;
+    yield 'b'   =>   2;
+}

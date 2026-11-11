@@ -1,7 +1,7 @@
 <?php
 
 // phpcs:set PERCS31.WhiteSpace.ArrowSpacing allowSeveralSpacesInArray false
-// With it off, an array needs exactly one space, as the Jumbo standard requires. Yields always do.
+// phpcs:set PERCS31.WhiteSpace.ArrowSpacing checkYield true
 
 // Correct spacing.
 $single = ['a' => 1, 'b' => 2];
@@ -53,4 +53,4 @@ foreach ($pairs as $key=>$value) {
 list('q' => $q) = $pair;
 
 // phpcs:set PERCS31.WhiteSpace.ArrowSpacing allowSeveralSpacesInArray true
-// End of the yields.
+// phpcs:set PERCS31.WhiteSpace.ArrowSpacing checkYield false

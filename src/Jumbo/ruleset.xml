@@ -341,10 +341,12 @@
     </rule>
 
     <!-- Exactly one space around => in every array, where PERCS31 allows more so arrows can be lined up. This replaces
-         Squiz.Arrays.ArrayDeclaration's arrow spacing checks, which cover only a single-line array. -->
+         Squiz.Arrays.ArrayDeclaration's arrow spacing checks, which cover only a single-line array. And exactly one
+         around a yield's =>, which PERCS31 doesn't check. -->
     <rule ref="PERCS31.WhiteSpace.ArrowSpacing">
         <properties>
             <property name="allowSeveralSpacesInArray" value="false"/>
+            <property name="checkYield" value="true"/>
         </properties>
     </rule>
 

@@ -2137,8 +2137,8 @@ class Limits
 
 ### PERCS31.WhiteSpace.ArrowSpacing
 
-Requires exactly one space before and after the `=>` in a `match` arm or a `yield`, and at least one in an array
-element, so arrows can be lined up.
+Requires exactly one space before and after the `=>` in a `match` arm, and at least one in an array element, so arrows
+can be lined up.
 
 **Why:** [PER Coding Style 3.1, Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) shows a `match` expression with one space each side of `=>`, and says to
 "note the placement of parentheses, spaces, and braces". Although the specification doesn't say so explicitly, it
@@ -2149,8 +2149,8 @@ checks a `match` arm, which has its own token, so aligned arms aren't caught.
 examples to rule out lining arrows up. So at least one space is required. The [Jumbo standard](Jumbo.md) turns
 `allowSeveralSpacesInArray` off, to require exactly one.
 
-PER says nothing about a `yield`'s `=>`, but every `=>` it does set has one space each side, so a `yield`'s does too.
-A `foreach`'s, an arrow function's and a property hook's `=>` have their own sniffs.
+PER says nothing about a `yield`'s `=>`, so it isn't checked. The [Jumbo standard](Jumbo.md) turns `checkYield` on, to require
+exactly one space each side. A `foreach`'s, an arrow function's and a property hook's `=>` have their own sniffs.
 
 A line break before or after the arrow is allowed, for wrapping a long arm, element or value.
 
@@ -2176,9 +2176,10 @@ $label = match ($size) {
 
 **Configuration:**
 
-| Property                    | Type | Default | Description                                             |
-| --------------------------- | ---- | ------- | ------------------------------------------------------- |
-| `allowSeveralSpacesInArray` | bool | true    | Allow more than one space each side of an array's `=>`. |
+| Property                    | Type | Default | Description                                              |
+| --------------------------- | ---- | ------- | -------------------------------------------------------- |
+| `allowSeveralSpacesInArray` | bool | true    | Allow more than one space each side of an array's `=>`.  |
+| `checkYield`                | bool | false   | Require exactly one space each side of a `yield`'s `=>`. |
 
 ---
 

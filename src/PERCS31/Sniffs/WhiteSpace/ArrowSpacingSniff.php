@@ -11,8 +11,8 @@ use PHPCSUtils\Utils\Lists;
 use PHPCSUtils\Utils\PassedParameters;
 
 /**
- * Requires exactly one space before and after the `=>` in a `match` arm and a `yield`, and at least one in an array
- * element. In an array, exactly one can be required instead.
+ * Requires exactly one space before and after the `=>` in a `match` arm, and at least one in an array element. In an
+ * array, exactly one can be required instead, and a `yield`'s `=>` can be checked too.
  *
  * PER Coding Style 3.1, section 6.2, doesn't list `=>` among the binary operators, so section 6 leaves its spacing
  * undefined, except where another section gives it a rule:
@@ -22,8 +22,8 @@ use PHPCSUtils\Utils\PassedParameters;
  * - An array element, including a destructuring assignment's: section 11's example, which "shows correct array usage",
  *   has a space each side, but too few examples to rule out lining arrows up. So at least one space is required, by
  *   default. The Jumbo standard turns allowSeveralSpacesInArray off, to require exactly one.
- * - `yield $key => $value`: PER says nothing, but every `=>` it does set has one space each side, so this one does
- *   too.
+ * - `yield $key => $value`: PER says nothing, so it isn't checked by default. The Jumbo standard turns checkYield on,
+ *   to require exactly one space each side, as for every `=>` PER does set.
  *
  * Other uses of `=>` have their own sniffs: Squiz.ControlStructures.ForEachLoopDeclaration for `foreach`,
  * SlevomatCodingStandard.Functions.ArrowFunctionDeclaration for an arrow function, and
@@ -61,6 +61,12 @@ class ArrowSpacingSniff implements Sniff
     public bool $allowSeveralSpacesInArray = true;
 
     /**
+     * Whether to check a `yield`'s `=>`, which then needs exactly one space each side. PER Coding Style 3.1 leaves it
+     * undefined, so it's off by default.
+     */
+    public bool $checkYield = false;
+
+    /**
      * Returns an array of tokens this test wants to listen for.
      *
      * @return array<int|string>
@@ -86,7 +92,7 @@ class ArrowSpacingSniff implements Sniff
         }
 
         if ($code === T_YIELD) {
-            $arrow = $this->findYieldArrow($phpcsFile, $stackPtr);
+            $arrow = $this->checkYield ? $this->findYieldArrow($phpcsFile, $stackPtr) : null;
             if ($arrow !== null) {
                 $this->checkArrow($phpcsFile, $arrow, 'yield');
             }

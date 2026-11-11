@@ -39,7 +39,7 @@ $label = match ($size) {
     default => [],
 };
 
-// An array's and a yield's arrows are checked too.
+// phpcs:set PERCS31.WhiteSpace.ArrowSpacing checkYield true
 $array = ['a'=>1, 'b'  =>  2];
 function generate(): iterable
 {
@@ -47,3 +47,4 @@ function generate(): iterable
 }
 
 // phpcs:set PERCS31.WhiteSpace.ArrowSpacing allowSeveralSpacesInArray true
+// phpcs:set PERCS31.WhiteSpace.ArrowSpacing checkYield false

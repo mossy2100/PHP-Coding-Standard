@@ -789,7 +789,7 @@ spacing.
 space each side, but there are too few examples to rule out lining arrows up.
 
 **Ruleset:** An array's `=>` needs at least one space each side. More is allowed. Jumbo requires exactly one. A
-`yield`'s `=>` isn't checked.
+`yield`'s `=>` isn't checked. Jumbo requires exactly one space each side of it too.
 
 **Why:** The spec always shows a space each side, and never none. It gives too little to forbid alignment.
 
