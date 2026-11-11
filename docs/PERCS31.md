@@ -315,9 +315,11 @@ $response = $client->post(
 
 ### PERCS31.Arrays.ValuePerLine
 
-Requires each value of a multi-line array with no keys to start on a new line, including the first. This replaces
-`Squiz.Arrays.ArrayDeclaration`'s `ValueNoNewline` check, and checks the same arrays: ones with two or more values and
-no keys. A keyed array is left to the Squiz sniff's `IndexNoNewline` check.
+Requires each value of a multi-line array to start on a new line, including the first. This replaces
+`Squiz.Arrays.ArrayDeclaration`'s `ValueNoNewline` check, which only looks at an array with two or more values and no
+keys. This sniff also checks an array with one value, and one that mixes keyed and unkeyed values, as in
+`'a' => 1, 2,`, which no Squiz check covers. An array whose values all have keys is left to the Squiz sniff's
+`IndexNoNewline` check.
 
 **Why:** [PER Coding Style 3.1, Section 11](https://www.php-fig.org/per/coding-style/#11-arrays) says that when an array is split across lines, the first value MUST be on the
 next line, and there MUST be only one value per line. The Squiz check reads an attribute on a value as an earlier value

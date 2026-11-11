@@ -22,12 +22,12 @@ $nested = [
     foo(5, 6),
 ];
 
-// Keyed arrays are left to Squiz.Arrays.ArrayDeclaration's IndexNoNewline check.
+// An array whose values all have keys is left to Squiz.Arrays.ArrayDeclaration's IndexNoNewline check.
 $keyed = [
     'a' => 1, 'b' => 2,
 ];
 
-// A single value is left alone too.
+// A single value on a line of its own.
 $one = [
     1,
 ];
@@ -68,4 +68,29 @@ $arrow = [
 
 $arrowFirst = [fn($x) => $x,
     2,
+];
+
+// A mix of keyed and unkeyed values, which no Squiz check covers.
+$mixed = [
+    'a' => 1, 2,
+    3, 'b' => fn($x) => $x, ...$rest,
+];
+
+$mixedFirst = ['a' => 1,
+    2,
+];
+
+$mixedValid = [
+    'a' => 1,
+    2,
+    ...$rest,
+];
+
+// A single value on the bracket's line.
+$oneFirst = [1,
+];
+
+$oneClosure = [function () {
+    return 1;
+},
 ];

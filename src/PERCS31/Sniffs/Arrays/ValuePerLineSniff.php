@@ -15,8 +15,9 @@ use PHPCSUtils\Utils\Context;
  *
  * PER Coding Style 3.1, section 11, says that when an array is split across lines, the first value MUST be on the next
  * line, and there MUST be only one value per line. This replaces Squiz.Arrays.ArrayDeclaration's ValueNoNewline check,
- * and checks the same arrays: ones with two or more values and no keys. Keyed arrays are left to its IndexNoNewline
- * check.
+ * which only looks at an array with two or more values and no keys. This sniff also checks an array with one value,
+ * and one that mixes keyed and unkeyed values, which no Squiz check covers. An array whose values all have keys is left
+ * to the Squiz sniff's IndexNoNewline check.
  *
  * The Squiz check reads an attribute on a value, as in `#[Pure] static fn() => 1,`, as an earlier value on the line, so
  * it reports a value that's already on a line of its own. A subclass can't fix that, as the check is in the middle of
@@ -63,7 +64,7 @@ class ValuePerLineSniff implements Sniff
         }
 
         $values = $this->findValues($phpcsFile, $opener, $closer);
-        if ($values === null || count($values) < 2) {
+        if ($values === null) {
             return;
         }
 
@@ -74,7 +75,7 @@ class ValuePerLineSniff implements Sniff
             }
 
             $error = $index === 0
-                ? 'The first value in a multi-value array must be on a new line'
+                ? 'The first value in a multi-line array must be on a new line'
                 : 'Each value in a multi-line array must be on a new line';
             if (!$phpcsFile->addFixableError($error, $first, self::CODE_VALUE_NO_NEWLINE)) {
                 continue;
@@ -89,21 +90,23 @@ class ValuePerLineSniff implements Sniff
     }
 
     /**
-     * Find the first token of each value, including any attribute on it.
+     * Find the first token of each value, or of its key, including any attribute on it.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $opener The position of the opening bracket or parenthesis.
      * @param int $closer The position of the closing bracket or parenthesis.
-     * @return list<int>|null The positions, or null if any value has a key.
+     * @return list<int>|null The positions, or null if every value has a key.
      */
     private function findValues(File $phpcsFile, int $opener, int $closer): ?array
     {
         $tokens = $phpcsFile->getTokens();
         $values = [];
+        $keys = 0;
         $start = $opener + 1;
         for ($i = $start; $i <= $closer; $i++) {
             if ($i < $closer && $tokens[$i]['code'] === T_DOUBLE_ARROW) {
-                return null;
+                $keys++;
+                continue;
             }
 
             if ($i === $closer || $tokens[$i]['code'] === T_COMMA) {
@@ -121,7 +124,8 @@ class ValuePerLineSniff implements Sniff
             $i = TokenHelper::findCloser($tokens[$i]) ?? $i;
         }
 
-        return $values;
+        // An array whose values all have keys is left to Squiz.Arrays.ArrayDeclaration.
+        return $values !== [] && $keys === count($values) ? null : $values;
     }
 
     /**

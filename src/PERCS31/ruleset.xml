@@ -399,7 +399,8 @@
         <exclude name="SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace.SpaceAfterComma"/>
     </rule>
 
-    <!-- One value per line in a multi-line array with no keys, the first on the next line (11) -->
+    <!-- One value per line, the first on the next line, in a multi-line array whose values don't all have keys (11).
+         One whose values all have keys is checked by Squiz.Arrays.ArrayDeclaration, above. -->
     <rule ref="PERCS31.Arrays.ValuePerLine"/>
 
     <!-- A multi-line array's [ not on a line of its own, except as an element of a multi-line array (11) -->

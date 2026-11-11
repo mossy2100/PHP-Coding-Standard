@@ -439,6 +439,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **One value per line in more arrays (breaking).** `PERCS31.Arrays.ValuePerLine` now checks a multi-line array that
+  mixes keyed and unkeyed values, as in `'a' => 1, 2,`, and one with a single value on the opening bracket's line, as
+  in `[1,` then `];`. Neither was reported, though PER Coding Style 3.1 requires the first value on the next line, and
+  one value per line. Auto-fixable.
 - **A value after an arrow function in a multi-line array.** `PERCS31.Arrays.ValuePerLine` missed a value on the same
   line as an arrow function before it, as in `fn($x) => $x, 2,`, and an arrow function on the opening bracket's line.
   Both are now reported. Auto-fixable.

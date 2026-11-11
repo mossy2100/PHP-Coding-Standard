@@ -30,6 +30,13 @@ class ValuePerLineUnitTest extends AbstractSniffTestCase
             // A value after an arrow function, and an arrow function as the first value.
             65 => 1,
             69 => 1,
+            // Mixed keyed and unkeyed values: two on a line, three on a line, and the first on the bracket's line.
+            75 => 1,
+            76 => 2,
+            79 => 1,
+            // A single value on the bracket's line.
+            90 => 1,
+            93 => 1,
         ];
     }
 
