@@ -271,8 +271,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   call with a `match` argument, where the same fix stopped `phpcbf` finishing.
 - **`PERCS31.Arrays.OpeningBracketPlacement` (breaking).** The opening bracket of a multi-line array must not be on a
   line of its own, as PER Coding Style 3.1 requires, e.g. `return [`, not `return` then `[` on the next line. An array
-  that's an element of a multi-line array is allowed, and so is one that's an argument in an argument list.
-  Auto-fixable.
+  that's an element of a multi-line array is allowed, and so is one that's an argument in an argument list, or a
+  condition of a `match` arm. Auto-fixable.
 - **The pipe operator `|>` (PHP 8.5) (breaking).** As PER Coding Style 3.1 requires, `|>` needs a space either side, and
   starts the line when a statement wraps at it. `PERCS31.Operators.OperatorSpacing` checks the spacing, and
   `PERCS31.Operators.OperatorPlacement` now covers `|>`. Only checked when PHPCS runs on PHP 8.5. Auto-fixable.

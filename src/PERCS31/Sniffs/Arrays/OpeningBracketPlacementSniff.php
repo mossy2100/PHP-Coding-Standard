@@ -16,9 +16,10 @@ use PHPCSUtils\Tokens\Collections;
  * array is an item in a list.
  *
  * PER Coding Style 3.1, section 11, says that when an array declaration is split across multiple lines, the opening
- * bracket MUST NOT be placed on its own line. Two kinds of array have to start a line, so they're allowed:
+ * bracket MUST NOT be placed on its own line. Three kinds of array have to start a line, so they're allowed:
  * - An element of a multi-line array, as PER's own example shows.
  * - An argument in an argument list, as section 4.7 puts each argument of a split list on a line of its own.
+ * - A condition of a `match` arm, as an arm starts a line.
  *
  * So is a destructuring assignment that starts a statement, which isn't an array declaration.
  *
@@ -86,8 +87,8 @@ class OpeningBracketPlacementSniff implements Sniff
     }
 
     /**
-     * Check whether an array is an item in a list: an element of an array, or an argument in an argument list. Each
-     * item of a split list starts a line, so its `[` has to.
+     * Check whether an array is an item in a list: an element of an array, an argument in an argument list, or a
+     * condition of a `match` arm. Each item of a split list starts a line, so its `[` has to.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $opener The position of the array's `[`.
@@ -106,6 +107,13 @@ class OpeningBracketPlacementSniff implements Sniff
         $container = TokenHelper::findContainer($phpcsFile, $opener);
         if ($container === null || $tokens[$container]['code'] === T_OPEN_SHORT_ARRAY) {
             return $container !== null;
+        }
+
+        // A comma directly inside a `match`'s braces ends an arm, or separates an arm's conditions.
+        if ($tokens[$container]['code'] === T_OPEN_CURLY_BRACKET) {
+            $owner = $tokens[$container]['scope_condition'] ?? null;
+
+            return is_int($owner) && $tokens[$owner]['code'] === T_MATCH;
         }
 
         // Parentheses hold an argument list when they follow something that takes arguments, such as a function's

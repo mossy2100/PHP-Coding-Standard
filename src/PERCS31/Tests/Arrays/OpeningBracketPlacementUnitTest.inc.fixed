@@ -78,6 +78,20 @@ $copy = clone(
     ],
 );
 
+// A match arm's condition has to start its line too.
+$result = match ($value) {
+    [
+        1,
+    ] => 'one',
+    [
+        2,
+    ] => 'two',
+    'three',
+    [
+        4,
+    ] => 'more',
+};
+
 // === INVALID ===
 
 $map = [

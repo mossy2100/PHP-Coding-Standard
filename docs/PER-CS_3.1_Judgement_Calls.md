@@ -1009,11 +1009,12 @@ as each argument there goes on its own line.
 
 - An element of a multi-line array, as in the example.
 - An argument in an argument list, so `foo(` then `[` on the next line is allowed, as is `foo([`.
+- A condition of a `match` arm.
 - A destructuring assignment.
 
 **Why:** The example shows the elements exception. An argument list split one per line leaves an array argument nowhere
-else to start, short of assigning it to a variable first, which PER doesn't ask for. A destructuring assignment is a
-list, not an array value.
+else to start, short of assigning it to a variable first, which PER doesn't ask for. A `match` arm starts a line, so an
+array that starts its conditions does. A destructuring assignment is a list, not an array value.
 
 ---
 

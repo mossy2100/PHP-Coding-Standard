@@ -20,15 +20,15 @@ class OpeningBracketPlacementUnitTest extends AbstractSniffTestCase
     {
         return [
             // After =>.
-            85 => 1,
+            99 => 1,
             // After return.
-            91 => 1,
+            105 => 1,
             // After =.
-            96 => 1,
-            // In a control structure's condition.
-            102 => 1,
-            // After a comment (not fixable).
             110 => 1,
+            // In a control structure's condition.
+            116 => 1,
+            // After a comment (not fixable).
+            124 => 1,
         ];
     }
 
