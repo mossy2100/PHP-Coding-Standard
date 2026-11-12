@@ -97,7 +97,7 @@ $match = match (true) {
     default => 2,
 };
 
-// In grouping parentheses, lined up with the first line, and indented once past it, which is valid.
+// In grouping parentheses, lined up with the first line, which is valid, and indented once past it.
 $grouped = (
     $a
     && $b

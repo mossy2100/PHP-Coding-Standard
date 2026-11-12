@@ -401,6 +401,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- **A wrapped operator in grouping parentheses lines up with the group's first line (breaking).** In `$a && (` with `$b`
+  and `|| $c` on the lines after it, `PERCS31.Operators.OperatorPlacement` wanted `|| $c` indented once past `$b`. Every
+  line in grouping parentheses is now indented once past the line with the `(`, so `|| $c` lines up with `$b`, in a
+  condition or any other expression. Auto-fixable, in PERCS31 and Jumbo.
 - **A multi-catch's types may be split across lines (breaking).** `catch (` then `A` then `|B $e` then `) {` now passes
   in PERCS31, as PER Coding Style 3.1 lets a union type be split before `|`. It was reported twice, with no fix.
   `PERCS31.TypeHints.CompoundTypeOperatorSpacing` now checks the `|`, and

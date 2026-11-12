@@ -13,6 +13,7 @@ use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Tokens\Collections;
 use PHPCSUtils\Utils\Operators;
 use PHPCSUtils\Utils\Parentheses;
 
@@ -28,9 +29,12 @@ use PHPCSUtils\Utils\Parentheses;
  *   expression starts after the nearest `;`, `,`, opening bracket, or full ternary `?` or `:`. The fix corrects the
  *   indent.
  *
- * The same applies wherever an expression is split: in a list item, such as a call argument, array element or `match`
- * arm, and in grouping parentheses, as in `$x = ($a && $b);` split over lines. The line is indented once past the line
- * its expression starts on, so lining it up with the item or group is reported.
+ * The same applies wherever an expression is split in a list item, such as a call argument, array element or `match`
+ * arm. The line is indented once past the line its expression starts on, so lining it up with the item is reported.
+ *
+ * In grouping parentheses, as in `$x = $a && ($b || $c);` split over lines, every line is indented once past the line
+ * with the opening parenthesis. So when the group's first value is on the line after the `(`, a wrapped operator lines
+ * up with it, as a line in a condition's parentheses does.
  *
  * A control structure's condition follows section 5 instead: each line is indented at least once past the line with
  * the opening parenthesis. Set requireExactConditionIndent to require exactly once for a line starting with a boolean
@@ -276,15 +280,66 @@ class OperatorPlacementSniff implements Sniff
             return;
         }
 
-        $expected = LayoutHelper::lineIndent($phpcsFile, $start) + LayoutHelper::INDENT;
+        // In grouping parentheses, every line is indented once past the line with the opening parenthesis, so an
+        // operator lines up with the group's first line when that's on a line of its own.
+        $isGroup = $this->isGroupingParenthesis($phpcsFile, $boundary);
+        $expected = LayoutHelper::lineIndent($phpcsFile, ($isGroup ? $boundary : $start)) + LayoutHelper::INDENT;
         $found = $tokens[$stackPtr]['column'] - 1;
         if ($found === $expected) {
             return;
         }
 
-        $error = 'A line starting with operator "%s" must be indented once past the line its expression starts on; '
-            . 'expected %s spaces, found %s';
+        $error = $isGroup
+            ? 'A line starting with operator "%s" in parentheses must be indented once past the line with the opening '
+                . 'parenthesis; expected %s spaces, found %s'
+            : 'A line starting with operator "%s" must be indented once past the line its expression starts on; '
+                . 'expected %s spaces, found %s';
         $this->reportIndent($phpcsFile, $stackPtr, $lastPtr, $error, $expected, $found);
+    }
+
+    /**
+     * Check whether a token is a parenthesis that only groups an expression, as in `$a && ($b || $c)`. One that
+     * holds a call's arguments, a declaration's parameters or a control structure's condition isn't.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $ptr The position of the token, or -1.
+     * @return bool True if it is.
+     */
+    private function isGroupingParenthesis(File $phpcsFile, int $ptr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        if ($ptr < 0 || $tokens[$ptr]['code'] !== T_OPEN_PARENTHESIS || isset($tokens[$ptr]['parenthesis_owner'])) {
+            return false;
+        }
+
+        $before = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($ptr - 1), null, true);
+        if ($before === false) {
+            return true;
+        }
+
+        // Parentheses after something that can be called, or that takes arguments, hold arguments.
+        $code = $tokens[$before]['code'];
+        $callees = [
+            T_CLOSE_PARENTHESIS,
+            T_CLOSE_SQUARE_BRACKET,
+            T_CLOSE_SHORT_ARRAY,
+            T_CLOSE_CURLY_BRACKET,
+            T_CONSTANT_ENCAPSED_STRING,
+            T_DOUBLE_QUOTED_STRING,
+            T_CLONE,
+            T_EXIT,
+            T_EMPTY,
+            T_EVAL,
+            T_LIST,
+            T_ANON_CLASS,
+            T_FN,
+            T_CLOSURE,
+            T_USE,
+            T_DECLARE,
+            T_CATCH,
+        ];
+
+        return !in_array($code, $callees, true) && !isset(Collections::parameterPassingTokens()[$code]);
     }
 
     /**

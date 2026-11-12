@@ -214,9 +214,9 @@ class ArrowSpacingSniff implements Sniff
             $isWhitespace
             && (
                 $minimum
-                    || $tokens[$sidePtr]['content'] === ' '
-                    || str_contains($tokens[$sidePtr]['content'], "\n")
-                    || $tokens[$sidePtr]['column'] === 1
+                || $tokens[$sidePtr]['content'] === ' '
+                || str_contains($tokens[$sidePtr]['content'], "\n")
+                || $tokens[$sidePtr]['column'] === 1
             )
         ) {
             return;

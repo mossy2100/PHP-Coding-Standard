@@ -2163,8 +2163,10 @@ indented once past the line its expression starts on. Operators within a line ar
 The expression starts after the nearest `;`, `,`, opening bracket, or full ternary `?` or `:`. Where it is decides the
 indent:
 
-- **A statement, a list item or grouping parentheses:** exactly once past the line the expression starts on. A list item
-  is a call argument, an array element or a `match` arm, and grouping parentheses are as in `$x = (`.
+- **A statement or a list item:** exactly once past the line the expression starts on. A list item is a call argument,
+  an array element or a `match` arm.
+- **Grouping parentheses:** exactly once past the line with the `(`, as in `$x = $a && (`. So when the group's first
+  value is on the line after the `(`, a wrapped operator lines up with it.
 - **An arrow function's `=>`:** exactly once past the line `fn` starts on.
 - **A control structure's condition:** at least once past the line with the `(`. Set `requireExactConditionIndent` to
   require exactly once for a line starting with a boolean operator, and exactly once past its operand's line for any
@@ -2174,9 +2176,13 @@ indent:
 
 **Why:** [PER Coding Style 3.1, Section 6.4](https://www.php-fig.org/per/coding-style/#64-operators-placement) says that when a statement is split at an operator, the operator MUST be at
 the start of the new line, and each subsequent line is indented once. Section 7.1 says the same of an arrow function's
-`=>`. That's read as applying wherever an expression is split, including a list item or grouping parentheses. Sections
-5.1 to 5.4 say a split condition is indented "at least once", which, being in section 5, applies to a control
-structure's parentheses only. Section 5.2's `case` example lines the operators up with the first condition.
+`=>`. That's read as applying wherever an expression is split, including a list item. Sections 5.1 to 5.4 say a split
+condition is indented "at least once", which, being in section 5, applies to a control structure's parentheses only.
+Section 5.2's `case` example lines the operators up with the first condition.
+
+In grouping parentheses, each line is indented once past the line with the `(`, the layout section 5.1's example gives a
+condition's parentheses. The lines in a group then read as one level, and the group's own line shows that it continues
+the statement.
 
 Two inherited sniffs check the placement here, each for one case: `Universal.Operators.ConcatPosition` for `.`, and
 `PSR12.ControlStructures.BooleanOperatorPlacement` for `&&` and `||` in a condition. Two more check part of it, but

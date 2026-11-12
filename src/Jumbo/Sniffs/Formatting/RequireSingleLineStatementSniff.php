@@ -392,8 +392,8 @@ class RequireSingleLineStatementSniff implements Sniff
         $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
         $isCall = $previous !== false && (
             isset(Tokens::FUNCTION_NAME_TOKENS[$tokens[$previous]['code']])
-                || in_array($tokens[$previous]['code'], self::CALLABLE_ENDS, true)
-                || isset($tokens[$stackPtr]['parenthesis_owner'])
+            || in_array($tokens[$previous]['code'], self::CALLABLE_ENDS, true)
+            || isset($tokens[$stackPtr]['parenthesis_owner'])
         );
         $closer = $tokens[$stackPtr]['parenthesis_closer'] ?? null;
 

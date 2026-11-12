@@ -82,7 +82,7 @@ class ClassInstantiationNoBracketsSniff implements Sniff
             $previous !== false
             && (
                 isset(Tokens::FUNCTION_NAME_TOKENS[$tokens[$previous]['code']])
-                    || in_array($tokens[$previous]['code'], self::BEFORE_CALL, true)
+                || in_array($tokens[$previous]['code'], self::BEFORE_CALL, true)
             )
         ) {
             return;

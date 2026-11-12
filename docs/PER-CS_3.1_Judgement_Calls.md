@@ -989,6 +989,22 @@ assignment operators, `.`, and an arrow function's `=>`.
 
 ---
 
+### Operators in Grouping Parentheses
+
+**Issue:** 6.4 says "each subsequent line is indented once", and 5.1 says a split condition's lines are "indented at
+least once". Neither says how the lines inside grouping parentheses are indented, as in `$a && (` with `$b` and `|| $c`
+on the lines after it.
+
+**Ruleset:** Every line in grouping parentheses is indented once past the line with the `(`. So `|| $c` lines up with
+`$b`, and isn't indented once more. That applies in a condition and in any other expression, such as `$x = $a` then
+`&& (` on the next line. A call's argument parentheses aren't a group, so an operator wrapped inside an argument is
+still indented once past the argument's first line.
+
+**Why:** It's the layout 5.1's example gives a condition's own parentheses, one level down. The lines in a group read as
+one level, and the line with the `(` shows that the group continues the statement.
+
+---
+
 ### When a Ternary Is Split
 
 **Issue:** 6.4 sets the layout of a split ternary, but not what counts as split.
