@@ -49,8 +49,8 @@ enum EDayOfWeek
     const VersionB = 1;
 }
 
-// No lower-case letter, so there's no acronym to write like a word. ValidClassName and ValidEnumCaseName report these,
-// and UPPER_CASE is allowed for an enum constant.
+// A class, an enum and an enum case with no lower-case letter are reported, as only a constant is written in
+// UPPER_CASE. The two enum constants pass.
 class FOO {}
 
 enum HTTP
@@ -295,4 +295,15 @@ register(new class {
 });
 
 foreach ($callURLs as $callId) {
+}
+
+// An upper-case constant passes in an interface and a trait too, and an upper-case interface or trait is reported.
+interface READER
+{
+    const MAX_ID = 1;
+}
+
+trait LOGS
+{
+    const LOG_URL = 'x';
 }

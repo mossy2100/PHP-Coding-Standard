@@ -258,6 +258,7 @@ letter of each word is capitalized". That doesn't settle whether `FOO`, `A` or `
 - This applies to classes, interfaces, traits, enums and enum cases, as an error. An enum constant may be in PascalCase
   or UPPER_CASE (9).
 - A name with no lower-case letter fails: `FOO`, `OK`, `A`, `C2`, `B2B`.
+- A name with an underscore fails: `next_node`
 - An acronym or an initial in capitals is still PascalCase: `HTTPStatus`, `XMLParser`, `ClassA`, `IAnimal`. The acronym
   gets a warning instead (2.7).
 
@@ -483,8 +484,9 @@ severity 5 warning.
 - A single capital is an initial, not an acronym, so `ClassA`, `EDayOfWeek` and `getX` pass.
 - There's no plural rule. `getURLs` reads as `get`, `UR`, `Ls`, and is reported. `getIDs` reads as `get`, `I`, `Ds`, and
   passes.
-- A class, interface, trait, enum, enum case or constant with no lower-case letter, such as `HTTP_OK`, is UPPER_CASE,
-  and isn't checked. A variable, property, parameter, function or method is, so `$ID` and `ID()` are reported.
+- A constant with no lower-case letter, such as `HTTP_OK`, is UPPER_CASE, and isn't checked. That covers a global
+  constant, from `const` or `define()`, and a class, interface, trait or enum constant. Every other name is checked, so
+  `$ID`, `ID()` and `class HTTP` are reported.
 - The advice to avoid abbreviations isn't checkable, so it isn't checked.
 
 **Why:** The recommendation isn't limited to one kind of name. Splitting a name into words can only be a best effort, so

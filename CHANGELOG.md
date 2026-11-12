@@ -525,6 +525,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **An acronym check for every name but an upper-case constant (breaking).** `PERCS31.NamingConventions.AcronymCasing`
+  skipped a class, interface, trait, enum or enum case with no lower-case letter, such as `class HTTP`. It's now
+  reported, as a warning, alongside the PascalCase error. Only a constant in upper case is skipped.
 - **Two hooks on a promoted parameter are left alone.** `phpcbf` split `{ get => 'a'; set => ucfirst($value); }` on a
   promoted constructor parameter over lines, though `PERCS31.Classes.PromotedPropertyHooks` still said to move the
   property to the class body. `PERCS31.Formatting.DisallowMultipleStatements` now skips a promoted parameter's hooks.

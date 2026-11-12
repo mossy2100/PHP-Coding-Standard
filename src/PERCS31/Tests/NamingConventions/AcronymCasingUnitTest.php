@@ -29,6 +29,13 @@ class AcronymCasingUnitTest extends AbstractSniffTestCase
     protected function getWarningList(): array
     {
         return [
+            // A class, an enum and an enum case with no lower-case letter.
+            54 => 1,
+            56 => 1,
+            58 => 1,
+            // An interface and a trait with no lower-case letter.
+            301 => 1,
+            306 => 1,
             // Classes, interfaces, traits, enums, enum cases and enum constants.
             76 => 1,
             78 => 1,

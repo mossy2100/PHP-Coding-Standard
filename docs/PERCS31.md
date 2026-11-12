@@ -1914,9 +1914,9 @@ It doesn't report:
 
 - A single capital, which is an initial, not an acronym, as in `ClassA`, `EDayOfWeek`, `getX` or `getTType`. So `getIDs`
   passes, as it's `get`, `I` and `Ds`.
-- A class, interface, trait, enum, enum case or constant with no lower-case letter, such as `FOO` or `HTTP_OK`. That's
-  UPPER_CASE, not an acronym in a name. It's allowed for a global or enum constant, and [`ValidClassName`](#percs31namingconventionsvalidclassname) and
-  [`ValidEnumCaseName`](#percs31namingconventionsvalidenumcasename) report it for the others.
+- A constant with no lower-case letter, such as `HTTP_OK` or `ID`. That's UPPER_CASE, which is how a constant is
+  written, not an acronym in a name. It covers a global constant, from `const` or `define()`, and a class, interface,
+  trait or enum constant. Every other name in capitals is reported, such as `$ID`, `ID()` and `class HTTP`.
 - A class constant outside an enum, as UPPER_CASE is required.
 - PHP's reserved variables, such as `$_SERVER`.
 - A property where it's used, such as `$this->userID` or `self::$userID`, as it may belong to a class you don't control.

@@ -542,6 +542,7 @@ class RulesetUnitTest extends TestCase
             '6 error NotPascalCase',
             '8 warning AcronymNotLikeWord',
             '10 warning AcronymNotLikeWord',
+            '12 warning AcronymNotLikeWord',
             '12 error NotPascalCase',
             '14 warning AcronymNotLikeWord',
             '15 warning EnumConstantNotPascalCase',

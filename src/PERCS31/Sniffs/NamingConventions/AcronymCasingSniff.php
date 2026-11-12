@@ -25,9 +25,9 @@ use PHPCSUtils\Utils\Variables;
  * `EDayOfWeek`, `getX`, `getIDs` and `whenXIs` aren't.
  *
  * It doesn't check:
- * - A class, interface, trait, enum, enum case or constant with no lower-case letter, such as `FOO` or `HTTP_OK`. It's
- *   in UPPER_CASE, which is allowed for a global or enum constant, and which ValidClassName and ValidEnumCaseName
- *   report for the others.
+ * - A constant with no lower-case letter, such as `HTTP_OK` or `ID`. It's in UPPER_CASE, which is how a constant is
+ *   written. That covers a global constant, from `const` or `define()`, and a class, interface, trait or enum
+ *   constant. Every other name in capitals is checked, such as `$ID`, `ID()` and `class HTTP`.
  * - A class constant outside an enum, as UPPER_CASE is required.
  * - PHP's reserved variables, such as `$_SERVER`, which aren't ours to name.
  * - A property where it's used, such as `$this->userID` or `self::$userID`, as it may belong to a class we don't
@@ -106,10 +106,9 @@ class AcronymCasingSniff implements Sniff
             $name = end($parts);
         }
 
-        // A name with no lower-case letter is in UPPER_CASE, so it has no acronym to write like a word. UPPER_CASE is
-        // allowed for a constant, and ValidClassName and ValidEnumCaseName report it for a class or an enum case.
-        $isClassLike = in_array($tokens[$stackPtr]['code'], self::CLASS_LIKE_TOKENS, true);
-        if (($isClassLike || $this->isConstant($phpcsFile, $stackPtr)) && strtoupper($name) === $name) {
+        // A constant with no lower-case letter is in UPPER_CASE, which is how a constant is written, so it has no
+        // acronym to write like a word. Any other name is checked.
+        if ($this->isConstant($phpcsFile, $stackPtr) && strtoupper($name) === $name) {
             return;
         }
 
