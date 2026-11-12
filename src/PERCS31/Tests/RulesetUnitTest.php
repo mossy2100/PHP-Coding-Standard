@@ -450,6 +450,33 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that an upper-case keyword is reported once, and fixed. Two Squiz sniffs that PSR-12 includes reported a
+     * control structure's keyword, and a function's keyword and `static`, a second time.
+     */
+    public function testUpperCaseKeywordIsReportedOnce(): void
+    {
+        $source = "<?php\n\nIF (\$a) {\n    run();\n} ELSE {\n    stop();\n}\n\n"
+            . "FUNCTION a(): void {}\n\n\$b = STATIC FN() => 1;\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        preg_match_all('/:(\d+):\d+: error - .*\(([\w.]+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
+        $reports = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
+        $code = 'PERCS31.PHP.LowerCaseKeyword.Found';
+        $expected = ["3 $code", "5 $code", "9 $code", "11 $code", "11 $code"];
+
+        $this->assertSame($expected, $reports, $result['output']);
+        $this->assertSame(strtolower($source), $fixed);
+    }
+
+    /**
      * Test that a comma starting a line in a call's arguments is reported once, including after a heredoc's closing
      * marker, as is the spacing around a comma in an array inside the call, and that the fix corrects each one.
      */

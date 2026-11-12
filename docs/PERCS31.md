@@ -49,6 +49,8 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 - **Generic.Formatting.DisallowMultipleStatements**, by [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements), which allows
   `{ get; set; }` on an abstract or interface property.
 - **Generic.PHP.LowerCaseKeyword**, by [`PERCS31.PHP.LowerCaseKeyword`](#percs31phplowercasekeyword), which also checks a property hook's name.
+  **Squiz.ControlStructures.LowercaseDeclaration** and **Squiz.Functions.LowercaseFunctionKeywords** are excluded, as
+  it reports every keyword they do, so an upper-case `IF` or `FUNCTION` was reported twice.
 - **Generic.PHP.LowerCaseType**, by [`PERCS31.PHP.LowerCaseType`](#percs31phplowercasetype), which also checks a `set` hook's parameter type.
 - **Generic.NamingConventions.UpperCaseConstantName**, from PSR-1, by [`PERCS31.NamingConventions.UpperCaseConstantName`](#percs31namingconventionsuppercaseconstantname),
   which allows PascalCase for an enum constant.

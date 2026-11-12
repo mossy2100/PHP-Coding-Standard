@@ -528,6 +528,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **An upper-case keyword is reported once (breaking).** `IF`, `FUNCTION`, `PUBLIC` and the like got a second error,
+  from `Squiz.ControlStructures.LowercaseDeclaration` or `Squiz.Functions.LowercaseFunctionKeywords`. Both are now
+  excluded, as `PERCS31.PHP.LowerCaseKeyword` reports the same keywords, so update any `phpcs:ignore` comments or
+  `<exclude>` rules that name them.
 - **A `->` at the end of a line (breaking).** `$user = $repository->` then `find($id);` passed, as
   `PEAR.WhiteSpace.ObjectOperatorIndent.StartOfLine` skips a statement's first `->`. It's now reported by
   `PERCS31.Formatting.MethodChaining`, as `OperatorAtEndOfLine`, for every `->` and `?->`, and the PEAR code is

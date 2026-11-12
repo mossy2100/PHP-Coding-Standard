@@ -43,6 +43,9 @@
         <exclude name="Generic.PHP.LowerCaseType"/>
         <!-- Replaced by a PERCS31 version that also checks a property hook's name (2.5) -->
         <exclude name="Generic.PHP.LowerCaseKeyword"/>
+        <!-- Covered by PERCS31.PHP.LowerCaseKeyword, which reports the same keywords (2.5) -->
+        <exclude name="Squiz.ControlStructures.LowercaseDeclaration"/>
+        <exclude name="Squiz.Functions.LowercaseFunctionKeywords"/>
         <!-- Replaced by PERCS31.ControlStructures.BodyOnNextLine, which allows an empty body as {} (5) -->
         <exclude name="Squiz.ControlStructures.ControlSignature.NewlineAfterOpenBrace"/>
         <!-- Replaced by SlevomatCodingStandard.Classes.TraitUseSpacing, which also reports more than one blank line
