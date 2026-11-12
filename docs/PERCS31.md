@@ -224,6 +224,7 @@ section gives the reason.
 | `PERCS31.ControlStructures.MultiLineTernaryOperator`    | A multi-line ternary takes three lines, `?` and `:` leading         | Yes     |
 | `PERCS31.ControlStructures.SwitchDeclaration`           | `switch` rules, with a `break` in the last case                     | Yes     |
 | `PERCS31.Files.DeclareStatement`                        | No spaces in `declare(...)`, with one directive or several          | Yes     |
+| `PERCS31.Files.Encoding`                                | A file is encoded in UTF-8                                          | No      |
 | `PERCS31.Files.FileHeader`                              | The file header, allowing `<?php declare(...) ?>` above markup      | Yes     |
 | `PERCS31.Files.LineLength`                              | A warning over 120 characters, and a hidden one over 80             | No      |
 | `PERCS31.Formatting.DisallowMultipleStatements`         | One statement per line, allowing `{ get; set; }`                    | Yes     |
@@ -1302,6 +1303,21 @@ declare(ticks=1,strict_types=1);
 ```php
 declare(ticks=1, strict_types=1);
 ```
+
+---
+
+### PERCS31.Files.Encoding
+
+Requires a file to be encoded in UTF-8.
+
+**Why:** [PSR-1, Section 2.2](https://www.php-fig.org/psr/psr-1/#22-character-encoding), which PER Coding Style 3.1 includes, says PHP code MUST use only UTF-8 without BOM.
+`Generic.Files.ByteOrderMark` reports the byte-order mark, but no inherited sniff checks the encoding itself.
+`Drupal.Files.FileEncoding` does, as a warning, but it isn't worth a dependency on Drupal's standard.
+
+The file is reported once, as `NotUtf8`, at the first line with bytes that aren't valid UTF-8.
+
+**Auto-fixable:** no, as the file's real encoding can't be known. Convert it, e.g. with
+`iconv -f ISO-8859-1 -t UTF-8`.
 
 ---
 

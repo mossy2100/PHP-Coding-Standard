@@ -82,6 +82,9 @@
 
     <!-- ====== GENERAL (2) ====== -->
 
+    <!-- A file is encoded in UTF-8 (2.1, PSR-1 2.2). PSR-12 includes Generic.Files.ByteOrderMark for the BOM -->
+    <rule ref="PERCS31.Files.Encoding"/>
+
     <!-- Line length (2.3): a warning over 120 characters, no hard limit, and a severity 4 warning over 80, which phpcs
          only shows with warning-severity set to 4 -->
     <rule ref="PERCS31.Files.LineLength"/>

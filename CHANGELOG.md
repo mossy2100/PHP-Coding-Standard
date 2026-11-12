@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`PERCS31.Files.Encoding` (breaking).** A file that isn't valid UTF-8 is now reported, as `NotUtf8`, at its first
+  invalid line. PSR-1 requires UTF-8, and only the byte-order mark was checked. Not auto-fixable.
 - **Strict UPPER_SNAKE_CASE for constants, in Jumbo (breaking).** `PERCS31.NamingConventions.UpperCaseConstantName` has
   a new `requireUpperSnakeCase` property, which Jumbo turns on. A constant in upper case must be words of capitals and
   digits, separated by single underscores, so `__HIDDEN`, `TWO__WORDS` and `TRAILING_` are reported, as
