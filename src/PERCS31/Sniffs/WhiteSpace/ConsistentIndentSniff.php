@@ -25,7 +25,7 @@ use PHPCSUtils\Utils\Conditions;
  * This subclass extends the operators that may start a continuation line, which are skipped, to every binary
  * operator section 6.4 allows a statement to be split at. The parent's list predates the pipe operator `|>`, so it
  * reported section 6.4's own example, and also missed `%`, `**`, `instanceof`, bitwise, comparison and assignment
- * operators, and an arrow function's `=>`.
+ * operators, `::`, and the `=>` of an arrow function or a `match` arm.
  *
  * The parent skips the body of a closure, anonymous class or switch, as it counts levels from column 0, which is wrong
  * for one inside a split call. This sniff checks them, measuring from the line each one opens on.
@@ -412,7 +412,13 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
             return false;
         }
 
-        $operators = [...OperatorHelper::binaryOperators(), ...array_values(Tokens::ASSIGNMENT_TOKENS), T_FN_ARROW];
+        $operators = [
+            ...OperatorHelper::binaryOperators(),
+            ...array_values(Tokens::ASSIGNMENT_TOKENS),
+            T_FN_ARROW,
+            T_MATCH_ARROW,
+            T_DOUBLE_COLON,
+        ];
 
         return in_array($code, $operators, true);
     }

@@ -526,6 +526,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A line wrapped before `::`, or before a `match` arm's `=>`.** After a line ending in `)`,
+  `PERCS31.WhiteSpace.ConsistentIndent` reported the wrapped line, and its fix removed the indent. Both now pass.
 - **`$a =` followed by a multi-line array is fixed to `$a = [`.** `phpcbf` gave `$a` then `= [` on the next line, as
   `PERCS31.Operators.OperatorPlacement` moved the `=` down while `PERCS31.Arrays.OpeningBracketPlacement` moved the
   `[` up. The operator sniff now leaves this case to the array sniff.

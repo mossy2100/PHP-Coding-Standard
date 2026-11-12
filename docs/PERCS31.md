@@ -2586,8 +2586,8 @@ each one opens on.
 
 This sniff also adds to the operators that may start a continuation line, which are skipped: every binary operator
 section 6.4 allows a statement to be split at. The original's list predates the pipe operator `|>`, so it reported
-section 6.4's own example. It also missed `%`, `**`, `instanceof`, bitwise, comparison and assignment operators, and an
-arrow function's `=>`.
+section 6.4's own example. It also missed `%`, `**`, `instanceof`, bitwise, comparison and assignment operators, `::`,
+and the `=>` of an arrow function or a `match` arm.
 
 It also skips the lines under a PHP opening tag that isn't at the start of its line, as in a template. The original
 measures from column 1, so it reported PHP indented to match the markup around it. So in a block, either 0 or 1 levels

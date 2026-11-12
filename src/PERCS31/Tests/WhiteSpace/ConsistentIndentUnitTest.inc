@@ -40,3 +40,18 @@ class User
         }
     }
 }
+
+// A line wrapped before `::`, or before a match arm's `=>`, after a line ending in a closing parenthesis.
+function build(): object
+{
+    $query = Query::create()
+        ::configure();
+
+    return $query;
+}
+
+$label = match (true) {
+    isAdmin($user)
+        => 'Admin',
+    default => 'User',
+};
