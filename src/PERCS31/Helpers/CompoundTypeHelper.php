@@ -100,6 +100,26 @@ class CompoundTypeHelper
     }
 
     /**
+     * Check whether a `|` or `&` token is a type's symbol, not a bitwise operator.
+     *
+     * PHP_CodeSniffer gives a type's symbol its own token, except in a `set` hook's parameter type and in a
+     * multi-catch, where it gives a bitwise operator's.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the token.
+     * @return bool True if it is.
+     */
+    public static function isTypeSymbol(File $phpcsFile, int $stackPtr): bool
+    {
+        $code = $phpcsFile->getTokens()[$stackPtr]['code'];
+
+        return $code === T_TYPE_UNION
+            || $code === T_TYPE_INTERSECTION
+            || PropertyHookHelper::isHookParameterType($phpcsFile, $stackPtr)
+            || self::isCatchSeparator($phpcsFile, $stackPtr);
+    }
+
+    /**
      * Find the `|` and `&` symbols of the type a symbol belongs to.
      *
      * @param File $phpcsFile The file being scanned.

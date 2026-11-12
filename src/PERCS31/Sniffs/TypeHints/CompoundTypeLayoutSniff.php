@@ -7,7 +7,6 @@ namespace PERCS31\Sniffs\TypeHints;
 use PERCS31\Helpers\CompoundTypeHelper;
 use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\LayoutHelper;
-use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -57,9 +56,7 @@ class CompoundTypeLayoutSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
         $code = $tokens[$stackPtr]['code'];
         $isHook = $code === T_BITWISE_OR || $code === T_BITWISE_AND;
-        $isTypeSymbol = PropertyHookHelper::isHookParameterType($phpcsFile, $stackPtr)
-            || CompoundTypeHelper::isCatchSeparator($phpcsFile, $stackPtr);
-        if ($isHook && !$isTypeSymbol) {
+        if (!CompoundTypeHelper::isTypeSymbol($phpcsFile, $stackPtr)) {
             return;
         }
 
@@ -186,13 +183,6 @@ class CompoundTypeLayoutSniff implements Sniff
             return;
         }
 
-        $tokens = $phpcsFile->getTokens();
-        $break = $phpcsFile->eolChar . str_repeat(' ', $indent);
-
-        if ($tokens[($symbol - 1)]['code'] === T_WHITESPACE) {
-            $phpcsFile->fixer->replaceToken(($symbol - 1), $break);
-        } else {
-            $phpcsFile->fixer->addContentBefore($symbol, $break);
-        }
+        FixerHelper::breakLineBefore($phpcsFile, $symbol, $indent);
     }
 }

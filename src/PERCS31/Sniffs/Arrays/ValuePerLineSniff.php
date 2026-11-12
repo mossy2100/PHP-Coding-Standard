@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Arrays;
 
+use PERCS31\Helpers\FixerHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -75,11 +76,7 @@ class ValuePerLineSniff implements Sniff
                 continue;
             }
 
-            if ($tokens[($first - 1)]['code'] === T_WHITESPACE) {
-                $phpcsFile->fixer->replaceToken(($first - 1), $phpcsFile->eolChar);
-            } else {
-                $phpcsFile->fixer->addNewlineBefore($first);
-            }
+            FixerHelper::breakLineBefore($phpcsFile, $first);
         }
     }
 

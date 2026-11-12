@@ -189,17 +189,8 @@ class MethodChainingSniff implements Sniff
         }
 
         // Indent once past the line the statement starts on, as PEAR.WhiteSpace.ObjectOperatorIndent expects.
-        $tokens = $phpcsFile->getTokens();
         $start = $phpcsFile->findStartOfStatement($operator);
-        $break = $phpcsFile->eolChar . str_repeat(
-            ' ',
-            LayoutHelper::lineIndent($phpcsFile, $start) + LayoutHelper::INDENT,
-        );
-
-        if ($tokens[($operator - 1)]['code'] === T_WHITESPACE) {
-            $phpcsFile->fixer->replaceToken(($operator - 1), $break);
-        } else {
-            $phpcsFile->fixer->addContentBefore($operator, $break);
-        }
+        $indent = LayoutHelper::lineIndent($phpcsFile, $start) + LayoutHelper::INDENT;
+        FixerHelper::breakLineBefore($phpcsFile, $operator, $indent);
     }
 }

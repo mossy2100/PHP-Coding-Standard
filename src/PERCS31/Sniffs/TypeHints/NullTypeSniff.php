@@ -6,7 +6,6 @@ namespace PERCS31\Sniffs\TypeHints;
 
 use PERCS31\Helpers\CompoundTypeHelper;
 use PERCS31\Helpers\FixerHelper;
-use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -58,7 +57,7 @@ class NullTypeSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
         $code = $tokens[$stackPtr]['code'];
         $isHook = $code === T_BITWISE_OR || $code === T_BITWISE_AND;
-        if ($isHook && !PropertyHookHelper::isHookParameterType($phpcsFile, $stackPtr)) {
+        if (!CompoundTypeHelper::isTypeSymbol($phpcsFile, $stackPtr)) {
             return;
         }
 

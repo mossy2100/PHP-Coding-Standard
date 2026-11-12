@@ -88,6 +88,23 @@ class FixerHelper
     }
 
     /**
+     * Break the line before a token, replacing the whitespace before it or adding some.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $ptr The position of the token.
+     * @param int $spaces The number of spaces to indent the token by, on its new line.
+     */
+    public static function breakLineBefore(File $phpcsFile, int $ptr, int $spaces = 0): void
+    {
+        $break = $phpcsFile->eolChar . str_repeat(' ', $spaces);
+        if ($phpcsFile->getTokens()[($ptr - 1)]['code'] === T_WHITESPACE) {
+            $phpcsFile->fixer->replaceToken(($ptr - 1), $break);
+        } else {
+            $phpcsFile->fixer->addContentBefore($ptr, $break);
+        }
+    }
+
+    /**
      * Set the indent of a token that starts its line, replacing the whitespace before it or adding some.
      *
      * @param File $phpcsFile The file being scanned.

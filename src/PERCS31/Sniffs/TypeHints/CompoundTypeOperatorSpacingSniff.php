@@ -68,11 +68,7 @@ class CompoundTypeOperatorSpacingSniff implements Sniff
             return;
         }
 
-        $isType = $code === T_TYPE_UNION || $code === T_TYPE_INTERSECTION;
-        $isType = $isType
-            || PropertyHookHelper::isHookParameterType($phpcsFile, $stackPtr)
-            || CompoundTypeHelper::isCatchSeparator($phpcsFile, $stackPtr);
-        if (!$isType) {
+        if (!CompoundTypeHelper::isTypeSymbol($phpcsFile, $stackPtr)) {
             return;
         }
 
