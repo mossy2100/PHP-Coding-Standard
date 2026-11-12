@@ -99,3 +99,35 @@ enum HoldsClosure
     };
     public const Lookup = ['a' => 1, 'b' => [2, 3]], Other = self::A;
 }
+
+// With requireUpperSnakeCase on, a constant in upper case must be in strict UPPER_SNAKE_CASE.
+// phpcs:set PERCS31.NamingConventions.UpperCaseConstantName requireUpperSnakeCase true
+// phpcs:set PERCS31.NamingConventions.UpperCaseConstantName checkGlobalConstants true
+const STRICT_VALID = 1;
+const HTTP_2 = 2;
+const __DOUBLE_LEADING = 3;
+const TWO__WORDS = 4;
+const TRAILING_ = 5;
+const _SINGLE_LEADING = 6; // Left to ValidConstantName.
+define('_DEFINED_LEADING', 7);
+define('DEFINED__TWO', 8);
+define('DEFINED_VALID', 9);
+
+class StrictClass
+{
+    public const VALID_NAME = 1;
+    public const __DOUBLE = 2;
+    public const TWO__WORDS = 3, TRAILING_ = 4;
+    public const lower_case = 5; // The case error only.
+}
+
+enum StrictEnum
+{
+    case A;
+
+    public const PascalName = 1;
+    public const UPPER_NAME = 2;
+    public const UPPER__NAME = 3;
+}
+// phpcs:set PERCS31.NamingConventions.UpperCaseConstantName checkGlobalConstants false
+// phpcs:set PERCS31.NamingConventions.UpperCaseConstantName requireUpperSnakeCase false

@@ -10,6 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **Strict UPPER_SNAKE_CASE for constants, in Jumbo (breaking).** `PERCS31.NamingConventions.UpperCaseConstantName` has
+  a new `requireUpperSnakeCase` property, which Jumbo turns on. A constant in upper case must be words of capitals and
+  digits, separated by single underscores, so `__HIDDEN`, `TWO__WORDS` and `TRAILING_` are reported, as
+  `ConstantNotUpperSnakeCase`. It covers class constants, global constants from `const` or `define()`, and an enum
+  constant that isn't in PascalCase. PERCS31 still allows them.
 - **`PERCS31.Namespaces.GroupUseLayout` (breaking).** A group `use` split across lines must have one name per line,
   with the first on the line after the `{`, and the `}` on a line of its own, as PER Coding Style 3.1's example shows.
   `use A\{B,` then `C,` then `};` passed. Auto-fixable, unless a comment is in the way.

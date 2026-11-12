@@ -8,6 +8,7 @@ use PERCS31\Helpers\NamingHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\Generic\Sniffs\NamingConventions\UpperCaseConstantNameSniff as GenericSniff;
 use PHPCSUtils\Utils\Scopes;
+use PHPCSUtils\Utils\TextStrings;
 
 /**
  * Requires class constant names in UPPER_CASE, except in an enum, where PascalCase is also allowed, and recommended.
@@ -30,6 +31,8 @@ class UpperCaseConstantNameSniff extends GenericSniff
      */
     public const string CODE_CONSTANT_NOT_UPPER_CASE = 'ConstantNotUpperCase';
 
+    public const string CODE_CONSTANT_NOT_UPPER_SNAKE_CASE = 'ConstantNotUpperSnakeCase';
+
     public const string CODE_ENUM_CONSTANT_NOT_PASCAL_CASE = 'EnumConstantNotPascalCase';
 
     public const string CODE_ENUM_CONSTANT_INVALID_CASE = 'EnumConstantInvalidCase';
@@ -39,6 +42,13 @@ class UpperCaseConstantNameSniff extends GenericSniff
      * PER doesn't require it.
      */
     public bool $checkGlobalConstants = false;
+
+    /**
+     * Whether a constant in upper case must be in strict UPPER_SNAKE_CASE: words of capitals and digits, separated by
+     * single underscores. It applies to every constant this sniff checks. PER Coding Style has no such rule, so it's
+     * off by default. The Jumbo standard turns it on.
+     */
+    public bool $requireUpperSnakeCase = false;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -64,6 +74,7 @@ class UpperCaseConstantNameSniff extends GenericSniff
             $aliasPtr = $this->checkGlobalConstants ? NamingHelper::findConstantAlias($phpcsFile, $stackPtr) : false;
             if ($aliasPtr !== false) {
                 $this->checkGlobalConstant($phpcsFile, $aliasPtr);
+                $this->checkSnakeCase($phpcsFile, $aliasPtr, $tokens[$aliasPtr]['content'], false);
             }
 
             return;
@@ -73,6 +84,11 @@ class UpperCaseConstantNameSniff extends GenericSniff
             // Anything else the parent checks is a call to `define()`.
             if ($this->checkGlobalConstants) {
                 parent::process($phpcsFile, $stackPtr);
+                $namePtr = NamingHelper::findDefinedConstantName($phpcsFile, $stackPtr);
+                if ($namePtr !== false) {
+                    $name = TextStrings::stripQuotes($tokens[$namePtr]['content']);
+                    $this->checkSnakeCase($phpcsFile, $namePtr, $name, false);
+                }
             }
 
             return;
@@ -82,16 +98,50 @@ class UpperCaseConstantNameSniff extends GenericSniff
         $isEnum = $isClassConstant && Scopes::validDirectScope($phpcsFile, $stackPtr, T_ENUM) !== false;
         if ($isClassConstant && !$isEnum) {
             parent::process($phpcsFile, $stackPtr);
-            return;
         }
 
         foreach (NamingHelper::findConstantNames($phpcsFile, $stackPtr) as $namePtr) {
             if ($isEnum) {
                 $this->checkEnumConstant($phpcsFile, $namePtr);
-            } elseif ($this->checkGlobalConstants) {
+            } elseif (!$isClassConstant && $this->checkGlobalConstants) {
                 $this->checkGlobalConstant($phpcsFile, $namePtr);
             }
+
+            if ($isClassConstant || $this->checkGlobalConstants) {
+                $this->checkSnakeCase($phpcsFile, $namePtr, $tokens[$namePtr]['content'], true);
+            }
         }
+    }
+
+    /**
+     * Report a constant in upper case that isn't in strict UPPER_SNAKE_CASE, if requireUpperSnakeCase is on.
+     *
+     * A name with a lower-case letter is left to the case checks. A single leading underscore on a `const` is left to
+     * PERCS31.NamingConventions.ValidConstantName, which reports it.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $namePtr The position of the name.
+     * @param string $name The name, without quotes.
+     * @param bool $isConstStatement Whether the name is from a `const` statement, not `define()` or an alias.
+     */
+    private function checkSnakeCase(File $phpcsFile, int $namePtr, string $name, bool $isConstStatement): void
+    {
+        if (!$this->requireUpperSnakeCase || strtoupper($name) !== $name) {
+            return;
+        }
+
+        $hasSingleUnderscore = str_starts_with($name, '_') && !str_starts_with($name, '__');
+        $checked = $isConstStatement && $hasSingleUnderscore ? substr($name, 1) : $name;
+        if (preg_match('/^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$/', $checked) === 1) {
+            return;
+        }
+
+        $phpcsFile->addError(
+            'Constant name "%s" must be in UPPER_SNAKE_CASE: capitals and digits, with single underscores between',
+            $namePtr,
+            self::CODE_CONSTANT_NOT_UPPER_SNAKE_CASE,
+            [$name],
+        );
     }
 
     /**

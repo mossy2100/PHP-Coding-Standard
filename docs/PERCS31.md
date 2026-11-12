@@ -1858,6 +1858,11 @@ It reports them with the `ConstantNotUpperCase` code:
 </rule>
 ```
 
+Set `requireUpperSnakeCase` to require strict UPPER_SNAKE_CASE of every constant in upper case that the sniff checks:
+words of capitals and digits, separated by single underscores. So `__HIDDEN`, `TWO__WORDS` and `TRAILING_` are
+reported, as `ConstantNotUpperSnakeCase`. PER has no such rule, so it's off by default. The [Jumbo standard](Jumbo.md) turns it on.
+A single leading underscore on a `const` is left to [`ValidConstantName`](#percs31namingconventionsvalidconstantname).
+
 Other class, interface and trait constants are left to the parent.
 
 **Auto-fixable:** no.
@@ -1893,9 +1898,10 @@ enum Suit: string
 
 **Configuration:**
 
-| Property               | Type | Default | Description                                                           |
-| ---------------------- | ---- | ------- | --------------------------------------------------------------------- |
-| `checkGlobalConstants` | bool | false   | Require UPPER_CASE for a global constant, and an alias of a constant. |
+| Property                | Type | Default | Description                                                           |
+| ----------------------- | ---- | ------- | --------------------------------------------------------------------- |
+| `checkGlobalConstants`  | bool | false   | Require UPPER_CASE for a global constant, and an alias of a constant. |
+| `requireUpperSnakeCase` | bool | false   | Require strict UPPER_SNAKE_CASE of a constant in upper case.          |
 
 ---
 

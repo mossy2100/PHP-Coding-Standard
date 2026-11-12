@@ -275,7 +275,7 @@ structure.
 
 **Ruleset:** Only class constants are checked for upper case, and for a leading underscore (4.3). A global constant,
 from `const` or `define()`, is only checked by `PERCS31.NamingConventions.AcronymCasing`, and only if it has a
-lower-case letter. Jumbo requires UPPER_CASE for a global constant, with no leading underscore.
+lower-case letter. Jumbo requires strict UPPER_SNAKE_CASE for a global constant, with no leading underscore.
 
 **Why:** PSR-1's rule names class constants only. 4.3's rule is about showing visibility, which a global constant
 doesn't have.
@@ -591,7 +591,8 @@ operators.
 
 **Issue:** Names "MUST NOT be prefixed with a single underscore". It's unclear whether a double one is covered.
 
-**Ruleset:** `$__a`, `__A` and `__a()` pass.
+**Ruleset:** `$__a`, `__A` and `__a()` pass. Jumbo reports `__A`, as it requires strict UPPER_SNAKE_CASE of a
+constant.
 
 **Why:** "Single" excludes a double underscore, which PHP uses for magic methods. PSR-2's method sniff reads it the
 same way.

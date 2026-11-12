@@ -587,6 +587,33 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a constant with a double underscore passes in PERCS31, and is an error in Jumbo, which requires strict
+     * UPPER_SNAKE_CASE of a class constant, a global constant and a constant from define().
+     */
+    public function testStrictUpperSnakeCaseIsRequiredInJumboOnly(): void
+    {
+        $source = "<?php\n\nconst TWO__WORDS = 1;\n\ndefine('_LEADING', 2);\n\nclass Holder\n{\n"
+            . "    public const __HIDDEN = 3;\n    public const VALID_NAME = 4;\n}\n";
+        $file = $this->copyToTempFile(null, $source);
+        $sniff = '--sniffs=PERCS31.NamingConventions.UpperCaseConstantName';
+        $reports = [];
+
+        try {
+            foreach (['PERCS31', 'Jumbo'] as $standard) {
+                $args = ["--standard=$standard", $sniff, '-s', '--report=emacs', $file];
+                $output = $this->runTool('phpcs', $args)['output'];
+                preg_match_all('/:(\\d+):\\d+: error - .*ConstantNotUpperSnakeCase\\)$/m', $output, $matches);
+                $reports[$standard] = $matches[1];
+            }
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame([], $reports['PERCS31']);
+        $this->assertSame(['3', '5', '9'], $reports['Jumbo']);
+    }
+
+    /**
      * Test that a leading underscore on a global constant passes in PERCS31, as PER's rule is about visibility, and is
      * an error in Jumbo.
      */

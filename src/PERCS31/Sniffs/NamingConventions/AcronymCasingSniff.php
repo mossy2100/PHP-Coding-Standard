@@ -9,7 +9,6 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 use PHPCSUtils\Utils\Context;
-use PHPCSUtils\Utils\PassedParameters;
 use PHPCSUtils\Utils\Scopes;
 use PHPCSUtils\Utils\TextStrings;
 use PHPCSUtils\Utils\Variables;
@@ -212,7 +211,7 @@ class AcronymCasingSniff implements Sniff
         }
 
         if ($code === T_STRING || $code === T_NAME_FULLY_QUALIFIED) {
-            return $this->findDefinedConstantName($phpcsFile, $stackPtr);
+            return NamingHelper::findDefinedConstantName($phpcsFile, $stackPtr);
         }
 
         $namePtr = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
@@ -255,36 +254,6 @@ class AcronymCasingSniff implements Sniff
         }
 
         return $namePtr;
-    }
-
-    /**
-     * Find the name given to a call to `define()`, as Generic.NamingConventions.UpperCaseConstantName does.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $stackPtr The position of a name that could be `define`.
-     * @return int|false The name's position, which holds a quoted string, or false if there's nothing to check.
-     */
-    private function findDefinedConstantName(File $phpcsFile, int $stackPtr): int|false
-    {
-        $tokens = $phpcsFile->getTokens();
-        if (strtolower(ltrim($tokens[$stackPtr]['content'], '\\')) !== 'define') {
-            return false;
-        }
-
-        $notCalls = [T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR, T_DOUBLE_COLON, T_NEW, T_FUNCTION];
-        $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
-        if ($previous !== false && in_array($tokens[$previous]['code'], $notCalls, true)) {
-            return false;
-        }
-
-        $name = PassedParameters::getParameter($phpcsFile, $stackPtr, 1, 'constant_name');
-        if ($name === false || !is_int($name['start']) || !is_int($name['end'])) {
-            return false;
-        }
-
-        $namePtr = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, $name['start'], ($name['end'] + 1), true);
-
-        return $namePtr !== false && $tokens[$namePtr]['code'] === T_CONSTANT_ENCAPSED_STRING ? $namePtr : false;
     }
 
     /**

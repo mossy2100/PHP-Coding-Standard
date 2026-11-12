@@ -32,6 +32,19 @@ class UpperCaseConstantNameUnitTest extends AbstractSniffTestCase
             80 => 1,
             // The second constant in a statement declaring several.
             87 => 1,
+            // With requireUpperSnakeCase: global constants with a double leading underscore, a double underscore
+            // between words, and a trailing one, and the same from define().
+            108 => 1,
+            109 => 1,
+            110 => 1,
+            112 => 1,
+            113 => 1,
+            // Class constants, with two in one statement, and one in lower case, which only gets the case error.
+            119 => 1,
+            120 => 2,
+            121 => 1,
+            // An enum constant in upper case that isn't in strict UPPER_SNAKE_CASE.
+            130 => 1,
         ];
     }
 
@@ -48,6 +61,9 @@ class UpperCaseConstantNameUnitTest extends AbstractSniffTestCase
             51 => 1,
             52 => 1,
             53 => 1,
+            // Enum constants in upper case, with requireUpperSnakeCase on.
+            129 => 1,
+            130 => 1,
         ];
     }
 }

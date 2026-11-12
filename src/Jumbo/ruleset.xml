@@ -137,10 +137,12 @@
     <rule ref="Universal.Constants.ModifierKeywordOrder"/>
     <rule ref="SlevomatCodingStandard.Classes.RequireSelfReference"/>
 
-    <!-- Global constants in UPPER_CASE too, which PER doesn't require -->
+    <!-- Global constants in UPPER_CASE too, and every constant in upper case in strict UPPER_SNAKE_CASE, neither of
+         which PER requires -->
     <rule ref="PERCS31.NamingConventions.UpperCaseConstantName">
         <properties>
             <property name="checkGlobalConstants" value="true"/>
+            <property name="requireUpperSnakeCase" value="true"/>
         </properties>
     </rule>
 
