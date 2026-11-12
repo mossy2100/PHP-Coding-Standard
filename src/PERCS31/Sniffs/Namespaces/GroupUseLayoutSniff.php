@@ -12,15 +12,20 @@ use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Requires a group `use` split across lines to have one name per line, with the first on the line after the `{`, and
- * the `}` on a line of its own.
+ * the `}` on a line of its own, and disallows a space just inside the braces of a group `use` on one line.
  *
  * PER Coding Style 3.1, section 3, shows a group `use` on one line, as in `use Vendor\Package\{ClassA, ClassB};`, and
  * one split across lines with a name on each line. Its text sets no layout, so the examples are read as the two
  * allowed forms, as for a single-line and a multi-line array (section 11). A group that mixes them, as in
  * `use A\{B,` then `C,` then `};`, is reported.
  *
+ * Every single-line example, in section 3 and in the overview, has no space after the `{` or before the `}`, as in
+ * `{ClassA as A, ClassB}`. That's read as setting the spacing, as it's how the spec writes every bracketed list.
+ *
  * PERCS31.WhiteSpace.ConsistentIndent checks each name's indent, and PERCS31.Formatting.TrailingComma the comma after
- * the last name. No sniff in PHP_CodeSniffer, PHPCSExtra, Slevomat or PhpCollective checks which line a name is on.
+ * the last name. Universal.WhiteSpace.CommaSpacing checks the commas, and Universal.UseStatements.KeywordSpacing the
+ * space around `as`. No sniff in PHP_CodeSniffer, PHPCSExtra, Slevomat or PhpCollective checks which line a name is
+ * on, or the space inside the braces.
  */
 class GroupUseLayoutSniff implements Sniff
 {
@@ -29,6 +34,10 @@ class GroupUseLayoutSniff implements Sniff
     public const string CODE_NAME_NOT_ON_OWN_LINE = 'NameNotOnOwnLine';
 
     public const string CODE_CLOSER_LINE = 'CloserLine';
+
+    public const string CODE_SPACE_AFTER_OPEN_BRACE = 'SpaceAfterOpenBrace';
+
+    public const string CODE_SPACE_BEFORE_CLOSE_BRACE = 'SpaceBeforeCloseBrace';
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -50,7 +59,14 @@ class GroupUseLayoutSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
         $closer = $phpcsFile->findNext(T_CLOSE_USE_GROUP, ($stackPtr + 1));
-        if ($closer === false || $tokens[$closer]['line'] === $tokens[$stackPtr]['line']) {
+        if ($closer === false) {
+            return;
+        }
+
+        if ($tokens[$closer]['line'] === $tokens[$stackPtr]['line']) {
+            $this->checkNoSpace($phpcsFile, ($stackPtr + 1), 'after the opening', self::CODE_SPACE_AFTER_OPEN_BRACE);
+            $this->checkNoSpace($phpcsFile, ($closer - 1), 'before the closing', self::CODE_SPACE_BEFORE_CLOSE_BRACE);
+
             return;
         }
 
@@ -80,6 +96,26 @@ class GroupUseLayoutSniff implements Sniff
             $error = 'The closing brace of a group use split across lines must be on a line of its own';
             $closerIndent = str_repeat(' ', $indent);
             $this->checkStartsLine($phpcsFile, $last, $closer, $closerIndent, $error, self::CODE_CLOSER_LINE);
+        }
+    }
+
+    /**
+     * Report a space just inside a brace of a group use on one line, and fix it by removing it.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $space The position of the token next to the brace.
+     * @param string $where Where the space is, for the message.
+     * @param string $code The error's code.
+     */
+    private function checkNoSpace(File $phpcsFile, int $space, string $where, string $code): void
+    {
+        if ($phpcsFile->getTokens()[$space]['code'] !== T_WHITESPACE) {
+            return;
+        }
+
+        $error = "There must be no space $where brace of a group use on one line";
+        if ($phpcsFile->addFixableError($error, $space, $code)) {
+            $phpcsFile->fixer->replaceToken($space, '');
         }
     }
 

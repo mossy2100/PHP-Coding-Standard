@@ -121,6 +121,9 @@
     <rule ref="Universal.Constants.LowercaseClassResolutionKeyword"/>
     <rule ref="Universal.UseStatements.LowercaseFunctionConst"/>
 
+    <!-- One space after use, function and const, and each side of as, in an import (3) -->
+    <rule ref="Universal.UseStatements.KeywordSpacing"/>
+
     <!-- A warning for an acronym in capitals in a name, as it's RECOMMENDED to write it like a word (2.7) -->
     <rule ref="PERCS31.NamingConventions.AcronymCasing"/>
 

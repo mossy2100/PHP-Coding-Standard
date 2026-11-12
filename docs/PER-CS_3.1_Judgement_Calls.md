@@ -522,6 +522,24 @@ array (11).
 
 ---
 
+### Spacing in a Group `use`
+
+**Issue:** No rule in section 3 sets the spacing in a group `use`. Its examples, and the overview's, which "encompasses
+some rules below", all write one the same way, as in `use Vendor\Package\{ClassA as A, ClassB, ClassC as C};`.
+
+**Ruleset:** The examples' spacing is required.
+
+- On one line: no space after the `{` or before the `}`, one space after each comma and none before it, no trailing
+  comma, and one space each side of `as`.
+- Split over lines: one name per line, indented once, a trailing comma after the last, and one space each side of `as`.
+
+The space around `as`, and after `use`, `function` and `const`, is checked in every import, not only a group.
+
+**Why:** The examples agree with each other, and with how the spec writes every other list in brackets: an array, a
+call's arguments and an attribute block.
+
+---
+
 ### Imports After Code
 
 **Issue:** The header's blocks end with "The remainder of the code in the file", but the spec doesn't say anything about

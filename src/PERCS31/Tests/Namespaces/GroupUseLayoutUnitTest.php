@@ -30,6 +30,10 @@ class GroupUseLayoutUnitTest extends AbstractSniffTestCase
             35 => 1,
             // A comment before the first name, which isn't fixed.
             38 => 1,
+            // A space inside both braces of a group use on one line, before the closing one, and after the opening one.
+            43 => 2,
+            44 => 1,
+            45 => 1,
         ];
     }
 

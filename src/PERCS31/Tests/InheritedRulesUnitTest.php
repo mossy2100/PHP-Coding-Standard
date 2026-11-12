@@ -37,6 +37,11 @@ class InheritedRulesUnitTest extends TestCase
             'Universal.Constants.LowercaseClassResolutionKeyword.Uppercase',
             'error',
         ],
+        'two spaces each side of as in an import' => [
+            "<?php\n\nuse Foo\\Bar  as  Baz;\n",
+            'Universal.UseStatements.KeywordSpacing.SpaceBeforeAs',
+            'error',
+        ],
         'use FUNCTION in upper case' => [
             "<?php\n\nuse FUNCTION Foo\\bar;\n",
             'Universal.UseStatements.LowercaseFunctionConst.NotLowercase',

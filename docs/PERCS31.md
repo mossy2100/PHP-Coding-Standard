@@ -150,6 +150,8 @@ Reference: [PHPCSExtra repository and documentation](https://github.com/PHPCSSta
 - **Universal.Operators.ConcatPosition**: Requires a wrapped `.` at the start of the line, not the end (6.4).
 - **Universal.PHP.LowercasePHPTag**: Requires the `<?php` tag in lower case (3).
 - **Universal.PHP.RequireExitDieParentheses**: Warns about `exit` or `die` without parentheses, as a SHOULD (4.7).
+- **Universal.UseStatements.KeywordSpacing**: Requires one space after `use`, `function` and `const`, and each side of
+  `as`, in an import, as in `use Vendor\Package\{ClassA as A, ClassB};` (3).
 - **Universal.UseStatements.LowercaseFunctionConst**: Requires `function` and `const` in lower case in a `use` statement
   (2.5).
 - **Universal.WhiteSpace.CommaSpacing**: Requires no space before a comma and one after, in an attribute block, e.g.
@@ -244,7 +246,7 @@ section gives the reason.
 | `PERCS31.Functions.MultiLineFunctionDeclaration`        | Function, closure and `fn` declarations, allowing `{}` bodies       | Yes     |
 | `PERCS31.Functions.NullableTypeDeclaration`             | No space after the `?` of a nullable type, in any position          | Yes     |
 | `PERCS31.Functions.RequireTrailingCommaInCall`          | A trailing comma in a split call, but not after `foo(...)`'s `...`  | Yes     |
-| `PERCS31.Namespaces.GroupUseLayout`                     | A split group `use` has one name per line, and `}` on its own line  | Yes     |
+| `PERCS31.Namespaces.GroupUseLayout`                     | A group `use`'s layout: on one line, or one name per line           | Yes     |
 | `PERCS31.NamingConventions.AcronymCasing`               | A warning for an acronym in capitals in a name                      | No      |
 | `PERCS31.NamingConventions.UpperCaseConstantName`       | Constants in UPPER_CASE, or PascalCase in an enum                   | No      |
 | `PERCS31.NamingConventions.ValidClassName`              | Classes, interfaces, traits and enums in PascalCase                 | No      |
@@ -1863,14 +1865,18 @@ $largest = max(
 ### PERCS31.Namespaces.GroupUseLayout
 
 Requires a group `use` split across lines to have one name per line, with the first on the line after the `{`, and the
-`}` on a line of its own. A group `use` on one line is left alone.
+`}` on a line of its own. In a group `use` on one line, it disallows a space after the `{` or before the `}`.
 
 **Why:** [PER Coding Style 3.1, Section 3](https://www.php-fig.org/per/coding-style/#3-declare-statements-namespace-and-import-statements) shows a group `use` on one line, and one split with a name on each line. Its
 text sets no layout, so the two examples are read as the two allowed forms, as for a single-line and a multi-line array.
-See [PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md#a-group-use-split-over-lines). No inherited sniff checks which line a name is on.
+See [PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md#a-group-use-split-over-lines). No inherited sniff checks which line a name is on, or the space inside the braces.
+
+Every single-line example, in section 3 and in the overview, is written `{ClassA as A, ClassB}`, with no space inside
+the braces. That's read as setting the spacing, as it's how the spec writes every list in brackets.
 
 `PERCS31.WhiteSpace.ConsistentIndent` checks each name's indent, and [`PERCS31.Formatting.TrailingComma`](#percs31formattingtrailingcomma) the comma after
-the last name.
+the last name. `Universal.WhiteSpace.CommaSpacing` checks the space around each comma, and
+`Universal.UseStatements.KeywordSpacing` the space around `as`.
 
 **Auto-fixable:** yes, unless a comment is in the way.
 
@@ -1887,6 +1893,7 @@ use Vendor\Other\{
 **Bad:**
 
 ```php
+use Vendor\Package\{ ClassA, ClassB };
 use Vendor\Other\{ClassC,
     ClassD, };
 ```

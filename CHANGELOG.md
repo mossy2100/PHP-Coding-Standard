@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **Spacing in an import (breaking).** A space just inside the braces of a group `use` on one line is now reported, by
+  `PERCS31.Namespaces.GroupUseLayout`, as `SpaceAfterOpenBrace` or `SpaceBeforeCloseBrace`, so `use Foo\{ A, B };` must
+  be `use Foo\{A, B};`. And `Universal.UseStatements.KeywordSpacing` now requires one space after `use`, `function` and
+  `const`, and each side of `as`, in any import. `use Foo\Bar  as  Baz;` passed. Both are auto-fixable.
 - **`PERCS31.Files.Encoding` (breaking).** A file that isn't valid UTF-8 is now reported, as `NotUtf8`, at its first
   invalid line. PSR-1 requires UTF-8, and only the byte-order mark was checked. Not auto-fixable.
 - **Strict UPPER_SNAKE_CASE for constants, in Jumbo (breaking).** `PERCS31.NamingConventions.UpperCaseConstantName` has
