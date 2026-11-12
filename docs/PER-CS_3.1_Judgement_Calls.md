@@ -494,6 +494,19 @@ doesn't have it either.
 
 ---
 
+### A Group `use` Split Over Lines
+
+**Issue:** Section 3 shows a group `use` on one line, and one split over lines with a name on each line. Its text
+doesn't say how a split one is laid out.
+
+**Ruleset:** A group `use` is all on one line, or has one name per line, indented once, with the first name on the
+line after the `{`, and the `}` on a line of its own. `use A\{B,` then `C,` then `};` is reported.
+
+**Why:** The two examples are the only forms the spec shows, and they match its rules for a single-line and a
+multi-line array (11).
+
+---
+
 ### Imports After Code
 
 **Issue:** The header's blocks end with "The remainder of the code in the file", but the spec doesn't say anything

@@ -215,6 +215,10 @@
     <!-- The file header (3), allowing a declare statement between PHP tags on the first line of a file with markup -->
     <rule ref="PERCS31.Files.FileHeader"/>
 
+    <!-- A group use split across lines: one name per line, the first on the line after the {, and the } on a line of
+         its own, as the examples in 3 show -->
+    <rule ref="PERCS31.Namespaces.GroupUseLayout"/>
+
     <!-- No spaces inside a declare statement's parentheses, including one with several directives (3) -->
     <rule ref="PERCS31.Files.DeclareStatement"/>
 

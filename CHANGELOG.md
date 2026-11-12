@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`PERCS31.Namespaces.GroupUseLayout` (breaking).** A group `use` split across lines must have one name per line,
+  with the first on the line after the `{`, and the `}` on a line of its own, as PER Coding Style 3.1's example shows.
+  `use A\{B,` then `C,` then `};` passed. Auto-fixable, unless a comment is in the way.
 - **`PERCS31.Classes.ConstantDeclaration` (breaking).** Requires a single space after a class constant's `const`
   keyword, and between its type and its name. `public const  int  A = 1;` passed. PER Coding Style 3.1 sets this
   spacing for keywords and for a property's type, and it's read as covering a constant too. Auto-fixable.
