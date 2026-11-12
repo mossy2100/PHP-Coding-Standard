@@ -29,6 +29,10 @@ class ControlStructureSpacingUnitTest extends AbstractSniffTestCase
             // A space after the ( and before the ) of a multi-line match.
             98 => 1,
             100 => 1,
+            // Two spaces, none, and three, between a catch's type and its variable.
+            108 => 1,
+            110 => 1,
+            112 => 1,
         ];
     }
 

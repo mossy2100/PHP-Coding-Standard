@@ -1057,6 +1057,10 @@ applies one to both anyway, so it rejects an array in the header, and a call wit
 For a multi-line `foreach` or `match`, this sniff only checks what section 5 requires of every control structure: no
 space after the `(` or before the `)`.
 
+It also requires one space between a `catch`'s type and its variable, as [section 5.6](https://www.php-fig.org/per/coding-style/#56-try-catch-finally)'s example shows, reported as
+`SpaceBeforeCatchVariable`. No inherited sniff checks it. A line break there is allowed, as a multi-catch's types may be
+split over lines.
+
 **Auto-fixable:** yes.
 
 **Good:**
@@ -1075,6 +1079,12 @@ $label = match ($this->lookup([
     'gold' => 'Gold member',
     default => 'Member',
 };
+
+try {
+    $order->submit();
+} catch (PaymentException $exception) {
+    $order->cancel();
+}
 ```
 
 **Bad:**
@@ -1085,6 +1095,12 @@ foreach ( [
     'second',
 ] as $value ) {
     echo $value;
+}
+
+try {
+    $order->submit();
+} catch (PaymentException  $exception) {
+    $order->cancel();
 }
 ```
 

@@ -102,3 +102,33 @@ $label = match ($this->lookup([
 ])) {
     default => 'none',
 };
+
+// === INVALID: the space between a catch's type and its variable ===
+
+try {
+    foo();
+} catch (FirstException $e) {
+    foo();
+} catch (SecondException $e) {
+    foo();
+} catch (A|B $e) {
+    foo();
+}
+
+// === VALID: a catch ===
+
+try {
+    foo();
+} catch (FirstException $e) {
+    foo();
+} catch (SecondException) {
+    foo();
+} catch (
+    A
+    | B
+    $e
+) {
+    foo();
+} catch (ThirdException /* Why. */  $e) {
+    foo();
+}
