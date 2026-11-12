@@ -28,6 +28,10 @@ use PHP_CodeSniffer\Util\Tokens;
  * lines itself (BlankLine). A single blank line between parameters is allowed, as the example shows. Any other, such
  * as more than one in a row, one before the closing parenthesis, or one between `use` items, is reported.
  *
+ * The parent reads a parameter list split only by an attribute, as in `function a(#[A]` then `$b)`, as a single-line
+ * declaration, so nothing reported it. This sniff reads any list whose parentheses are on different lines as
+ * multi-line.
+ *
  * The parent doesn't register an arrow function. Section 7.1 says one follows the same rules as a closure, so this
  * sniff registers `fn` too, and checks a split parameter list. It has no braces, so the brace checks don't apply.
  *
@@ -73,6 +77,29 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
         }
 
         parent::process($phpcsFile, $stackPtr);
+    }
+
+    /**
+     * Determine if this is a multi-line function declaration.
+     *
+     * The parent goes by where each parameter starts, so it reads `function a(#[A]` then `$b)` as a single-line
+     * declaration: the attribute follows the `(` on its line, and the `)` follows the parameter on its line. A
+     * parameter list whose parentheses are on different lines is always multi-line.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the function keyword.
+     * @param int $openBracket The position of the parameter list's opening parenthesis.
+     * @param array<int, array<string, mixed>> $tokens The stack of tokens that make up the file.
+     * @return bool True if the declaration is split across lines.
+     */
+    public function isMultiLineDeclaration(File $phpcsFile, int $stackPtr, int $openBracket, array $tokens): bool
+    {
+        $closeBracket = $tokens[$openBracket]['parenthesis_closer'] ?? null;
+        if (is_int($closeBracket) && $tokens[$openBracket]['line'] !== $tokens[$closeBracket]['line']) {
+            return true;
+        }
+
+        return (bool) parent::isMultiLineDeclaration($phpcsFile, $stackPtr, $openBracket, $tokens);
     }
 
     /**

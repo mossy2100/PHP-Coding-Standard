@@ -95,3 +95,26 @@ $commented = function (
 use ($var1) {
     return 1;
 };
+
+// A parameter list split only by an attribute is multi-line. The parent read it as a single-line declaration.
+function attributeSplit(
+    #[Foo]
+    $b
+) {
+    return 1;
+}
+
+function attributeSplitLast(
+    $a,
+    #[Foo]
+    $b,
+) {
+    return 1;
+}
+
+$attributeSplit = function (
+    #[Foo]
+    $b
+) {
+    return 1;
+};

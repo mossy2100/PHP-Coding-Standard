@@ -35,6 +35,15 @@ class MultiLineFunctionDeclarationUnitTest extends AbstractSniffTestCase
             81 => 1,
             86 => 1,
             94 => 1,
+            // A parameter list split only by an attribute, which the parent read as a single-line declaration.
+            99 => 1,
+            100 => 1,
+            101 => 1,
+            105 => 2,
+            106 => 2,
+            107 => 1,
+            111 => 1,
+            112 => 1,
         ];
     }
 

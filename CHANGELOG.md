@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **A parameter list split only by an attribute (breaking).** `function a(#[Foo]` then `$b)` is now reported by
+  `PERCS31.Functions.MultiLineFunctionDeclaration`, and fixed to one parameter per line, with `) {` on a line of their
+  own. It was read as a single-line declaration, so it passed. Auto-fixable.
 - **No trailing comma after a single argument split over lines (breaking).** `foo([` ... `],);` is now reported, as
   PER Coding Style 3.1 says a single argument split across lines doesn't split the argument list, and only a split list
   takes a trailing comma. The new `PERCS31.Functions.DisallowTrailingCommaInCall` replaces

@@ -1587,6 +1587,11 @@ between two parameters, both before an attribute and before a parameter with non
 allowed, as the example shows. Any other is reported, such as two in a row, one straight after `(` or before `)`, one
 after a parameter's attributes, or one between a closure's `use` items.
 
+The parent reads a parameter list split only by an attribute, as in `function a(#[Sensitive]` then `$password)`, as a
+single-line declaration, so the split wasn't reported. This sniff reads any list whose parentheses are on different
+lines as multi-line, so the first parameter goes on the line after `(`, and `) {` on a line of their own, as
+[section 4.5](https://www.php-fig.org/per/coding-style/#45-method-and-function-parameters) requires.
+
 The parent doesn't check an arrow function. [Section 7.1](https://www.php-fig.org/per/coding-style/#71-short-closures) says an arrow function follows the same rules as a closure, so
 this sniff checks its split parameter list too:
 
