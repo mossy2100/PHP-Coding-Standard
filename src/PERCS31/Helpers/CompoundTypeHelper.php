@@ -6,6 +6,12 @@ namespace PERCS31\Helpers;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Tokens\Collections;
+use PHPCSUtils\Utils\Constants;
+use PHPCSUtils\Utils\FunctionDeclarations;
+use PHPCSUtils\Utils\Parentheses;
+use PHPCSUtils\Utils\Variables;
+use RuntimeException;
 
 /**
  * Helper class for finding the parts of a compound type, such as `int|string` or `(A&B)|null`.
@@ -87,13 +93,9 @@ class CompoundTypeHelper
     public static function findSymbols(File $phpcsFile, int $stackPtr, bool $isHook): array
     {
         $tokens = $phpcsFile->getTokens();
-        $start = $stackPtr;
-        while ($start > 0 && self::isTypeToken($tokens[($start - 1)]['code'], $isHook)) {
-            $start--;
-        }
-
+        [$start, $end] = self::findTypeBounds($phpcsFile, $stackPtr, $isHook);
         $symbols = [];
-        for ($i = $start; isset($tokens[$i]) && self::isTypeToken($tokens[$i]['code'], $isHook); $i++) {
+        for ($i = $start; $i <= $end; $i++) {
             if (self::isSymbol($tokens[$i]['code'])) {
                 $symbols[] = $i;
             }
@@ -105,8 +107,8 @@ class CompoundTypeHelper
     /**
      * Find the first and last tokens of the type a symbol belongs to, leaving out whitespace and comments around it.
      *
-     * In a `set` hook's parameter, the type stops at the parameter list's own parentheses. In a typed constant, as in
-     * `const int|null A = 1`, it stops before the constant's name.
+     * PHPCSUtils finds the type of a parameter, property, typed constant or return type. A `set` hook's parameter type
+     * is found by walking out from the symbol, as PHP_CodeSniffer reads it as an expression.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of a symbol.
@@ -115,33 +117,158 @@ class CompoundTypeHelper
      */
     public static function findTypeBounds(File $phpcsFile, int $stackPtr, bool $isHook): array
     {
+        if ($isHook) {
+            return self::findHookTypeBounds($phpcsFile, $stackPtr);
+        }
+
+        return self::findParameterTypeBounds($phpcsFile, $stackPtr)
+            ?? self::findDeclarationTypeBounds($phpcsFile, $stackPtr)
+            ?? [$stackPtr, $stackPtr];
+    }
+
+    /**
+     * Find the bounds of a parameter's type, from a symbol in it.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of a symbol.
+     * @return array{int, int}|null The positions of the type's first and last tokens, or null if the symbol isn't in a
+     *     parameter's type.
+     */
+    private static function findParameterTypeBounds(File $phpcsFile, int $stackPtr): ?array
+    {
+        $owner = Parentheses::getLastOwner($phpcsFile, $stackPtr, Collections::functionDeclarationTokens());
+        if ($owner === false) {
+            return null;
+        }
+
+        foreach (FunctionDeclarations::getParameters($phpcsFile, $owner) as $parameter) {
+            $bounds = self::between($parameter['type_hint_token'], $parameter['type_hint_end_token'], $stackPtr);
+            if ($bounds !== null) {
+                return $bounds;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Find the bounds of a property's, typed constant's or return type, from a symbol in it.
+     *
+     * What follows the type says which it is: a property's variable, a constant's `=`, or the `{`, `;` or `=>` after a
+     * return type.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of a symbol.
+     * @return array{int, int}|null The positions of the type's first and last tokens, or null if it can't be found.
+     */
+    private static function findDeclarationTypeBounds(File $phpcsFile, int $stackPtr): ?array
+    {
         $tokens = $phpcsFile->getTokens();
-        $limit = $isHook ? self::findHookParameterListOpener($phpcsFile, $stackPtr) : -1;
+        $ends = [T_VARIABLE, T_EQUAL, T_OPEN_CURLY_BRACKET, T_SEMICOLON, T_FN_ARROW];
+        $after = $phpcsFile->findNext($ends, ($stackPtr + 1));
+        if ($after === false) {
+            return null;
+        }
+
+        try {
+            if ($tokens[$after]['code'] === T_VARIABLE) {
+                $property = Variables::getMemberProperties($phpcsFile, $after);
+
+                return self::between($property['type_token'], $property['type_end_token'], $stackPtr);
+            }
+
+            if ($tokens[$after]['code'] === T_EQUAL) {
+                $const = $phpcsFile->findPrevious(T_CONST, ($stackPtr - 1));
+                $constant = $const === false ? null : Constants::getProperties($phpcsFile, $const);
+
+                return $constant === null
+                    ? null
+                    : self::between($constant['type_token'], $constant['type_end_token'], $stackPtr);
+            }
+
+            $function = self::findReturnTypeOwner($phpcsFile, $stackPtr);
+            $properties = $function === null ? null : FunctionDeclarations::getProperties($phpcsFile, $function);
+
+            return $properties === null
+                ? null
+                : self::between($properties['return_type_token'], $properties['return_type_end_token'], $stackPtr);
+        } catch (RuntimeException) {
+            return null;
+        }
+    }
+
+    /**
+     * Find the function, closure or arrow function whose return type a symbol is in.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of a symbol.
+     * @return int|null The position of the function keyword, or null if there isn't one.
+     */
+    private static function findReturnTypeOwner(File $phpcsFile, int $stackPtr): ?int
+    {
+        $tokens = $phpcsFile->getTokens();
+        $colon = $phpcsFile->findPrevious(T_COLON, ($stackPtr - 1));
+        $closer = $colon === false ? false : $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($colon - 1), null, true);
+        if ($closer === false) {
+            return null;
+        }
+
+        $owner = $tokens[$closer]['parenthesis_owner'] ?? null;
+        if (!is_int($owner)) {
+            return null;
+        }
+
+        // After a closure's `use` list, the parentheses belong to `use`.
+        if ($tokens[$owner]['code'] === T_USE) {
+            $closure = $phpcsFile->findPrevious(T_CLOSURE, ($owner - 1));
+
+            return $closure === false ? null : $closure;
+        }
+
+        return isset(Collections::functionDeclarationTokens()[$tokens[$owner]['code']]) ? $owner : null;
+    }
+
+    /**
+     * Give a type's bounds if a token is within them.
+     *
+     * @param mixed $start The position of the type's first token, or false if there's no type.
+     * @param mixed $end The position of the type's last token, or false if there's no type.
+     * @param int $stackPtr The position of the token.
+     * @return array{int, int}|null The bounds, or null if there's no type, or the token is outside it.
+     */
+    private static function between(mixed $start, mixed $end, int $stackPtr): ?array
+    {
+        return is_int($start) && is_int($end) && $start <= $stackPtr && $stackPtr <= $end ? [$start, $end] : null;
+    }
+
+    /**
+     * Find the bounds of a `set` hook's parameter type, by walking out from a symbol over anything that can be in a
+     * type. The type stops at the parameter list's own parentheses.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of a symbol.
+     * @return array{int, int} The positions of the type's first and last tokens.
+     */
+    private static function findHookTypeBounds(File $phpcsFile, int $stackPtr): array
+    {
+        $tokens = $phpcsFile->getTokens();
+        $limit = self::findHookParameterListOpener($phpcsFile, $stackPtr);
 
         $start = $stackPtr;
-        while (($start - 1) > $limit && self::isTypeToken($tokens[($start - 1)]['code'], $isHook)) {
+        while (($start - 1) > $limit && self::isTypeToken($tokens[($start - 1)]['code'], true)) {
             $start--;
         }
 
         $end = $stackPtr;
-        while (isset($tokens[($end + 1)]) && self::isTypeToken($tokens[($end + 1)]['code'], $isHook)) {
+        while (isset($tokens[($end + 1)]) && self::isTypeToken($tokens[($end + 1)]['code'], true)) {
             $end++;
         }
 
         // The symbol itself isn't empty, so both searches stop at it at the latest.
         $first = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, $start, ($stackPtr + 1), true);
         $last = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, $end, ($stackPtr - 1), true);
-        $start = $first === false ? $stackPtr : $first;
-        $end = $last === false ? $stackPtr : $last;
 
-        // A constant's name follows its type, and is a T_STRING too.
-        $before = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($start - 1), null, true);
-        if ($before !== false && $tokens[$before]['code'] === T_CONST) {
-            $last = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($end - 1), ($stackPtr - 1), true);
-            $end = $last === false ? $stackPtr : $last;
-        }
-
-        return [$start, $end];
+        return [$first === false ? $stackPtr : $first, $last === false ? $stackPtr : $last];
     }
 
     /**

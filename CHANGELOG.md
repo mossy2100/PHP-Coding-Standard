@@ -493,6 +493,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **`null` and `?T` on a static property.** `PERCS31.TypeHints.NullType` now reports `public static null|int $a` and
+  `public static int|null $a`. It read the `static` modifier as part of the type, so both passed.
 - **`phpcbf` no longer fails on a closure's `use` on its own line.** With `use` on the line after the parameter list's
   closing parenthesis, two inherited fixes undid each other until `phpcbf` gave up. It's now joined to that line, as
   `) use ($var) {`.

@@ -108,3 +108,13 @@ $i = function (?int $a): ?string {
     return null;
 };
 $j = fn(?int $a): ?string => null;
+
+// The static modifier isn't part of a property's type.
+class StaticProperties
+{
+    public static int|string|null $first;
+    public static int|string|null $middle;
+    public static ?int $short = null;
+    public static (A&B)|null $dnf = null;
+    public static int|string|null $valid;
+}

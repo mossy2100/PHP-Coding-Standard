@@ -40,6 +40,10 @@ class NullTypeUnitTest extends AbstractSniffTestCase
             81 => 1,
             // null before static in a return type.
             95 => 1,
+            // Static properties: null first, in the middle, and first in a DNF type.
+            115 => 1,
+            116 => 1,
+            118 => 1,
         ];
     }
 
@@ -66,6 +70,8 @@ class NullTypeUnitTest extends AbstractSniffTestCase
             // ?T in a closure and an arrow function.
             107 => 2,
             110 => 2,
+            // ?T in a static property.
+            117 => 1,
         ];
     }
 }
