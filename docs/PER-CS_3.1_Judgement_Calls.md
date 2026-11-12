@@ -657,9 +657,22 @@ unclear whether the same applies to a parameter's default value.
 
 **Issue:** 4.6 sets the order of modifier keywords for classes, properties and methods, not constants.
 
-**Ruleset:** A constant's modifier order isn't checked. Its spacing is.
+**Ruleset:** A constant's modifier order isn't checked. The space between its keywords is.
 
 **Why:** The order rule names its targets. The single space between keywords applies everywhere.
+
+---
+
+### Spacing in a Constant Declaration
+
+**Issue:** 4.6 requires a single space between keywords, and 4.3 requires a space between a property's type and its
+name. Neither says how a constant's `const`, type and name are spaced.
+
+**Ruleset:** A class constant has exactly one space after `const`, and between its type and its name, so
+`public const  int  A = 1;` is reported. A line break counts as more than one space. A global constant isn't checked.
+
+**Why:** A constant is declared like a property, so the same spacing applies. Section 4 is about classes, so the rule
+stops at class constants.
 
 ---
 

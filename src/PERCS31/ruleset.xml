@@ -247,6 +247,9 @@
     <!-- One constant per statement (4.3) -->
     <rule ref="SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition"/>
 
+    <!-- One space after a class constant's const keyword, and between its type and its name (4.3, 4.6) -->
+    <rule ref="PERCS31.Classes.ConstantDeclaration"/>
+
     <!-- No leading underscore on a constant (4.3) -->
     <rule ref="PERCS31.NamingConventions.ValidConstantName"/>
 

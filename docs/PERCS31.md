@@ -216,6 +216,7 @@ section gives the reason.
 | `PERCS31.Classes.ClassDeclaration`                      | Class declarations, allowing an empty body as `{}`                  | Yes     |
 | `PERCS31.Classes.ClassInstantiationNoBrackets`          | A warning for `(new Foo())->bar()`                                  | Yes     |
 | `PERCS31.Classes.ClosingBrace`                          | No comment or statement after a class's, function's or hook's `}`   | No      |
+| `PERCS31.Classes.ConstantDeclaration`                   | One space after a class constant's `const`, and after its type      | Yes     |
 | `PERCS31.Classes.EnumMemberVisibility`                  | `private`, not `protected`, for a method or constant in an enum     | Yes     |
 | `PERCS31.Classes.PromotedPropertyHooks`                 | A hook on a promoted parameter is a single short hook on one line   | No      |
 | `PERCS31.Classes.PropertyDeclaration`                   | No leading `_`, no `var`, a visibility, and `get` before `set`      | Partly  |
@@ -691,6 +692,44 @@ final class Counter
 {
     public int $count = 0;
 } // Counts calls.
+```
+
+---
+
+### PERCS31.Classes.ConstantDeclaration
+
+Requires a single space after a class constant's `const` keyword, and between its type and its name. A line break
+counts as more than a single space.
+
+**Why:** [PER Coding Style 3.1, Section 4.6](https://www.php-fig.org/per/coding-style/#46-modifier-keywords) says keywords MUST be on a single line, separated by a single space, and
+[section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says there MUST be a space between a property's type and its name. Neither names a constant's type or name,
+but a constant is declared like a property, so the same spacing is required. See [PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md#spacing-in-a-constant-declaration).
+
+`Squiz.WhiteSpace.ScopeKeywordSpacing` checks the space after a visibility or `final`, but not after `const` or the
+type. `SlevomatCodingStandard.Classes.PropertyDeclaration` makes these checks for a property only, and
+`SlevomatCodingStandard.Whitespaces.DuplicateSpaces` reports every run of spaces, which PER allows around operators.
+No inherited sniff checks a constant alone.
+
+A global constant isn't checked, as section 4 is about classes.
+
+**Auto-fixable:** yes, unless a comment is in the way.
+
+**Good:**
+
+```php
+final class Config
+{
+    public const int LIMIT = 10;
+}
+```
+
+**Bad:**
+
+```php
+final class Config
+{
+    public const  int  LIMIT = 10;
+}
 ```
 
 ---

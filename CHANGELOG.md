@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`PERCS31.Classes.ConstantDeclaration` (breaking).** Requires a single space after a class constant's `const`
+  keyword, and between its type and its name. `public const  int  A = 1;` passed. PER Coding Style 3.1 sets this
+  spacing for keywords and for a property's type, and it's read as covering a constant too. Auto-fixable.
 - **A line indented 1 to 3 spaces too far (breaking).** `PERCS31.WhiteSpace.ConsistentIndent` now reports a statement
   indented 5, 6 or 7 spaces in a body indented 4, and the like. Only a whole extra level was reported. Auto-fixable.
 - **A comment indented too far, in Jumbo (breaking).** `PERCS31.WhiteSpace.ConsistentIndent` has a new `checkComments`
