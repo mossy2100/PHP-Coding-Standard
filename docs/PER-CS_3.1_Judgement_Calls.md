@@ -1048,18 +1048,22 @@ warning, as it SHOULD be a nowdoc.
 
 **Issue:** The opening bracket of a split array "MUST NOT be placed on its own line". Section 11's own example puts a
 nested array's bracket at the start of a line. So does 4.7, for an array that's an argument in a split argument list,
-as each argument there goes on its own line.
+as each argument there goes on its own line. So do 5.1 to 5.4, for an array that starts a split condition, as "the first
+condition MUST be on the next line".
 
 **Ruleset:** The rule is applied after `=`, `=>`, `return` and the like, so `$a = [`. The exceptions are:
 
 - An element of a multi-line array, as in the example.
 - An argument in an argument list, so `foo(` then `[` on the next line is allowed, as is `foo([`.
 - A condition of a `match` arm.
+- The first condition of a split `if`, `elseif`, `while`, `switch` or `for`, so `if (` then `[` on the next line is
+  allowed. `foreach ([` and `match ([` are required, as neither has a split rule.
 - A destructuring assignment.
 
 **Why:** The example shows the elements exception. An argument list split one per line leaves an array argument nowhere
 else to start, short of assigning it to a variable first, which PER doesn't ask for. A `match` arm starts a line, so an
-array that starts its conditions does. A destructuring assignment is a list, not an array value.
+array that starts its conditions does. The same goes for a split condition: section 5's rule and section 11's can't both
+be met, and section 5's is the one with no other layout. A destructuring assignment is a list, not an array value.
 
 ---
 

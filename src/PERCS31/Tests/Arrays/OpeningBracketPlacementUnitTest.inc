@@ -92,6 +92,35 @@ $result = match ($value) {
     ] => 'more',
 };
 
+// The first condition of a split control structure has to start its line too.
+if (
+    [
+        $first,
+    ] === $expected
+) {
+} elseif (
+    [
+        $second,
+    ] === $expected
+) {
+}
+
+while (
+    [
+        $first,
+    ] !== $expected
+) {
+}
+
+switch (
+    [
+        $first,
+    ]
+) {
+    default:
+        break;
+}
+
 // === INVALID ===
 
 $map = [
@@ -111,7 +140,7 @@ $assigned =
         1,
     ];
 
-// A control structure's condition isn't an argument list.
+// A foreach has no rule that puts its expression on the line after the parenthesis.
 foreach (
     [
         1,

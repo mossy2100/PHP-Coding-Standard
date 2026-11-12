@@ -293,12 +293,14 @@ allowed, as each has to start a line:
 - An element of a multi-line array.
 - An argument in an argument list, including an attribute's.
 - A condition of a `match` arm.
+- The first condition of a split `if`, `elseif`, `while`, `switch` or `for`.
 - A destructuring assignment such as `[$a, $b] = pair();` split over lines.
 
 **Why:** [PER Coding Style 3.1, Section 11](https://www.php-fig.org/per/coding-style/#11-arrays) says the opening bracket of a multi-line array MUST NOT be on its own line.
 PER's own example puts a nested array's `[` on its own line, hence the first exception. [Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) puts each
-argument of a split argument list on its own line, hence the second, and a `match` arm starts a line too. No inherited
-sniff checks it.
+argument of a split argument list on its own line, hence the second, and a `match` arm starts a line too. Sections 5.1
+to 5.4 put the first condition of a split control structure on the line after the `(`, hence the fourth. A `foreach` and
+a `match` have no such rule, so `foreach ([` and `match ([` are required. No inherited sniff checks it.
 
 **Auto-fixable:** yes. The fix moves the `[` to the end of the previous line, and `Generic.Arrays.ArrayIndent` then
 re-indents the elements. After a comment, it's left to a person.

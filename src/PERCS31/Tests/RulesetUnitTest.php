@@ -266,6 +266,33 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a multi-line array may start a split condition, on the line after the opening parenthesis, and that
+     * one on the parenthesis's line is moved there. The array sniff's fix and the control structure sniff's undid
+     * each other until phpcbf failed.
+     */
+    public function testArrayStartingSplitConditionGoesOnNextLine(): void
+    {
+        $body = "    [\n        \$first,\n        \$second,\n    ] === \$expected\n) {\n    run();\n}\n";
+        $valid = "<?php\n\nif (\n$body\nwhile (\n$body";
+        $joined = "<?php\n\nif ([\n    \$first,\n    \$second,\n] === \$expected) {\n    run();\n}\n";
+        $validFile = $this->copyToTempFile(null, $valid);
+        $joinedFile = $this->copyToTempFile(null, $joined);
+
+        try {
+            $result = $this->runTool('phpcs', ['--standard=PERCS31', $validFile]);
+            $fixer = $this->runTool('phpcbf', ['--standard=PERCS31', $joinedFile]);
+            $fixed = (string) file_get_contents($joinedFile);
+        } finally {
+            unlink($validFile);
+            unlink($joinedFile);
+        }
+
+        $this->assertSame(0, $result['exitCode'], $result['output']);
+        $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
+        $this->assertSame("<?php\n\nif (\n$body", $fixed);
+    }
+
+    /**
      * Test the blank lines around trait use statements: none between two, exactly one after the last, and none before
      * the class's closing brace, each reported once, and fixed.
      */

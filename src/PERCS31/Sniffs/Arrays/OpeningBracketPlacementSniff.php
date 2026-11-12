@@ -16,10 +16,12 @@ use PHPCSUtils\Tokens\Collections;
  * array is an item in a list.
  *
  * PER Coding Style 3.1, section 11, says that when an array declaration is split across multiple lines, the opening
- * bracket MUST NOT be placed on its own line. Three kinds of array have to start a line, so they're allowed:
+ * bracket MUST NOT be placed on its own line. Four kinds of array have to start a line, so they're allowed:
  * - An element of a multi-line array, as PER's own example shows.
  * - An argument in an argument list, as section 4.7 puts each argument of a split list on a line of its own.
  * - A condition of a `match` arm, as an arm starts a line.
+ * - The first condition of a split `if`, `elseif`, `while`, `switch` or `for`, as sections 5.1 to 5.4 put it on the
+ *   line after the opening parenthesis.
  *
  * So is a destructuring assignment that starts a statement, which isn't an array declaration.
  *
@@ -42,6 +44,14 @@ class OpeningBracketPlacementSniff implements Sniff
         T_OPEN_TAG,
         T_COLON,
     ];
+
+    /**
+     * The control structures whose first condition goes on the line after the opening parenthesis, when the
+     * parentheses are split (sections 5.1 to 5.4). A `foreach` and a `match` have no such rule.
+     *
+     * @var list<int|string>
+     */
+    private const array SPLIT_CONDITION_OWNERS = [T_IF, T_ELSEIF, T_WHILE, T_SWITCH, T_FOR];
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -87,8 +97,9 @@ class OpeningBracketPlacementSniff implements Sniff
     }
 
     /**
-     * Check whether an array is an item in a list: an element of an array, an argument in an argument list, or a
-     * condition of a `match` arm. Each item of a split list starts a line, so its `[` has to.
+     * Check whether an array is an item in a list: an element of an array, an argument in an argument list, a
+     * condition of a `match` arm, or the first condition of a control structure that has the split rule. Each item of
+     * a split list starts a line, so its `[` has to.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $opener The position of the array's `[`.
@@ -116,8 +127,19 @@ class OpeningBracketPlacementSniff implements Sniff
             return is_int($owner) && $tokens[$owner]['code'] === T_MATCH;
         }
 
+        // A control structure's first condition goes on the line after its `(`, so an array that starts it has to
+        // start a line.
+        $owner = $tokens[$container]['parenthesis_owner'] ?? null;
+        if (
+            $previous === $container
+            && is_int($owner)
+            && in_array($tokens[$owner]['code'], self::SPLIT_CONDITION_OWNERS, true)
+        ) {
+            return true;
+        }
+
         // Parentheses hold an argument list when they follow something that takes arguments, such as a function's
-        // name. A control structure's condition, as in `foreach (`, isn't one.
+        // name. The parentheses of a `foreach` or a `match` don't.
         $name = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($container - 1), null, true);
         if ($tokens[$container]['code'] !== T_OPEN_PARENTHESIS || $name === false) {
             return false;

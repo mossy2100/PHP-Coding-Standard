@@ -528,6 +528,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - **A line wrapped before `::`, or before a `match` arm's `=>`.** After a line ending in `)`,
   `PERCS31.WhiteSpace.ConsistentIndent` reported the wrapped line, and its fix removed the indent. Both now pass.
+- **`phpcbf` no longer fails on a split condition that starts with a multi-line array.** In `if (` then `[` on the
+  next line, `PERCS31.Arrays.OpeningBracketPlacement` moved the `[` up, and
+  `PERCS31.ControlStructures.ControlStructureSpacing` moved it back down. The array may now start the line there, in an
+  `if`, `elseif`, `while`, `switch` or `for`, as PER Coding Style 3.1 puts the first condition on the line after the
+  opening parenthesis.
 - **`$a =` followed by a multi-line array is fixed to `$a = [`.** `phpcbf` gave `$a` then `= [` on the next line, as
   `PERCS31.Operators.OperatorPlacement` moved the `=` down while `PERCS31.Arrays.OpeningBracketPlacement` moved the
   `[` up. The operator sniff now leaves this case to the array sniff.
