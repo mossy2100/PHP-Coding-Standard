@@ -526,6 +526,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **`new (expression)` with no argument list (breaking).** `new (className())` passed, though PER Coding Style 3.1
+  requires the parentheses of an argument list on every instantiation. The new
+  `PERCS31.Classes.DynamicClassInstantiation` reports it, and fixes it to `new (className())()`.
 - **A `match` whose subject spans lines.** `match ($this->lookup([` then the argument's lines then `])) {` was reported
   by `PERCS31.ControlStructures.ControlStructureSpacing`, and the fix moved the call onto a line of its own. PER Coding
   Style 3.1 only gives that rule to `if`, `switch`, `while` and `for`, so a multi-line `match` now only has the spaces

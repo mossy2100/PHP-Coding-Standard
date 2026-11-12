@@ -231,6 +231,9 @@
     <!-- A warning for new Foo() wrapped in parentheses before ->, ?-> or :: (4) -->
     <rule ref="PERCS31.Classes.ClassInstantiationNoBrackets"/>
 
+    <!-- An argument list after new (expression), which PSR12.Classes.ClassInstantiation misses (4) -->
+    <rule ref="PERCS31.Classes.DynamicClassInstantiation"/>
+
     <!-- No blank line between trait use statements, exactly one after the last, and none before the class's closing
          brace, as the examples in 4.2 show. The use on the line after the opening brace is checked by
          PSR12.Traits.UseDeclaration. -->

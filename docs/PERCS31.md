@@ -212,6 +212,7 @@ section gives the reason.
 | `PERCS31.Classes.ClassInstantiationNoBrackets`          | A warning for `(new Foo())->bar()`                                  | Yes     |
 | `PERCS31.Classes.ClosingBrace`                          | No comment or statement after a class's, function's or hook's `}`   | No      |
 | `PERCS31.Classes.ConstantDeclaration`                   | One space after a class constant's `const`, and after its type      | Yes     |
+| `PERCS31.Classes.DynamicClassInstantiation`             | An argument list after `new (expression)`                           | Yes     |
 | `PERCS31.Classes.EnumMemberVisibility`                  | `private`, not `protected`, for a method or constant in an enum     | Yes     |
 | `PERCS31.Classes.PromotedPropertyHooks`                 | A hook on a promoted parameter is a single short hook on one line   | No      |
 | `PERCS31.Classes.PropertyDeclaration`                   | No leading `_`, no `var`, a visibility, and `get` before `set`      | Partly  |
@@ -729,6 +730,35 @@ final class Config
 {
     public const  int  LIMIT = 10;
 }
+```
+
+---
+
+### PERCS31.Classes.DynamicClassInstantiation
+
+Requires an argument list after `new (expression)`, as in `new (className())()`.
+
+**Why:** [PER Coding Style 3.1, Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says parentheses MUST always be present when instantiating a class, even
+with no arguments. `PSR12.Classes.ClassInstantiation` checks that, but it takes the first `(` after `new` for the
+argument list. In `new (className())`, the parentheses hold the expression that gives the class, so it passes.
+`SlevomatCodingStandard.ControlStructures.NewWithParentheses` reports it, but its fix turns `new Foo instanceof Bar`
+into `new Foo instanceof Bar()`, which PHP rejects.
+
+This sniff only looks at a `new` followed by `(`. It's a sniff of its own, not a subclass, so the PSR-12 sniff still
+checks every other form.
+
+**Auto-fixable:** yes.
+
+**Good:**
+
+```php
+$handler = new ($this->handlerClass($request))();
+```
+
+**Bad:**
+
+```php
+$handler = new ($this->handlerClass($request));
 ```
 
 ---
