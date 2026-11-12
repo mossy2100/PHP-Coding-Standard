@@ -526,6 +526,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A trailing comma in a call through an expression (breaking).** `$handlers[$name](`, `[$object, 'method'](`,
+  `$object->{$method}(` and `'strlen'(` weren't checked, so a split argument list with no trailing comma passed, as did
+  a comma on one line. `PERCS31.Formatting.TrailingComma` now checks them. Auto-fixable.
 - **`new (expression)` with no argument list (breaking).** `new (className())` passed, though PER Coding Style 3.1
   requires the parentheses of an argument list on every instantiation. The new
   `PERCS31.Classes.DynamicClassInstantiation` reports it, and fixes it to `new (className())()`.

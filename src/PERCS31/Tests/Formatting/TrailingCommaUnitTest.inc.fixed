@@ -163,3 +163,46 @@ $b = clone($a, [
 $d = new class ([
     1,
 ]) {};
+
+// A call through an expression: an array element, an array callable, a member named by an expression, and a string.
+$a = $handlers[$name]($first, $second);
+$a = $handlers[$name](
+    $first,
+    $second,
+);
+$a = [$object, 'method']($first);
+$a = $object->{$method}($first);
+$a = Foo::{$method}($first);
+$a = 'strlen'($first);
+$a = $handlers[$name]([
+    1,
+]);
+$a = $handlers[$name](function () {
+    return 1;
+});
+$a = $handlers[$name](...);
+
+// A block's closing brace before a statement in parentheses isn't a call.
+if ($a) {
+    run();
+}
+($a ?: $b)->run(
+    $first
+);
+
+$a = $handlers[$name]($first, $second);
+$a = $handlers[$name](
+    $first,
+    $second,
+);
+$a = [$object, 'method']($first);
+$a = $object->{$method}(
+    $first,
+);
+$a = Foo::{$method}($first);
+$a = 'strlen'(
+    $first,
+);
+$a = $handlers[$name]([
+    1,
+]);

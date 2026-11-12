@@ -1510,13 +1510,15 @@ $someInstance->create()
 
 Requires a trailing comma after the last arm of a multi-line `match`, the last name in a multi-line group `use`, the
 last item in a multi-line `list()`, or the last argument in multi-line arguments to an anonymous class, `clone()`,
-`exit()` or `die()`, and disallows one when the list is on a single line. It also disallows one in a `match` arm's
-conditions on a single line, e.g. `1, 2, => 'a'`.
+`exit()`, `die()` or a call through an expression, such as `$handlers[$name](`, and disallows one when the list is on a
+single line. It also disallows one in a `match` arm's conditions on a single line, e.g. `1, 2, => 'a'`.
 
 **Why:** [PER Coding Style 3.1, Section 2.6](https://www.php-fig.org/per/coding-style/#26-trailing-commas) says the last item of a list split across lines MUST have a trailing comma,
 and the last item of a list on one line MUST NOT. Slevomat's trailing comma sniffs cover calls, declarations and closure
 `use` lists, and Slevomat's array sniff covers arrays and short lists, but none covers `match`, group `use`,
-`new class (`, `list()`, `clone()`, `exit()` or `die()`. `PhpCollective.PHP.DisallowTrailingCommaInSingleLine` reports a
+`new class (`, `list()`, `clone()`, `exit()` or `die()`. Slevomat's call sniffs also skip a call unless a name, a
+variable or a `)` comes before its `(`, so they miss `$handlers[$name](`, `[$object, 'method'](`, `$object->{$method}(`
+and `'strlen'(`. `PhpCollective.PHP.DisallowTrailingCommaInSingleLine` reports a
 comma in a single-line `list()`, `new class (`, `clone()` or `exit()`, but it goes by the comma's line, not the list's,
 so it also reports a comma PER requires in a split list. A single argument split over lines, as in `clone($a, [` ...
 `]);`, doesn't split the argument list, so a comma after it is reported, as

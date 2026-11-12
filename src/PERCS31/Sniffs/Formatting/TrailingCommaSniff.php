@@ -13,12 +13,15 @@ use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Requires a trailing comma in a multi-line `match`, group `use`, `list()`, or the arguments of an anonymous class,
- * `clone()`, `exit()` or `die()`, and disallows one on a single line, including in a `match` arm's conditions.
+ * `clone()`, `exit()`, `die()` or a call through an expression, as in `$handlers[$name](`, and disallows one on a
+ * single line, including in a `match` arm's conditions.
  *
  * PER Coding Style 3.1, section 2.6, says that for any comma-separated list, including `match` arms and group use
  * statements, the last item MUST have a trailing comma if the list is split across lines, and MUST NOT if it's on one.
  * Slevomat's trailing comma sniffs cover function calls, declarations and closure `use` lists, but skip `new class (`,
- * and `clone`, `exit` and `die`, which PHP 8.4 and 8.5 made function-like.
+ * and `clone`, `exit` and `die`, which PHP 8.4 and 8.5 made function-like. They also skip a call unless a name, a
+ * variable or a `)` comes before its `(`, so they miss `$handlers[$name](`, `[$object, 'method'](`,
+ * `$object->{$method}(` and `'strlen'(`.
  * Slevomat's array sniff covers arrays and short lists, as in `[$a, $b] = $c;`, but not `list()`, and
  * Universal.Attributes.TrailingComma covers attribute blocks. PhpCollective.PHP.DisallowTrailingCommaInSingleLine
  * reports a comma in some of these on one line, but it goes by the comma's line, not the list's, so it also reports a
@@ -26,7 +29,7 @@ use PHP_CodeSniffer\Util\Tokens;
  * end, which PHP ignores, so adding or removing one doesn't change the code.
  *
  * Like Slevomat's call sniffs, this doesn't require a comma in an anonymous class's arguments, or `clone()`'s,
- * `exit()`'s or `die()`'s, when the closing parenthesis follows the last one on its line, as in
+ * `exit()`'s, `die()`'s or such a call's, when the closing parenthesis follows the last one on its line, as in
  * `new class (function () {\n}) {`. Parentheses after `clone` followed by `->`, `?->`, `::` or `[` may only group an
  * expression, so they're skipped. A `match` arm's conditions are only checked on one line, so a split list of
  * conditions isn't required to have a comma before `=>`. Set disallowInSplitMatchConditions to disallow one there too,
@@ -51,7 +54,7 @@ class TrailingCommaSniff implements Sniff
      */
     public function register(): array
     {
-        return [T_MATCH, T_OPEN_USE_GROUP, T_ANON_CLASS, T_LIST, T_CLONE, T_EXIT];
+        return [T_MATCH, T_OPEN_USE_GROUP, T_ANON_CLASS, T_LIST, T_CLONE, T_EXIT, T_OPEN_PARENTHESIS];
     }
 
     /**
@@ -64,6 +67,15 @@ class TrailingCommaSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
         $code = $tokens[$stackPtr]['code'];
+        if ($code === T_OPEN_PARENTHESIS) {
+            $closer = $tokens[$stackPtr]['parenthesis_closer'] ?? null;
+            if (is_int($closer) && $this->isExpressionCall($phpcsFile, $stackPtr)) {
+                $this->checkArguments($phpcsFile, $stackPtr, $closer, 'function call argument list');
+            }
+
+            return;
+        }
+
         if ($code === T_ANON_CLASS || $code === T_CLONE || $code === T_EXIT) {
             $kind = $code === T_ANON_CLASS ? 'anonymous class' : strtolower($tokens[$stackPtr]['content']) . '()';
             $this->processArguments($phpcsFile, $stackPtr, $kind . ' argument list');
@@ -125,6 +137,55 @@ class TrailingCommaSniff implements Sniff
                 return;
             }
         }
+
+        $this->checkArguments($phpcsFile, $opener, $closer, $kind);
+    }
+
+    /**
+     * Check whether parentheses hold the arguments of a call that Slevomat's call sniffs skip: one through an array
+     * element, an array callable, a member named by an expression, or a string.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the opening parenthesis.
+     * @return bool True if it's such a call, and not a first-class callable.
+     */
+    private function isExpressionCall(File $phpcsFile, int $opener): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $before = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($opener - 1), null, true);
+        if ($before === false) {
+            return false;
+        }
+
+        $code = $tokens[$before]['code'];
+        $callees = [T_CLOSE_SQUARE_BRACKET, T_CLOSE_SHORT_ARRAY, T_CONSTANT_ENCAPSED_STRING, T_DOUBLE_QUOTED_STRING];
+        if ($code === T_CLOSE_CURLY_BRACKET) {
+            // Only the brace of `->{$name}`, `::{$name}` or `${$name}`. A block's `}` can come before a statement
+            // that starts with `(`.
+            $brace = $tokens[$before]['bracket_opener'] ?? null;
+            $owner = is_int($brace) ? $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($brace - 1), null, true) : false;
+            $accesses = [T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR, T_DOUBLE_COLON, T_DOLLAR];
+            if ($owner === false || !in_array($tokens[$owner]['code'], $accesses, true)) {
+                return false;
+            }
+        } elseif (!in_array($code, $callees, true)) {
+            return false;
+        }
+
+        return TokenHelper::findCallableEllipsis($phpcsFile, $opener) === null;
+    }
+
+    /**
+     * Checks the last argument in a pair of parentheses.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the opening parenthesis.
+     * @param int $closer The position of the closing parenthesis.
+     * @param string $kind The kind of list, for the error message.
+     */
+    private function checkArguments(File $phpcsFile, int $opener, int $closer, string $kind): void
+    {
+        $tokens = $phpcsFile->getTokens();
 
         // As in a call, a single argument split over lines, as in `clone($a, [` ... `]);`, doesn't split the list. A
         // closing parenthesis after the last argument of a badly split list is left to the layout sniff.
