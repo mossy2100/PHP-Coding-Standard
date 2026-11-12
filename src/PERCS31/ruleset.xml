@@ -313,7 +313,11 @@
 
     <!-- A method chain split across lines: each object operator starts a line indented once, and the first method is
          on the next line (4.7) -->
-    <rule ref="PEAR.WhiteSpace.ObjectOperatorIndent"/>
+    <rule ref="PEAR.WhiteSpace.ObjectOperatorIndent">
+        <!-- Replaced by PERCS31.Formatting.MethodChaining.OperatorAtEndOfLine, which also reports a statement's first
+             operator, and its only one -->
+        <exclude name="PEAR.WhiteSpace.ObjectOperatorIndent.StartOfLine"/>
+    </rule>
     <rule ref="PERCS31.Formatting.MethodChaining"/>
 
     <!-- exit() and die() with parentheses; a warning, as 4.7 says SHOULD -->

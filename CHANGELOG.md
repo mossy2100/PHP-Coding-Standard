@@ -528,6 +528,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A `->` at the end of a line (breaking).** `$user = $repository->` then `find($id);` passed, as
+  `PEAR.WhiteSpace.ObjectOperatorIndent.StartOfLine` skips a statement's first `->`. It's now reported by
+  `PERCS31.Formatting.MethodChaining`, as `OperatorAtEndOfLine`, for every `->` and `?->`, and the PEAR code is
+  excluded, so update any `phpcs:ignore` comments or `<exclude>` rules that name it. The fix no longer leaves a blank
+  line when the operator is alone on its line. Auto-fixable, unless a comment follows the operator.
 - **The space before a `catch`'s variable (breaking).** `catch (Exception  $e)` and `catch (Exception$e)` passed.
   `PERCS31.ControlStructures.ControlStructureSpacing` now requires one space between the type and the variable, as
   `SpaceBeforeCatchVariable`, as PER Coding Style 3.1's example shows. Auto-fixable.

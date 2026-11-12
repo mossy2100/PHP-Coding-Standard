@@ -111,8 +111,10 @@ Two custom sniffs extend php-collective sniffs.
 
 ### PEAR
 
-- **PEAR.WhiteSpace.ObjectOperatorIndent**: In a method chain split across lines, requires each `->` or `?->` to start
-  its line, indented once past the line the statement starts on (4.7).
+- **PEAR.WhiteSpace.ObjectOperatorIndent**: In a method chain split across lines, requires each `->` or `?->` that
+  starts a line to be indented once past the line the statement starts on (4.7). Its `StartOfLine` code is replaced by
+  [`PERCS31.Formatting.MethodChaining`](#percs31formattingmethodchaining), which also reports a statement's first `->` at the end of a line, and its only
+  one.
 
 ### Squiz
 
@@ -229,7 +231,7 @@ section gives the reason.
 | `PERCS31.Files.LineLength`                              | A warning over 120 characters, and a hidden one over 80             | No      |
 | `PERCS31.Formatting.DisallowMultipleStatements`         | One statement per line, allowing `{ get; set; }`                    | Yes     |
 | `PERCS31.Formatting.EmptyBody`                          | An empty class, function, closure or anonymous class body is `{}`   | Yes     |
-| `PERCS31.Formatting.MethodChaining`                     | The first method of a split chain on the next line                  | Yes     |
+| `PERCS31.Formatting.MethodChaining`                     | The first method of a split chain, and `->`, start a line           | Yes     |
 | `PERCS31.Formatting.TrailingComma`                      | Trailing commas in `match`, group `use`, `list()` and some calls    | Yes     |
 | `PERCS31.Functions.DisallowTrailingCommaInCall`         | No trailing comma in a call, unless the argument list is split      | Yes     |
 | `PERCS31.Functions.ArrowFunctionSemicolonSpacing`       | No space before the `;` that ends an arrow function                 | Yes     |
@@ -1505,13 +1507,20 @@ $noop = static function (): void {
 ### PERCS31.Formatting.MethodChaining
 
 Requires the first method of a method chain split across lines to be on the next line, not on the line with the object.
-Property accesses before the first method, as in `$this->query`, can stay on that line.
+Property accesses before the first method, as in `$this->query`, can stay on that line. It also disallows a `->` or
+`?->` at the end of a line, reported as `OperatorAtEndOfLine`.
 
 **Why:** [PER Coding Style 3.1, Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) says that when method chaining is put on separate lines, the first method
 MUST be on the next line. `PEAR.WhiteSpace.ObjectOperatorIndent` checks that each line is indented once, but lets the
 first method stay on the object's line.
 
-**Auto-fixable:** yes. The fix moves the first method to the next line, indented once.
+Section 4.7's example starts each wrapped line with the `->`. The PEAR sniff's `StartOfLine` code reports one at the end
+of a line, but skips a statement's first operator, so `$user = $repository->` then `find($id);` passes. Its fix also
+leaves a blank line when the operator is alone on its line. So that code is excluded, and this sniff makes the check for
+every `->` and `?->`.
+
+**Auto-fixable:** yes. The fix moves the first method to the next line, indented once, and an operator at the end of a
+line to the start of the next. An operator followed by a comment is left to a person.
 
 **Good:**
 
@@ -1534,6 +1543,9 @@ $name = $user->getName();
 $someInstance->create()
     ->prepare()
     ->run();
+
+$user = $repository->
+    find($id);
 ```
 
 ---

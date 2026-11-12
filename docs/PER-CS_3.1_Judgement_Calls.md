@@ -716,6 +716,20 @@ the start of the chain.
 
 ---
 
+### `->` at the End of a Line
+
+**Issue:** "Method chaining MAY be put on separate lines, where each subsequent line is indented once. When doing so,
+the first method MUST be on the next line." Only the example shows where the `->` goes. `$a->` then `b()` meets the
+text, as the method is on the next line.
+
+**Ruleset:** A `->` or `?->` starts its line, so one at the end of a line is reported, whether the statement has one
+or several.
+
+**Why:** The example shows it, and 6.4 puts every wrapped operator at the start of a line. One rule for every `->` is
+simpler than a rule that depends on how many a statement has.
+
+---
+
 ### Closures as Arguments
 
 **Issue:** 4.7 doesn't say whether a closure split over lines splits the argument list.

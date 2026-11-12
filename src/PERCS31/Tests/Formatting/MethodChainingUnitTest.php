@@ -29,6 +29,13 @@ class MethodChainingUnitTest extends AbstractSniffTestCase
             43 => 1,
             // A chain inside a function call's argument.
             47 => 1,
+            // An operator at the end of a line: the only one, the first, a later one, and one alone on its line.
+            51 => 1,
+            54 => 1,
+            59 => 1,
+            63 => 1,
+            // An operator at the end of a line, before a comment.
+            67 => 1,
         ];
     }
 

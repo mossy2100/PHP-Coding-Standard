@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Formatting;
 
+use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\LayoutHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Requires the first method of a method chain split across lines to be on a line of its own.
+ * Requires the first method of a method chain split across lines to be on a line of its own, and disallows a `->` or
+ * `?->` at the end of a line.
  *
  * PER Coding Style 3.1, section 4.7, says method chaining MAY be put on separate lines, each indented once, and that
  * when it is, the first method MUST be on the next line. PEAR.WhiteSpace.ObjectOperatorIndent checks the indentation,
@@ -19,10 +21,17 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * A chain is every `->` and `?->` in a statement at the same parenthesis depth, as in the PEAR sniff. It's split if any
  * of them starts a line. Property accesses before the first method, as in `$this->query`, can stay on the first line.
+ *
+ * Section 4.7's example starts each wrapped line with the `->`, so one at the end of a line is reported, and the fix
+ * moves it to the start of the next line. This replaces the PEAR sniff's StartOfLine check, which skips a statement's
+ * first operator, and so every statement with only one. Its fix also leaves a blank line when the operator is alone on
+ * its line.
  */
 class MethodChainingSniff implements Sniff
 {
     public const string CODE_FIRST_METHOD_ON_SAME_LINE = 'FirstMethodOnSameLine';
+
+    public const string CODE_OPERATOR_AT_END_OF_LINE = 'OperatorAtEndOfLine';
 
     /**
      * The object operators that link a chain.
@@ -47,6 +56,7 @@ class MethodChainingSniff implements Sniff
      */
     public function process(File $phpcsFile, int $stackPtr): void
     {
+        $this->checkEndOfLine($phpcsFile, $stackPtr);
         $chain = $this->findChain($phpcsFile, $stackPtr);
 
         // Check each chain once, from its first operator.
@@ -67,12 +77,52 @@ class MethodChainingSniff implements Sniff
                 continue;
             }
 
-            if (!LayoutHelper::startsLine($phpcsFile, $operator)) {
+            // An operator at the end of its line has its own error, whose fix puts the method on the next line.
+            $endsLine = $tokens[$name]['line'] !== $tokens[$operator]['line'];
+            if (!$endsLine && !LayoutHelper::startsLine($phpcsFile, $operator)) {
                 $this->report($phpcsFile, $operator);
             }
 
             return;
         }
+    }
+
+    /**
+     * Report an object operator at the end of a line, and fix it by moving it to the start of the next line. After a
+     * comment, it's left to a person.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $operator The position of the object operator.
+     */
+    private function checkEndOfLine(File $phpcsFile, int $operator): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $name = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($operator + 1), null, true);
+        if ($name === false || $tokens[$name]['line'] === $tokens[$operator]['line']) {
+            return;
+        }
+
+        $error = 'An object operator must be at the start of a line, not the end';
+        $isFixable = $phpcsFile->findNext(T_WHITESPACE, ($operator + 1), $name, true) === false;
+        $code = self::CODE_OPERATOR_AT_END_OF_LINE;
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $operator, $code)) {
+            return;
+        }
+
+        $phpcsFile->fixer->beginChangeset();
+        if (LayoutHelper::startsLine($phpcsFile, $operator)) {
+            // The operator is alone on its line, so the name joins it.
+            FixerHelper::setBetween($phpcsFile, $operator, $name, '');
+        } else {
+            if ($tokens[($operator - 1)]['code'] === T_WHITESPACE) {
+                $phpcsFile->fixer->replaceToken(($operator - 1), '');
+            }
+
+            $phpcsFile->fixer->replaceToken($operator, '');
+            $phpcsFile->fixer->addContentBefore($name, $tokens[$operator]['content']);
+        }
+
+        $phpcsFile->fixer->endChangeset();
     }
 
     /**
