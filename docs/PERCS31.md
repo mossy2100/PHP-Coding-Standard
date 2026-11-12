@@ -1978,7 +1978,8 @@ can't fix it. This sniff covers every other binary operator: assignment, arithme
 operators, `??`, `instanceof`, the short ternary `?:`, the arrow function's `=>`, and the pipe operator `|>` (PHP 8.5).
 It checks the indent of all of them, including `.`. A full ternary is checked by
 `PERCS31.ControlStructures.MultiLineTernaryOperator`, and section 6.2 doesn't list `=>`, so one in an array or `match`
-arm isn't checked.
+arm isn't checked. An assignment operator before a multi-line array's `[` on the next line is left to
+[`PERCS31.Arrays.OpeningBracketPlacement`](#percs31arraysopeningbracketplacement), whose fix gives `$a = [`.
 
 A short ternary must be written `?:`, with nothing between the `?` and `:`, as [section 6.3](https://www.php-fig.org/per/coding-style/#63-ternary-operators) says it follows the rules for
 other binary operators, and its examples write it as one. Anything between them, such as `$a ? : $b`, is reported as

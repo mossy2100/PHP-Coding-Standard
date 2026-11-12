@@ -35,6 +35,8 @@ class CompoundTypeLayoutUnitTest extends AbstractSniffTestCase
             // An intersection split inside the first group, or a later one.
             116 => 1,
             120 => 1,
+            // Two types on the first line of a half-split property type.
+            133 => 1,
         ];
     }
 

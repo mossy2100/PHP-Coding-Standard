@@ -23,8 +23,8 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * PERCS31.TypeHints.CompoundTypeOperatorSpacing checks that last rule. This sniff checks the other two. A type is split
  * if any `|` or `&` outside parentheses starts a line. Then every one of them must start a line, and the fix breaks the
- * line before each that doesn't. A `&` inside a DNF type's parentheses must never start a line, and the fix joins it to
- * the line before.
+ * line before each that doesn't, lining it up with the first one that does. A `&` inside a DNF type's parentheses must
+ * never start a line, and the fix joins it to the line before.
  *
  * It also covers a `set` hook's parameter type, e.g. `set(int|string $value)`, whose symbols and parentheses
  * PHP_CodeSniffer gives other tokens, as it doesn't know about hooks.
@@ -105,9 +105,12 @@ class CompoundTypeLayoutSniff implements Sniff
         $error = $grouped === []
             ? 'A compound type split across lines must have a single type on each line'
             : 'A compound type split across lines must have a single union segment on each line';
+        // A new line is lined up with the first symbol that already starts one.
+        $aligned = array_find($topLevel, static fn(int $ptr): bool => LayoutHelper::startsLine($phpcsFile, $ptr));
+        $indent = $aligned === null ? 0 : ($tokens[$aligned]['column'] - 1);
         foreach ($topLevel as $symbol) {
             if (!LayoutHelper::startsLine($phpcsFile, $symbol)) {
-                $this->reportMultipleTypesOnLine($phpcsFile, $symbol, $error);
+                $this->reportMultipleTypesOnLine($phpcsFile, $symbol, $error, $indent);
             }
         }
     }
@@ -170,17 +173,17 @@ class CompoundTypeLayoutSniff implements Sniff
      * @param File $phpcsFile The file being scanned.
      * @param int $symbol The position of the symbol.
      * @param string $error The message.
+     * @param int $indent The number of spaces to indent the new line by.
      */
-    private function reportMultipleTypesOnLine(File $phpcsFile, int $symbol, string $error): void
+    private function reportMultipleTypesOnLine(File $phpcsFile, int $symbol, string $error, int $indent): void
     {
         $fix = $phpcsFile->addFixableError($error, $symbol, self::CODE_MULTIPLE_TYPES_ON_LINE);
         if (!$fix) {
             return;
         }
 
-        // The new line takes the indentation of the line the symbol is on.
         $tokens = $phpcsFile->getTokens();
-        $break = $phpcsFile->eolChar . str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $symbol));
+        $break = $phpcsFile->eolChar . str_repeat(' ', $indent);
 
         if ($tokens[($symbol - 1)]['code'] === T_WHITESPACE) {
             $phpcsFile->fixer->replaceToken(($symbol - 1), $break);

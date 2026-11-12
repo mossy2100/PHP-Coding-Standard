@@ -126,3 +126,10 @@ function splitReturnType(): int
 {
     return 1;
 }
+
+// The fix lines a new break up with the symbols that already start a line.
+class HalfSplit
+{
+    public static int|string
+        |float $a;
+}

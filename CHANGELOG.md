@@ -506,6 +506,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **`$a =` followed by a multi-line array is fixed to `$a = [`.** `phpcbf` gave `$a` then `= [` on the next line, as
+  `PERCS31.Operators.OperatorPlacement` moved the `=` down while `PERCS31.Arrays.OpeningBracketPlacement` moved the
+  `[` up. The operator sniff now leaves this case to the array sniff.
+- **A half-split type is fixed to one indent.** `PERCS31.TypeHints.CompoundTypeLayout`'s fix for `int|string` then
+  `|float` on the next line now lines the new break up with the `|` that already starts a line.
 - **`null` and `?T` on a static property.** `PERCS31.TypeHints.NullType` now reports `public static null|int $a` and
   `public static int|null $a`. It read the `static` modifier as part of the type, so both passed.
 - **`phpcbf` no longer fails on a closure's `use` on its own line.** With `use` on the line after the parameter list's

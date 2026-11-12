@@ -44,7 +44,8 @@ use PHPCSUtils\Utils\Parentheses;
  * full ternary is checked by PERCS31.ControlStructures.MultiLineTernaryOperator, and section 6.2 doesn't list `=>`, so
  * one in an array or `match` arm isn't checked. An assignment operator or arrow function's `=>` before a heredoc or
  * nowdoc is left to PERCS31.Strings.HeredocIndentation, as section 10 says it must begin on the same line as the
- * variable it's set against.
+ * variable it's set against. An assignment operator before a multi-line array's `[` on the next line is left to
+ * PERCS31.Arrays.OpeningBracketPlacement, which joins the `[` to the operator's line.
  *
  * PhpCollective.Operators.OperatorPosition covers some of this, but only about 14 operators, and doesn't check the
  * indent. This sniff doesn't extend it, as only the report and fix for an operator at the end of a line could be left
@@ -155,6 +156,18 @@ class OperatorPlacementSniff implements Sniff
 
         if ($next === false || $tokens[$next]['line'] === $tokens[$lastPtr]['line']) {
             $this->checkIndent($phpcsFile, $stackPtr, $lastPtr);
+            return;
+        }
+
+        // A multi-line array's `[` on the next line is joined to the assignment's line by
+        // PERCS31.Arrays.OpeningBracketPlacement, giving `$a = [`. Moving the operator down too would give `= [`.
+        $closer = $tokens[$next]['bracket_closer'] ?? null;
+        if (
+            isset(Tokens::ASSIGNMENT_TOKENS[$code])
+            && $tokens[$next]['code'] === T_OPEN_SHORT_ARRAY
+            && is_int($closer)
+            && $tokens[$closer]['line'] !== $tokens[$next]['line']
+        ) {
             return;
         }
 

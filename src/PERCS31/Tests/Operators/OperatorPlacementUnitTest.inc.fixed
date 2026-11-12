@@ -79,3 +79,14 @@ $g = $h ? /* c */ : $i;
 $g = $a ? $b ?: $c : $d;
 $g = $h ? // Why.
     : $i;
+
+// An assignment before a multi-line array's [ on the next line is left to PERCS31.Arrays.OpeningBracketPlacement.
+$leftToArraySniff =
+    [
+        1,
+        2,
+    ];
+
+// A single-line array on the next line is still reported.
+$reported
+    = [1, 2];

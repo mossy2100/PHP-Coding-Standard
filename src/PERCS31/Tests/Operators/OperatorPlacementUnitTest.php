@@ -124,6 +124,8 @@ class OperatorPlacementUnitTest extends AbstractSniffTestCase
             78 => 1,
             79 => 1,
             80 => 1,
+            // An assignment before a single-line array on the next line. Before a multi-line one, it's left alone.
+            91 => 1,
         ];
     }
 
