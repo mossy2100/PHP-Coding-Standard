@@ -46,6 +46,9 @@
              after the last trait use statement (4.2) -->
         <exclude name="PSR12.Traits.UseDeclaration.NoBlankLineAfterUse"/>
         <exclude name="PSR12.Traits.UseDeclaration.BlankLineAfterLastUse"/>
+        <!-- Replaced by SlevomatCodingStandard.Classes.TraitUseDeclaration, which also reports several traits in a use
+             statement with a { } block (4.2) -->
+        <exclude name="PSR12.Traits.UseDeclaration.MultipleImport"/>
         <!-- A default value's = is a binary operator, so it needs at least one space, not exactly one (6.2). Checked by
              PERCS31.Operators.OperatorSpacing -->
         <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpaceBeforeEquals"/>
@@ -234,6 +237,9 @@
             <property name="linesCountAfterLastUseWhenLastInClass" value="0"/>
         </properties>
     </rule>
+
+    <!-- One trait per use statement, including one with a { } block, as in use A, B { ... } (4.2) -->
+    <rule ref="SlevomatCodingStandard.Classes.TraitUseDeclaration"/>
 
     <!-- abstract or final before readonly on a class (4.6) -->
     <rule ref="SlevomatCodingStandard.Classes.ClassKeywordOrder"/>

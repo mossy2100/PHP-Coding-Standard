@@ -44,6 +44,27 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that several traits in one use statement are reported when the statement has a block, which
+     * PSR12.Traits.UseDeclaration misses.
+     */
+    public function testSeveralTraitsInUseWithBlockAreReported(): void
+    {
+        $source = "<?php\n\nclass Example\n{\n    use A, B {\n        A::a insteadof B;\n    }\n}\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertStringContainsString(
+            'SlevomatCodingStandard.Classes.TraitUseDeclaration.MultipleTraitsPerDeclaration',
+            $result['output'],
+        );
+    }
+
+    /**
      * Test that phpcbf puts two short hooks on one line on lines of their own. DisallowMultipleStatements only moves
      * the second, so PropertyHookLayout has to move the first.
      */

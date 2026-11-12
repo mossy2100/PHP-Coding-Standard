@@ -66,7 +66,8 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 - **PSR12.Operators.OperatorSpacing**, by [`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing), which also covers the pipe operator `|>`.
 - **PSR12.Traits.UseDeclaration** is kept, but its `NoBlankLineAfterUse` and `BlankLineAfterLastUse` codes are replaced
   by `SlevomatCodingStandard.Classes.TraitUseSpacing`, which also reports more than one blank line after the last trait
-  `use` statement.
+  `use` statement. Its `MultipleImport` code is replaced by `SlevomatCodingStandard.Classes.TraitUseDeclaration`, which
+  also reports several traits in a `use` statement with a `{ }` block.
 - **PSR12.Properties.ConstantVisibility** is kept, but a constant with no visibility is an error, not a warning, as
   [Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says MUST.
 - **PSR2.Classes.ClassDeclaration**, **Squiz.Functions.MultiLineFunctionDeclaration** and
@@ -172,6 +173,9 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
   including on promoted properties (4.3, 4.6). Its check for a space after a nullable type's `?` is replaced by
   [`PERCS31.Functions.NullableTypeDeclaration`](#percs31functionsnullabletypedeclaration), which is more complete: it checks every place a type can appear,
   including a `set` hook's parameter, not just a property.
+- **Classes.TraitUseDeclaration**: Disallows several traits in one `use` statement, as in `use A, B;` (4.2). It
+  replaces `PSR12.Traits.UseDeclaration.MultipleImport`, which misses a statement with a `{ }` block, as in
+  `use A, B {`. That form is reported but not fixed.
 - **Classes.TraitUseSpacing**: Requires no blank line between trait `use` statements, exactly one after the last, and
   none before the class's closing brace, as section 4.2's examples show (4.2). Its check before the first `use` is
   excluded, as `PSR12.Traits.UseDeclaration` reports the same.

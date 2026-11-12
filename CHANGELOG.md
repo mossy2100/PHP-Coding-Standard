@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **Several traits in a `use` statement with a block (breaking).** `use A, B { ... }` in a class is now reported, as
+  PER Coding Style 3.1 gives each trait its own `use` statement. `SlevomatCodingStandard.Classes.TraitUseDeclaration`
+  makes the check, so `PSR12.Traits.UseDeclaration.MultipleImport` is now
+  `SlevomatCodingStandard.Classes.TraitUseDeclaration.MultipleTraitsPerDeclaration`. `use A, B;` is still fixed.
 - **A short hook on the opening brace's line (breaking).** `PERCS31.Classes.PropertyHookLayout` now reports a hook
   that shares the `{`'s line in a list over several lines, as in `{ get => 1;` then `set => $value;`, as
   `HookNotOnOwnLine`. PER Coding Style 3.1 only lets a single short hook that doesn't wrap be inline. The fix for
