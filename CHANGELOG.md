@@ -10,6 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **A line indented 1 to 3 spaces too far (breaking).** `PERCS31.WhiteSpace.ConsistentIndent` now reports a statement
+  indented 5, 6 or 7 spaces in a body indented 4, and the like. Only a whole extra level was reported. Auto-fixable.
+- **A comment indented too far, in Jumbo (breaking).** `PERCS31.WhiteSpace.ConsistentIndent` has a new `checkComments`
+  property, which Jumbo turns on. A comment indented further than its scope after a statement is reported as
+  `Comment`. Auto-fixable for a comment on one line.
 - **Several traits in a `use` statement with a block (breaking).** `use A, B { ... }` in a class is now reported, as
   PER Coding Style 3.1 gives each trait its own `use` statement. `SlevomatCodingStandard.Classes.TraitUseDeclaration`
   makes the check, so `PSR12.Traits.UseDeclaration.MultipleImport` is now

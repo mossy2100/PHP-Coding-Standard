@@ -55,6 +55,22 @@ class ConsistentIndentUnitTest extends AbstractSniffTestCase
             ];
         }
 
+        if ($testFile === 'ConsistentIndentUnitTest.5.inc') {
+            return [
+                // Statements indented 1, 2 and 3 spaces too far, and 2 too far in an if body.
+                7 => 1,
+                8 => 1,
+                9 => 1,
+                12 => 1,
+                // With checkComments on: comments indented too far, two of them not fixable, and one in a closure.
+                30 => 1,
+                31 => 1,
+                32 => 1,
+                34 => 1,
+                38 => 1,
+            ];
+        }
+
         if ($testFile === 'ConsistentIndentUnitTest.2.inc') {
             return [
                 // After a PHP opening tag at the start of its line, in a file with markup.

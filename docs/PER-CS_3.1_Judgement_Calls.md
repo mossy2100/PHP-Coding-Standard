@@ -327,10 +327,11 @@ See [Line Length](LineLength.md) to change the limit.
 
 **Issue:** The spec doesn't say how a comment is indented.
 
-**Ruleset:** A comment is indented like code in the same body. Too little or too much is reported. Too much at the top
-level passes.
+**Ruleset:** A comment indented too little is reported, as code is, and so is one indented too far on a body's first
+line. A comment indented too far after a statement isn't reported. Jumbo reports it, except at the top level.
 
-**Why:** A comment belongs to the code around it, so it follows the same indent.
+**Why:** A comment belongs to the code around it, so the indent checks for code treat it as code. Beyond that, PER has
+no rule for a comment's indent, so PERCS31 has no check of its own for one.
 
 ---
 

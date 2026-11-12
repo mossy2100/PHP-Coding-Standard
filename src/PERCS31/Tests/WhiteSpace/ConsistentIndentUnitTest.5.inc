@@ -1,0 +1,47 @@
+<?php
+
+// A line indented 1 to 3 spaces too far, which the parent rounded down to the right level.
+function partLevels(): int
+{
+    $a = 1;
+     $b = 2;
+      $c = 3;
+       $d = 4;
+    if ($a) {
+        $e = 5;
+          $f = 6;
+    }
+
+    return $a;
+}
+
+// A comment indented too far isn't checked by default.
+function commentsOff(): int
+{
+    $a = 1;
+        // Too far.
+    return $a;
+}
+
+// phpcs:set PERCS31.WhiteSpace.ConsistentIndent checkComments true
+function commentsOn(): int
+{
+    $a = 1;
+        // Too far.
+          # Too far.
+        /* Too far, and not fixed,
+           as it's on two lines. */
+        /** Too far, and not fixed. */
+    // Level with the code.
+    $f = function () use ($a) {
+        $b = $a;
+            // Too far, in a closure.
+        return $b;
+    };
+
+    return $a;
+}
+
+$top = 1;
+    // Too far at the top level passes.
+// phpcs:set PERCS31.WhiteSpace.ConsistentIndent checkComments false

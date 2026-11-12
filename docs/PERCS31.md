@@ -2506,6 +2506,14 @@ past the tags is allowed, as PER doesn't say, and its example in section 3 uses 
 accepts both too, and doesn't check the indent of `?>`, as PER has no rule on it. The [Jumbo standard](Jumbo.md) requires 0 levels,
 and `?>` level with `<?php`.
 
+The original counts whole levels, rounding down, so a line indented 1 to 3 spaces too far passed. This sniff rounds
+up, so any extra space is reported. The message gives the indent found as a whole number of levels.
+
+The original skips a line that starts with a comment, and PER has no rule for a comment's indent, so that's the
+default here. Set `checkComments` to report a comment indented further than its scope after a complete statement, as
+the [Jumbo standard](Jumbo.md) does. It's reported as `Comment`. A comment at the top level isn't checked, and a comment over
+several lines isn't fixed.
+
 Three more lines are checked, each indented exactly, as section 2.4 sets:
 
 - **A value wrapped after an array's `=>`:** once past the key's line. A heredoc or nowdoc is left to
@@ -2535,6 +2543,12 @@ function total(array $items): int
         return $sum;
 }
 ```
+
+**Configuration:**
+
+| Property        | Type | Default | Description                                                          |
+| --------------- | ---- | ------- | -------------------------------------------------------------------- |
+| `checkComments` | bool | false   | Report a comment indented further than its scope, after a statement. |
 
 ---
 

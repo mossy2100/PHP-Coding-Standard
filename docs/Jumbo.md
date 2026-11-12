@@ -44,6 +44,9 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
 - `PERCS31.WhiteSpace.ArrowSpacing` requires exactly one space around an array's `=>`, where PERCS31 allows more
   (`allowSeveralSpacesInArray` set to `false`). It replaces Squiz `ArrayDeclaration`'s arrow spacing checks. It also
   requires exactly one space around a `yield`'s `=>`, which PERCS31 doesn't check (`checkYield` set to `true`).
+- `PERCS31.WhiteSpace.ConsistentIndent` also reports a comment indented further than its scope, when the line before it
+  ends a statement (`checkComments` set to `true`). PERCS31 doesn't check this, as PER has no rule for a comment's
+  indent. A comment at the top level isn't checked.
 - `PERCS31.Formatting.EmptyBody` requires a control structure's empty body as `{}`, as in `catch (Exception $e) {}`,
   where PERCS31 also allows the braces on separate lines (`checkControlStructures` set to `true`).
 - `PERCS31.Operators.OperatorPlacement` requires a line in a control structure's condition to be indented exactly once

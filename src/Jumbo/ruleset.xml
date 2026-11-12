@@ -27,6 +27,14 @@
 
     <rule ref="SlevomatCodingStandard.PHP.UselessSemicolon"/>
 
+    <!-- A comment indented further than its scope after a statement, which PERCS31 doesn't check, as PER has no rule
+         for a comment's indent -->
+    <rule ref="PERCS31.WhiteSpace.ConsistentIndent">
+        <properties>
+            <property name="checkComments" value="true"/>
+        </properties>
+    </rule>
+
     <!-- ====== TYPES (2.5) ====== -->
 
     <!-- Magic constants in upper case, as in __DIR__. PHP ignores their case, and PERCS31 doesn't check it, as 2.5's

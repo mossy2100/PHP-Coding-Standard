@@ -33,12 +33,25 @@ use PHPCSUtils\Utils\Conditions;
  * It also skips the lines under a PHP opening tag that isn't at the start of its line, as in a template. The parent
  * measures from column 1, so it would report PHP indented to match the markup around it.
  *
+ * The parent counts whole levels, rounding down, so a line indented 1 to 3 spaces too far passed. This sniff rounds up,
+ * so any extra space is reported.
+ *
+ * The parent skips a line that starts with a comment. PER has no rule for a comment's indent, so that stays the
+ * default. With checkComments on, as in the Jumbo standard, a comment indented further than its scope after a complete
+ * statement is reported too.
+ *
  * Three more lines are checked, each indented exactly as section 2.4 sets: a value wrapped after `=>` in an array, once
  * past the key's line; a group use's items, once past the `use` line, as section 3's example shows; and dead code after
  * a `break` or other statement that ends a switch case, with no case to measure from, level with that statement.
  */
 class ConsistentIndentSniff extends PhpCollectiveSniff
 {
+    /**
+     * Whether to report a comment indented further than its scope, after a complete statement. PER Coding Style has no
+     * rule for a comment's indent, so it's off by default. The Jumbo standard turns it on.
+     */
+    public bool $checkComments = false;
+
     /**
      * Whether the last PHP opening tag was after the start of its line, as in a template.
      */
@@ -83,6 +96,10 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
             return;
         }
 
+        if ($this->checkComment($phpcsFile, $stackPtr)) {
+            return;
+        }
+
         // The parent skips these, as it assumes a fixed depth from column 0.
         $anchor = $this->findAnchor($phpcsFile, $stackPtr);
         if ($anchor !== null) {
@@ -91,6 +108,75 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
         }
 
         parent::process($phpcsFile, $stackPtr);
+    }
+
+    /**
+     * Get the indentation level of a line's leading whitespace, counting part of a level as a whole one.
+     *
+     * The parent divides the number of spaces by 4 and rounds down, so a line indented 1 to 3 spaces too far counted as
+     * correctly indented. Rounding up makes it a level too far. The parent's message then gives the rounded number of
+     * spaces, as it works from the level.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param array<string, mixed> $token The whitespace token.
+     * @return int The number of levels.
+     */
+    protected function getIndentLevel(File $phpcsFile, array $token): int
+    {
+        $content = $token['orig_content'] ?? $token['content'];
+        if (!is_string($content) || str_contains($content, "\t")) {
+            return parent::getIndentLevel($phpcsFile, $token);
+        }
+
+        return (int) ceil(strlen($content) / LayoutHelper::INDENT);
+    }
+
+    /**
+     * Report a comment indented further than its scope, when the line before it ends a statement, if checkComments is
+     * on. The parent skips every line that starts with a comment.
+     *
+     * A comment at the top level isn't checked, nor one PERCS31.WhiteSpace.ScopeIndent reports: one indented too
+     * little, or a body's first line.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the whitespace at the start of a line.
+     * @return bool True if the line starts with a comment, so nothing else is to be checked.
+     */
+    private function checkComment(File $phpcsFile, int $stackPtr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $next = $stackPtr + 1;
+        if (
+            $tokens[$stackPtr]['column'] !== 1
+            || !isset($tokens[$next])
+            || $tokens[$next]['line'] !== $tokens[$stackPtr]['line']
+            || !isset(Tokens::COMMENT_TOKENS[$tokens[$next]['code']])
+        ) {
+            return false;
+        }
+
+        $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
+        if (!$this->checkComments || $previous === false || !$this->endsStatement($phpcsFile, $previous)) {
+            return true;
+        }
+
+        $anchor = $this->findAnchor($phpcsFile, $stackPtr);
+        $expected = $anchor === null
+            ? $this->getExpectedIndent($phpcsFile, $next, $tokens) * LayoutHelper::INDENT
+            : $this->findExpectedFromAnchor($phpcsFile, $next, $anchor);
+        $found = strlen($tokens[$stackPtr]['content']);
+        if ($expected === null || $expected === 0 || $found <= $expected) {
+            return true;
+        }
+
+        // Only the first line of a comment over several lines would move, so that's left to a person.
+        $error = 'Comment indented incorrectly; expected %s spaces, found %s spaces';
+        $isFixable = $tokens[$next]['code'] === T_COMMENT && !str_starts_with($tokens[$next]['content'], '/*');
+        if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $next, 'Comment', [$expected, $found])) {
+            $phpcsFile->fixer->replaceToken($stackPtr, str_repeat(' ', $expected));
+        }
+
+        return true;
     }
 
     /**

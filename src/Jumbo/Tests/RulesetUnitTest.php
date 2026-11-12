@@ -176,6 +176,27 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a comment indented too far after a statement passes in PERCS31, which has no rule for a comment's
+     * indent, and is an error in Jumbo.
+     */
+    public function testOverIndentedCommentIsReportedInJumboOnly(): void
+    {
+        $source = "<?php\n\nfunction total(): int\n{\n    \$a = 1;\n        // Too far.\n    return \$a;\n}\n";
+        $file = $this->copyToTempFile(null, $source);
+        $sniff = '--sniffs=PERCS31.WhiteSpace.ConsistentIndent';
+
+        try {
+            $per = $this->runTool('phpcs', ['--standard=PERCS31', $sniff, '-s', '--report=emacs', $file])['output'];
+            $jumbo = $this->runTool('phpcs', ['--standard=Jumbo', $sniff, '-s', '--report=emacs', $file])['output'];
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertStringNotContainsString('ConsistentIndent', $per);
+        $this->assertStringContainsString('PERCS31.WhiteSpace.ConsistentIndent.Comment', $jumbo);
+    }
+
+    /**
      * Test that a blank line after a case label is reported in both standards, and a comment on its line isn't.
      */
     public function testLabelLineInBothStandards(): void
