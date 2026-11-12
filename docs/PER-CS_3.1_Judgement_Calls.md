@@ -280,6 +280,19 @@ doesn't have.
 
 ---
 
+### File Encoding (PSR-1)
+
+**Issue:** PSR-1 says "PHP code MUST use only UTF-8 without BOM". PSR-12 only checks the byte-order mark, and no
+inherited sniff checks the encoding.
+
+**Ruleset:** `PERCS31.Files.Encoding` reports a file that isn't valid UTF-8, once, at its first invalid line. There's no
+fix.
+
+**Why:** It's a MUST, and it can be checked. The file's real encoding can't be known, so converting it is left to a
+person.
+
+---
+
 ## 2.3 Lines
 
 ### Line Length
