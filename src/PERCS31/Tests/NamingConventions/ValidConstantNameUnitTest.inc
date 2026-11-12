@@ -22,9 +22,10 @@ enum Suit
     public const Suit DEFAULT = self::Hearts;
 }
 
-// === INVALID ===
-
+// A global constant has no visibility, so it isn't checked by default.
 const _TOP_LEVEL = 1;
+
+// === INVALID ===
 
 final class Invalid
 {
@@ -54,3 +55,9 @@ enum HoldsClosure
     };
     public const Lookup = ['a' => 1, 'b' => [2, 3]], Other = self::A;
 }
+
+// With checkGlobalConstants on, a global constant is checked too.
+// phpcs:set PERCS31.NamingConventions.ValidConstantName checkGlobalConstants true
+const _CHECKED = 1;
+const __DOUBLE_CHECKED = 2;
+// phpcs:set PERCS31.NamingConventions.ValidConstantName checkGlobalConstants false

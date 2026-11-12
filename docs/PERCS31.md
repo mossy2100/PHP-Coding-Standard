@@ -1870,8 +1870,12 @@ interface JSON {}
 
 ### PERCS31.NamingConventions.ValidConstantName
 
-Disallows a constant name that starts with an underscore, for class constants and `const` statements at file scope. A
-double underscore, as in `__A`, passes, as section 4.3 says "a single underscore", and it passes on a method.
+Disallows a class constant name that starts with an underscore. A double underscore, as in `__A`, passes, as section
+4.3 says "a single underscore", and it passes on a method.
+
+A global constant isn't checked by default, as the rule is about showing visibility, which only a class constant has.
+Set `checkGlobalConstants` to check a `const` statement at file scope too, as the [Jumbo standard](Jumbo.md) does. A constant made
+with `define()` isn't checked.
 
 **Why:** [PER Coding Style 3.1, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says constant names MUST NOT start with an underscore.
 `Generic.NamingConventions.UpperCaseConstantName` only checks the case, so `const _HIDDEN = 1;` passes it.
@@ -1895,6 +1899,12 @@ final class Config
     public const int _LIMIT = 10;
 }
 ```
+
+**Configuration:**
+
+| Property               | Type | Default | Description                                             |
+| ---------------------- | ---- | ------- | ------------------------------------------------------- |
+| `checkGlobalConstants` | bool | false   | Check a global constant, from a `const` statement, too. |
 
 ---
 

@@ -273,10 +273,12 @@ structure.
 
 **Issue:** PSR-1 says "Class constants MUST be declared in all upper case". It says nothing about global constants.
 
-**Ruleset:** Only class constants are checked for upper case. A global constant, from `const` or `define()`, is only
-checked by `PERCS31.NamingConventions.AcronymCasing`, and only if it has a lower-case letter.
+**Ruleset:** Only class constants are checked for upper case, and for a leading underscore (4.3). A global constant,
+from `const` or `define()`, is only checked by `PERCS31.NamingConventions.AcronymCasing`, and only if it has a
+lower-case letter. Jumbo requires UPPER_CASE for a global constant, with no leading underscore.
 
-**Why:** The rule names class constants only.
+**Why:** PSR-1's rule names class constants only. 4.3's rule is about showing visibility, which a global constant
+doesn't have.
 
 ---
 

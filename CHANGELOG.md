@@ -390,6 +390,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- **A leading underscore on a global constant is only reported in Jumbo.** PERCS31 no longer reports
+  `const _FOO = 1;` outside a class, as PER Coding Style 3.1's rule is about showing visibility, which a global
+  constant doesn't have. `PERCS31.NamingConventions.ValidConstantName` has a new `checkGlobalConstants` property, which
+  Jumbo turns on.
 - **`PERCS31.PHP.TypeCast` (breaking).** PER Coding Style 3.1 requires the short form of a type keyword, and PHP 8.5
   deprecates `(double)` and `(binary)` just as it does `(boolean)` and `(integer)`. Both standards now report all four
   with this sniff's `InvalidCastUsed` code. It replaces `PSR12.Keywords.ShortFormTypeKeywords` in PERCS31, and

@@ -65,6 +65,8 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
 - `PERCS31.NamingConventions.UpperCaseConstantName` has `checkGlobalConstants` set to `true`, so a global constant, from
   `const` or `define()`, and an alias of a constant, must be in UPPER_CASE. PERCS31 doesn't check this, as PER doesn't
   require it.
+- `PERCS31.NamingConventions.ValidConstantName` has `checkGlobalConstants` set to `true`, so a global constant from a
+  `const` statement can't start with a single underscore either. PERCS31 only checks a class constant.
 - `PERCS31.NamingConventions.UpperCaseConstantName`'s `EnumConstantNotPascalCase` warning has a severity of 4, not 5, so
   it's hidden by default, as UPPER_CASE is the house style for every constant. Run `phpcs --warning-severity=4` to see
   it.

@@ -144,6 +144,13 @@
         </properties>
     </rule>
 
+    <!-- No leading underscore on a global constant either, which PER has no rule for -->
+    <rule ref="PERCS31.NamingConventions.ValidConstantName">
+        <properties>
+            <property name="checkGlobalConstants" value="true"/>
+        </properties>
+    </rule>
+
     <!-- UPPER_CASE is the house style for every constant, so hide the warning recommending PascalCase in enums (9) -->
     <rule ref="PERCS31.NamingConventions.UpperCaseConstantName.EnumConstantNotPascalCase">
         <severity>4</severity>

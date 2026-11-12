@@ -587,6 +587,26 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a leading underscore on a global constant passes in PERCS31, as PER's rule is about visibility, and is
+     * an error in Jumbo.
+     */
+    public function testGlobalConstantUnderscoreIsCheckedInJumboOnly(): void
+    {
+        $file = $this->copyToTempFile(null, "<?php\n\nconst _HIDDEN = 1;\n");
+        $sniff = '--sniffs=PERCS31.NamingConventions.ValidConstantName';
+
+        try {
+            $per = $this->runTool('phpcs', ['--standard=PERCS31', $sniff, '-s', '--report=emacs', $file])['output'];
+            $jumbo = $this->runTool('phpcs', ['--standard=Jumbo', $sniff, '-s', '--report=emacs', $file])['output'];
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertStringNotContainsString('ValidConstantName', $per);
+        $this->assertStringContainsString('PERCS31.NamingConventions.ValidConstantName.Underscore', $jumbo);
+    }
+
+    /**
      * Test that two or more attribute blocks go on separate lines in both standards, with the target on the next
      * line, except in a single-line list, where they stay inline, and that phpcbf gives the same result in each.
      */

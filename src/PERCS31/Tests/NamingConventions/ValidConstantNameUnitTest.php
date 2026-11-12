@@ -19,16 +19,16 @@ class ValidConstantNameUnitTest extends AbstractSniffTestCase
     protected function getErrorList(): array
     {
         return [
-            // File-scope constant.
-            27 => 1,
             // Typed class constant.
-            31 => 1,
+            32 => 1,
             // Untyped protected class constant.
-            33 => 1,
+            34 => 1,
             // The second constant in a statement.
-            37 => 1,
+            38 => 1,
             // Interface constant.
-            42 => 1,
+            43 => 1,
+            // A global constant, with checkGlobalConstants on.
+            61 => 1,
         ];
     }
 
