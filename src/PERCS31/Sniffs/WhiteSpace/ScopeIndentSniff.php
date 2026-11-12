@@ -936,6 +936,7 @@ class ScopeIndentSniff implements Sniff
                 $currentIndent = $openerIndent;
                 $setIndents[$checkToken] = $currentIndent;
                 $checkIndent   = $openerIndent;
+                $exact         = true;
 
                 if ($this->debug === true) {
                     StatusWriter::write("=> indent set to $currentIndent by property hook closer $checkToken", 1);

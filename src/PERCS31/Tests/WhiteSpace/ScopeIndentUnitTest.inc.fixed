@@ -374,3 +374,19 @@ class FirstLineInvalid
         get => 1;
     }
 }
+
+// A hook's closing brace, and a hook list's, indented too far.
+class HookClosers
+{
+    public string $name {
+        get {
+            return $this->name;
+        }
+    }
+
+    public string $title {
+        get {
+            return $this->title;
+        }
+    }
+}

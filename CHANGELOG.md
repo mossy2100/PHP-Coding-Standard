@@ -526,6 +526,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A hook's closing brace indented too far (breaking).** `PERCS31.WhiteSpace.ScopeIndent` only reported a property
+  hook's `}`, or a hook list's, when it was indented too little. One indented too far is now reported, and fixed.
 - **A trailing comma in a call through an expression (breaking).** `$handlers[$name](`, `[$object, 'method'](`,
   `$object->{$method}(` and `'strlen'(` weren't checked, so a split argument list with no trailing comma passed, as did
   a comma on one line. `PERCS31.Formatting.TrailingComma` now checks them. Auto-fixable.
