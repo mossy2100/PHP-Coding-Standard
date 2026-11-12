@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Operators;
 
+use PERCS31\Helpers\CompoundTypeHelper;
 use PERCS31\Helpers\OperatorHelper;
 use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
@@ -26,7 +27,7 @@ use PHPCSUtils\Utils\Parentheses;
  * Jumbo does, turns them back on.
  *
  * The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operator, so it's skipped. Section 2.5 says
- * the union symbol MUST NOT have a space either side, which PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing checks.
+ * the union symbol MUST NOT have a space either side, which PERCS31.TypeHints.CompoundTypeOperatorSpacing checks.
  *
  * The `&` of a by-reference hook, e.g. `&get => $this->items;`, isn't an operator either, so it's skipped. So are the
  * `|`, `&` and `?` of a `set` hook's parameter type, e.g. `set(int|string $value)`, which PHP_CodeSniffer reads as
@@ -98,7 +99,7 @@ class OperatorSpacingSniff extends SquizSniff
             return null;
         }
 
-        if ($this->isCatchUnion($phpcsFile, $stackPtr)) {
+        if (CompoundTypeHelper::isCatchSeparator($phpcsFile, $stackPtr)) {
             return null;
         }
 
@@ -147,18 +148,5 @@ class OperatorSpacingSniff extends SquizSniff
     {
         return $phpcsFile->getTokens()[$stackPtr]['code'] === T_EQUAL
             && Parentheses::lastOwnerIn($phpcsFile, $stackPtr, Collections::functionDeclarationTokens()) !== false;
-    }
-
-    /**
-     * Check whether a token is the `|` between the types in a multi-catch.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $stackPtr The position of the token.
-     * @return bool True if it's a `|` directly inside a catch's parentheses.
-     */
-    private function isCatchUnion(File $phpcsFile, int $stackPtr): bool
-    {
-        return $phpcsFile->getTokens()[$stackPtr]['code'] === T_BITWISE_OR
-            && Parentheses::lastOwnerIn($phpcsFile, $stackPtr, [T_CATCH]) !== false;
     }
 }

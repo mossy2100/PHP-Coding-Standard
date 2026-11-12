@@ -396,6 +396,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- **A multi-catch's types may be split across lines (breaking).** `catch (` then `A` then `|B $e` then `) {` now
+  passes in PERCS31, as PER Coding Style 3.1 lets a union type be split before `|`. It was reported twice, with no fix.
+  `PERCS31.TypeHints.CompoundTypeOperatorSpacing` now checks the `|`, and
+  `PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing` is no longer used, so `catch (A | B $e)` is reported as
+  `PERCS31.TypeHints.CompoundTypeOperatorSpacing.SpaceAroundOperator`. A `|` at the end of a line is now fixed.
 - **A leading underscore on a global constant is only reported in Jumbo.** PERCS31 no longer reports
   `const _FOO = 1;` outside a class, as PER Coding Style 3.1's rule is about showing visibility, which a global
   constant doesn't have. `PERCS31.NamingConventions.ValidConstantName` has a new `checkGlobalConstants` property, which

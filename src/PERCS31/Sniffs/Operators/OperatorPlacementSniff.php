@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Operators;
 
+use PERCS31\Helpers\CompoundTypeHelper;
 use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\LayoutHelper;
 use PERCS31\Helpers\OperatorHelper;
@@ -459,6 +460,7 @@ class OperatorPlacementSniff implements Sniff
         if (
             PropertyHookHelper::isHookReference($phpcsFile, $stackPtr)
             || PropertyHookHelper::isHookParameterType($phpcsFile, $stackPtr)
+            || CompoundTypeHelper::isCatchSeparator($phpcsFile, $stackPtr)
         ) {
             return true;
         }

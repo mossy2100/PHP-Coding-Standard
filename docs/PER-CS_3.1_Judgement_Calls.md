@@ -359,7 +359,8 @@ no rule for a comment's indent, so PERCS31 has no check of its own for one.
 **Issue:** PHP calls `catch (A|B $e)` a multi-catch, not a type declaration. It's unclear whether 2.5's rule on
 compound types covers it, or whether `|` is a binary operator there.
 
-**Ruleset:** It's read as a union type, so no space is allowed around the `|`.
+**Ruleset:** It's read as a union type, so no space is allowed around the `|`. The types may be split across lines
+before a `|`, one type per line, as any union type may.
 
 **Why:** `A|B` lists the exception types the variable can hold, which is what a union type does.
 

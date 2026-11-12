@@ -32,6 +32,9 @@ class CompoundTypeOperatorSpacingUnitTest extends AbstractSniffTestCase
             52 => 1,
             56 => 1,
             61 => 1,
+            // A multi-catch: spaces around the |, and the | at a line end.
+            84 => 1,
+            87 => 1,
         ];
     }
 

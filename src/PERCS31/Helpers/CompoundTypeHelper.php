@@ -17,7 +17,8 @@ use RuntimeException;
  * Helper class for finding the parts of a compound type, such as `int|string` or `(A&B)|null`.
  *
  * It also covers a `set` hook's parameter type, e.g. `set(int|string $value)`. PHP_CodeSniffer doesn't know about
- * hooks, so it reads that type as an expression, and gives its symbols and parentheses other tokens.
+ * hooks, so it reads that type as an expression, and gives its symbols and parentheses other tokens. The same goes
+ * for the `|` between a multi-catch's types, e.g. `catch (A|B $e)`.
  */
 class CompoundTypeHelper
 {
@@ -83,6 +84,22 @@ class CompoundTypeHelper
     }
 
     /**
+     * Check whether a token is the `|` between a multi-catch's types, as in `catch (A|B $e)`.
+     *
+     * PHP_CodeSniffer gives it a bitwise operator's token, but it's read as a union type's symbol, as the types list
+     * what the variable can hold.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the token.
+     * @return bool True if it is.
+     */
+    public static function isCatchSeparator(File $phpcsFile, int $stackPtr): bool
+    {
+        return $phpcsFile->getTokens()[$stackPtr]['code'] === T_BITWISE_OR
+            && Parentheses::lastOwnerIn($phpcsFile, $stackPtr, [T_CATCH]) !== false;
+    }
+
+    /**
      * Find the `|` and `&` symbols of the type a symbol belongs to.
      *
      * @param File $phpcsFile The file being scanned.
@@ -112,7 +129,7 @@ class CompoundTypeHelper
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of a symbol.
-     * @param bool $isHook Whether the symbol is in a `set` hook's parameter type.
+     * @param bool $isHook Whether the symbol is in a `set` hook's parameter type, or a multi-catch's types.
      * @return array{int, int} The positions of the type's first and last tokens.
      */
     public static function findTypeBounds(File $phpcsFile, int $stackPtr, bool $isHook): array
@@ -242,8 +259,8 @@ class CompoundTypeHelper
     }
 
     /**
-     * Find the bounds of a `set` hook's parameter type, by walking out from a symbol over anything that can be in a
-     * type. The type stops at the parameter list's own parentheses.
+     * Find the bounds of a `set` hook's parameter type, or a multi-catch's types, by walking out from a symbol over
+     * anything that can be in a type. The type stops at the parameter list's, or the catch's, own parentheses.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of a symbol.
@@ -253,6 +270,11 @@ class CompoundTypeHelper
     {
         $tokens = $phpcsFile->getTokens();
         $limit = self::findHookParameterListOpener($phpcsFile, $stackPtr);
+        if ($limit === -1) {
+            // A multi-catch's types stop at the catch's own parentheses.
+            $opener = Parentheses::getLastOpener($phpcsFile, $stackPtr, [T_CATCH]);
+            $limit = $opener === false ? -1 : $opener;
+        }
 
         $start = $stackPtr;
         while (($start - 1) > $limit && self::isTypeToken($tokens[($start - 1)]['code'], true)) {

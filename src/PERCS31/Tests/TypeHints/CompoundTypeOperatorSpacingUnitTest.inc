@@ -70,3 +70,22 @@ class HookParameterTypes
         }
     }
 }
+
+// A multi-catch's | is a union type's: no space around it, and a split before it is allowed.
+try {
+    run();
+} catch (FirstException|SecondException $e) {
+    report($e);
+} catch (
+    FirstException
+    |SecondException $e
+) {
+    report($e);
+} catch (FirstException | SecondException $e) {
+    report($e);
+} catch (
+    FirstException|
+    SecondException $e
+) {
+    report($e);
+}

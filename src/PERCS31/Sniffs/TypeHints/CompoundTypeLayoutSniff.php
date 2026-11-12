@@ -27,7 +27,8 @@ use PHP_CodeSniffer\Util\Tokens;
  * never start a line, and the fix joins it to the line before.
  *
  * It also covers a `set` hook's parameter type, e.g. `set(int|string $value)`, whose symbols and parentheses
- * PHP_CodeSniffer gives other tokens, as it doesn't know about hooks.
+ * PHP_CodeSniffer gives other tokens, as it doesn't know about hooks, and a multi-catch's types, e.g.
+ * `catch (A|B $e)`, whose `|` is read as a union type's.
  */
 class CompoundTypeLayoutSniff implements Sniff
 {
@@ -56,7 +57,9 @@ class CompoundTypeLayoutSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
         $code = $tokens[$stackPtr]['code'];
         $isHook = $code === T_BITWISE_OR || $code === T_BITWISE_AND;
-        if ($isHook && !PropertyHookHelper::isHookParameterType($phpcsFile, $stackPtr)) {
+        $isTypeSymbol = PropertyHookHelper::isHookParameterType($phpcsFile, $stackPtr)
+            || CompoundTypeHelper::isCatchSeparator($phpcsFile, $stackPtr);
+        if ($isHook && !$isTypeSymbol) {
             return;
         }
 
@@ -132,10 +135,11 @@ class CompoundTypeLayoutSniff implements Sniff
             }
 
             if ($tokens[$i]['code'] === T_OPEN_PARENTHESIS) {
-                // In a hook's parameter, the list's own `(` follows the name `set`. A group's doesn't.
+                // In a hook's parameter, the list's own `(` follows the name `set`, and a catch's follows `catch`. A
+                // group's doesn't.
                 $before = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($i - 1), null, true);
 
-                return $before !== false && $tokens[$before]['code'] !== T_STRING;
+                return $before !== false && !in_array($tokens[$before]['code'], [T_STRING, T_CATCH], true);
             }
         }
 

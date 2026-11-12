@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\TypeHints;
 
+use PERCS31\Helpers\CompoundTypeHelper;
 use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
@@ -22,6 +23,10 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  *   to the start of the next line.
  *
  * Which types go on which line is checked by PERCS31.TypeHints.CompoundTypeLayout.
+ *
+ * It also covers the `|` between a multi-catch's types, e.g. `catch (A|B $e)`, which is read as a union type's. It
+ * replaces PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing there, which reports a type split before the `|`, and
+ * can't fix one split after it.
  *
  * It also covers a `set` hook's parameter type, e.g. `set(int|string $value)`. PHP_CodeSniffer doesn't know about
  * hooks, so it gives those symbols operator tokens, and Slevomat's sniff doesn't see them. So this sniff also checks
@@ -64,7 +69,10 @@ class CompoundTypeOperatorSpacingSniff implements Sniff
         }
 
         $isType = $code === T_TYPE_UNION || $code === T_TYPE_INTERSECTION;
-        if (!$isType && !PropertyHookHelper::isHookParameterType($phpcsFile, $stackPtr)) {
+        $isType = $isType
+            || PropertyHookHelper::isHookParameterType($phpcsFile, $stackPtr)
+            || CompoundTypeHelper::isCatchSeparator($phpcsFile, $stackPtr);
+        if (!$isType) {
             return;
         }
 

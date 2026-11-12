@@ -44,6 +44,25 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a multi-catch's types split before the `|` pass, as a split union type does. The `|` isn't a binary
+     * operator to OperatorPlacement, and the line break before it isn't a space.
+     */
+    public function testSplitMultiCatchPasses(): void
+    {
+        $source = "<?php\n\ntry {\n    run();\n} catch (\n    FirstException\n    |SecondException \$e\n) {\n"
+            . "    report(\$e);\n}\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $result = $this->runTool('phpcs', ['--standard=PERCS31', '--report=emacs', $file]);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame('', trim($result['output']));
+    }
+
+    /**
      * Test that several traits in one use statement are reported when the statement has a block, which
      * PSR12.Traits.UseDeclaration misses.
      */

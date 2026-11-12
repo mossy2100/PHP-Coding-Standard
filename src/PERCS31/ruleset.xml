@@ -144,7 +144,8 @@
         </properties>
     </rule>
 
-    <!-- No space around | or & in a compound type, but a split before one allowed (2.5) -->
+    <!-- No space around | or & in a compound type, but a split before one allowed, including the | between a
+         multi-catch's types (2.5) -->
     <rule ref="PERCS31.TypeHints.CompoundTypeOperatorSpacing"/>
     <!-- A compound type split across lines has one type, or one union segment, per line (2.5) -->
     <rule ref="PERCS31.TypeHints.CompoundTypeLayout"/>
@@ -154,9 +155,6 @@
 
     <!-- No space after the ? of a nullable type, wherever a type can appear (4.5) -->
     <rule ref="PERCS31.Functions.NullableTypeDeclaration"/>
-
-    <!-- No space around the | between a multi-catch's types, as union types have none (2.5) -->
-    <rule ref="PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing"/>
 
     <!-- ====== COMMAS (2.6) ====== -->
 

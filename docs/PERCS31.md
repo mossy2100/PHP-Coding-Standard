@@ -95,8 +95,8 @@ default value's `=` is a binary operator, which section 6.2 allows more than one
 
 ## Inherited Sniffs
 
-Sniffs from PHP_CodeSniffer's other standards, Slevomat, PHPCSExtra and php-collective, each for the PER Coding Style
-rule in brackets.
+Sniffs from PHP_CodeSniffer's other standards, Slevomat and PHPCSExtra, each for the PER Coding Style rule in brackets.
+Two custom sniffs extend php-collective sniffs.
 
 ### Generic
 
@@ -189,13 +189,6 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **TypeHints.DNFTypeHintFormat**: Requires no spaces inside the parentheses (2.5). Its check for spaces around `|` and
   `&` is replaced by [`PERCS31.TypeHints.CompoundTypeOperatorSpacing`](#percs31typehintscompoundtypeoperatorspacing), which allows a split type. Its checks for `null`
   last and for `?T` are replaced by [`PERCS31.TypeHints.NullType`](#percs31typehintsnulltype), which covers every type.
-
-### PhpCollective
-
-Reference: [php-collective/code-sniffer repository and documentation](https://github.com/php-collective/code-sniffer)
-
-- **PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing**: Disallows a space around the `|` between a multi-catch's
-  types, e.g. `catch (A | B $e)` (2.5). A `|` at the start or end of a line is reported but not fixed.
 
 ---
 
@@ -2144,7 +2137,7 @@ The `=` of a parameter's default value is a binary operator too, so `int $a    =
 `false` to leave it to that sniff, as the Jumbo standard does.
 
 The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operator, so it's skipped. [Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the
-union symbol MUST NOT have a space either side, which `PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing` checks. The
+union symbol MUST NOT have a space either side, which `PERCS31.TypeHints.CompoundTypeOperatorSpacing` checks. The
 parent would require one.
 
 The `&` of a by-reference hook, e.g. `&get => $this->items;`, isn't an operator either, so it's skipped, here and by
@@ -2394,7 +2387,8 @@ type's parentheses never can.
 
 **Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says each line of a split union or intersection MUST have a single type, and
 each line of a split DNF type MUST have a single union segment, with all of its intersections on that line. No inherited
-sniff checks it. This includes a `set` hook's parameter type, e.g. `set(int|string $value)`.
+sniff checks it. This includes a `set` hook's parameter type, e.g. `set(int|string $value)`, and a multi-catch's
+types, e.g. `catch (A|B $e)`.
 
 **Auto-fixable:** yes, unless a comment comes before a `&` that starts a line inside parentheses.
 
@@ -2441,6 +2435,10 @@ before one. This replaces the `DisallowedWhitespaceAroundOperator` check of
 space, and that a compound type MAY be split across lines, with the symbol at the start of each line. The Slevomat check
 counts the line break as a space, so it rejects every split type, including PER's own examples. Which types go on which
 line is checked by `PERCS31.TypeHints.CompoundTypeLayout`.
+
+It also checks the `|` between a multi-catch's types, e.g. `catch (A|B $e)`, which is read as a union type's, so the
+types may be split before a `|` too. `PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing` reports that split, and can't
+fix a `|` at the end of a line, so the ruleset doesn't use it.
 
 It also checks a `set` hook's parameter type, e.g. `set(int|string $value)`, and the parentheses of a DNF type there, as
 PHP_CodeSniffer reads that type as an expression, and the Slevomat sniff doesn't see it.
