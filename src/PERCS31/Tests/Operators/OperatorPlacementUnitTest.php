@@ -53,7 +53,7 @@ class OperatorPlacementUnitTest extends AbstractSniffTestCase
                 91 => 1,
                 // An index, lined up with its first line.
                 99 => 1,
-                // An arrow function's => and body indented twice.
+                // An arrow function's => and body lined up with fn.
                 105 => 1,
                 110 => 1,
             ];

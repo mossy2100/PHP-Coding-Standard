@@ -41,15 +41,15 @@ $value = $values[
         + $b
 ];
 
-// An arrow function's => and body in a group.
+// An arrow function's => and body are indented once past the line with fn, in a group too.
 $callback = (
     fn(int $y): int
-    => $y
+        => $y
 );
 
 $callback = (
     fn(int $y): int => $y
-    + 1
+        + 1
 );
 
 $callback = (fn(int $y): int => $y
@@ -99,13 +99,13 @@ $value = $values[
     + $b
 ];
 
-// An arrow function's => and body indented twice.
+// An arrow function's => and body lined up with fn.
 $callback = (
     fn(int $y): int
-        => $y
+    => $y
 );
 
 $callback = (
     fn(int $y): int => $y
-        + 1
+    + 1
 );

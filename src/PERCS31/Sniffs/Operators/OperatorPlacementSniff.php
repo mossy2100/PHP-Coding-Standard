@@ -34,7 +34,8 @@ use PHPCSUtils\Utils\Parentheses;
  *
  * In grouping parentheses, as in `$x = $a && ($b || $c);` split over lines, every line is indented once past the line
  * with the opening parenthesis. So when the group's first value is on the line after the `(`, a wrapped operator lines
- * up with it, as a line in a condition's parentheses does.
+ * up with it, as a line in a condition's parentheses does. An arrow function's `=>` and body are the exception: they're
+ * indented once past the line with `fn`, in a group or not.
  *
  * A control structure's condition follows section 5 instead: each line is indented at least once past the line with
  * the opening parenthesis. Set requireExactConditionIndent to require exactly once for a line starting with a boolean
@@ -282,7 +283,9 @@ class OperatorPlacementSniff implements Sniff
 
         // In grouping parentheses, every line is indented once past the line with the opening parenthesis, so an
         // operator lines up with the group's first line when that's on a line of its own.
-        $isGroup = $this->isGroupingParenthesis($phpcsFile, $boundary);
+        // An arrow function's `=>` and body are indented once past the line `fn` is on, in a group or not.
+        $isGroup = $this->isGroupingParenthesis($phpcsFile, $boundary)
+            && !$this->isInArrowFunction($phpcsFile, $stackPtr, $boundary);
         $expected = LayoutHelper::lineIndent($phpcsFile, ($isGroup ? $boundary : $start)) + LayoutHelper::INDENT;
         $found = $tokens[$stackPtr]['column'] - 1;
         if ($found === $expected) {
@@ -295,6 +298,27 @@ class OperatorPlacementSniff implements Sniff
             : 'A line starting with operator "%s" must be indented once past the line its expression starts on; '
                 . 'expected %s spaces, found %s';
         $this->reportIndent($phpcsFile, $stackPtr, $lastPtr, $error, $expected, $found);
+    }
+
+    /**
+     * Check whether an operator is the `=>` of an arrow function that starts after a boundary, or is in its body.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the operator.
+     * @param int $boundary The position of the token before the operator's expression.
+     * @return bool True if it is.
+     */
+    private function isInArrowFunction(File $phpcsFile, int $stackPtr, int $boundary): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        for ($i = ($stackPtr - 1); $i > $boundary; $i--) {
+            $closer = $tokens[$i]['scope_closer'] ?? null;
+            if ($tokens[$i]['code'] === T_FN && is_int($closer) && $closer >= $stackPtr) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

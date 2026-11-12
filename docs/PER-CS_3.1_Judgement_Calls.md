@@ -998,7 +998,8 @@ on the lines after it.
 **Ruleset:** Every line in grouping parentheses is indented once past the line with the `(`. So `|| $c` lines up with
 `$b`, and isn't indented once more. That applies in a condition and in any other expression, such as `$x = $a` then
 `&& (` on the next line. A call's argument parentheses aren't a group, so an operator wrapped inside an argument is
-still indented once past the argument's first line.
+still indented once past the argument's first line. An arrow function's `=>` is always indented once past the line with
+`fn`, in a group or not, as is an operator wrapped in its body.
 
 **Why:** It's the layout 5.1's example gives a condition's own parentheses, one level down. The lines in a group read as
 one level, and the line with the `(` shows that the group continues the statement.
