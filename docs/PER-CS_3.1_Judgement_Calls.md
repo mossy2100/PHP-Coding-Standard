@@ -832,6 +832,19 @@ one.
 
 ---
 
+### A `match`'s Subject Split Over Lines
+
+**Issue:** 5.2 gives `switch` the rule for an expression split inside the parentheses, with the first condition on the
+next line. Of a `match`, it only says it "looks like" its example.
+
+**Ruleset:** The split rule isn't applied to a `match`, so `match ($this->lookup([` then the argument's lines then
+`])) {` passes. Only the spacing just inside the parentheses is checked.
+
+**Why:** The rule applies where the spec states it, which is how "5.4 `for` and 5.5 `foreach`" reads it for `foreach`.
+4.7 says a single argument split over lines doesn't split anything, so this layout is compliant.
+
+---
+
 ### The `case` Line
 
 **Issue:** The `case` line "MUST consist only of" the label, but it's unclear whether that includes a comment.

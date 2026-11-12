@@ -20,12 +20,15 @@ class ControlStructureSpacingUnitTest extends AbstractSniffTestCase
     {
         return [
             // A space after the ( and before the ) of a multi-line foreach.
-            45 => 1,
-            53 => 1,
+            66 => 1,
+            74 => 1,
             // The parent's checks: spaces in a single-line foreach, and the first expression on the ( line.
-            59 => 2,
-            63 => 1,
-            69 => 1,
+            80 => 2,
+            84 => 1,
+            90 => 1,
+            // A space after the ( and before the ) of a multi-line match.
+            98 => 1,
+            100 => 1,
         ];
     }
 

@@ -27,6 +27,27 @@ foreach (foo(
     bar();
 }
 
+// === VALID: a multi-line match ===
+
+$label = match ($this->lookup([
+    'code' => $code,
+])) {
+    default => 'none',
+};
+
+$label = match ([
+    $first,
+    $second,
+]) {
+    default => 'none',
+};
+
+$label = match (
+    $code
+) {
+    default => 'none',
+};
+
 // === VALID: the parent's layout ===
 
 foreach ($items as $x) {
@@ -71,3 +92,11 @@ while ($a
 ) {
     foo();
 }
+
+// === INVALID: a space inside a multi-line match's parentheses ===
+
+$label = match ( $this->lookup([
+    'code' => $code,
+]) ) {
+    default => 'none',
+};

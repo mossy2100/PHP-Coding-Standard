@@ -56,7 +56,7 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 - **PSR12.ControlStructures.BooleanOperatorPlacement** is kept, with `allowOnly` set to `first`, so a wrapped `&&` or
   `||` in a condition starts the line (5.1, 6.4). PSR-12 only requires consistency.
 - **PSR12.ControlStructures.ControlStructureSpacing**, by [`PERCS31.ControlStructures.ControlStructureSpacing`](#percs31controlstructurescontrolstructurespacing), which
-  drops its rules for a multi-line `foreach`.
+  drops its rules for a multi-line `foreach` or `match`.
 - **PSR12.Files.DeclareStatement**, by [`PERCS31.Files.DeclareStatement`](#percs31filesdeclarestatement), which accepts a declare statement with several
   directives, such as `declare(ticks=1,strict_types=1);`, or a string value, such as `declare(encoding='UTF-8');`.
 - **PSR12.Files.FileHeader**, by [`PERCS31.Files.FileHeader`](#percs31filesfileheader), which allows `<?php declare(strict_types=1) ?>` on the
@@ -217,7 +217,7 @@ section gives the reason.
 | `PERCS31.Classes.PropertyDeclaration`                   | No leading `_`, no `var`, a visibility, and `get` before `set`      | Partly  |
 | `PERCS31.Classes.PropertyHookLayout`                    | A hook list's and hook body's braces, and a short hook's `=>`       | Partly  |
 | `PERCS31.ControlStructures.BodyOnNextLine`              | A structure's body on the line after its `{`, allowing `{}`         | Yes     |
-| `PERCS31.ControlStructures.ControlStructureSpacing`     | A control structure's parentheses, with no split rule for `foreach` | Yes     |
+| `PERCS31.ControlStructures.ControlStructureSpacing`     | The parentheses, with no split rule for `foreach` or `match`        | Yes     |
 | `PERCS31.ControlStructures.ForEachSpacing`              | A space or line break each side of a `foreach`'s `as` and `=>`      | Yes     |
 | `PERCS31.ControlStructures.MatchArmPlacement`           | Each `match` arm starts on a new line                               | Yes     |
 | `PERCS31.ControlStructures.MultiLineTernaryOperator`    | A multi-line ternary takes three lines, `?` and `:` leading         | Yes     |
@@ -1016,14 +1016,15 @@ while (next($items)) { count();
 ### PERCS31.ControlStructures.ControlStructureSpacing
 
 Checks the layout of a control structure's parentheses, as `PSR12.ControlStructures.ControlStructureSpacing` does,
-except for a multi-line `foreach`. This extends that sniff.
+except for a multi-line `foreach` or `match`. This extends that sniff.
 
 **Why:** [PER Coding Style 3.1, Section 5.5](https://www.php-fig.org/per/coding-style/#55-foreach) has no rule for an expression split inside a `foreach`'s parentheses, unlike
-`if`, `switch`, `while`, `do while` and `for`. The parent applies one anyway, so it rejects an array in the header.
-Moving the array down then breaks section 11, which forbids `[` on a line of its own.
+`if`, `switch`, `while`, `do while` and `for`. [Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) gives the rule to `switch`, and not to `match`. The parent
+applies one to both anyway, so it rejects an array in the header, and a call with one argument split over lines, as in
+`match ($this->lookup([`. Moving an array down then breaks section 11, which forbids `[` on a line of its own.
 
-For a multi-line `foreach`, this sniff only checks what section 5 requires of every control structure: no space after
-the `(` or before the `)`.
+For a multi-line `foreach` or `match`, this sniff only checks what section 5 requires of every control structure: no
+space after the `(` or before the `)`.
 
 **Auto-fixable:** yes.
 
@@ -1036,6 +1037,13 @@ foreach ([
 ] as $value) {
     echo $value;
 }
+
+$label = match ($this->lookup([
+    'code' => $code,
+])) {
+    'gold' => 'Gold member',
+    default => 'Member',
+};
 ```
 
 **Bad:**
