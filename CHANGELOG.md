@@ -10,6 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **A short hook on the opening brace's line (breaking).** `PERCS31.Classes.PropertyHookLayout` now reports a hook
+  that shares the `{`'s line in a list over several lines, as in `{ get => 1;` then `set => $value;`, as
+  `HookNotOnOwnLine`. PER Coding Style 3.1 only lets a single short hook that doesn't wrap be inline. The fix for
+  `{ get => 1; set => $value; }` used to leave that layout. Auto-fixable.
+- **Code after a hook list's closing brace (breaking).** `PERCS31.Classes.PropertyHookLayout` now reports
+  `} public int $b = 1;` after a hook list, as `CodeAfterCloser`, as PER Coding Style 3.1 puts that brace on its own
+  line. Auto-fixable, unless a comment is in the way.
 - **A parameter list split only by an attribute (breaking).** `function a(#[Foo]` then `$b)` is now reported by
   `PERCS31.Functions.MultiLineFunctionDeclaration`, and fixed to one parameter per line, with `) {` on a line of their
   own. It was read as a single-line declaration, so it passed. Auto-fixable.

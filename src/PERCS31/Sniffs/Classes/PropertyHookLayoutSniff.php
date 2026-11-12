@@ -17,13 +17,16 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * PER Coding Style 3.1, section 4.9, says:
  * - The opening brace MUST be on the same line as the property, after a single space.
- * - In the long form, the closing brace MUST be on its own line, with no comment after it.
+ * - In the long form, the closing brace MUST be on its own line, with no comment after it. Code after it on its line,
+ *   such as the next property, is reported as CodeAfterCloser.
  * - The entire body of the hook definition, and the body of each hook, MUST be indented one level, and hooks MUST be
  *   separated by a line break. So in a list with a `{}` body, each hook starts on its own line, each body starts on
  *   the line after its `{`, and each `}` is first on its line. An empty body, `{}`, has nothing to move.
  * - Hooks MAY be separated by an additional blank line, so more than one blank line between them is reported.
  * - A short hook's `=>` MUST have a single space on either side, and its body MUST begin on the same line.
- * - A short hook listed inline MUST have a single space after the opening brace and before the closing one.
+ * - A short hook listed inline MUST have a single space after the opening brace and before the closing one. Only a
+ *   single hook whose expression doesn't wrap may be inline, so in a list of short hooks over several lines, each hook
+ *   starts on its own line too.
  *
  * Section 4.10 says a list with no hook bodies, as on an interface or abstract property, MUST be on one line, as
  * `{ get; set; }`: a single space inside each brace, no space before each `;`, and a single space between operations.
@@ -46,6 +49,8 @@ class PropertyHookLayoutSniff implements Sniff
     public const string CODE_SPACE_BEFORE_OPENER = 'SpaceBeforeOpener';
 
     public const string CODE_CLOSER_NOT_ON_OWN_LINE = 'CloserNotOnOwnLine';
+
+    public const string CODE_CODE_AFTER_CLOSER = 'CodeAfterCloser';
 
     public const string CODE_ARROW_SPACING = 'ArrowSpacing';
 
@@ -128,6 +133,11 @@ class PropertyHookLayoutSniff implements Sniff
         // A list on one line with a `{}` body is long form too. Its closing brace moves in the same pass as the rest,
         // as ScopeIndent and ConsistentIndent can't agree on the indentation after a line with two closing braces.
         if ($hasHookBodies || $tokens[$opener]['line'] !== $tokens[$closer]['line']) {
+            // A list of short hooks over several lines isn't inline, so each hook starts on its own line too.
+            if (!$hasHookBodies && !$isPromoted) {
+                $this->checkHookStarts($phpcsFile, $opener, $closer);
+            }
+
             $this->checkLongFormCloser($phpcsFile, $opener, $closer);
             if (!$isPromoted) {
                 $this->checkBlankLinesBetweenHooks($phpcsFile, $opener, $closer);
@@ -259,8 +269,8 @@ class PropertyHookLayoutSniff implements Sniff
     }
 
     /**
-     * Check that the closing brace of a hook list over several lines is on its own line. A comment after it is reported
-     * by PERCS31.Classes.ClosingBrace.
+     * Check that the closing brace of a hook list over several lines is on its own line, with no code after it. A
+     * comment after it is reported by PERCS31.Classes.ClosingBrace.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $opener The position of the hook list's opening brace.
@@ -278,6 +288,24 @@ class PropertyHookLayoutSniff implements Sniff
                 $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $opener));
                 FixerHelper::replaceBetween($phpcsFile, $previous, $closer, $phpcsFile->eolChar . $indent);
             }
+        }
+
+        // What follows a promoted property's hook list, a `,` or `)`, is part of the parameter list.
+        $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($closer + 1), null, true);
+        if (
+            $next === false
+            || $tokens[$next]['line'] !== $tokens[$closer]['line']
+            || in_array($tokens[$next]['code'], [T_COMMA, T_CLOSE_PARENTHESIS], true)
+        ) {
+            return;
+        }
+
+        $error = 'The closing brace of a property\'s hooks must not be followed by code on the same line';
+        $isFixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($closer + 1), $next) === false;
+        $code = self::CODE_CODE_AFTER_CLOSER;
+        if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $closer, $code)) {
+            $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $opener));
+            FixerHelper::replaceBetween($phpcsFile, $closer, $next, $phpcsFile->eolChar . $indent);
         }
     }
 
@@ -562,9 +590,7 @@ class PropertyHookLayoutSniff implements Sniff
      */
     private function checkHookBodies(File $phpcsFile, int $opener, int $closer): bool
     {
-        // Where a hook can end, so another can start: the list's opening brace, a `;`, or a body's closing brace.
         $hooks = PropertyHookHelper::parseHooks($phpcsFile, $opener, $closer) ?? [];
-        $boundaries = [$opener, ...array_column($hooks, 'end')];
         $bodies = array_values(array_filter(array_column($hooks, 'bodyOpener'), is_int(...)));
 
         // A short hook may be inline, and a list with no bodies must be, so only a `{}` body rules them out.
@@ -573,10 +599,7 @@ class PropertyHookLayoutSniff implements Sniff
         }
 
         $hookIndent = LayoutHelper::lineIndent($phpcsFile, $opener) + LayoutHelper::INDENT;
-
-        foreach ($boundaries as $boundary) {
-            $this->checkHookStart($phpcsFile, $boundary, $closer, $hookIndent);
-        }
+        $this->checkHookStarts($phpcsFile, $opener, $closer);
 
         foreach ($bodies as $body) {
             $this->checkHookBrace($phpcsFile, $body);
@@ -585,6 +608,23 @@ class PropertyHookLayoutSniff implements Sniff
         }
 
         return true;
+    }
+
+    /**
+     * Check that each hook in a list that isn't inline starts on its own line.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the hook list's opening brace.
+     * @param int $closer The position of the hook list's closing brace.
+     */
+    private function checkHookStarts(File $phpcsFile, int $opener, int $closer): void
+    {
+        // Where a hook can end, so another can start: the list's opening brace, a `;`, or a body's closing brace.
+        $hooks = PropertyHookHelper::parseHooks($phpcsFile, $opener, $closer) ?? [];
+        $hookIndent = LayoutHelper::lineIndent($phpcsFile, $opener) + LayoutHelper::INDENT;
+        foreach ([$opener, ...array_column($hooks, 'end')] as $boundary) {
+            $this->checkHookStart($phpcsFile, $boundary, $closer, $hookIndent);
+        }
     }
 
     /**
@@ -603,7 +643,7 @@ class PropertyHookLayoutSniff implements Sniff
             return;
         }
 
-        $error = 'A property hook must start on its own line when a hook in the list has a body in braces';
+        $error = 'A property hook must start on its own line, unless the list is a single short hook on one line';
         if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($boundary + 1), $next) !== false) {
             $phpcsFile->addError($error, $next, self::CODE_HOOK_NOT_ON_OWN_LINE);
         } elseif ($phpcsFile->addFixableError($error, $next, self::CODE_HOOK_NOT_ON_OWN_LINE)) {

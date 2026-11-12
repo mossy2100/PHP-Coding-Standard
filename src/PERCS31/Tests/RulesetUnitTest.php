@@ -44,6 +44,27 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that phpcbf puts two short hooks on one line on lines of their own. DisallowMultipleStatements only moves
+     * the second, so PropertyHookLayout has to move the first.
+     */
+    public function testPhpcbfSplitsTwoShortHooksOnOneLine(): void
+    {
+        $source = "<?php\n\nclass Example\n{\n    public string \$name { get => 'a'; set => trim(\$value); }\n}\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $this->runTool('phpcbf', ['--standard=PERCS31', '--exclude=PSR1.Classes.ClassDeclaration', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        $expected = "<?php\n\nclass Example\n{\n    public string \$name {\n        get => 'a';\n"
+            . "        set => trim(\$value);\n    }\n}\n";
+        $this->assertSame($expected, $fixed);
+    }
+
+    /**
      * Test that phpcbf doesn't fail on section 4.9's "not allowed" promoted hook, which only a person can fix, and that
      * it's still reported.
      */

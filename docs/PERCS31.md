@@ -852,8 +852,10 @@ Checks the layout of a property's hook list: its braces, and the `=>` of a short
 This sniff checks:
 
 - The opening brace is on the same line as the property, after a single space.
-- In the long form, the closing brace is on its own line. A comment after it is reported by
-  [`PERCS31.Classes.ClosingBrace`](#percs31classesclosingbrace).
+- In the long form, the closing brace is on its own line. Code after it on its line, such as the next property, is
+  reported as `CodeAfterCloser`. A comment after it is reported by [`PERCS31.Classes.ClosingBrace`](#percs31classesclosingbrace).
+- In a list of short hooks over several lines, each hook starts on its own line, as only a single hook whose
+  expression doesn't wrap may be inline. So `{ get => 1;` followed by `set => $value;` on the next line is reported.
 - In a list with a `{}` body, each hook starts on its own line, each body starts on the line after its `{`, and each `}`
   is first on its line. An empty body, `{}`, has nothing to move, and a comment may follow the `{`.
 - In a list over several lines, there's at most one blank line between hooks. Section 4.9 says hooks MAY be separated by

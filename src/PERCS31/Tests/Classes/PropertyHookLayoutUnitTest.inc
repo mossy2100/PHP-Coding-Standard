@@ -319,3 +319,39 @@ final class HookParameterSpacing
     }
 }
 // End of this case.
+
+// A list of short hooks over several lines isn't inline, so each hook starts on its own line.
+final class ShortHooksOverLines
+{
+    public string $first { get => $this->first;
+        set => trim($value);
+    }
+
+    public string $wrapped { get => str_replace(
+        'a',
+        'b',
+        $this->wrapped,
+    );
+    }
+
+    public string $valid {
+        get => $this->valid;
+        set => trim($value);
+    }
+}
+
+// Code after a hook list's closing brace.
+final class CodeAfterCloser
+{
+    public string $first {
+        get => $this->first;
+    } public int $second = 1;
+
+    public string $commented {
+        get => $this->commented;
+    } /* Why. */ public int $fourth = 1;
+
+    public function __construct(
+        public string $promoted { get => $this->promoted; },
+    ) {}
+}
