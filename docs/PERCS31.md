@@ -153,8 +153,6 @@ Reference: [PHPCSExtra repository and documentation](https://github.com/PHPCSSta
 
 Reference: [Slevomat coding standard repository and documentation](https://github.com/slevomat/coding-standard)
 
-- **Arrays.MultiLineArrayEndBracketPlacement**: Requires a nested array that starts on its parent's first line to end on
-  its parent's last line (11).
 - **Arrays.SingleLineArrayWhitespace**: Requires no space inside a single-line array's brackets, as section 11's example
   shows (11). Its comma checks are excluded, as `Universal.WhiteSpace.CommaSpacing` covers them, including in an array
   nested in a multi-line one, which this sniff skips.

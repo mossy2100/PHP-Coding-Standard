@@ -473,6 +473,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+- **`SlevomatCodingStandard.Arrays.MultiLineArrayEndBracketPlacement` from PERCS31.** It only looks at a nested array
+  that starts on its parent's first line, and `PERCS31.Arrays.ValuePerLine` and
+  `Squiz.Arrays.ArrayDeclaration.IndexNoNewline` now put every multi-line array's first value on a new line, so it had
+  nothing left to report.
 - **Four duplicate messages.** Each of these was reported twice. The second report is gone, so a `phpcs:ignore` for it
   can be removed:
   - `PERCS31.Classes.PropertyHookLayout.CommentAfterCloser`, as `PERCS31.Classes.ClosingBrace` reports a comment after

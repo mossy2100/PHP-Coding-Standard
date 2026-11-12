@@ -460,9 +460,6 @@
          a match arm's condition (11) -->
     <rule ref="PERCS31.Arrays.OpeningBracketPlacement"/>
 
-    <!-- A nested array that starts on its parent's first line ends on its parent's last line (11) -->
-    <rule ref="SlevomatCodingStandard.Arrays.MultiLineArrayEndBracketPlacement"/>
-
     <!-- No blank line before a multi-line array's closing bracket (11) -->
     <rule ref="PERCS31.Arrays.ArrayBracketSpacing"/>
 
