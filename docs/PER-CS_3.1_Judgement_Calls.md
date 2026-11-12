@@ -257,8 +257,8 @@ letter of each word is capitalized". That doesn't settle whether `FOO`, `A` or `
 - A PascalCase name starts with a capital, has only letters and digits, and has at least one lower-case letter.
 - This applies to classes, interfaces, traits, enums and enum cases, as an error. An enum constant may be in PascalCase
   or UPPER_CASE (9).
-- A name with no lower-case letter fails: `FOO`, `OK`, `A`, `C2`, `B2B`.
-- A name with an underscore fails: `next_node`
+- Any name with no lower-case letter fails: `FOO`, `OK`, `A`, `C2`, `B2B`.
+- Any name with an underscore fails: `next_node`, `REDUCED_PLANCK`, `Phone_Number`.
 - An acronym or an initial in capitals is still PascalCase: `HTTPStatus`, `XMLParser`, `ClassA`, `IAnimal`. The acronym
   gets a warning instead (2.7).
 
@@ -473,24 +473,25 @@ Section 10's example puts the comma straight after a heredoc's closing marker.
 
 ### Acronyms
 
-**Issue:** 2.7 RECOMMENDS treating acronyms as words, but doesn't say which names it covers, or what counts as an
-acronym.
+**Issue:** 2.7 RECOMMENDS two rules from the php-src coding standards. Abbreviations, acronyms and initialisms "SHOULD
+be avoided wherever possible, unless they are much more widely used than the long form (e.g. HTTP or URL)". And they
+"SHOULD be treated like regular words", so written with an upper-case first character, then lower case. It doesn't say
+which names the rules cover, or what counts as an acronym.
 
-**Ruleset:** `PERCS31.NamingConventions.AcronymCasing` applies it to classes, interfaces, traits, enums, enum cases,
-enum constants, namespaces, functions, methods, properties, parameters, variables, and import and trait aliases, as a
-severity 5 warning.
+**Ruleset:** Only the second rule is checked. `PERCS31.NamingConventions.AcronymCasing` applies it to everything except
+upper-case constants (global or otherwise) as a severity 5 warning.
 
 - An acronym is a word of two or more capitals, so `HTTPClient`, `getID`, `parseURL` and `IHeartAI` are reported.
 - A single capital is an initial, not an acronym, so `ClassA`, `EDayOfWeek` and `getX` pass.
-- There's no plural rule. `getURLs` reads as `get`, `UR`, `Ls`, and is reported. `getIDs` reads as `get`, `I`, `Ds`, and
-  passes.
+- There's no plural rule because code is not always written in English, and different languages form plurals in
+  different ways. `getURLs` reads as `get`, `UR`, `Ls`, and is reported. `getIDs` reads as `get`, `I`, `Ds`, and passes.
 - A constant with no lower-case letter, such as `HTTP_OK`, is UPPER_CASE, and isn't checked. That covers a global
   constant, from `const` or `define()`, and a class, interface, trait or enum constant. Every other name is checked, so
   `$ID`, `ID()` and `class HTTP` are reported.
-- The advice to avoid abbreviations isn't checkable, so it isn't checked.
 
-**Why:** The recommendation isn't limited to one kind of name. Splitting a name into words can only be a best effort, so
-a simple rule is applied consistently.
+**Why:** The first rule would need a dictionary of acronyms, and of which are more widely used than their long form,
+which isn't practical. The second isn't limited to one kind of name. Splitting a name into words can only be a best
+effort, so a simple rule is applied consistently.
 
 ---
 
