@@ -68,6 +68,8 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   by `SlevomatCodingStandard.Classes.TraitUseSpacing`, which also reports more than one blank line after the last trait
   `use` statement. Its `MultipleImport` code is replaced by `SlevomatCodingStandard.Classes.TraitUseDeclaration`, which
   also reports several traits in a `use` statement with a `{ }` block.
+- **PSR12.Classes.AnonClassDeclaration** is kept, but its three comma spacing codes are replaced by
+  `Universal.WhiteSpace.CommaSpacing`, which reports the same.
 - **PSR12.Properties.ConstantVisibility** is kept, but a constant with no visibility is an error, not a warning, as
   [Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says MUST.
 - **PSR2.Classes.ClassDeclaration**, **Squiz.Functions.MultiLineFunctionDeclaration** and
@@ -664,8 +666,9 @@ list or hook body. This replaces `PSR12.Classes.ClosingBrace`.
 **Why:** [PER Coding Style 3.1, Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says any closing brace MUST NOT be followed by any comment or statement on the
 same line. The PSR-12 sniff checks classes, interfaces, traits, enums and functions, but not a property hook, as
 PHP_CodeSniffer doesn't know about hooks. So this sniff also checks a hook list's `}` and each hook body's, as section 4
-covers properties. Only a comment after one is reported, including after a promoted property's hook list, as in
-`{ set => trim($value); }, // Comment`. A phpcs annotation is allowed, as it only works on that line.
+covers properties. Here, only a comment after one is reported, as [`PERCS31.Classes.PropertyHookLayout`](#percs31classespropertyhooklayout) reports code
+after one. That includes after a promoted property's hook list, as in `{ set => trim($value); }, // Comment`. A phpcs
+annotation is allowed, as it only works on that line.
 
 An anonymous class's, a closure's and a control structure's closing brace aren't checked. Each is part of a larger
 expression or statement, and what completes it, such as `};`, follows.

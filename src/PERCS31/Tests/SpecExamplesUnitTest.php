@@ -14,8 +14,10 @@ use PHPUnit\Framework\TestCase;
  *
  * Each file in SpecExamples is one `php` block from the spec (tag 3.1.0), numbered in order and named after its
  * section, with `<?php` added where the block has none, and invisible trailing whitespace removed. The attribute
- * example in section 8 is left out, as its `...` body isn't valid PHP. PSR-1's checks for a namespace and side effects
- * are excluded, as the examples are fragments.
+ * example in section 8 is left out, as its `...` body isn't valid PHP. Four others that PHP rejects are kept, as
+ * PHP_CodeSniffer reads them as it reads valid code: 03 declares a function twice, 28 and 29 are a method outside a
+ * class, and 38 declares a property twice. PSR-1's checks for a namespace and side effects are excluded, as the
+ * examples are fragments.
  *
  * An example is expected to pass unless it's marked "not allowed" in the spec, or breaks one of the spec's own rules,
  * as the rule text beats an example. Messages below the default warning severity, such as a line over 80 characters,

@@ -538,7 +538,7 @@ so it isn't checked. `strict_types` isn't required.
 braces.
 
 **Ruleset:** It covers the closing brace of a class, interface, trait, enum, method, function, property hook list and
-hook body. Not an anonymous class, a closure or a control structure. Only a comment is reported.
+hook body. Not an anonymous class, a closure or a control structure. A comment or code after one is reported.
 
 **Why:** It sits in the section on classes. An anonymous class, a closure or a control structure is part of a larger
 expression or statement, which often continues after the brace.
