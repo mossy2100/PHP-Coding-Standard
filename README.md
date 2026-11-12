@@ -108,8 +108,8 @@ The default maximum line length is 120. To change it, see [Line Length](docs/Lin
 Each standard has its own page, listing the sniffs it uses, inherited and custom, with the reason for each. PSR-12's own
 sniffs are listed only where PERCS31 changes or replaces them.
 
-- [PERCS31](docs/PERCS31.md): PSR-12, sniffs from Generic, PEAR, Squiz, Slevomat and PHPCSExtra (`Universal`), and custom sniffs, two
-  of which extend PhpCollective's, for PER Coding Style 3.1.
+- [PERCS31](docs/PERCS31.md): PSR-12, sniffs from Generic, PEAR, Squiz, Slevomat and PHPCSExtra (`Universal`), and custom sniffs, two of
+  which extend PhpCollective's, for PER Coding Style 3.1.
 - [Jumbo](docs/Jumbo.md): what Jumbo changes in PERCS31, and the Generic, Squiz, PHPCSExtra, Slevomat and Zend sniffs and custom sniffs
   it adds as extra rules.
 - [PER-CS 3.1 Judgement Calls](docs/PER-CS_3.1_Judgement_Calls.md): how PERCS31 reads the points PER Coding Style 3.1 leaves unclear, contradicts or leaves

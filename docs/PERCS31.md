@@ -49,8 +49,8 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 - **Generic.Formatting.DisallowMultipleStatements**, by [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements), which allows
   `{ get; set; }` on an abstract or interface property.
 - **Generic.PHP.LowerCaseKeyword**, by [`PERCS31.PHP.LowerCaseKeyword`](#percs31phplowercasekeyword), which also checks a property hook's name.
-  **Squiz.ControlStructures.LowercaseDeclaration** and **Squiz.Functions.LowercaseFunctionKeywords** are excluded, as
-  it reports every keyword they do, so an upper-case `IF` or `FUNCTION` was reported twice.
+  **Squiz.ControlStructures.LowercaseDeclaration** and **Squiz.Functions.LowercaseFunctionKeywords** are excluded, as it
+  reports every keyword they do, so an upper-case `IF` or `FUNCTION` was reported twice.
 - **Generic.PHP.LowerCaseType**, by [`PERCS31.PHP.LowerCaseType`](#percs31phplowercasetype), which also checks a `set` hook's parameter type.
 - **Generic.NamingConventions.UpperCaseConstantName**, from PSR-1, by [`PERCS31.NamingConventions.UpperCaseConstantName`](#percs31namingconventionsuppercaseconstantname),
   which allows PascalCase for an enum constant.
@@ -83,8 +83,11 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   [`PERCS31.ControlStructures.BodyOnNextLine`](#percs31controlstructuresbodyonnextline), which allows an empty body as `{}`.
 - **PSR2.ControlStructures.SwitchDeclaration**, by [`PERCS31.ControlStructures.SwitchDeclaration`](#percs31controlstructuresswitchdeclaration), which adds PER's
   `switch` rules.
-- **Squiz.ControlStructures.ForEachLoopDeclaration**, by [`PERCS31.ControlStructures.ForEachSpacing`](#percs31controlstructuresforeachspacing), which allows a
-  line break before or after `as` and `=>`.
+- **Squiz.ControlStructures.ForEachLoopDeclaration**, by [`PERCS31.ControlStructures.ForEachSpacing`](#percs31controlstructuresforeachspacing), which allows a line
+  break before or after `as` and `=>`.
+- **Generic.Functions.FunctionCallArgumentSpacing**, by `Universal.WhiteSpace.CommaSpacing`'s codes for a call, which
+  also report a comma on the line after a heredoc's closing marker, and one in an array or a `match` inside a call's
+  parentheses.
 - **PSR2.Methods.FunctionCallSignature**, by [`PERCS31.Functions.FunctionCallLayout`](#percs31functionsfunctioncalllayout), which also checks `clone()`, and
   skips a `set` hook's parameter list, which isn't a call.
 - **Squiz.Classes.ValidClassName**, from PSR-1, by [`PERCS31.NamingConventions.ValidClassName`](#percs31namingconventionsvalidclassname), which also reports a name
@@ -179,9 +182,9 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
   including on promoted properties (4.3, 4.6). Its check for a space after a nullable type's `?` is replaced by
   [`PERCS31.Functions.NullableTypeDeclaration`](#percs31functionsnullabletypedeclaration), which is more complete: it checks every place a type can appear,
   including a `set` hook's parameter, not just a property.
-- **Classes.TraitUseDeclaration**: Disallows several traits in one `use` statement, as in `use A, B;` (4.2). It
-  replaces `PSR12.Traits.UseDeclaration.MultipleImport`, which misses a statement with a `{ }` block, as in
-  `use A, B {`. That form is reported but not fixed.
+- **Classes.TraitUseDeclaration**: Disallows several traits in one `use` statement, as in `use A, B;` (4.2). It replaces
+  `PSR12.Traits.UseDeclaration.MultipleImport`, which misses a statement with a `{ }` block, as in `use A, B {`. That
+  form is reported but not fixed.
 - **Classes.TraitUseSpacing**: Requires no blank line between trait `use` statements, exactly one after the last, and
   none before the class's closing brace, as section 4.2's examples show (4.2). Its check before the first `use` is
   excluded, as `PSR12.Traits.UseDeclaration` reports the same.
@@ -190,8 +193,8 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Functions.DisallowTrailingCommaInClosureUse** and **...InDeclaration**: Disallow a trailing comma in a single-line
   list (2.6). For a call, [`PERCS31.Functions.DisallowTrailingCommaInCall`](#percs31functionsdisallowtrailingcommaincall) replaces `...InCall`.
 - **Functions.NamedArgumentSpacing**: Requires no space before a named argument's colon, and one after (4.7).
-- **Functions.RequireTrailingCommaInClosureUse** and **...InDeclaration**: Require a trailing comma in a multi-line
-  list (2.6). For a call, [`PERCS31.Functions.RequireTrailingCommaInCall`](#percs31functionsrequiretrailingcommaincall) replaces `...InCall`.
+- **Functions.RequireTrailingCommaInClosureUse** and **...InDeclaration**: Require a trailing comma in a multi-line list
+  (2.6). For a call, [`PERCS31.Functions.RequireTrailingCommaInCall`](#percs31functionsrequiretrailingcommaincall) replaces `...InCall`.
 - **TypeHints.DNFTypeHintFormat**: Requires no spaces inside the parentheses (2.5). Its check for spaces around `|` and
   `&` is replaced by [`PERCS31.TypeHints.CompoundTypeOperatorSpacing`](#percs31typehintscompoundtypeoperatorspacing), which allows a split type. Its checks for `null`
   last and for `?T` are replaced by [`PERCS31.TypeHints.NullType`](#percs31typehintsnulltype), which covers every type.
@@ -235,8 +238,8 @@ section gives the reason.
 | `PERCS31.Formatting.EmptyBody`                          | An empty class, function, closure or anonymous class body is `{}`   | Yes     |
 | `PERCS31.Formatting.MethodChaining`                     | The first method of a split chain, and `->`, start a line           | Yes     |
 | `PERCS31.Formatting.TrailingComma`                      | Trailing commas in `match`, group `use`, `list()` and some calls    | Yes     |
-| `PERCS31.Functions.DisallowTrailingCommaInCall`         | No trailing comma in a call, unless the argument list is split      | Yes     |
 | `PERCS31.Functions.ArrowFunctionSemicolonSpacing`       | No space before the `;` that ends an arrow function                 | Yes     |
+| `PERCS31.Functions.DisallowTrailingCommaInCall`         | No trailing comma in a call, unless the argument list is split      | Yes     |
 | `PERCS31.Functions.FunctionCallLayout`                  | A call's argument list, including `clone()`'s                       | Yes     |
 | `PERCS31.Functions.MultiLineFunctionDeclaration`        | Function, closure and `fn` declarations, allowing `{}` bodies       | Yes     |
 | `PERCS31.Functions.NullableTypeDeclaration`             | No space after the `?` of a nullable type, in any position          | Yes     |
@@ -296,8 +299,8 @@ $values = [
 
 ### PERCS31.Arrays.OpeningBracketPlacement
 
-Disallows the opening bracket of a multi-line array on a line of its own, e.g. after `=` or `return`. These are
-allowed, as each has to start a line:
+Disallows the opening bracket of a multi-line array on a line of its own, e.g. after `=` or `return`. These are allowed,
+as each has to start a line:
 
 - An element of a multi-line array.
 - An argument in an argument list, including an attribute's.
@@ -306,10 +309,10 @@ allowed, as each has to start a line:
 - A destructuring assignment such as `[$a, $b] = pair();` split over lines.
 
 **Why:** [PER Coding Style 3.1, Section 11](https://www.php-fig.org/per/coding-style/#11-arrays) says the opening bracket of a multi-line array MUST NOT be on its own line.
-PER's own example puts a nested array's `[` on its own line, hence the first exception. [Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) puts each
-argument of a split argument list on its own line, hence the second, and a `match` arm starts a line too. Sections 5.1
-to 5.4 put the first condition of a split control structure on the line after the `(`, hence the fourth. A `foreach` and
-a `match` have no such rule, so `foreach ([` and `match ([` are required. No inherited sniff checks it.
+PER's own example puts a nested array's `[` on its own line, hence the first exception. [Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) puts each argument
+of a split argument list on its own line, hence the second, and a `match` arm starts a line too. Sections 5.1 to 5.4 put
+the first condition of a split control structure on the line after the `(`, hence the fourth. A `foreach` and a `match`
+have no such rule, so `foreach ([` and `match ([` are required. No inherited sniff checks it.
 
 **Auto-fixable:** yes. The fix moves the `[` to the end of the previous line, and `Generic.Arrays.ArrayIndent` then
 re-indents the elements. After a comment, it's left to a person.
@@ -360,9 +363,8 @@ $payload =
 
 Requires each value of a multi-line array to start on a new line, including the first. This replaces
 `Squiz.Arrays.ArrayDeclaration`'s `ValueNoNewline` check, which only looks at an array with two or more values and no
-keys. This sniff also checks an array with one value, and one that mixes keyed and unkeyed values, as in
-`'a' => 1, 2,`, which no Squiz check covers. An array whose values all have keys is left to the Squiz sniff's
-`IndexNoNewline` check.
+keys. This sniff also checks an array with one value, and one that mixes keyed and unkeyed values, as in `'a' => 1, 2,`,
+which no Squiz check covers. An array whose values all have keys is left to the Squiz sniff's `IndexNoNewline` check.
 
 **Why:** [PER Coding Style 3.1, Section 11](https://www.php-fig.org/per/coding-style/#11-arrays) says that when an array is split across lines, the first value MUST be on the
 next line, and there MUST be only one value per line. The Squiz check reads an attribute on a value as an earlier value
@@ -410,8 +412,8 @@ name.
 
 Anywhere else, such as in an assignment or an array, PER says nothing, so it isn't checked.
 
-An enum case isn't in section 12.2's list either. It's treated as a constant, so its attribute goes on the line
-before, and `#[Label] case Active;` is reported, and fixed. Nor is a property hook:
+An enum case isn't in section 12.2's list either. It's treated as a constant, so its attribute goes on the line before,
+and `#[Label] case Active;` is reported, and fixed. Nor is a property hook:
 
 - **A hook with a body in braces** is laid out like a method, so its attribute goes on the line before. `#[Label] get {`
   is reported, and fixed.
@@ -421,8 +423,8 @@ before, and `#[Label] case Active;` is reported, and fixed. Nor is a property ho
 A hook's parameter follows the parameter rule.
 
 With two or more attribute blocks, the target goes on the line after them, as each block must be on its own line. So
-`#[A] #[B] case X;` becomes three lines. [`PERCS31.Attributes.DisallowMultipleAttributesPerLine`](#percs31attributesdisallowmultipleattributesperline) puts each block on
-its own line. One block holding several attributes can stay inline on a short hook, as in `#[A, B] get => 'a';`.
+`#[A] #[B] case X;` becomes three lines. [`PERCS31.Attributes.DisallowMultipleAttributesPerLine`](#percs31attributesdisallowmultipleattributesperline) puts each block on its
+own line. One block holding several attributes can stay inline on a short hook, as in `#[A, B] get => 'a';`.
 
 A single-line parameter or argument list is the exception, as section 12.2 only separates blocks "in a multi-line
 context". There, two or more blocks stay inline, each followed by a single space, so `function f(#[A] #[B] int $c) {}`
@@ -463,7 +465,7 @@ each attribute block on its own line.
 
 ```php
 #[Attribute]
-final class Session
+final class Session implements Authenticator
 {
     #[Override]
     public function login(#[SensitiveParameter] string $password): bool
@@ -490,7 +492,7 @@ $handler = new
 **Bad:**
 
 ```php
-#[Attribute] final class Session
+#[Attribute] final class Session implements Authenticator
 {
     #[Override] public function login(#[SensitiveParameter] string $password): bool
     {
@@ -515,7 +517,8 @@ $handler = new #[Attribute] class {
 ### PERCS31.Attributes.DisallowMultiLineAttributesJoining
 
 Disallows several attributes in one attribute block when the block spans more than one line. A block on one line, such
-as `#[Attribute, Deprecated]`, is allowed. This replaces `SlevomatCodingStandard.Attributes.DisallowAttributesJoining`.
+as `#[Attribute, AllowDynamicProperties]`, is allowed. This replaces
+`SlevomatCodingStandard.Attributes.DisallowAttributesJoining`.
 
 **Why:** [PER Coding Style 3.1, Section 12.3](https://www.php-fig.org/per/coding-style/#123-compound-attributes) allows several attributes in one block, but says that if the list is split
 into multiple lines, the attributes MUST be in separate blocks. The Slevomat sniff disallows joining altogether, and its
@@ -528,22 +531,22 @@ line.
 **Good:**
 
 ```php
-#[Attribute, Deprecated]
+#[Attribute, AllowDynamicProperties]
 final class Marker {}
 
-#[Attribute]
-#[Deprecated('Use Marker instead.')]
-final class OldMarker {}
+#[Attribute(Attribute::TARGET_METHOD)]
+#[AllowDynamicProperties]
+final class MethodMarker {}
 ```
 
 **Bad:**
 
 ```php
 #[
-    Attribute,
-    Deprecated('Use Marker instead.'),
+    Attribute(Attribute::TARGET_METHOD),
+    AllowDynamicProperties,
 ]
-final class OldMarker {}
+final class MethodMarker {}
 ```
 
 ---
@@ -557,8 +560,8 @@ Requires separate attribute blocks on separate lines. This replaces
 sniff checks this, with three problems:
 
 - It reports blocks in a single-line parameter or argument list, as in `function f(#[A] #[B] int $c) {}`. Section 12.2
-  only separates blocks "in a multi-line context", and requires a parameter's attribute inline in a single-line list,
-  so this sniff skips that case. [`AttributePlacement`](#percs31attributesattributeplacement) checks the single space after each block.
+  only separates blocks "in a multi-line context", and requires a parameter's attribute inline in a single-line list, so
+  this sniff skips that case. [`AttributePlacement`](#percs31attributesattributeplacement) checks the single space after each block.
 - It misses blocks on a property hook, as PHP_CodeSniffer doesn't know about hooks. This sniff reports them.
 - When code comes before the blocks on their line, as in `$pure = #[A] #[B]`, its fix lines the next block up with the
   line. This sniff indents it one level more, as a continuation of the statement.
@@ -703,8 +706,8 @@ final class Counter
 
 ### PERCS31.Classes.ConstantDeclaration
 
-Requires a single space after a class constant's `const` keyword, and between its type and its name. A line break
-counts as more than a single space.
+Requires a single space after a class constant's `const` keyword, and between its type and its name. A line break counts
+as more than a single space.
 
 **Why:** [PER Coding Style 3.1, Section 4.6](https://www.php-fig.org/per/coding-style/#46-modifier-keywords) says keywords MUST be on a single line, separated by a single space, and
 [section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says there MUST be a space between a property's type and its name. Neither names a constant's type or name,
@@ -712,8 +715,8 @@ but a constant is declared like a property, so the same spacing is required. See
 
 `Squiz.WhiteSpace.ScopeKeywordSpacing` checks the space after a visibility or `final`, but not after `const` or the
 type. `SlevomatCodingStandard.Classes.PropertyDeclaration` makes these checks for a property only, and
-`SlevomatCodingStandard.Whitespaces.DuplicateSpaces` reports every run of spaces, which PER allows around operators.
-No inherited sniff checks a constant alone.
+`SlevomatCodingStandard.Whitespaces.DuplicateSpaces` reports every run of spaces, which PER allows around operators. No
+inherited sniff checks a constant alone.
 
 A global constant isn't checked, as section 4 is about classes.
 
@@ -743,9 +746,9 @@ final class Config
 
 Requires an argument list after `new (expression)`, as in `new (className())()`.
 
-**Why:** [PER Coding Style 3.1, Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says parentheses MUST always be present when instantiating a class, even
-with no arguments. `PSR12.Classes.ClassInstantiation` checks that, but it takes the first `(` after `new` for the
-argument list. In `new (className())`, the parentheses hold the expression that gives the class, so it passes.
+**Why:** [PER Coding Style 3.1, Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says parentheses MUST always be present when instantiating a class, even with
+no arguments. `PSR12.Classes.ClassInstantiation` checks that, but it takes the first `(` after `new` for the argument
+list. In `new (className())`, the parentheses hold the expression that gives the class, so it passes.
 `SlevomatCodingStandard.ControlStructures.NewWithParentheses` reports it, but its fix turns `new Foo instanceof Bar`
 into `new Foo instanceof Bar()`, which PHP rejects.
 
@@ -932,8 +935,8 @@ This sniff checks:
 - The opening brace is on the same line as the property, after a single space.
 - In the long form, the closing brace is on its own line. Code after it on its line, such as the next property, is
   reported as `CodeAfterCloser`. A comment after it is reported by [`PERCS31.Classes.ClosingBrace`](#percs31classesclosingbrace).
-- In a list of short hooks over several lines, each hook starts on its own line, as only a single hook whose
-  expression doesn't wrap may be inline. So `{ get => 1;` followed by `set => $value;` on the next line is reported.
+- In a list of short hooks over several lines, each hook starts on its own line, as only a single hook whose expression
+  doesn't wrap may be inline. So `{ get => 1;` followed by `set => $value;` on the next line is reported.
 - In a list with a `{}` body, each hook starts on its own line, each body starts on the line after its `{`, and each `}`
   is first on its line. An empty body, `{}`, has nothing to move, and a comment may follow the `{`.
 - In a list over several lines, there's at most one blank line between hooks. Section 4.9 says hooks MAY be separated by
@@ -1114,9 +1117,8 @@ try {
 
 Requires one space, or a line break, before and after a `foreach`'s `as` and `=>`.
 
-**Why:** [PER Coding Style 3.1, Section 5.5](https://www.php-fig.org/per/coding-style/#55-foreach) shows `foreach ($iterable as $key => $value)`, and says to note the
-placement of spaces. It has no rule for a `foreach` split inside its parentheses, so a line break may take a space's
-place.
+**Why:** [PER Coding Style 3.1, Section 5.5](https://www.php-fig.org/per/coding-style/#55-foreach) shows `foreach ($iterable as $key => $value)`, and says to note the placement
+of spaces. It has no rule for a `foreach` split inside its parentheses, so a line break may take a space's place.
 
 This replaces `Squiz.ControlStructures.ForEachLoopDeclaration`, which PSR-12 includes. That sniff reports an `as` or
 `=>` that starts a line, and its fix leaves the line indented by one space. It also checks the `=>` of a key in
@@ -1336,8 +1338,7 @@ Requires a file to be encoded in UTF-8.
 
 The file is reported once, as `NotUtf8`, at the first line with bytes that aren't valid UTF-8.
 
-**Auto-fixable:** no, as the file's real encoding can't be known. Convert it, e.g. with
-`iconv -f ISO-8859-1 -t UTF-8`.
+**Auto-fixable:** no, as the file's real encoding can't be known. Convert it, e.g. with `iconv -f ISO-8859-1 -t UTF-8`.
 
 ---
 
@@ -1568,11 +1569,10 @@ and the last item of a list on one line MUST NOT. Slevomat's trailing comma snif
 `use` lists, and Slevomat's array sniff covers arrays and short lists, but none covers `match`, group `use`,
 `new class (`, `list()`, `clone()`, `exit()` or `die()`. Slevomat's call sniffs also skip a call unless a name, a
 variable or a `)` comes before its `(`, so they miss `$handlers[$name](`, `[$object, 'method'](`, `$object->{$method}(`
-and `'strlen'(`. `PhpCollective.PHP.DisallowTrailingCommaInSingleLine` reports a
-comma in a single-line `list()`, `new class (`, `clone()` or `exit()`, but it goes by the comma's line, not the list's,
-so it also reports a comma PER requires in a split list. A single argument split over lines, as in `clone($a, [` ...
-`]);`, doesn't split the argument list, so a comma after it is reported, as
-[`PERCS31.Functions.DisallowTrailingCommaInCall`](#percs31functionsdisallowtrailingcommaincall) does for a call.
+and `'strlen'(`. `PhpCollective.PHP.DisallowTrailingCommaInSingleLine` reports a comma in a single-line `list()`,
+`new class (`, `clone()` or `exit()`, but it goes by the comma's line, not the list's, so it also reports a comma PER
+requires in a split list. A single argument split over lines, as in `clone($a, [` ... `]);`, doesn't split the argument
+list, so a comma after it is reported, as [`PERCS31.Functions.DisallowTrailingCommaInCall`](#percs31functionsdisallowtrailingcommaincall) does for a call.
 
 **Auto-fixable:** yes. A missing comma goes after the last item, before any comment.
 
@@ -1714,9 +1714,9 @@ and when split, the first argument on the next line and one per line. The parent
   in the parentheses, it's reported but not fixed. On one line, the parent already reports `foo( ... )`.
 
 It's named Layout, not Signature like its parent, as a function's signature is its declaration. PSR-12 turns off the
-parent's `SpaceAfterCloseBracket` and `OpeningIndent` codes, so they're off here too. A blank line between arguments,
-or before the closing parenthesis, is reported as `EmptyLine`, as 4.7's examples, which "show correct argument usage",
-have none.
+parent's `SpaceAfterCloseBracket` and `OpeningIndent` codes, so they're off here too. A blank line between arguments, or
+before the closing parenthesis, is reported as `EmptyLine`, as 4.7's examples, which "show correct argument usage", have
+none.
 
 **Auto-fixable:** yes, as the parent.
 
@@ -1751,11 +1751,10 @@ Checks the layout of function, closure and arrow function declarations, includin
 except in an empty body written as `{}` on one line, e.g. `function reset(): void {}`. This replaces
 `Squiz.Functions.MultiLineFunctionDeclaration`.
 
-**Why:** `Squiz.Functions.MultiLineFunctionDeclaration` rejects an empty body written as `{}` on one line, which [PER
-Coding Style 3.1, Sections 4.4 and 7](https://www.php-fig.org/per/coding-style/#7-closures) requires for a closure and
-recommends for a function. This sniff skips that case, and leaves everything else to the parent. For an empty body after
-a single-line signature, the parent's `CloseBracketNewLine` check is skipped too, as it can't be run on its own. See
-[PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
+**Why:** `Squiz.Functions.MultiLineFunctionDeclaration` rejects an empty body written as `{}` on one line, which
+[PER Coding Style 3.1, Sections 4.4 and 7](https://www.php-fig.org/per/coding-style/#7-closures) requires for a closure and recommends for a function. This sniff skips that
+case, and leaves everything else to the parent. For an empty body after a single-line signature, the parent's
+`CloseBracketNewLine` check is skipped too, as it can't be run on its own. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
 
 The parent also reports every blank line in a multi-line parameter or `use` list, but [section 12.4](https://www.php-fig.org/per/coding-style/#124-example)'s example has one
 between two parameters, both before an attribute and before a parameter with none. So the ruleset excludes the parent's
@@ -1765,8 +1764,8 @@ after a parameter's attributes, or one between a closure's `use` items.
 
 The parent reads a parameter list split only by an attribute, as in `function a(#[Sensitive]` then `$password)`, as a
 single-line declaration, so the split wasn't reported. This sniff reads any list whose parentheses are on different
-lines as multi-line, so the first parameter goes on the line after `(`, and `) {` on a line of their own, as
-[section 4.5](https://www.php-fig.org/per/coding-style/#45-method-and-function-parameters) requires.
+lines as multi-line, so the first parameter goes on the line after `(`, and `) {` on a line of their own, as [section 4.5](https://www.php-fig.org/per/coding-style/#45-method-and-function-parameters)
+requires.
 
 The parent doesn't check an arrow function. [Section 7.1](https://www.php-fig.org/per/coding-style/#71-short-closures) says an arrow function follows the same rules as a closure, so
 this sniff checks its split parameter list too:
@@ -1784,9 +1783,9 @@ code, which has to be rewritten, so this sniff leaves that parameter list alone.
 
 The parent's fix for a closure's `use` on the line after the closing parenthesis never finished. One of its fixes added
 a space before `use`, leaving it on its line, and another indented that line, each undoing the other until `phpcbf`
-failed. This sniff reports that `use` itself, with the parent's `SpaceBeforeUse` code, and joins it to the
-parenthesis's line, giving `) use ($var) {`. It's a workaround for a bug in `PEAR.Functions.FunctionDeclaration`, to
-remove once that's fixed.
+failed. This sniff reports that `use` itself, with the parent's `SpaceBeforeUse` code, and joins it to the parenthesis's
+line, giving `) use ($var) {`. It's a workaround for a bug in `PEAR.Functions.FunctionDeclaration`, to remove once
+that's fixed.
 
 **Auto-fixable:** yes, as the parent.
 
@@ -1836,8 +1835,8 @@ callable. This replaces `SlevomatCodingStandard.Functions.RequireTrailingCommaIn
 **Why:** [PER Coding Style 3.1, Section 2.6](https://www.php-fig.org/per/coding-style/#26-trailing-commas) says the last item of a list split across lines MUST have a trailing comma.
 The Slevomat sniff checks that, but reads the `...` of a first-class callable as the last argument. So for one split
 over lines, its fix adds a comma, giving `...,`, which is a parse error. It has no property to turn that off, so this
-subclass skips a first-class callable, and leaves everything else to the parent.
-[`PERCS31.Functions.FunctionCallLayout`](#percs31functionsfunctioncalllayout) reports the split, and fixes it to `foo(...)`.
+subclass skips a first-class callable, and leaves everything else to the parent. [`PERCS31.Functions.FunctionCallLayout`](#percs31functionsfunctioncalllayout)
+reports the split, and fixes it to `foo(...)`.
 
 **Auto-fixable:** yes, as the parent.
 
@@ -1870,8 +1869,8 @@ Requires a group `use` split across lines to have one name per line, with the fi
 text sets no layout, so the two examples are read as the two allowed forms, as for a single-line and a multi-line array.
 See [PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md#a-group-use-split-over-lines). No inherited sniff checks which line a name is on.
 
-`PERCS31.WhiteSpace.ConsistentIndent` checks each name's indent, and
-[`PERCS31.Formatting.TrailingComma`](#percs31formattingtrailingcomma) the comma after the last name.
+`PERCS31.WhiteSpace.ConsistentIndent` checks each name's indent, and [`PERCS31.Formatting.TrailingComma`](#percs31formattingtrailingcomma) the comma after
+the last name.
 
 **Auto-fixable:** yes, unless a comment is in the way.
 
@@ -1926,9 +1925,9 @@ It doesn't report:
 
 A name you can't change, such as a method overriding a parent's, is reported too. A variable is reported at each use.
 
-The `excludedNames` property allows whole names, as a comma-separated list. Matching is case-sensitive, and a
-variable's `$` is optional. Each part of a namespace counts as a name of its own, so `PERCS31` allows `PERCS31\Sniffs`,
-but not `PERCS31\HTTP`. It suits a name used in many files, such as a namespace:
+The `excludedNames` property allows whole names, as a comma-separated list. Matching is case-sensitive, and a variable's
+`$` is optional. Each part of a namespace counts as a name of its own, so `PERCS31` allows `PERCS31\Sniffs`, but not
+`PERCS31\HTTP`. It suits a name used in many files, such as a namespace:
 
 ```xml
 <rule ref="PERCS31.NamingConventions.AcronymCasing">
@@ -1995,9 +1994,9 @@ It reports them with the `ConstantNotUpperCase` code:
 ```
 
 Set `requireUpperSnakeCase` to require strict UPPER_SNAKE_CASE of every constant in upper case that the sniff checks:
-words of capitals and digits, separated by single underscores. So `__HIDDEN`, `TWO__WORDS` and `TRAILING_` are
-reported, as `ConstantNotUpperSnakeCase`. PER has no such rule, so it's off by default. The [Jumbo standard](Jumbo.md) turns it on.
-A single leading underscore on a `const` is left to [`ValidConstantName`](#percs31namingconventionsvalidconstantname).
+words of capitals and digits, separated by single underscores. So `__HIDDEN`, `TWO__WORDS` and `TRAILING_` are reported,
+as `ConstantNotUpperSnakeCase`. PER has no such rule, so it's off by default. The [Jumbo standard](Jumbo.md) turns it on. A single
+leading underscore on a `const` is left to [`ValidConstantName`](#percs31namingconventionsvalidconstantname).
 
 Other class, interface and trait constants are left to the parent.
 
@@ -2054,8 +2053,8 @@ this sniff extends it to report one.
 - **Passes:** `Client`, `HttpClient`, `Http2`, `ClassA`, `Vector3D`, `X509Certificate` and `IAnimal`.
 - **Fails:** `FOO`, `A`, `C2`, `B2B`, `HTTP2`, `client` and `Foo_Bar`.
 
-An acronym in capitals, as in `HTTPClient` or `XMLParser`, is still PascalCase, so it passes here.
-[`AcronymCasing`](#percs31namingconventionsacronymcasing) reports it as a warning, as section 2.7 only RECOMMENDS writing an acronym like a word.
+An acronym in capitals, as in `HTTPClient` or `XMLParser`, is still PascalCase, so it passes here. [`AcronymCasing`](#percs31namingconventionsacronymcasing)
+reports it as a warning, as section 2.7 only RECOMMENDS writing an acronym like a word.
 
 **Auto-fixable:** no. Renaming a class would break references to it in other files.
 
@@ -2079,8 +2078,8 @@ interface JSON {}
 
 ### PERCS31.NamingConventions.ValidConstantName
 
-Disallows a class constant name that starts with an underscore. A double underscore, as in `__A`, passes, as section
-4.3 says "a single underscore", and it passes on a method.
+Disallows a class constant name that starts with an underscore. A double underscore, as in `__A`, passes, as section 4.3
+says "a single underscore", and it passes on a method.
 
 A global constant isn't checked by default, as the rule is about showing visibility, which only a class constant has.
 Set `checkGlobalConstants` to check a `const` statement at file scope too, as the [Jumbo standard](Jumbo.md) does. A constant made
@@ -2279,8 +2278,8 @@ The `=` of a parameter's default value is a binary operator too, so `int $a    =
 `false` to leave it to that sniff, as the Jumbo standard does.
 
 The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operator, so it's skipped. [Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the
-union symbol MUST NOT have a space either side, which `PERCS31.TypeHints.CompoundTypeOperatorSpacing` checks. The
-parent would require one.
+union symbol MUST NOT have a space either side, which `PERCS31.TypeHints.CompoundTypeOperatorSpacing` checks. The parent
+would require one.
 
 The `&` of a by-reference hook, e.g. `&get => $this->items;`, isn't an operator either, so it's skipped, here and by
 `PERCS31.Operators.OperatorPlacement`. So are the `|`, `&` and `?` of a `set` hook's parameter type, e.g.
@@ -2423,16 +2422,16 @@ Requires the canonical form of a type in a cast: `(bool)`, `(int)`, `(float)` an
 `(integer)`, `(double)` or `(binary)`. This replaces `PSR12.Keywords.ShortFormTypeKeywords`, and extends
 `SlevomatCodingStandard.PHP.TypeCast`.
 
-**Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the short form of a type keyword MUST be used, "i.e. `bool`
-instead of `boolean`, `int` instead of `integer` etc." PHP 8.5 deprecates all four long forms alike, as non-canonical
-casts. The PSR-12 sniff only knows `(boolean)` and `(integer)`. The Slevomat sniff knows all four, with one bug:
+**Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the short form of a type keyword MUST be used, "i.e. `bool` instead of
+`boolean`, `int` instead of `integer` etc." PHP 8.5 deprecates all four long forms alike, as non-canonical casts. The
+PSR-12 sniff only knows `(boolean)` and `(integer)`. The Slevomat sniff knows all four, with one bug:
 
 - It says a `(binary)` cast has no effect, and its fix deletes it. It's an alias of `(string)`, so `(binary) 5` is
   `'5'`, and deleting it can change what the code does. This sniff reports it with the `InvalidCastUsed` code, as the
   other three are, and fixes it to `(string)`.
 
-A sniff's fix can't be changed from a ruleset, so this needs a subclass. A binary string's prefix, as in `b'abc'`,
-isn't a cast, and isn't reported.
+A sniff's fix can't be changed from a ruleset, so this needs a subclass. A binary string's prefix, as in `b'abc'`, isn't
+a cast, and isn't reported.
 
 **Auto-fixable:** yes.
 
@@ -2529,8 +2528,8 @@ type's parentheses never can.
 
 **Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says each line of a split union or intersection MUST have a single type, and
 each line of a split DNF type MUST have a single union segment, with all of its intersections on that line. No inherited
-sniff checks it. This includes a `set` hook's parameter type, e.g. `set(int|string $value)`, and a multi-catch's
-types, e.g. `catch (A|B $e)`.
+sniff checks it. This includes a `set` hook's parameter type, e.g. `set(int|string $value)`, and a multi-catch's types,
+e.g. `catch (A|B $e)`.
 
 **Auto-fixable:** yes, unless a comment comes before a `&` that starts a line inside parentheses.
 
@@ -2614,8 +2613,8 @@ function reflect(
 
 ### PERCS31.TypeHints.NullType
 
-Requires `null` to be the last type in a union, and recommends `?T` for a union of one type with `null`, wherever a
-type can appear. This replaces the `NullTypeHintNotOnLastPosition` and `RequiredShortNullable` checks of
+Requires `null` to be the last type in a union, and recommends `?T` for a union of one type with `null`, wherever a type
+can appear. This replaces the `NullTypeHintNotOnLastPosition` and `RequiredShortNullable` checks of
 `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat`.
 
 **Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says `null` MUST be the last item, and that a union of a single simple type
@@ -2736,10 +2735,10 @@ the indent as a number of levels. So this sniff makes the original's check itsel
 counting spaces. Any extra space is reported, with the real number. It still extends the original, for the methods that
 decide which lines can be judged.
 
-The original skips a line that starts with a comment, and PER has no rule for a comment's indent, so that's the
-default here. Set `checkComments` to report a comment indented further than its scope after a complete statement, as
-the [Jumbo standard](Jumbo.md) does. It's reported as `Comment`. A comment at the top level isn't checked, and a comment over
-several lines isn't fixed.
+The original skips a line that starts with a comment, and PER has no rule for a comment's indent, so that's the default
+here. Set `checkComments` to report a comment indented further than its scope after a complete statement, as the
+[Jumbo standard](Jumbo.md) does. It's reported as `Comment`. A comment at the top level isn't checked, and a comment over several
+lines isn't fixed.
 
 Three more lines are checked, each indented exactly, as section 2.4 sets:
 
@@ -2881,6 +2880,9 @@ These are the original's properties. PER Coding Style 3.1 needs their defaults, 
 - **Whether a fall-through comment is clear (5.2).** Any comment just before the next `case` or `default` passes, as the
   spec doesn't set any wording.
 - **Avoiding abbreviations (2.7).** Whether a name could avoid an abbreviation can't be judged by a sniff.
+- **Autoloading (PSR-1, 3).** Whether a class's namespace matches its file's path depends on the project's autoload
+  roots, which a standard doesn't know. One class per file, in a namespace, is checked.
+- **Consistent property names (PSR-1, 4.2).** Which naming convention a scope uses can't be judged by a sniff.
 - **A comment or statement after an anonymous class's, closure's or control structure's closing brace (4).** Section 4
   says "any closing brace", but each of these is part of a larger expression or statement, so this standard reads it as
   covering classes, methods, functions and property hooks only. After a block `declare` in the file header, a statement
