@@ -128,6 +128,54 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that phpcbf leaves two hooks on a promoted parameter alone, as the error that remains means moving the
+     * property to the class body. The fix for two statements on a line split them first.
+     */
+    public function testPhpcbfLeavesTwoHooksOnPromotedParameter(): void
+    {
+        $source = "<?php\n\nclass Example\n{\n    public function __construct(\n"
+            . "        public string \$name { get => 'a'; set => ucfirst(\$value); },\n    ) {}\n}\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame($source, $fixed);
+        $this->assertStringContainsString('PromotedPropertyHooks.TooComplex', $result['output']);
+    }
+
+    /**
+     * Test that an object operator at the end of a line is moved to the start of the next, with no blank line left
+     * behind. PEAR.WhiteSpace.ObjectOperatorIndent's fix left one after PERCS31.Formatting.MethodChaining's.
+     */
+    public function testObjectOperatorAtEndOfLineIsMovedToNextLine(): void
+    {
+        $source = "<?php\n\n\$someInstance->\n    create()\n    ->prepare();\n\n"
+            . "\$user = \$repository->\n    find(\$id);\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        $expected = "<?php\n\n\$someInstance\n    ->create()\n    ->prepare();\n\n"
+            . "\$user = \$repository\n    ->find(\$id);\n";
+
+        $this->assertSame(2, substr_count($result['output'], 'MethodChaining.OperatorAtEndOfLine'), $result['output']);
+        $this->assertSame(2, substr_count($result['output'], ' error - '), $result['output']);
+        $this->assertSame($expected, $fixed);
+    }
+
+    /**
      * Test that a comma inside parentheses in a constant's value isn't read as a second constant, and a real second
      * constant is fixed with its modifiers and type kept. These need Slevomat 8.31.3.
      */

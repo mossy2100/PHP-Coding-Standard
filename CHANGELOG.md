@@ -528,6 +528,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **Two hooks on a promoted parameter are left alone.** `phpcbf` split `{ get => 'a'; set => ucfirst($value); }` on a
+  promoted constructor parameter over lines, though `PERCS31.Classes.PromotedPropertyHooks` still said to move the
+  property to the class body. `PERCS31.Formatting.DisallowMultipleStatements` now skips a promoted parameter's hooks.
 - **An upper-case keyword is reported once (breaking).** `IF`, `FUNCTION`, `PUBLIC` and the like got a second error,
   from `Squiz.ControlStructures.LowercaseDeclaration` or `Squiz.Functions.LowercaseFunctionKeywords`. Both are now
   excluded, as `PERCS31.PHP.LowerCaseKeyword` reports the same keywords, so update any `phpcs:ignore` comments or

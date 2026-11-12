@@ -15,6 +15,10 @@ use PHP_CodeSniffer\Util\Tokens;
  * Generic.Formatting.DisallowMultipleStatements treats `{ get; set; }` on an abstract or interface property as two
  * statements on one line. PER Coding Style 3.1, section 4.10, requires them on one line. This sniff skips a semicolon
  * that ends a `get` or `set` operation when the previous one does too, and leaves everything else to the parent.
+ *
+ * It also skips a semicolon in the hooks of a promoted constructor parameter. Section 4.9 only allows a single short
+ * hook on one line there, and PERCS31.Classes.PromotedPropertyHooks reports anything else, which a person has to move
+ * to the class body. The parent's fix would split the hooks over lines first, leaving a layout nobody wants.
  */
 class DisallowMultipleStatementsSniff extends GenericSniff
 {
@@ -27,6 +31,10 @@ class DisallowMultipleStatementsSniff extends GenericSniff
      */
     public function process(File $phpcsFile, int $stackPtr): void
     {
+        if ($this->isInPromotedPropertyHook($phpcsFile, $stackPtr)) {
+            return;
+        }
+
         $prev = $phpcsFile->findPrevious(T_SEMICOLON, ($stackPtr - 1));
         if (
             $prev !== false
@@ -37,6 +45,26 @@ class DisallowMultipleStatementsSniff extends GenericSniff
         }
 
         parent::process($phpcsFile, $stackPtr);
+    }
+
+    /**
+     * Check whether a semicolon is in a hook of a promoted constructor parameter.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $semicolonPtr The position of the semicolon.
+     * @return bool True if it's inside a function's parameter list, and inside a property's hook list there.
+     */
+    private function isInPromotedPropertyHook(File $phpcsFile, int $semicolonPtr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        foreach (array_keys($tokens[$semicolonPtr]['nested_parenthesis'] ?? []) as $opener) {
+            $owner = $tokens[$opener]['parenthesis_owner'] ?? null;
+            if (is_int($owner) && $tokens[$owner]['code'] === T_FUNCTION) {
+                return PropertyHookHelper::isInsidePropertyHook($phpcsFile, $semicolonPtr);
+            }
+        }
+
+        return false;
     }
 
     /**

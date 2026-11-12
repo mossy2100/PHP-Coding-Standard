@@ -33,3 +33,14 @@ abstract class Invalid
 
     abstract public string $mixed { get => 'x'; set; }
 }
+
+// === VALID: the hooks of a promoted parameter, which PERCS31.Classes.PromotedPropertyHooks reports ===
+
+class Promoted
+{
+    public function __construct(
+        public string $name { get => 'a'; set => ucfirst($value); },
+    ) {
+        $a = 1;
+    }
+}

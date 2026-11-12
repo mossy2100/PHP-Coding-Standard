@@ -1423,6 +1423,10 @@ Requires each statement to be on a line by itself. This replaces `Generic.Format
 statements on one line. [PER Coding Style 3.1, Section 4.10](https://www.php-fig.org/per/coding-style/#410-interface-and-abstract-properties) requires them on one line. This sniff skips a semicolon that
 ends a `get` or `set` operation when the previous one does too, and leaves everything else to the Generic sniff.
 
+It also skips the hooks of a promoted constructor parameter. Section 4.9 only allows a single short hook there, and
+[`PERCS31.Classes.PromotedPropertyHooks`](#percs31classespromotedpropertyhooks) reports anything else, which a person has to move to the class body. Splitting
+the hooks over lines first would only leave a layout nobody wants.
+
 **Auto-fixable:** yes.
 
 **Good:**
