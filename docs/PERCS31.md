@@ -81,6 +81,8 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   [`PERCS31.ControlStructures.BodyOnNextLine`](#percs31controlstructuresbodyonnextline), which allows an empty body as `{}`.
 - **PSR2.ControlStructures.SwitchDeclaration**, by [`PERCS31.ControlStructures.SwitchDeclaration`](#percs31controlstructuresswitchdeclaration), which adds PER's
   `switch` rules.
+- **Squiz.ControlStructures.ForEachLoopDeclaration**, by [`PERCS31.ControlStructures.ForEachSpacing`](#percs31controlstructuresforeachspacing), which allows a
+  line break before or after `as` and `=>`.
 - **PSR2.Methods.FunctionCallSignature**, by [`PERCS31.Functions.FunctionCallLayout`](#percs31functionsfunctioncalllayout), which also checks `clone()`, and
   skips a `set` hook's parameter list, which isn't a call.
 - **Squiz.Classes.ValidClassName**, from PSR-1, by [`PERCS31.NamingConventions.ValidClassName`](#percs31namingconventionsvalidclassname), which also reports a name
@@ -216,6 +218,7 @@ section gives the reason.
 | `PERCS31.Classes.PropertyHookLayout`                    | A hook list's and hook body's braces, and a short hook's `=>`       | Partly  |
 | `PERCS31.ControlStructures.BodyOnNextLine`              | A structure's body on the line after its `{`, allowing `{}`         | Yes     |
 | `PERCS31.ControlStructures.ControlStructureSpacing`     | A control structure's parentheses, with no split rule for `foreach` | Yes     |
+| `PERCS31.ControlStructures.ForEachSpacing`              | A space or line break each side of a `foreach`'s `as` and `=>`      | Yes     |
 | `PERCS31.ControlStructures.MatchArmPlacement`           | Each `match` arm starts on a new line                               | Yes     |
 | `PERCS31.ControlStructures.MultiLineTernaryOperator`    | A multi-line ternary takes three lines, `?` and `:` leading         | Yes     |
 | `PERCS31.ControlStructures.SwitchDeclaration`           | `switch` rules, with a `break` in the last case                     | Yes     |
@@ -1043,6 +1046,47 @@ foreach ( [
     'second',
 ] as $value ) {
     echo $value;
+}
+```
+
+---
+
+### PERCS31.ControlStructures.ForEachSpacing
+
+Requires one space, or a line break, before and after a `foreach`'s `as` and `=>`.
+
+**Why:** [PER Coding Style 3.1, Section 5.5](https://www.php-fig.org/per/coding-style/#55-foreach) shows `foreach ($iterable as $key => $value)`, and says to note the
+placement of spaces. It has no rule for a `foreach` split inside its parentheses, so a line break may take a space's
+place.
+
+This replaces `Squiz.ControlStructures.ForEachLoopDeclaration`, which PSR-12 includes. That sniff reports an `as` or
+`=>` that starts a line, and its fix leaves the line indented by one space. It also checks the `=>` of a key in
+`as ['key' => $value]`, which [`PERCS31.WhiteSpace.ArrowSpacing`](#percs31whitespacearrowspacing) checks as a list's. It has no property for either. A
+standalone sniff is used, not a subclass, as PSR-12 turns the original's other checks off, so nothing of it would be
+left to call.
+
+**Auto-fixable:** yes.
+
+**Good:**
+
+```php
+foreach ($customers as $id => $customer) {
+    echo $customer->name;
+}
+
+foreach (
+    $this->repository->findActiveCustomers($region)
+    as $id => $customer
+) {
+    echo $customer->name;
+}
+```
+
+**Bad:**
+
+```php
+foreach ($customers  as  $id=>$customer) {
+    echo $customer->name;
 }
 ```
 

@@ -871,10 +871,10 @@ reported.
 
 **Issue:** The text doesn't set the spacing around `;`, `=>` and `as`. The examples do.
 
-**Ruleset:** The examples' spacing is required. A `foreach` split inside its parentheses only gets section 5's general
-spacing.
+**Ruleset:** The examples' spacing is required. In a `foreach` split inside its parentheses, a line break may take the
+place of the space before or after `as` or `=>`. Otherwise it only gets section 5's general spacing.
 
-**Why:** The examples are the only guide. No example splits a `foreach`.
+**Why:** The examples are the only guide. No example splits a `foreach`, and no rule says where it may be split.
 
 ---
 

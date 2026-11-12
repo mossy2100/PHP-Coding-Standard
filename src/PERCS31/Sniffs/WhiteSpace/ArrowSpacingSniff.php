@@ -25,7 +25,7 @@ use PHPCSUtils\Utils\PassedParameters;
  * - `yield $key => $value`: PER says nothing, so it isn't checked by default. The Jumbo standard turns checkYield on,
  *   to require exactly one space each side, as for every `=>` PER does set.
  *
- * Other uses of `=>` have their own sniffs: Squiz.ControlStructures.ForEachLoopDeclaration for `foreach`,
+ * Other uses of `=>` have their own sniffs: PERCS31.ControlStructures.ForEachSpacing for `foreach`,
  * SlevomatCodingStandard.Functions.ArrowFunctionDeclaration for an arrow function, and
  * PERCS31.Classes.PropertyHookLayout for a property hook.
  *

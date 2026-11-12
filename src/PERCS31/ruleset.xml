@@ -34,6 +34,9 @@
         <exclude name="PSR12.Files.DeclareStatement"/>
         <!-- Replaced by a PERCS31 version without PSR-12's rules for a multi-line foreach (5.5) -->
         <exclude name="PSR12.ControlStructures.ControlStructureSpacing"/>
+        <!-- Replaced by PERCS31.ControlStructures.ForEachSpacing, which allows a line break before or after as and =>
+             (5.5) -->
+        <exclude name="Squiz.ControlStructures.ForEachLoopDeclaration"/>
         <!-- Replaced by a PERCS31 version that also covers a set hook's parameter (4.5) -->
         <exclude name="PSR12.Functions.NullableTypeDeclaration"/>
         <!-- Replaced by a PERCS31 version that also checks a set hook's parameter type (2.5) -->
@@ -333,6 +336,9 @@
 
     <!-- A control structure's parentheses, without PSR-12's rules for a multi-line foreach (5, 5.5) -->
     <rule ref="PERCS31.ControlStructures.ControlStructureSpacing"/>
+
+    <!-- One space, or a line break, before and after a foreach's as and => (5.5) -->
+    <rule ref="PERCS31.ControlStructures.ForEachSpacing"/>
 
     <!-- switch rules, including a terminating statement in the last case, and parentheses around a multi-line case
          condition (5.2) -->

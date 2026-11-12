@@ -526,6 +526,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A `foreach` split before `as` or `=>` (breaking).** `foreach (` then `$this->items()` then `as $item` on the next
+  line was reported, and the fix left that line indented by one space. A line break is now allowed before or after
+  either one. The new `PERCS31.ControlStructures.ForEachSpacing` replaces
+  `Squiz.ControlStructures.ForEachLoopDeclaration`, so update any `phpcs:ignore` comments or `<exclude>` rules that
+  name the old codes. The `=>` of a key in `as ['key' => $value]` is now checked as a list's, by
+  `PERCS31.WhiteSpace.ArrowSpacing`.
 - **A line wrapped before `::`, or before a `match` arm's `=>`.** After a line ending in `)`,
   `PERCS31.WhiteSpace.ConsistentIndent` reported the wrapped line, and its fix removed the indent. Both now pass.
 - **`phpcbf` no longer fails on a split condition that starts with a multi-line array.** In `if (` then `[` on the

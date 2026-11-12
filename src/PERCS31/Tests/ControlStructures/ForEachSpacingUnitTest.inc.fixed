@@ -1,0 +1,73 @@
+<?php
+
+// === VALID ===
+
+foreach ($items as $item) {
+    foo();
+}
+
+foreach ($items as $key => $value) {
+    foo();
+}
+
+// A line break before or after `as` or `=>`.
+foreach (
+    $this->items()
+    as $item
+) {
+    foo();
+}
+
+foreach (
+    $this->items() as
+    $key =>
+    $value
+) {
+    foo();
+}
+
+foreach (
+    $this->items()
+    as $key
+    => $value
+) {
+    foo();
+}
+
+// The `=>` of a list, an array or a nested function isn't the loop's. PERCS31.WhiteSpace.ArrowSpacing checks a list's.
+foreach ($rows as ['id'  =>  $id]) {
+    foo();
+}
+
+foreach (['a'  =>  1] as $value) {
+    foo();
+}
+
+foreach (array_map(fn($x)=>$x, $items) as $value) {
+    foo();
+}
+
+// === INVALID ===
+
+foreach ($items as $item) {
+    foo();
+}
+
+foreach ($items as $key => $value) {
+    foo();
+}
+
+foreach ($items as $key => $value) {
+    foo();
+}
+
+foreach (items() as $item) {
+    foo();
+}
+
+foreach (
+    $this->items() as $key
+    => $value
+) {
+    foo();
+}
