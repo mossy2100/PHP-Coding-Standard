@@ -2589,8 +2589,10 @@ past the tags is allowed, as PER doesn't say, and its example in section 3 uses 
 accepts both too, and doesn't check the indent of `?>`, as PER has no rule on it. The [Jumbo standard](Jumbo.md) requires 0 levels,
 and `?>` level with `<?php`.
 
-The original counts whole levels, rounding down, so a line indented 1 to 3 spaces too far passed. This sniff rounds
-up, so any extra space is reported. The message gives the indent found as a whole number of levels.
+The original counts whole levels, rounding down, so a line indented 1 to 3 spaces too far passed, and its message gave
+the indent as a number of levels. So this sniff makes the original's check itself, copied from php-collective 0.6.10,
+counting spaces. Any extra space is reported, with the real number. It still extends the original, for the methods that
+decide which lines can be judged.
 
 The original skips a line that starts with a comment, and PER has no rule for a comment's indent, so that's the
 default here. Set `checkComments` to report a comment indented further than its scope after a complete statement, as

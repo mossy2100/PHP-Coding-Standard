@@ -33,8 +33,10 @@ use PHPCSUtils\Utils\Conditions;
  * It also skips the lines under a PHP opening tag that isn't at the start of its line, as in a template. The parent
  * measures from column 1, so it would report PHP indented to match the markup around it.
  *
- * The parent counts whole levels, rounding down, so a line indented 1 to 3 spaces too far passed. This sniff rounds up,
- * so any extra space is reported.
+ * The parent counts whole levels, rounding down, so a line indented 1 to 3 spaces too far passed, and its message gave
+ * the indent as a number of levels. So this sniff makes the parent's check itself, in checkLine(), counting spaces. It
+ * still extends the parent, for the methods that decide which lines can be judged. After a php-collective upgrade,
+ * compare checkLine() with the parent's process().
  *
  * The parent skips a line that starts with a comment. PER has no rule for a comment's indent, so that stays the
  * default. With checkComments on, as in the Jumbo standard, a comment indented further than its scope after a complete
@@ -107,28 +109,79 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
             return;
         }
 
-        parent::process($phpcsFile, $stackPtr);
+        $this->checkLine($phpcsFile, $stackPtr);
     }
 
     /**
-     * Get the indentation level of a line's leading whitespace, counting part of a level as a whole one.
+     * Report a line indented further than its scope, when the line before it ends a statement.
      *
-     * The parent divides the number of spaces by 4 and rounds down, so a line indented 1 to 3 spaces too far counted as
-     * correctly indented. Rounding up makes it a level too far. The parent's message then gives the rounded number of
-     * spaces, as it works from the level.
+     * This is the parent's process(), from php-collective/code-sniffer 0.6.10, with its checks in the same order. It's
+     * copied, not called, as the parent counts whole levels, rounding down, and builds its message from them. So it
+     * passed a line indented 1 to 3 spaces too far, and reported 14 spaces as 12. Here the spaces are counted, so any
+     * extra space is reported, with the real number.
+     *
+     * Two of the parent's checks are left out, as this sniff handles a closure, anonymous class or switch before it
+     * gets here: the skip for a `return`, `break` or `continue` in a switch, and the skips for those three scopes
+     * themselves, which are kept only for a line nested in one that findAnchor() doesn't find, such as in an arrow
+     * function. A line indented with tabs is passed to the parent, which counts them.
      *
      * @param File $phpcsFile The file being scanned.
-     * @param array<string, mixed> $token The whitespace token.
-     * @return int The number of levels.
+     * @param int $stackPtr The position of a whitespace token.
      */
-    protected function getIndentLevel(File $phpcsFile, array $token): int
+    private function checkLine(File $phpcsFile, int $stackPtr): void
     {
-        $content = $token['orig_content'] ?? $token['content'];
-        if (!is_string($content) || str_contains($content, "\t")) {
-            return parent::getIndentLevel($phpcsFile, $token);
+        $tokens = $phpcsFile->getTokens();
+
+        // Only whitespace at the start of a line is an indent.
+        if ($stackPtr > 0 && $tokens[($stackPtr - 1)]['line'] === $tokens[$stackPtr]['line']) {
+            return;
         }
 
-        return (int) ceil(strlen($content) / LayoutHelper::INDENT);
+        $line = $tokens[$stackPtr]['line'];
+        if ($line === 1 || ($tokens[$stackPtr]['nested_attributes'] ?? []) !== []) {
+            return;
+        }
+
+        $content = $tokens[$stackPtr]['orig_content'] ?? $tokens[$stackPtr]['content'];
+        if (str_contains($content, "\t")) {
+            parent::process($phpcsFile, $stackPtr);
+            return;
+        }
+
+        $next = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
+        if ($next === false || $tokens[$next]['line'] !== $line || $tokens[$next]['code'] === T_CLOSE_CURLY_BRACKET) {
+            return;
+        }
+
+        // Anything the parent can't judge safely.
+        if (
+            $this->isInsideClosure($phpcsFile, $next, $tokens)
+            || $this->isInsideArray($phpcsFile, $next, $tokens)
+            || $this->isInsideSwitchCase($phpcsFile, $next, $tokens)
+            || $this->isInsideAnonClass($tokens, $next)
+            || isset(Tokens::COMMENT_TOKENS[$tokens[$next]['code']])
+            || $this->startsWithContinuationOperator($next, $tokens)
+        ) {
+            return;
+        }
+
+        // The line before must end a statement, and not continue onto this one.
+        $previous = $this->findPreviousContentLine($phpcsFile, $stackPtr, $tokens);
+        if (
+            $previous === null
+            || !$this->isPreviousLineComplete($previous, $tokens)
+            || $this->isValidContinuation($previous, $tokens)
+            || $this->isInMultiLineConstruct($phpcsFile, $next, $tokens)
+            || $this->couldBeInCaseBlock($phpcsFile, $stackPtr, $tokens)
+        ) {
+            return;
+        }
+
+        $expected = $this->getExpectedIndent($phpcsFile, $next, $tokens) * LayoutHelper::INDENT;
+        $found = strlen($content);
+        if ($found > $expected) {
+            $this->reportIndent($phpcsFile, $next, $expected, $found);
+        }
     }
 
     /**
