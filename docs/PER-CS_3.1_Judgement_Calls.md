@@ -739,13 +739,16 @@ stops at class constants.
 ### `require` and `include` With Parentheses
 
 **Issue:** 4.7 says there MUST NOT be a space between a function's name and its opening parenthesis. The spec doesn't
-say whether `require ($file)` is a call.
+say whether `require ($file)` is a call. Its only example of either is in PSR-1's section on side effects, which writes
+`include "file.php";`.
 
 **Ruleset:** It isn't checked. `require`, `include` and their `_once` forms may be written with or without parentheses,
-and with a space before them. Jumbo requires `require $file;`, with no parentheses and one space.
+and with a space before them. Jumbo requires the form in PSR-1's example, as in `require $file;`, with no parentheses
+and one space.
 
 **Why:** They're language constructs, not functions, and parentheses after one only group its expression, as in
-`include ($a ? 'x' : 'y') . '.php';`. The spec has no rule or example for either.
+`include ($a ? 'x' : 'y') . '.php';`. PSR-1's example is there to show a side effect, not a layout, so it shows one
+allowed form, and no rule covers them.
 
 ---
 
