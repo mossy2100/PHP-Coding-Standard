@@ -38,3 +38,16 @@ try {
 } catch (Exception $e) {} finally {}
 
 while (next($items)) {}
+
+// A throw or exit inside an expression doesn't end a case, though the tokenizer takes it for the case's closer.
+switch ($a) {
+    case 1:
+        $b = foo() ?? throw new Exception();
+        break;
+    case 2:
+        $b = foo() or exit(1);
+        break;
+    default:
+        $b = $c ? throw new Exception() : 1;
+        break;
+}
