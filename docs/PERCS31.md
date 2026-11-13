@@ -1710,7 +1710,7 @@ Checks the spacing and layout of a function call's argument list, including `clo
 `PSR2.Methods.FunctionCallSignature`, which it extends.
 
 **Why:** [PER Coding Style 3.1, Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) sets the rules for a call: no space before or just inside the parentheses,
-and when split, the first argument on the next line and one per line. The parent checks those, with two gaps:
+and when split, the first argument on the next line and one per line. The parent checks those, with these gaps:
 
 - It doesn't check `clone()`, which section 4.7 calls a function. This sniff does. Parentheses that may only group the
   object, as in `clone ($a)->b`, aren't an argument list. Nor are parentheses after a space, as in `clone ($a)`, which
@@ -1721,6 +1721,9 @@ and when split, the first argument on the next line and one per line. The parent
   line of its own, which is how a split argument list is written. [Section 4.8](https://www.php-fig.org/per/coding-style/#48-function-callable-references) says the `...` MUST NOT have whitespace
   before or after it, so this sniff reports it as `SplitFirstClassCallable`, and fixes it to `foo(...)`. With a comment
   in the parentheses, it's reported but not fixed. On one line, the parent already reports `foo( ... )`.
+- It reads `require`, `include` and their `_once` forms as function names, so it reports the space in
+  `include ($a ? 'x' : 'y') . '.php';`. They're language constructs, and the parentheses only group an expression. PER
+  has no rule for them, so this sniff skips them.
 
 It's named Layout, not Signature like its parent, as a function's signature is its declaration. PSR-12 turns off the
 parent's `SpaceAfterCloseBracket` and `OpeningIndent` codes, so they're off here too. A blank line between arguments, or

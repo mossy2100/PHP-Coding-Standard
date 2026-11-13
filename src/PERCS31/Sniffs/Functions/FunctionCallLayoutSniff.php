@@ -17,7 +17,7 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * PER Coding Style 3.1, section 4.7, sets the rules for a call: no space before or just inside the parentheses, and
  * when split, the first argument on the next line and one per line. This extends PSR2.Methods.FunctionCallSignature,
- * and changes three things:
+ * and changes four things:
  * - It checks `clone()`, which section 4.7 calls a function, but the parent doesn't register. Parentheses that may
  *   only group the object, as in `clone ($a)->b`, are skipped, and so are parentheses after a space, as in
  *   `clone ($a)`, where `clone` may be the operator. PERCS31.PHP.RequireCloneParentheses reports that space.
@@ -26,6 +26,9 @@ use PHP_CodeSniffer\Util\Tokens;
  * - It reports a first-class callable split over lines, as in `foo(` then `...` then `)`. Section 4.8 says the `...`
  *   MUST NOT have whitespace before or after it. The parent reads the `...` as an argument on a line of its own, which
  *   is how a split argument list is written, so it says nothing. On one line, the parent reports `foo( ... )`.
+ * - It skips `require`, `include` and their `_once` forms, which the parent registers as function names. They're
+ *   language constructs, and parentheses after one only group its expression, as in
+ *   `include ($a ? 'x' : 'y') . '.php';`. PER has no rule for them.
  *
  * It's named Layout, not Signature like its parent, as a function's signature is its declaration, not a call.
  */
@@ -53,6 +56,12 @@ class FunctionCallLayoutSniff extends Psr2Sniff
     public function process(File $phpcsFile, int $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
+
+        // `require` and `include` are language constructs, so parentheses after one only group its expression.
+        if (isset(Tokens::INCLUDE_TOKENS[$tokens[$stackPtr]['code']])) {
+            return;
+        }
+
         if ($tokens[$stackPtr]['code'] === T_CLONE) {
             $parentheses = TokenHelper::findCloneArguments($phpcsFile, $stackPtr);
             if ($parentheses === null || $parentheses[0] !== ($stackPtr + 1)) {

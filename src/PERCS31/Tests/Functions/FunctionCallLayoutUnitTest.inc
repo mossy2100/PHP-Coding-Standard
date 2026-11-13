@@ -65,3 +65,8 @@ $a = strlen(
     // Why.
     ...
 );
+
+// `require` and `include` are language constructs, so parentheses after one only group its expression.
+$b = include ($a ? 'x' : 'y') . '.php';
+require_once (__DIR__) . '/x.php';
+$c = require ($base . '/file.php');
