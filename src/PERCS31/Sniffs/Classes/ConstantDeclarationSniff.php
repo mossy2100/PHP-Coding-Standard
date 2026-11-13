@@ -7,7 +7,6 @@ namespace PERCS31\Sniffs\Classes;
 use PERCS31\Helpers\FixerHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
-use PHP_CodeSniffer\Util\Tokens;
 use PHPCSUtils\Utils\Constants;
 use PHPCSUtils\Utils\Scopes;
 
@@ -54,7 +53,7 @@ class ConstantDeclarationSniff implements Sniff
 
         $first = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
         if ($first !== false) {
-            $this->checkSpace(
+            FixerHelper::requireSingleSpace(
                 $phpcsFile,
                 $stackPtr,
                 $first,
@@ -67,34 +66,13 @@ class ConstantDeclarationSniff implements Sniff
         $typeEnd = $constant['type_end_token'];
         $name = $constant['name_token'];
         if (is_int($typeEnd) && is_int($name)) {
-            $this->checkSpace(
+            FixerHelper::requireSingleSpace(
                 $phpcsFile,
                 $typeEnd,
                 $name,
                 'Expected 1 space between a constant\'s type and its name',
                 self::CODE_SPACE_AFTER_TYPE,
             );
-        }
-    }
-
-    /**
-     * Report anything but a single space between two tokens, and fix it unless a comment is between them.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $from The position of the token before the gap.
-     * @param int $to The position of the token after the gap.
-     * @param string $error The message.
-     * @param string $code The error's code.
-     */
-    private function checkSpace(File $phpcsFile, int $from, int $to, string $error, string $code): void
-    {
-        if ($phpcsFile->getTokensAsString(($from + 1), ($to - $from - 1)) === ' ') {
-            return;
-        }
-
-        $isFixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($from + 1), $to) === false;
-        if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $to, $code)) {
-            FixerHelper::replaceBetween($phpcsFile, $from, $to, ' ');
         }
     }
 }

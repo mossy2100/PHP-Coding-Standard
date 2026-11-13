@@ -346,22 +346,8 @@ class AttributePlacementSniff implements Sniff
      */
     private function checkParameterSpacing(File $phpcsFile, int $closerPtr, int $targetPtr): void
     {
-        $spacing = $phpcsFile->getTokensAsString(($closerPtr + 1), ($targetPtr - $closerPtr - 1));
-        $hasComment = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($closerPtr + 1), $targetPtr) !== false;
-        if ($spacing === ' ' || $hasComment) {
-            return;
-        }
-
-        $fix = $phpcsFile->addFixableError(
-            'Expected 1 space between an attribute and its parameter',
-            $closerPtr,
-            self::CODE_PARAMETER_SPACING,
-        );
-        if (!$fix) {
-            return;
-        }
-
-        FixerHelper::replaceBetween($phpcsFile, $closerPtr, $targetPtr, ' ');
+        $error = 'Expected 1 space between an attribute and its parameter';
+        $this->checkInlineSpacing($phpcsFile, $closerPtr, $targetPtr, $error, self::CODE_PARAMETER_SPACING);
     }
 
     /**
@@ -546,15 +532,7 @@ class AttributePlacementSniff implements Sniff
         string $error,
         string $code,
     ): void {
-        $spacing = $phpcsFile->getTokensAsString(($closerPtr + 1), ($targetPtr - $closerPtr - 1));
-        $hasComment = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($closerPtr + 1), $targetPtr) !== false;
-        if ($spacing === ' ' || $hasComment) {
-            return;
-        }
-
-        if ($phpcsFile->addFixableError($error, $closerPtr, $code)) {
-            FixerHelper::replaceBetween($phpcsFile, $closerPtr, $targetPtr, ' ');
-        }
+        FixerHelper::requireSingleSpace($phpcsFile, $closerPtr, $targetPtr, $error, $code, $closerPtr, false);
     }
 
     /**

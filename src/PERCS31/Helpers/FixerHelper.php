@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PERCS31\Helpers;
 
 use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Helper class for common fixes.
@@ -37,6 +38,43 @@ class FixerHelper
         }
 
         return $phpcsFile->addFixableError($error, $stackPtr, $code, $data);
+    }
+
+    /**
+     * Report anything but a single space between two tokens, and fix it to one, unless a comment is between them.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $from The position of the token before the gap.
+     * @param int $to The position of the token after the gap.
+     * @param string $error The error message.
+     * @param string $code The error's code.
+     * @param int|null $reportPtr The position of the token the error is on, or null for the token after the gap.
+     * @param bool $reportIfComment Whether a gap with a comment in it is reported, as an error with no fix. If not,
+     *     it's left alone.
+     * @param array<int|string, mixed> $data The values for the message's placeholders.
+     */
+    public static function requireSingleSpace(
+        File $phpcsFile,
+        int $from,
+        int $to,
+        string $error,
+        string $code,
+        ?int $reportPtr = null,
+        bool $reportIfComment = true,
+        array $data = [],
+    ): void {
+        if ($phpcsFile->getTokensAsString(($from + 1), ($to - $from - 1)) === ' ') {
+            return;
+        }
+
+        $hasComment = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($from + 1), $to) !== false;
+        if ($hasComment && !$reportIfComment) {
+            return;
+        }
+
+        if (self::addFixableErrorIf($phpcsFile, !$hasComment, $error, ($reportPtr ?? $to), $code, $data)) {
+            self::replaceBetween($phpcsFile, $from, $to, ' ');
+        }
     }
 
     /**

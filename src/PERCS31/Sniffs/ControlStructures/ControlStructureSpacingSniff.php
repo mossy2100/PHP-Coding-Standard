@@ -93,16 +93,11 @@ class ControlStructureSpacingSniff extends Psr12Sniff
             return;
         }
 
-        $found = $phpcsFile->getTokensAsString(($type + 1), ($variable - $type - 1));
-        if ($found === ' ') {
-            return;
-        }
-
+        // Only whitespace is between them, as the type is the code or comment just before the variable.
+        $found = strlen($phpcsFile->getTokensAsString(($type + 1), ($variable - $type - 1)));
         $error = 'Expected 1 space between the type and the variable of a catch; %s found';
-        $fix = $phpcsFile->addFixableError($error, $variable, self::CODE_SPACE_BEFORE_CATCH_VARIABLE, [strlen($found)]);
-        if ($fix) {
-            FixerHelper::replaceBetween($phpcsFile, $type, $variable, ' ');
-        }
+        $code = self::CODE_SPACE_BEFORE_CATCH_VARIABLE;
+        FixerHelper::requireSingleSpace($phpcsFile, $type, $variable, $error, $code, data: [$found]);
     }
 
     /**
