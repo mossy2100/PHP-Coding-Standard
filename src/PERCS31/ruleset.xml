@@ -261,6 +261,10 @@
     <!-- One trait per use statement, including one with a { } block, as in use A, B { ... } (4.2) -->
     <rule ref="SlevomatCodingStandard.Classes.TraitUseDeclaration"/>
 
+    <!-- One space after a visibility or final in a trait's as clause, as in sayBye as private myBye; (4.2).
+         PSR12.Traits.UseDeclaration checks the space each side of as and insteadof. -->
+    <rule ref="PERCS31.Classes.TraitAliasSpacing"/>
+
     <!-- abstract or final before readonly on a class (4.6) -->
     <rule ref="SlevomatCodingStandard.Classes.ClassKeywordOrder"/>
 

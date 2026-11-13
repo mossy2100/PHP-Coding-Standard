@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`PERCS31.Classes.TraitAliasSpacing` (breaking).** Requires a single space after a visibility or `final` in a trait's
+  `as` clause. `sayBye as private  myBye;` passed, though PER Coding Style 3.1 sets the spacing there by its example.
+  Auto-fixable, unless a comment is in the way.
 - **A blank line just inside a multi-line array or a split group `use` (breaking).** A blank line after a multi-line
   array's `[` is now reported, by `PERCS31.Arrays.ArrayBracketSpacing`, as `BlankLineAfterOpener`. PER Coding Style 3.1
   puts the first value on the next line, and only a blank line before the `]` was reported. A blank line after a split
@@ -709,6 +712,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`PERCS31.Classes.TraitAliasSpacing` (breaking).** Requires a single space after a visibility or `final` in a
+  trait's `as` clause. `sayBye as private  myBye;` passed, though PER Coding Style 3.1 sets the spacing there by its
+  example. Auto-fixable, unless a comment is in the way.
 - **A blank line just inside a multi-line array or a split group `use` (breaking).** A blank line after a multi-line
   array's `[` is now reported, by `PERCS31.Arrays.ArrayBracketSpacing`, as `BlankLineAfterOpener`. PER Coding Style 3.1
   puts the first value on the next line, and only a blank line before the `]` was reported. A blank line after a split
@@ -860,6 +866,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`PERCS31.Classes.TraitAliasSpacing` (breaking).** Requires a single space after a visibility or `final` in a
+  trait's `as` clause. `sayBye as private  myBye;` passed, though PER Coding Style 3.1 sets the spacing there by its
+  example. Auto-fixable, unless a comment is in the way.
 - **A blank line just inside a multi-line array or a split group `use` (breaking).** A blank line after a multi-line
   array's `[` is now reported, by `PERCS31.Arrays.ArrayBracketSpacing`, as `BlankLineAfterOpener`. PER Coding Style 3.1
   puts the first value on the next line, and only a blank line before the `]` was reported. A blank line after a split
@@ -918,6 +927,9 @@ This is the first stable release of Galaxon Coding Standard, ready for publicati
 
 ### Added
 
+- **`PERCS31.Classes.TraitAliasSpacing` (breaking).** Requires a single space after a visibility or `final` in a
+  trait's `as` clause. `sayBye as private  myBye;` passed, though PER Coding Style 3.1 sets the spacing there by its
+  example. Auto-fixable, unless a comment is in the way.
 - **A blank line just inside a multi-line array or a split group `use` (breaking).** A blank line after a multi-line
   array's `[` is now reported, by `PERCS31.Arrays.ArrayBracketSpacing`, as `BlankLineAfterOpener`. PER Coding Style 3.1
   puts the first value on the next line, and only a blank line before the `]` was reported. A blank line after a split
@@ -936,6 +948,9 @@ This is the first stable release of Galaxon Coding Standard, ready for publicati
 
 ### Added
 
+- **`PERCS31.Classes.TraitAliasSpacing` (breaking).** Requires a single space after a visibility or `final` in a
+  trait's `as` clause. `sayBye as private  myBye;` passed, though PER Coding Style 3.1 sets the spacing there by its
+  example. Auto-fixable, unless a comment is in the way.
 - **A blank line just inside a multi-line array or a split group `use` (breaking).** A blank line after a multi-line
   array's `[` is now reported, by `PERCS31.Arrays.ArrayBracketSpacing`, as `BlankLineAfterOpener`. PER Coding Style 3.1
   puts the first value on the next line, and only a blank line before the `]` was reported. A blank line after a split
@@ -982,6 +997,9 @@ This is the first stable release of Galaxon Coding Standard, ready for publicati
 
 ### Added
 
+- **`PERCS31.Classes.TraitAliasSpacing` (breaking).** Requires a single space after a visibility or `final` in a
+  trait's `as` clause. `sayBye as private  myBye;` passed, though PER Coding Style 3.1 sets the spacing there by its
+  example. Auto-fixable, unless a comment is in the way.
 - **A blank line just inside a multi-line array or a split group `use` (breaking).** A blank line after a multi-line
   array's `[` is now reported, by `PERCS31.Arrays.ArrayBracketSpacing`, as `BlankLineAfterOpener`. PER Coding Style 3.1
   puts the first value on the next line, and only a blank line before the `]` was reported. A blank line after a split
