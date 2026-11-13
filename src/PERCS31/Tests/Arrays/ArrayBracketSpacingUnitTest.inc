@@ -15,11 +15,6 @@ $blankBetweenValues = [
     2,
 ];
 
-$blankAfterOpener = [
-
-    1,
-];
-
 $comment = [
     1, // A note.
     // Another note.
@@ -81,4 +76,33 @@ $comment = [
     1,
     // A note.
 
+];
+
+// A blank line after the opening bracket, then two, the long array syntax, and a comment first.
+$blankAfterOpener = [
+
+    1,
+];
+
+$twoAfterOpener = [
+
+
+    'a' => 1,
+];
+
+$longAfterOpener = array(
+
+    1,
+);
+
+$commentFirst = [
+
+    // A note.
+    1,
+];
+
+// A comment on the bracket's line is the first thing in the array.
+$commentOnBracketLine = [ // A note.
+
+    1,
 ];

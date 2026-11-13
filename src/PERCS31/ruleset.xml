@@ -229,7 +229,7 @@
     <rule ref="PERCS31.Files.FileHeader"/>
 
     <!-- A group use split across lines: one name per line, the first on the line after the {, and the } on a line of
-         its own, as the examples in 3 show -->
+         its own, with no blank line after the { or before the }, as the examples in 3 show -->
     <rule ref="PERCS31.Namespaces.GroupUseLayout"/>
 
     <!-- No spaces inside a declare statement's parentheses, including one with several directives (3) -->
@@ -487,7 +487,7 @@
          a match arm's condition (11) -->
     <rule ref="PERCS31.Arrays.OpeningBracketPlacement"/>
 
-    <!-- No blank line before a multi-line array's closing bracket (11) -->
+    <!-- No blank line after a multi-line array's opening bracket, or before its closing bracket (11) -->
     <rule ref="PERCS31.Arrays.ArrayBracketSpacing"/>
 
     <!-- ====== ATTRIBUTES (12) ====== -->

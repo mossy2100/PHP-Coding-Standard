@@ -204,7 +204,7 @@ section gives the reason.
 
 | Sniff                                                   | Checks                                                              | Fixable |
 | ------------------------------------------------------- | ------------------------------------------------------------------- | ------- |
-| `PERCS31.Arrays.ArrayBracketSpacing`                    | No blank line before a multi-line array's `]`                       | Yes     |
+| `PERCS31.Arrays.ArrayBracketSpacing`                    | No blank line after a multi-line array's `[`, or before its `]`     | Yes     |
 | `PERCS31.Arrays.OpeningBracketPlacement`                | A multi-line array's `[` isn't on a line of its own, outside a list | Yes     |
 | `PERCS31.Arrays.ValuePerLine`                           | One value per line in a multi-line array, the first on the next     | Yes     |
 | `PERCS31.Attributes.AttributePlacement`                 | An attribute is on its own line, except on a parameter              | Yes     |
@@ -263,14 +263,19 @@ section gives the reason.
 
 ### PERCS31.Arrays.ArrayBracketSpacing
 
-Disallows a blank line before the closing bracket of a multi-line array. This extends
+Disallows a blank line after the opening bracket of a multi-line array, and before its closing bracket. This extends
 `PhpCollective.Arrays.ArrayBracketSpacing`, from [php-collective/code-sniffer](https://github.com/php-collective/code-sniffer).
 
 **Why:** [PER Coding Style 3.1, Section 11](https://www.php-fig.org/per/coding-style/#11-arrays) says the closing bracket MUST be on the next line after the last value.
-`Generic.Arrays.ArrayIndent` only checks that it starts a line. This subclass skips a destructuring assignment, which
-isn't an array declaration, so section 2.3 allows the blank line.
+`Generic.Arrays.ArrayIndent` only checks that it starts a line.
 
-**Auto-fixable:** yes, except after a comment.
+Section 11 also says the first value MUST be on the next line after the opening bracket. The parent has no check for
+that end, so this subclass reports a blank line there, as `BlankLineAfterOpener`. A comment counts as the first thing in
+the array, so a blank line after a comment on the bracket's line isn't reported.
+
+It also skips a destructuring assignment, which isn't an array declaration, so section 2.3 allows the blank line.
+
+**Auto-fixable:** yes, except a blank line before the closing bracket that follows a comment.
 
 **Good:**
 
@@ -1885,7 +1890,8 @@ $largest = max(
 ### PERCS31.Namespaces.GroupUseLayout
 
 Requires a group `use` split across lines to have one name per line, with the first on the line after the `{`, and the
-`}` on a line of its own. In a group `use` on one line, it disallows a space after the `{` or before the `}`.
+`}` on a line of its own, and no blank line after the `{` or before the `}`. In a group `use` on one line, it disallows
+a space after the `{` or before the `}`.
 
 **Why:** [PER Coding Style 3.1, Section 3](https://www.php-fig.org/per/coding-style/#3-declare-statements-namespace-and-import-statements) shows a group `use` on one line, and one split with a name on each line. Its
 text sets no layout, so the two examples are read as the two allowed forms, as for a single-line and a multi-line array.

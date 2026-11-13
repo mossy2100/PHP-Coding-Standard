@@ -17,7 +17,8 @@ use PHP_CodeSniffer\Util\Tokens;
  * PER Coding Style 3.1, section 3, shows a group `use` on one line, as in `use Vendor\Package\{ClassA, ClassB};`, and
  * one split across lines with a name on each line. Its text sets no layout, so the examples are read as the two
  * allowed forms, as for a single-line and a multi-line array (section 11). A group that mixes them, as in
- * `use A\{B,` then `C,` then `};`, is reported.
+ * `use A\{B,` then `C,` then `};`, is reported. So is a blank line after the `{` or before the `}`, as the first
+ * name is on the line after the `{`.
  *
  * Every single-line example, in section 3 and in the overview, has no space after the `{` or before the `}`, as in
  * `{ClassA as A, ClassB}`. That's read as setting the spacing, as it's how the spec writes every bracketed list.
@@ -38,6 +39,10 @@ class GroupUseLayoutSniff implements Sniff
     public const string CODE_SPACE_AFTER_OPEN_BRACE = 'SpaceAfterOpenBrace';
 
     public const string CODE_SPACE_BEFORE_CLOSE_BRACE = 'SpaceBeforeCloseBrace';
+
+    public const string CODE_BLANK_LINE_AFTER_OPEN_BRACE = 'BlankLineAfterOpenBrace';
+
+    public const string CODE_BLANK_LINE_BEFORE_CLOSE_BRACE = 'BlankLineBeforeCloseBrace';
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -96,6 +101,50 @@ class GroupUseLayoutSniff implements Sniff
             $error = 'The closing brace of a group use split across lines must be on a line of its own';
             $closerIndent = str_repeat(' ', $indent);
             $this->checkStartsLine($phpcsFile, $last, $closer, $closerIndent, $error, self::CODE_CLOSER_LINE);
+            $error = 'There must be no blank line before the closing brace of a group use';
+            $code = self::CODE_BLANK_LINE_BEFORE_CLOSE_BRACE;
+            $this->checkNoBlankLine($phpcsFile, $last, $closer, $closerIndent, $error, $code);
+        }
+
+        $first = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), $closer, true);
+        if ($first !== false) {
+            $error = 'There must be no blank line after the opening brace of a group use';
+            $code = self::CODE_BLANK_LINE_AFTER_OPEN_BRACE;
+            $this->checkNoBlankLine($phpcsFile, $stackPtr, $first, $nameIndent, $error, $code);
+        }
+    }
+
+    /**
+     * Report a blank line between two tokens on different lines, and fix it by putting the second on the line after
+     * the first.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $previous The position of the token before the gap.
+     * @param int $ptr The position of the token after the gap.
+     * @param string $indent The indent for the second token's line.
+     * @param string $error The message.
+     * @param string $code The error's code.
+     */
+    private function checkNoBlankLine(
+        File $phpcsFile,
+        int $previous,
+        int $ptr,
+        string $indent,
+        string $error,
+        string $code,
+    ): void {
+        $tokens = $phpcsFile->getTokens();
+
+        // A `//` comment's token holds its own line break, so it ends on the line after it starts.
+        $endsLine = str_ends_with($tokens[$previous]['content'], $phpcsFile->eolChar);
+        $previousLine = $tokens[$previous]['line'] + ($endsLine ? 1 : 0);
+        if (($tokens[$ptr]['line'] - $previousLine) < ($endsLine ? 1 : 2)) {
+            return;
+        }
+
+        if ($phpcsFile->addFixableError($error, $ptr, $code)) {
+            $break = $endsLine ? '' : $phpcsFile->eolChar;
+            FixerHelper::replaceBetween($phpcsFile, $previous, $ptr, $break . $indent);
         }
     }
 

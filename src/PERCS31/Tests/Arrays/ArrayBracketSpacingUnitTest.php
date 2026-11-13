@@ -20,15 +20,20 @@ class ArrayBracketSpacingUnitTest extends AbstractSniffTestCase
     {
         return [
             // One blank line, then two.
-            54 => 1,
-            61 => 1,
+            49 => 1,
+            56 => 1,
             // A keyed array, and the long array syntax.
+            61 => 1,
             66 => 1,
-            71 => 1,
             // A nested array.
-            77 => 1,
+            72 => 1,
             // After a comment (not fixable).
-            84 => 1,
+            79 => 1,
+            // After the opening bracket: one blank line, two, the long array syntax, and before a comment.
+            82 => 1,
+            87 => 1,
+            93 => 1,
+            98 => 1,
         ];
     }
 

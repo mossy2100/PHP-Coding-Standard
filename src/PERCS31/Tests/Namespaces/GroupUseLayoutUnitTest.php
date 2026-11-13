@@ -34,6 +34,10 @@ class GroupUseLayoutUnitTest extends AbstractSniffTestCase
             43 => 2,
             44 => 1,
             45 => 1,
+            // A blank line after the opening brace, and before the closing one, after a name and after a comment.
+            53 => 1,
+            56 => 1,
+            60 => 1,
         ];
     }
 

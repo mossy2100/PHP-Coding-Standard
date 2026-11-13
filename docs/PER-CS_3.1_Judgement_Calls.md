@@ -519,7 +519,8 @@ doesn't have it either.
 doesn't say how a split one is laid out.
 
 **Ruleset:** A group `use` is all on one line, or has one name per line, indented once, with the first name on the line
-after the `{`, and the `}` on a line of its own. `use A\{B,` then `C,` then `};` is reported.
+after the `{`, and the `}` on a line of its own. `use A\{B,` then `C,` then `};` is reported. So is a blank line after
+the `{` or before the `}`, as for an array.
 
 **Why:** The two examples are the only forms the spec shows, and they match its rules for a single-line and a multi-line
 array (11).
@@ -1199,11 +1200,16 @@ argument split over lines doesn't split an argument list.
 
 ### Spacing and the Closing Bracket
 
-**Issue:** The text doesn't set comma spacing or space inside the brackets.
+**Issue:** The text doesn't set comma spacing or space inside the brackets. It puts the first value "on the next line"
+after the `[`, and the `]` "on the next line after the last value", without saying whether a blank line may come
+between.
 
-**Ruleset:** One space after a comma, no space inside the brackets, and no blank line before a multi-line array's `]`.
+**Ruleset:** One space after a comma, no space inside the brackets, and no blank line after a multi-line array's `[` or
+before its `]`. A blank line between two values is allowed.
 
-**Why:** Section 11 introduces its example as showing "correct array usage".
+**Why:** Section 11 introduces its example as showing "correct array usage". A value two lines after the `[` isn't on
+the next line, and the same goes for the `]`. 2.3 allows blank lines "except where explicitly forbidden", which leaves
+the ones between values.
 
 ---
 
