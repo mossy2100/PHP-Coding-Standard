@@ -19,7 +19,7 @@ use PHP_CodeSniffer\Util\Tokens;
  *   as a plain name is checked. One read as a keyword, such as `SELF` or `NULL`, is already reported there by
  *   PERCS31.PHP.LowerCaseKeyword or Generic.PHP.LowerCaseConstant.
  * - It drops the parent's reports for a `set` hook's parameter after an attribute, as in `set(#[A] INT $value)`. There,
- *   the parent reads the parameter as a property, and reports its type twice, as PropertyTypeFound.
+ *   the parent reads the parameter as a property, and reports its type as PropertyTypeFound.
  */
 class LowerCaseTypeSniff extends GenericSniff
 {

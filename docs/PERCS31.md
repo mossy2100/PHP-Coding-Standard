@@ -2452,7 +2452,7 @@ parameters, return types, properties, typed constants and casts, with two gaps:
   read there as a keyword, such as `SELF` or `NULL`, is already reported by `PERCS31.PHP.LowerCaseKeyword` or
   `Generic.PHP.LowerCaseConstant`.
 - After an attribute, as in `set(#[Sensitive] INT $value)`, it reads the parameter as a property, and reports its type
-  twice. This sniff drops those two reports, and makes its own.
+  as `PropertyTypeFound`. This sniff drops that report, and makes its own.
 
 A backed enum's type is checked by [`PERCS31.Classes.ClassDeclaration`](#percs31classesclassdeclaration).
 
@@ -2713,7 +2713,8 @@ can appear. This replaces the `NullTypeHintNotOnLastPosition` and `RequiredShort
 with `null` SHOULD be written `?T`. The Slevomat sniff gets some cases wrong:
 
 - It skips the `null` position in a type with an intersection, such as `null|(A&B)`.
-- For `null|int`, it only gives the `?T` warning, so the MUST is lost below warning level.
+- For `null|int`, it only reports the missing `?T`, not the position. `?T` is a SHOULD, so with that code set to a
+  warning, the MUST is lost below warning level.
 - It doesn't check a typed constant, or a `set` hook's parameter, which PHP_CodeSniffer reads as an expression.
 - Its `?T` fix deletes `static` from a return type, so `static|null` becomes `?`, which is a parse error.
 
