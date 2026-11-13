@@ -223,7 +223,7 @@ class RulesetUnitTest extends TestCase
 
     /**
      * Test that a statement after a block declare in the header is one spacing error in both standards, as section 3
-     * wants a blank line, and that one after any other control structure is an error in Jumbo only.
+     * wants a blank line, and that one after any other control structure is an error in both too.
      */
     public function testStatementAfterClosingBrace(): void
     {
@@ -242,7 +242,7 @@ class RulesetUnitTest extends TestCase
             $isBlock = $source === $block;
             $this->assertSame($isBlock, str_contains($perCs['output'], 'SpacingAfterDeclareBlock'), $perCs['output']);
             $this->assertSame($isBlock, str_contains($jumbo['output'], 'SpacingAfterDeclareBlock'), $jumbo['output']);
-            $this->assertStringNotContainsString('StatementAfter', $perCs['output']);
+            $this->assertSame(!$isBlock, str_contains($perCs['output'], 'StatementAfter'), $perCs['output']);
             $this->assertSame(!$isBlock, str_contains($jumbo['output'], 'StatementAfter'), $jumbo['output']);
         }
     }

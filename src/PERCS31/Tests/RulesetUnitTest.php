@@ -606,6 +606,43 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a throw expression in a case isn't reported, that a terminating statement sharing a line is reported
+     * once, and that the fix puts it on the next line with no blank line before it.
+     */
+    public function testTerminatingStatementInCaseIsReportedOnce(): void
+    {
+        $source = "<?php\n\nswitch (\$a) {\n    case 1:\n        \$b = foo() ?? throw new \\Exception();\n"
+            . "        break;\n    case 2: break;\n    case 3:\n        run(); break;\n    case 4:\n"
+            . "        if (\$b) {\n            run();\n        } return;\n}\n";
+        $expected = "<?php\n\nswitch (\$a) {\n    case 1:\n        \$b = foo() ?? throw new \\Exception();\n"
+            . "        break;\n    case 2:\n        break;\n    case 3:\n        run();\n        break;\n"
+            . "    case 4:\n        if (\$b) {\n            run();\n        }\n        return;\n}\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        preg_match_all('/:(\d+):\d+: error - .*\(([\w.]+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
+        $reports = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
+
+        $this->assertSame(
+            [
+                '7 PERCS31.ControlStructures.SwitchDeclaration.BodyOnNextLineCASE',
+                '9 PERCS31.Formatting.DisallowMultipleStatements.SameLine',
+                '13 PERCS31.Formatting.AfterClosingBrace.StatementAfter',
+            ],
+            $reports,
+            $result['output'],
+        );
+        $this->assertSame($expected, $fixed);
+    }
+
+    /**
      * Test that a comma starting a line in a call's arguments is reported once, including after a heredoc's closing
      * marker, as is the spacing around a comma in an array inside the call, and that the fix corrects each one.
      */

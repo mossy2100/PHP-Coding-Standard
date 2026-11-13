@@ -82,9 +82,6 @@ class PropertyHookLayoutUnitTest extends AbstractSniffTestCase
             // A short hook on the opening brace's line, in a list over several lines.
             326 => 1,
             330 => 1,
-            // Code after a hook list's closing brace, the second with a comment in the way.
-            348 => 1,
-            352 => 1,
         ];
     }
 

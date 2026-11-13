@@ -235,7 +235,6 @@ gives the reason. The custom sniffs for PER Coding Style itself are in [PERCS31]
 | `Jumbo.ControlStructures.MatchArmWrapIndent`               | One line if it fits, else a wrapped `match` arm indented once   | Yes     |
 | `Jumbo.ControlStructures.RequireShortTernaryOperator`      | `$a ?: $b`, skipping a nullable type in a `set` hook            | Yes     |
 | `Jumbo.ControlStructures.RequireSingleLineHeader`          | A multi-line loop, `switch` or `match` header fits on a line    | Yes     |
-| `Jumbo.ControlStructures.StatementAfterClosingBrace`       | A control structure's `}` on its own line                       | Yes     |
 | `Jumbo.Formatting.RequireSingleLineStatement`              | A split statement or `case` label fits on a line                | Yes     |
 | `Jumbo.Functions.RequireSingleLineCall`                    | A call that fits is on one line, skipping a class or `match`    | Yes     |
 | `Jumbo.Functions.RequireSingleLineSignature`               | A split function or closure signature fits on a line            | Yes     |
@@ -479,44 +478,6 @@ foreach (
 | `maxLineLength` | int  | 120     | Maximum line length for a collapsed header. |
 
 To use a different limit, set every line-length property, as described in [Line Length](LineLength.md).
-
----
-
-### Jumbo.ControlStructures.StatementAfterClosingBrace
-
-Requires a control structure's closing brace to be on its own line, for `if`, `elseif`, `else`, `for`, `foreach`,
-`while`, `do`, `switch`, `try`, `catch`, `finally` and block `declare` statements. It allows:
-
-- A comment, such as `} // for $i`.
-- What continues the structure: `} else {`, `} elseif (...) {`, `} else if (...) {`, `} catch (...) {`, `} finally {`,
-  or the `} while (...);` of a `do`.
-- A closing PHP tag, or another closing brace.
-
-**Why:** [PER Coding Style 3.1, Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says any closing brace MUST NOT be followed by a comment or statement on the
-same line, but it's in the section on classes, properties and methods, and PERCS31 reads it as only those. So this is an
-extra rule. No inherited sniff checks it.
-
-A block `declare` in the file header is skipped, as [`PERCS31.Files.FileHeader`](PERCS31.md#percs31filesfileheader) reports what follows it.
-
-**Auto-fixable:** yes. The statement moves to the next line.
-
-**Good:**
-
-```php
-if ($ready) {
-    start();
-} // $ready
-
-stop();
-```
-
-**Bad:**
-
-```php
-if ($ready) {
-    start();
-} stop();
-```
 
 ---
 

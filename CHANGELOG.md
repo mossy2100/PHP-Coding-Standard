@@ -49,9 +49,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   shares the `{`'s line in a list over several lines, as in `{ get => 1;` then `set => $value;`, as `HookNotOnOwnLine`.
   PER Coding Style 3.1 only lets a single short hook that doesn't wrap be inline. The fix for
   `{ get => 1; set => $value; }` used to leave that layout. Auto-fixable.
-- **Code after a hook list's closing brace (breaking).** `PERCS31.Classes.PropertyHookLayout` now reports
-  `} public int $b = 1;` after a hook list, as `CodeAfterCloser`, as PER Coding Style 3.1 puts that brace on its own
-  line. Auto-fixable, unless a comment is in the way.
 - **A parameter list split only by an attribute (breaking).** `function a(#[Foo]` then `$b)` is now reported by
   `PERCS31.Functions.MultiLineFunctionDeclaration`, and fixed to one parameter per line, with `) {` on a line of their
   own. It was read as a single-line declaration, so it passed. Auto-fixable.
@@ -147,9 +144,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   up to its value if it fits, and otherwise indented one level past its first line. A comma before an arm's `=>` is also
   an error there, even with its conditions split over lines (new `PERCS31.Formatting.TrailingComma` property
   `disallowInSplitMatchConditions`). Auto-fixable.
-- **`Jumbo.ControlStructures.StatementAfterClosingBrace` (breaking).** A control structure's closing brace must be on
-  its own line in the Jumbo standard, so `} stop();` is an error. A comment such as `} // for $i` is allowed, and so is
-  what continues the structure, such as `} else {`. Auto-fixable.
+- **`PERCS31.Formatting.AfterClosingBrace` (breaking).** Replaces `PSR12.Classes.ClosingBrace`, and checks every
+  closing brace, as PER Coding Style 3.1, section 4, says "any closing brace". A statement after one on the same line is
+  reported as `StatementAfter`, so `} stop();` after an `if` or a loop is an error, and so is `} public int $b = 1;`
+  after a property's hook list. What continues the statement is allowed, such as `} else {`. A comment after the closing
+  brace of a class, method, function or property hook is reported as `CommentAfter`. A comment after any other brace,
+  such as `} // for $i`, is allowed, and so is a phpcs annotation. A statement is auto-fixable, unless a comment is in
+  the way. A comment isn't.
 - **`PERCS31.ControlStructures.MatchArmPlacement` (breaking).** Each `match` arm must start on a new line, as PER Coding
   Style 3.1, section 5.2, shows. Auto-fixable.
 - **Comma spacing in every list (breaking).** As PER Coding Style 3.1's examples show, a comma has no space before it
@@ -405,9 +406,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   promoted constructor parameter. They skip a function with one, and check everything else as before.
 - **`Squiz.WhiteSpace.ObjectOperatorSpacing` (breaking).** Disallows spaces around `->`, `?->` and `::`, e.g.
   `$a -> b()` or `Foo :: bar()`. A line break before one, in a wrapped method chain, is allowed. Auto-fixable.
-- **`PERCS31.Classes.ClosingBrace` (breaking).** Replaces `PSR12.Classes.ClosingBrace`, and also reports a comment after
-  a property hook list's or hook body's closing brace on the same line, as PER Coding Style 3.1, section 4, covers
-  properties. A phpcs annotation is allowed. Not auto-fixable.
 - **`Universal.Constants.ModifierKeywordOrder` (breaking).** In the Jumbo standard, `final` must come before the
   visibility on a constant, as in `final public const A`, the order PER Coding Style 3.1 sets for classes, properties
   and methods. Auto-fixable. PERCS31 allows either order, as section 4.6 doesn't name constants.
@@ -511,8 +509,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   nothing left to report.
 - **Four duplicate messages.** Each of these was reported twice. The second report is gone, so a `phpcs:ignore` for it
   can be removed:
-  - `PERCS31.Classes.PropertyHookLayout.CommentAfterCloser`, as `PERCS31.Classes.ClosingBrace` reports a comment after a
-    hook list's closing brace.
+  - `PERCS31.Classes.PropertyHookLayout.CommentAfterCloser`, as `PERCS31.Formatting.AfterClosingBrace` reports a
+    comment after a hook list's closing brace.
   - `SlevomatCodingStandard.Classes.BackedEnumTypeSpacing.IncorrectSpacesBeforeType`, as
     `PERCS31.Classes.ClassDeclaration` reports the space after an enum's colon.
   - `Squiz.Arrays.ArrayDeclaration.CloseBraceNewLine`, as `Generic.Arrays.ArrayIndent` reports a closing bracket that
@@ -713,6 +711,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   an argument in an argument list. One helper now decides whether parentheses hold arguments, for every sniff that asks.
   `PERCS31.Classes.ClassInstantiationNoBrackets` also reports `(new Foo())->bar()` straight after a block's closing
   brace, which it took for a call.
+- A `throw` or `exit` expression in a `case`. `$b = foo() ?? throw new Exception();` in a `case` was reported twice, by
+  `PERCS31.ControlStructures.SwitchDeclaration.BreakNotNewLine` and
+  `PERCS31.WhiteSpace.ScopeClosingBrace.ContentBefore`, and `phpcbf` failed to fix the file. `BreakNotNewLine` is now
+  excluded, and `ScopeClosingBrace` no longer checks a `case` or `default`, which has no braces. A terminating statement
+  that shares a line is still reported, once, and the message no longer calls a `break` a closing brace.
 
 ---
 

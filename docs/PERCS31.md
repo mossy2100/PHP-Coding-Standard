@@ -55,7 +55,7 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 - **Generic.PHP.LowerCaseType**, by [`PERCS31.PHP.LowerCaseType`](#percs31phplowercasetype), which also checks a `set` hook's parameter type.
 - **Generic.NamingConventions.UpperCaseConstantName**, from PSR-1, by [`PERCS31.NamingConventions.UpperCaseConstantName`](#percs31namingconventionsuppercaseconstantname),
   which allows PascalCase for an enum constant.
-- **PSR12.Classes.ClosingBrace**, by [`PERCS31.Classes.ClosingBrace`](#percs31classesclosingbrace), which also checks a property hook's closing braces.
+- **PSR12.Classes.ClosingBrace**, by [`PERCS31.Formatting.AfterClosingBrace`](#percs31formattingafterclosingbrace), which checks every closing brace.
 - **PSR12.ControlStructures.BooleanOperatorPlacement** is kept, with `allowOnly` set to `first`, so a wrapped `&&` or
   `||` in a condition starts the line (5.1, 6.4). PSR-12 only requires consistency.
 - **PSR12.ControlStructures.ControlStructureSpacing**, by [`PERCS31.ControlStructures.ControlStructureSpacing`](#percs31controlstructurescontrolstructurespacing), which
@@ -214,7 +214,6 @@ section gives the reason.
 | `PERCS31.Classes.AnonClassOpeningBrace`                 | One space before an anonymous class's `{`, and nothing after it     | Yes     |
 | `PERCS31.Classes.ClassDeclaration`                      | Class declarations, allowing an empty body as `{}`                  | Yes     |
 | `PERCS31.Classes.ClassInstantiationNoBrackets`          | A warning for `(new Foo())->bar()`                                  | Yes     |
-| `PERCS31.Classes.ClosingBrace`                          | No comment or statement after a class's, function's or hook's `}`   | No      |
 | `PERCS31.Classes.ConstantDeclaration`                   | One space after a class constant's `const`, and after its type      | Yes     |
 | `PERCS31.Classes.DynamicClassInstantiation`             | An argument list after `new (expression)`                           | Yes     |
 | `PERCS31.Classes.EnumMemberVisibility`                  | `private`, not `protected`, for a method or constant in an enum     | Yes     |
@@ -232,6 +231,7 @@ section gives the reason.
 | `PERCS31.Files.Encoding`                                | A file is encoded in UTF-8                                          | No      |
 | `PERCS31.Files.FileHeader`                              | The file header, allowing `<?php declare(...) ?>` above markup      | Yes     |
 | `PERCS31.Files.LineLength`                              | A warning over 120 characters, and a hidden one over 80             | No      |
+| `PERCS31.Formatting.AfterClosingBrace`                  | No statement after a `}`, or comment after a class's or function's  | Partly  |
 | `PERCS31.Formatting.DisallowMultipleStatements`         | One statement per line, allowing `{ get; set; }`                    | Yes     |
 | `PERCS31.Formatting.EmptyBody`                          | An empty class, function, closure or anonymous class body is `{}`   | Yes     |
 | `PERCS31.Formatting.MethodChaining`                     | A split chain's first method, its `->` and their indent             | Yes     |
@@ -672,43 +672,6 @@ $total = (new Calculator())->add(1, 2);
 
 ---
 
-### PERCS31.Classes.ClosingBrace
-
-Disallows a comment or statement after the closing brace of a class, method or function, and after a property's hook
-list or hook body. This replaces `PSR12.Classes.ClosingBrace`.
-
-**Why:** [PER Coding Style 3.1, Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says any closing brace MUST NOT be followed by any comment or statement on the
-same line. The PSR-12 sniff checks classes, interfaces, traits, enums and functions, but not a property hook, as
-PHP_CodeSniffer doesn't know about hooks. So this sniff also checks a hook list's `}` and each hook body's, as section 4
-covers properties. Here, only a comment after one is reported, as [`PERCS31.Classes.PropertyHookLayout`](#percs31classespropertyhooklayout) reports code
-after one. That includes after a promoted property's hook list, as in `{ set => trim($value); }, // Comment`. A phpcs
-annotation is allowed, as it only works on that line.
-
-An anonymous class's, a closure's and a control structure's closing brace aren't checked. Each is part of a larger
-expression or statement, and what completes it, such as `};`, follows.
-
-**Auto-fixable:** no.
-
-**Good:**
-
-```php
-final class Counter
-{
-    public int $count = 0;
-}
-```
-
-**Bad:**
-
-```php
-final class Counter
-{
-    public int $count = 0;
-} // Counts calls.
-```
-
----
-
 ### PERCS31.Classes.ConstantDeclaration
 
 Requires a single space after a class constant's `const` keyword, and between its type and its name. A line break counts
@@ -938,8 +901,8 @@ Checks the layout of a property's hook list: its braces, and the `=>` of a short
 This sniff checks:
 
 - The opening brace is on the same line as the property, after a single space.
-- In the long form, the closing brace is on its own line. Code after it on its line, such as the next property, is
-  reported as `CodeAfterCloser`. A comment after it is reported by [`PERCS31.Classes.ClosingBrace`](#percs31classesclosingbrace).
+- In the long form, the closing brace is on its own line. A comment or code after it on its line, such as the next
+  property, is reported by [`PERCS31.Formatting.AfterClosingBrace`](#percs31formattingafterclosingbrace).
 - In a list of short hooks over several lines, each hook starts on its own line, as only a single hook whose expression
   doesn't wrap may be inline. So `{ get => 1;` followed by `set => $value;` on the next line is reported.
 - In a list with a `{}` body, each hook starts on its own line, each body starts on the line after its `{`, and each `}`
@@ -1306,6 +1269,12 @@ line is allowed, as in `case 1: // The first.`
 The parent's `caseNotLower` and `defaultNotLower` codes are excluded, as [`PERCS31.PHP.LowerCaseKeyword`](#percs31phplowercasekeyword) reports an
 upper-case `CASE` or `DEFAULT` already.
 
+The parent's `BreakNotNewLine` code is excluded too. PHP_CodeSniffer 4.0.4 takes a `throw` or `exit` inside an
+expression, as in `$b = foo() ?? throw new Exception();`, for the statement that ends the `case`, so the code was
+reported on compliant code, and its fix never finished. A terminating statement that shares a line is still reported:
+after the label by `BodyOnNextLineCASE`, after another statement by [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements), and
+after a closing brace by [`PERCS31.Formatting.AfterClosingBrace`](#percs31formattingafterclosingbrace).
+
 A multi-line `case` condition must also follow the rule for any expression split inside parentheses. The first condition
 must be on the line after `(`, and each line must be indented at least once past the `case`.
 
@@ -1470,6 +1439,73 @@ measured as by the parent, and gets at most one warning. See [Line Length](LineL
 | `lineLimit`            | int  | 120     | The soft limit, over which a line gets a `TooLong` warning.                         |
 | `recommendedLineLimit` | int  | 80      | The limit over which a line gets an `OverRecommended` warning, or 0 to turn it off. |
 | `absoluteLineLimit`    | int  | 0       | A hard limit, over which a line gets an error. PER says there MUST NOT be one.      |
+
+---
+
+### PERCS31.Formatting.AfterClosingBrace
+
+Disallows a statement after any closing brace on the same line, and a comment after the closing brace of a class,
+interface, trait, enum, method or function, or of a property's hook list or hook body. This replaces
+`PSR12.Classes.ClosingBrace`.
+
+**Why:** [PER Coding Style 3.1, Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says any closing brace MUST NOT be followed by any comment or statement on the
+same line. PERCS31 reads that as two rules:
+
+- **No statement after any closing brace**, as in `} run();` after an `if`. [Section 2.3](https://www.php-fig.org/per/coding-style/#23-lines) allows one statement per line.
+  Reported as `StatementAfter`.
+- **No comment after the closing brace of a class, method, function or property hook**, which are what section 4 is
+  about. Reported as `CommentAfter`. A comment is allowed after any other brace, such as `} // for $i`.
+
+`PSR12.Classes.ClosingBrace` checks classes and functions only, and reports both under one code that can't be fixed. No
+inherited sniff checks a control structure's brace, or a property hook's.
+
+What continues the brace's own statement isn't a new statement, so these are allowed:
+
+- `} else {`, `} elseif (...) {`, `} else if (...) {`, `} catch (...) {` and `} finally {`.
+- The `} while (...);` of a `do`.
+- What follows the brace of a closure, an anonymous class or a `match`, as in `});`. That brace isn't checked. A
+  statement after its `;` is reported by [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements).
+
+Also allowed after a brace:
+
+- A phpcs annotation, as it only works on that line.
+- A closing PHP tag.
+- Another closing brace, which [`PERCS31.WhiteSpace.ScopeClosingBrace`](#percs31whitespacescopeclosingbrace) reports.
+- The `,` or `)` after a promoted property's hook list. A comment after that comma is still reported.
+- The next hook after a hook's body, which [`PERCS31.Classes.PropertyHookLayout`](#percs31classespropertyhooklayout) reports.
+
+A block `declare` in the file header is skipped, as [`PERCS31.Files.FileHeader`](#percs31filesfileheader) reports what follows it.
+
+**Auto-fixable:** partly. A statement moves to the next line, unless a comment comes before it, or it's the `;` of an
+empty statement, as in `class Foo {};`. A comment isn't moved, as where it should go is left to a person.
+
+**Good:**
+
+```php
+final class Counter
+{
+    public int $count = 0;
+}
+
+if ($ready) {
+    start();
+} // $ready
+
+stop();
+```
+
+**Bad:**
+
+```php
+final class Counter
+{
+    public int $count = 0;
+} // Counts calls.
+
+if ($ready) {
+    start();
+} stop();
+```
 
 ---
 
@@ -2880,6 +2916,11 @@ Checks that a scope's closing brace is on a line by itself, and indented to matc
 [PER Coding Style 3.1, Sections 4, 4.4 and 7](https://www.php-fig.org/per/coding-style/#7-closures) requires for a closure and recommends for a class or function. This sniff
 skips that case, and leaves everything else to the parent. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody). It skips a control
 structure's empty body written as `{}` too, which [PERCS31.ControlStructures.BodyOnNextLine](#percs31controlstructuresbodyonnextline) allows.
+
+It also skips `case` and `default`, which have no braces. The parent treats a case's terminating statement, such as
+`break`, as its closing brace, and reported it as a "closing brace" that isn't on its own line. Where that statement
+goes is checked by [`PERCS31.ControlStructures.SwitchDeclaration`](#percs31controlstructuresswitchdeclaration), [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements) and
+[`PERCS31.Formatting.AfterClosingBrace`](#percs31formattingafterclosingbrace).
 
 **Auto-fixable:** yes, as the parent.
 

@@ -39,7 +39,7 @@ try {
 
 while (next($items)) {}
 
-// A throw or exit inside an expression doesn't end a case, though the tokenizer takes it for the case's closer.
+// A case has no braces, so it isn't checked, whatever the tokenizer takes for its closer.
 switch ($a) {
     case 1:
         $b = foo() ?? throw new Exception();

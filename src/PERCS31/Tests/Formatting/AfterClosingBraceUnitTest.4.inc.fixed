@@ -1,0 +1,12 @@
+<?php
+
+namespace A {
+    echo 1;
+} // A comment is allowed after a namespace's brace.
+
+namespace B {
+    echo 1;
+}
+namespace C {
+    echo 1;
+}

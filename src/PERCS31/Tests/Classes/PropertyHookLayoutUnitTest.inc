@@ -340,7 +340,7 @@ final class ShortHooksOverLines
     }
 }
 
-// Code after a hook list's closing brace.
+// Code after a hook list's closing brace is reported by PERCS31.Formatting.AfterClosingBrace.
 final class CodeAfterCloser
 {
     public string $first {

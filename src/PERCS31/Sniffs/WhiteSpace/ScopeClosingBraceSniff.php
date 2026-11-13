@@ -17,10 +17,9 @@ use PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\ScopeClosingBraceSniff as 
  * `catch (Exception $e) {}` is allowed too. This sniff skips an empty body on one line, and leaves everything else to
  * the parent.
  *
- * It also skips a `case` or `default` whose closer is a `throw` or `exit` inside an expression, as in
- * `$b = foo() ?? throw new Exception();`. PHP_CodeSniffer 4.0.4's tokenizer takes the first `throw` or `exit` in a
- * case's body for the statement that ends it, so the parent reported it as a closing brace that isn't on its own line.
- * Only one that starts a statement ends the case.
+ * It also skips `case` and `default`, which have no braces. The parent treats a case's terminating statement, such as
+ * `break`, as its closing brace. PERCS31.ControlStructures.SwitchDeclaration and
+ * PERCS31.Formatting.DisallowMultipleStatements check where that statement goes.
  */
 class ScopeClosingBraceSniff extends SquizSniff
 {
@@ -38,11 +37,7 @@ class ScopeClosingBraceSniff extends SquizSniff
         }
 
         $tokens = $phpcsFile->getTokens();
-        $closer = $tokens[$stackPtr]['scope_closer'] ?? null;
-        $isExpression = is_int($closer)
-            && in_array($tokens[$closer]['code'], [T_THROW, T_EXIT], true)
-            && $phpcsFile->findStartOfStatement($closer) !== $closer;
-        if ($isExpression) {
+        if (in_array($tokens[$stackPtr]['code'], [T_CASE, T_DEFAULT], true)) {
             return;
         }
 

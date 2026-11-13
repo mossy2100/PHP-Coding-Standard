@@ -17,8 +17,7 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * PER Coding Style 3.1, section 4.9, says:
  * - The opening brace MUST be on the same line as the property, after a single space.
- * - In the long form, the closing brace MUST be on its own line, with no comment after it. Code after it on its line,
- *   such as the next property, is reported as CodeAfterCloser.
+ * - In the long form, the closing brace MUST be on its own line.
  * - The entire body of the hook definition, and the body of each hook, MUST be indented one level, and hooks MUST be
  *   separated by a line break. So in a list with a `{}` body, each hook starts on its own line, each body starts on
  *   the line after its `{`, and each `}` is first on its line. An empty body, `{}`, has nothing to move.
@@ -40,7 +39,7 @@ use PHP_CodeSniffer\Util\Tokens;
  * A hook on a promoted constructor parameter is reported by PERCS31.Classes.PromotedPropertyHooks, so its body isn't
  * checked here. Indentation is checked by PERCS31.WhiteSpace.ScopeIndent, several statements on a line by
  * PERCS31.Formatting.DisallowMultipleStatements, `get` before `set` by PERCS31.Classes.PropertyDeclaration, and a
- * comment after the closing brace by PERCS31.Classes.ClosingBrace.
+ * comment or code after the closing brace by PERCS31.Formatting.AfterClosingBrace.
  */
 class PropertyHookLayoutSniff implements Sniff
 {
@@ -50,7 +49,6 @@ class PropertyHookLayoutSniff implements Sniff
 
     public const string CODE_CLOSER_NOT_ON_OWN_LINE = 'CloserNotOnOwnLine';
 
-    public const string CODE_CODE_AFTER_CLOSER = 'CodeAfterCloser';
 
     public const string CODE_ARROW_SPACING = 'ArrowSpacing';
 
@@ -269,8 +267,8 @@ class PropertyHookLayoutSniff implements Sniff
     }
 
     /**
-     * Check that the closing brace of a hook list over several lines is on its own line, with no code after it. A
-     * comment after it is reported by PERCS31.Classes.ClosingBrace.
+     * Check that the closing brace of a hook list over several lines is on its own line. A comment or code after it
+     * is reported by PERCS31.Formatting.AfterClosingBrace.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $opener The position of the hook list's opening brace.
@@ -288,24 +286,6 @@ class PropertyHookLayoutSniff implements Sniff
                 $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $opener));
                 FixerHelper::replaceBetween($phpcsFile, $previous, $closer, $phpcsFile->eolChar . $indent);
             }
-        }
-
-        // What follows a promoted property's hook list, a `,` or `)`, is part of the parameter list.
-        $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($closer + 1), null, true);
-        if (
-            $next === false
-            || $tokens[$next]['line'] !== $tokens[$closer]['line']
-            || in_array($tokens[$next]['code'], [T_COMMA, T_CLOSE_PARENTHESIS], true)
-        ) {
-            return;
-        }
-
-        $error = 'The closing brace of a property\'s hooks must not be followed by code on the same line';
-        $isFixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($closer + 1), $next) === false;
-        $code = self::CODE_CODE_AFTER_CLOSER;
-        if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $closer, $code)) {
-            $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $opener));
-            FixerHelper::replaceBetween($phpcsFile, $closer, $next, $phpcsFile->eolChar . $indent);
         }
     }
 

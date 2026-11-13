@@ -36,12 +36,11 @@ if ($a) { echo 1; } ?>
 <p>Hi</p>
 <?php
 
-// A class or function is PSR12.Classes.ClosingBrace's.
+// === INVALID ===
+
 function a()
 {
 } echo 1;
-
-// === INVALID ===
 
 declare(ticks=1) {
     echo 1;

@@ -17,7 +17,7 @@
         <exclude name="Squiz.WhiteSpace.ScopeClosingBrace"/>
         <!-- Replaced by a PERCS31 version with the switch rules (5.2) -->
         <exclude name="PSR2.ControlStructures.SwitchDeclaration"/>
-        <!-- Replaced by a PERCS31 version that also checks a property hook's closing braces (4) -->
+        <!-- Replaced by PERCS31.Formatting.AfterClosingBrace, which checks every closing brace (4) -->
         <exclude name="PSR12.Classes.ClosingBrace"/>
         <!-- Replaced by a PERCS31 version that also covers the pipe operator |> (6.2) -->
         <exclude name="PSR12.Operators.OperatorSpacing"/>
@@ -238,8 +238,9 @@
 
     <!-- ====== CLASSES, PROPERTIES AND CONSTANTS (4) ====== -->
 
-    <!-- No comment or statement after a class's, method's, function's or property hook's closing brace (4) -->
-    <rule ref="PERCS31.Classes.ClosingBrace"/>
+    <!-- No statement after any closing brace, and no comment after a class's, method's, function's or property hook's
+         (4, 2.3) -->
+    <rule ref="PERCS31.Formatting.AfterClosingBrace"/>
 
     <!-- A warning for new Foo() wrapped in parentheses before ->, ?-> or :: (4) -->
     <rule ref="PERCS31.Classes.ClassInstantiationNoBrackets"/>
@@ -366,6 +367,10 @@
         <!-- Covered by PERCS31.PHP.LowerCaseKeyword, which reports the same keywords (2.5) -->
         <exclude name="PERCS31.ControlStructures.SwitchDeclaration.caseNotLower"/>
         <exclude name="PERCS31.ControlStructures.SwitchDeclaration.defaultNotLower"/>
+        <!-- Reported on a throw or exit expression in a case, as in $a ?? throw $e, which PHP_CodeSniffer takes for
+             the case's terminating statement. A terminating statement that shares a line is still reported, by
+             BodyOnNextLine, PERCS31.Formatting.DisallowMultipleStatements or PERCS31.Formatting.AfterClosingBrace. -->
+        <exclude name="PERCS31.ControlStructures.SwitchDeclaration.BreakNotNewLine"/>
     </rule>
 
     <!-- Each match arm on a new line, as in the example in 5.2 -->

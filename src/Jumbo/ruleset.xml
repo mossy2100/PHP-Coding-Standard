@@ -153,7 +153,7 @@
         </properties>
     </rule>
 
-    <!-- UPPER_CASE is the house style for every constant, so hide the warning recommending PascalCase in enums (9) -->
+    <!-- UPPER_CASE is preferred for every constant, so bury the warning recommending PascalCase for enum constants -->
     <rule ref="PERCS31.NamingConventions.UpperCaseConstantName.EnumConstantNotPascalCase">
         <severity>4</severity>
     </rule>
@@ -240,9 +240,6 @@
             <property name="maxLineLength" value="&lineLength;"/>
         </properties>
     </rule>
-
-    <!-- A control structure's closing brace on its own line, except for a comment, or what continues the structure -->
-    <rule ref="Jumbo.ControlStructures.StatementAfterClosingBrace"/>
 
     <!-- A match arm on one line up to its value if it fits, otherwise indented one level past its first line, and no
          comma before its => -->
@@ -421,7 +418,11 @@
 
     <rule ref="SlevomatCodingStandard.Variables.DisallowVariableVariable"/>
     <rule ref="SlevomatCodingStandard.Variables.DuplicateAssignmentToVariable"/>
-    <rule ref="SlevomatCodingStandard.Variables.UnusedVariable"/>
-    <rule ref="SlevomatCodingStandard.Variables.UselessVariable"/>
+    <rule ref="SlevomatCodingStandard.Variables.UnusedVariable">
+        <type>warning</type>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Variables.UselessVariable">
+        <type>warning</type>
+    </rule>
 
 </ruleset>

@@ -24,6 +24,15 @@ $e = array_map(function ($v) {
 
 $f = new class {}; $g = 1;
 
+// A phpcs annotation and a closing tag are allowed after any brace.
+function annotated(): void
+{
+    $m = 1;
+} // phpcs:ignore Generic.Foo
+
+function beforeTag(): void {} ?>
+<?php
+
 // An anonymous class's closing brace isn't checked, so a comment after it passes.
 
 $h = new class {
@@ -60,27 +69,28 @@ final class WithMethod
     } // Comment.
 }
 
-// A function outside a class isn't checked by default.
+// A statement after a function's closing brace.
 function named(): void
 {
     $m = 1;
-} $n = 1;
+}
+$n = 1;
 
 function commented(): void
 {
     $m = 1;
 } // Comment.
 
-// A function's closing brace is checked too.
+// An empty statement, and a comment with a statement after it.
 function checked(): void
 {
     $m = 1;
-} $n = 1;
+};
 
 function checkedComment(): void
 {
     $m = 1;
-} // Comment.
+} /* Comment. */ $n = 1;
 // End of the functions.
 
 // A property hook body or hook list.
@@ -111,4 +121,39 @@ class B
         public string $e { set => trim($value); }, // Promoted comment.
         public string $f { set => trim($value); },
     ) {}
+}
+
+// Code after a hook list's closing brace, and after a trait use block's.
+class C
+{
+    use T { a as b; } // A comment is allowed here.
+
+    use U { a as c; }
+    public int $z = 1;
+
+    public string $first {
+        get => $this->first;
+    }
+    public int $second = 1;
+
+    public string $commented {
+        get => $this->commented;
+    } /* Why. */ public int $fourth = 1;
+
+    public int $g {
+        get {
+            return 1;
+        } set {
+            $this->g = $value;
+        }
+    }
+
+    public function method(): void
+    {
+        $m = 1;
+    }
+    public function other(): void
+    {
+        $m = 1;
+    }
 }
