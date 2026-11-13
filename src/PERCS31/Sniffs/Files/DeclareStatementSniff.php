@@ -15,6 +15,8 @@
  *   loop never ended on `){`, with no space at all.
  * - The check that the closing brace is on a new line is removed, as PERCS31.WhiteSpace.ScopeClosingBrace makes it,
  *   and with both fixes, the result had a blank line before the brace.
+ * - The closing brace's alignment is only checked when the brace is first on its line. The original's fix replaces the
+ *   token before the brace, which is only the line's indent after the removed check's fix has run.
  *
  * Apart from the namespace, every change from upstream is marked with a "PERCS31:" comment, so a diff against the
  * upstream file shows only these. To update the fork to a new PHP_CodeSniffer release, copy the new upstream file,
@@ -166,12 +168,23 @@ class DeclareStatementSniff implements Sniff
             // line before the brace.
 
             // Closing curly bracket must align with the declare keyword.
-            if ($tokens[$stackPtr]['column'] !== $tokens[$closeCurlyBracket]['column']) {
+            // PERCS31: only a brace that's first on its line is checked. The original's fix replaces the token before
+            // the brace, taking it for the line's indent. With the new-line check gone, that token can be code, as in
+            // `declare(ticks=1) {echo 1;}`, where the fix deleted the `;`. PERCS31.WhiteSpace.ScopeClosingBrace moves
+            // such a brace to its own line first.
+            $beforeBrace = $phpcsFile->findPrevious(T_WHITESPACE, ($closeCurlyBracket - 1), null, true);
+            $isFirstOnLine = $tokens[$beforeBrace]['line'] !== $tokens[$closeCurlyBracket]['line'];
+            if ($isFirstOnLine && $tokens[$stackPtr]['column'] !== $tokens[$closeCurlyBracket]['column']) {
                 $error = 'The closing curly bracket of a declare statements must be aligned with the declare keyword';
 
                 $fix = $phpcsFile->addFixableError($error, $closeCurlyBracket, 'CloseBracketNotAligned');
                 if ($fix === true) {
-                    $phpcsFile->fixer->replaceToken(($closeCurlyBracket - 1), str_repeat(' ', ($tokens[$stackPtr]['column'] - 1)));
+                    $indent = str_repeat(' ', ($tokens[$stackPtr]['column'] - 1));
+                    if ($tokens[$closeCurlyBracket]['column'] === 1) {
+                        $phpcsFile->fixer->addContentBefore($closeCurlyBracket, $indent);
+                    } else {
+                        $phpcsFile->fixer->replaceToken(($closeCurlyBracket - 1), $indent);
+                    }
                 }
             }
 

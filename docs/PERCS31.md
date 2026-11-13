@@ -1363,6 +1363,9 @@ removes whatever is between them, then adds one space.
 The original's check that a block declare's closing brace is on a new line is removed, as
 `PERCS31.WhiteSpace.ScopeClosingBrace` makes it. With both fixes, the result had a blank line before the brace.
 
+With that check gone, the original's fix for the closing brace's alignment could delete the `;` before it, as in
+`declare(ticks=1) {echo 1;}`. So the fork only checks the alignment of a brace that's first on its line.
+
 **Auto-fixable:** yes.
 
 **Good:**

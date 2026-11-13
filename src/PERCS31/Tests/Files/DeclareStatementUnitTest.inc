@@ -34,3 +34,6 @@ declare(ticks=1)
 {
     $a = 1;
 }
+
+// A block declare on one line. The fix for the brace keeps the `;` before it.
+declare(ticks=1) {$a = 1;}

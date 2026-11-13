@@ -485,6 +485,24 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a one-line block declare with no space inside its braces keeps the `;` before its closing brace, which
+     * the fix for the brace's alignment deleted.
+     */
+    public function testOneLineBlockDeclareWithNoSpacesKeepsItsSemicolon(): void
+    {
+        $file = $this->copyToTempFile(null, "<?php\n\ndeclare(ticks=1) {echo 1;}\n");
+
+        try {
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame("<?php\n\ndeclare(ticks=1) {\n    echo 1;\n}\n", $fixed);
+    }
+
+    /**
      * Test that a heredoc on the line after `=`, or after an `=` on the next line, is fixed to `$x = <<<'EOT'`, with
      * OperatorPlacement leaving the `=` alone, and the result passes.
      */

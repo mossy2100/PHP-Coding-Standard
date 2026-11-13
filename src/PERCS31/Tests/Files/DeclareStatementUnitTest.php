@@ -37,6 +37,8 @@ class DeclareStatementUnitTest extends AbstractSniffTestCase
             27 => 1,
             30 => 1,
             34 => 1,
+            // A block declare on one line: code after the opening brace.
+            39 => 1,
         ];
     }
 

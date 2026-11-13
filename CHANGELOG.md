@@ -698,6 +698,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   parentheses of a call through a string or an array, as in `[$factory, 'make'](new Foo())->bar()`, for parentheses
   around the `new`, and its fix removed them, leaving a parse error. They hold the call's arguments, so they're no
   longer reported.
+- **The fix for `declare(ticks=1) {echo 1;}` deleted the `;`.** For a block `declare` on one line with no space before
+  its closing brace, `PERCS31.Files.DeclareStatement`'s fix replaced the `;` with the brace's indent, leaving a parse
+  error. It now gives `declare(ticks=1) {`, then `echo 1;`, then `}`.
 
 ---
 
