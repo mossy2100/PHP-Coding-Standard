@@ -596,6 +596,21 @@ expression or statement, which often continues after the brace.
 
 ---
 
+### Parentheses Around `new`
+
+**Issue:** "When accessing a class member immediately after instantiating a new class, the instantiation SHOULD NOT be
+wrapped in parentheses." The spec doesn't say which parentheses wrap. In `clone(new Foo())->bar` and
+`make(new Foo())->bar`, a `new` is in parentheses, and a member is accessed straight after them.
+
+**Ruleset:** Only parentheses that group an expression are reported, as in `(new Foo())->bar()`. Parentheses that hold a
+call's arguments aren't, whatever comes after them. A name or `clone` before the `(` shows which they are.
+
+**Why:** The two kinds do different jobs. Grouping parentheses set the order of operations, and PHP 8.4 made them
+unnecessary around `new`. A call's parentheses are part of the call, and 4.7 says `clone()` SHOULD always have them.
+Removing them from `clone(new Foo())->bar` would clone `bar`, not the new object.
+
+---
+
 ## 4.2 Using Traits
 
 ### Blank Lines Around `use`

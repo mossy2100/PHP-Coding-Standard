@@ -648,8 +648,10 @@ Warns about parentheses around a class instantiation that's immediately derefere
 **Why:** [PER Coding Style 3.1, Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says the instantiation SHOULD NOT be wrapped in parentheses, and PHP 8.4 allows
 `new Foo()->bar()`. As it's a SHOULD, this is a warning. `SlevomatCodingStandard.PHP.UselessParentheses` has a similar
 check, but it misses `::`, and removes the parentheses from `(new Foo() ?: new Bar())->baz()`, changing its meaning.
-This sniff only reports parentheses holding exactly one `new` expression. A `new` without an argument list, such as
-`(new Foo)->bar()`, is left until `PSR12.Classes.ClassInstantiation` has added the `()`, as PHP needs them.
+This sniff only reports parentheses that group an expression, and hold exactly one `new` expression. Parentheses that
+hold a call's arguments aren't reported, so `clone(new Foo())->bar` and `make(new Foo())->bar()` pass. A `new` without
+an argument list, such as `(new Foo)->bar()`, is left until `PSR12.Classes.ClassInstantiation` has added the `()`, as
+PHP needs them.
 
 **Auto-fixable:** yes, unless a comment is between the parentheses and the expression.
 
