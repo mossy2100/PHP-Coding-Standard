@@ -20,6 +20,7 @@ The [Jumbo standard](Jumbo.md) is PERCS31 plus extra rules. Use PERCS31 on its o
 - [Inherited Sniffs](#inherited-sniffs)
 - [Custom Sniffs](#custom-sniffs)
 - [Not Checked](#not-checked)
+- [Known Issues](#known-issues)
 
 ---
 
@@ -2979,3 +2980,11 @@ These are the original's properties. PER Coding Style 3.1 needs their defaults, 
   control structure's closing brace.
 - **The pipe operator `|>` on PHP 8.4.** It's only checked when PHP_CodeSniffer runs on PHP 8.5. On PHP 8.4, where `|>`
   is a parse error, PHP_CodeSniffer reads it as `|` and `>`, and reports them.
+
+---
+
+## Known Issues
+
+- **An arrow function with a `throw` or `exit` in a `case` body.** PHP_CodeSniffer 4.0.4 never finishes on
+  `$b = fn() => throw new Exception();` directly inside a `case` or `default`, under any standard, as it hangs before
+  any sniff runs. Wrap the body in a closure, or move the arrow function out of the `switch`.
