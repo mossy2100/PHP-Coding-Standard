@@ -237,13 +237,26 @@ class PropertyHookHelper
             return false;
         }
 
-        foreach (array_keys($tokens[$stackPtr]['nested_parenthesis']) as $opener) {
+        return self::findHookParameterListOpener($phpcsFile, $stackPtr) !== null;
+    }
+
+    /**
+     * Find the opening parenthesis of the `set` hook parameter list a token is in.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the token.
+     * @return int|null The position of the parenthesis, or null if the token isn't in one.
+     */
+    public static function findHookParameterListOpener(File $phpcsFile, int $stackPtr): ?int
+    {
+        $nested = $phpcsFile->getTokens()[$stackPtr]['nested_parenthesis'] ?? [];
+        foreach (array_reverse(array_keys($nested)) as $opener) {
             if (is_int($opener) && self::isHookParameterList($phpcsFile, $opener)) {
-                return true;
+                return $opener;
             }
         }
 
-        return false;
+        return null;
     }
 
     /**

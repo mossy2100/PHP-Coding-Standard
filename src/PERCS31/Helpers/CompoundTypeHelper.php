@@ -289,7 +289,7 @@ class CompoundTypeHelper
     private static function findHookTypeBounds(File $phpcsFile, int $stackPtr): array
     {
         $tokens = $phpcsFile->getTokens();
-        $limit = self::findHookParameterListOpener($phpcsFile, $stackPtr);
+        $limit = PropertyHookHelper::findHookParameterListOpener($phpcsFile, $stackPtr) ?? -1;
         if ($limit === -1) {
             // A multi-catch's types stop at the catch's own parentheses.
             $opener = Parentheses::getLastOpener($phpcsFile, $stackPtr, [T_CATCH]);
@@ -311,24 +311,5 @@ class CompoundTypeHelper
         $last = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, $end, ($stackPtr - 1), true);
 
         return [$first === false ? $stackPtr : $first, $last === false ? $stackPtr : $last];
-    }
-
-    /**
-     * Find the opening parenthesis of the `set` hook parameter list a token is in.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $stackPtr The position of the token.
-     * @return int The position of the parenthesis, or -1 if there isn't one.
-     */
-    private static function findHookParameterListOpener(File $phpcsFile, int $stackPtr): int
-    {
-        $nested = $phpcsFile->getTokens()[$stackPtr]['nested_parenthesis'] ?? [];
-        foreach (array_reverse(array_keys($nested)) as $opener) {
-            if (is_int($opener) && PropertyHookHelper::isHookParameterList($phpcsFile, $opener)) {
-                return $opener;
-            }
-        }
-
-        return -1;
     }
 }

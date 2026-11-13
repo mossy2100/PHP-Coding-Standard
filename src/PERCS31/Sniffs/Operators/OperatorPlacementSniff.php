@@ -518,7 +518,7 @@ class OperatorPlacementSniff implements Sniff
         }
 
         $code = $phpcsFile->getTokens()[$stackPtr]['code'];
-        if ($code === T_BITWISE_AND && $phpcsFile->isReference($stackPtr)) {
+        if ($code === T_BITWISE_AND && Operators::isReference($phpcsFile, $stackPtr)) {
             return true;
         }
 
