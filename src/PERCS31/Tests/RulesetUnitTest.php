@@ -151,7 +151,7 @@ class RulesetUnitTest extends TestCase
 
     /**
      * Test that an object operator at the end of a line is moved to the start of the next, with no blank line left
-     * behind. PEAR.WhiteSpace.ObjectOperatorIndent's fix left one after PERCS31.Formatting.MethodChaining's.
+     * behind. PEAR.WhiteSpace.ObjectOperatorIndent's fix, which PERCS31 once used, left one after this sniff's.
      */
     public function testObjectOperatorAtEndOfLineIsMovedToNextLine(): void
     {

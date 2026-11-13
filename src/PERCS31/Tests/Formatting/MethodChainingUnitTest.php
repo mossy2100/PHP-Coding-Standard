@@ -38,6 +38,15 @@ class MethodChainingUnitTest extends AbstractSniffTestCase
             67 => 1,
             // A chain's first method, before brackets, in a statement split after it.
             88 => 1,
+            // A chain's lines not indented, and indented too far.
+            93 => 1,
+            94 => 1,
+            97 => 1,
+            98 => 1,
+            // A chain in a ternary's branch, and after a wrapped operator, level with the line it starts on.
+            103 => 1,
+            104 => 1,
+            109 => 1,
         ];
     }
 

@@ -114,13 +114,6 @@ Two custom sniffs extend php-collective sniffs.
 - **Generic.Strings.UnnecessaryHeredoc**: Warns about a heredoc with no interpolation or escape sequences, which could
   be a nowdoc (10).
 
-### PEAR
-
-- **PEAR.WhiteSpace.ObjectOperatorIndent**: In a method chain split across lines, requires each `->` or `?->` that
-  starts a line to be indented once past the line the statement starts on (4.7). Its `StartOfLine` code is replaced by
-  [`PERCS31.Formatting.MethodChaining`](#percs31formattingmethodchaining), which also reports a statement's first `->` at the end of a line, and its only
-  one.
-
 ### Squiz
 
 - **Squiz.Arrays.ArrayDeclaration**: Requires the first value of a multi-line array on the next line, and one value per
@@ -238,7 +231,7 @@ section gives the reason.
 | `PERCS31.Files.LineLength`                              | A warning over 120 characters, and a hidden one over 80             | No      |
 | `PERCS31.Formatting.DisallowMultipleStatements`         | One statement per line, allowing `{ get; set; }`                    | Yes     |
 | `PERCS31.Formatting.EmptyBody`                          | An empty class, function, closure or anonymous class body is `{}`   | Yes     |
-| `PERCS31.Formatting.MethodChaining`                     | The first method of a split chain, and `->`, start a line           | Yes     |
+| `PERCS31.Formatting.MethodChaining`                     | A split chain's first method, its `->` and their indent             | Yes     |
 | `PERCS31.Formatting.TrailingComma`                      | Trailing commas in `match`, group `use`, `list()` and some calls    | Yes     |
 | `PERCS31.Functions.ArrowFunctionSemicolonSpacing`       | No space before the `;` that ends an arrow function                 | Yes     |
 | `PERCS31.Functions.DisallowTrailingCommaInCall`         | No trailing comma in a call, unless the argument list is split      | Yes     |
@@ -1519,21 +1512,30 @@ $noop = static function (): void {
 
 ### PERCS31.Formatting.MethodChaining
 
-Requires the first method of a method chain split across lines to be on the next line, not on the line with the object.
-Property accesses before the first method, as in `$this->query`, can stay on that line. It also disallows a `->` or
-`?->` at the end of a line, reported as `OperatorAtEndOfLine`.
+Checks a method chain split across lines:
+
+- The first method is on the next line, not on the line with the object. Property accesses before it, as in
+  `$this->query`, can stay on that line.
+- Each `->` or `?->` starts its line. One at the end of a line is reported as `OperatorAtEndOfLine`.
+- Each of those lines is indented once past the line the chain starts on, reported as `Indent`.
 
 A chain is one expression, so it ends at an operator, a comma or an enclosing bracket. In `$a->isValid()` then `&& $b`
 then `->check()`, the first call is on one line, and isn't part of the chain that's split.
 
-**Why:** [PER Coding Style 3.1, Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) says that when method chaining is put on separate lines, the first method
-MUST be on the next line. `PEAR.WhiteSpace.ObjectOperatorIndent` checks that each line is indented once, but lets the
-first method stay on the object's line.
+The indent is measured from the line with the chain's object. When the chain is a ternary's branch, or follows a wrapped
+operator, that's a continuation line, and the chain's lines are indented once past it.
 
-Section 4.7's example starts each wrapped line with the `->`. The PEAR sniff's `StartOfLine` code reports one at the end
-of a line, but skips a statement's first operator, so `$user = $repository->` then `find($id);` passes. Its fix also
-leaves a blank line when the operator is alone on its line. So that code is excluded, and this sniff makes the check for
-every `->` and `?->`.
+**Why:** [PER Coding Style 3.1, Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) says method chaining MAY be put on separate lines, "where each
+subsequent line is indented once", and that the first method MUST then be on the next line. Its example starts each
+wrapped line with the `->`.
+
+This replaces `PEAR.WhiteSpace.ObjectOperatorIndent`, which has no property for any of these:
+
+- It takes every `->` in a statement as one chain, and measures the indent from the line the statement starts on. So it
+  reported a chain in a ternary's branch that was indented past its object, and its fix lined the two up.
+- It lets the first method stay on the object's line.
+- Its `StartOfLine` code skips a statement's first operator, so `$user = $repository->` then `find($id);` passed, and
+  its fix leaves a blank line when the operator is alone on its line.
 
 **Auto-fixable:** yes. The fix moves the first method to the next line, indented once, and an operator at the end of a
 line to the start of the next. An operator followed by a comment is left to a person.

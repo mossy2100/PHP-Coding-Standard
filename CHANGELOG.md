@@ -533,6 +533,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A chain on a continuation line is indented once past it (breaking).** A split method chain's indent is now
+  measured from the line the chain starts on, not the statement's. So a chain in a ternary's branch, as in `? $a` then
+  `->b()`, is indented once past `? $a`, where it had to be level with it. `PERCS31.Formatting.MethodChaining` makes
+  the check, as `Indent`, and `PEAR.WhiteSpace.ObjectOperatorIndent` is no longer used, so
+  `PEAR.WhiteSpace.ObjectOperatorIndent.Incorrect` is now `PERCS31.Formatting.MethodChaining.Indent`. Auto-fixable.
 - **A default value wrapped at an operator can be written (breaking).** In a multi-line parameter list,
   `string $name = 'a'` then `. 'b',` was reported whichever way the second line was indented, and `phpcbf` failed on
   it. It's now indented once past its parameter, as any wrapped operator is. A parameter's own indent is still

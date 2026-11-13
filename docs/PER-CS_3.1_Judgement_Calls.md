@@ -758,6 +758,19 @@ the start of the chain.
 
 ---
 
+### A Chain on a Continuation Line
+
+**Issue:** A split chain's lines are "indented once", but the spec doesn't say from where. It only matters when the
+chain starts on a continuation line, as a ternary's branch does, or an operand after a wrapped operator.
+
+**Ruleset:** They're indented once past the line the chain starts on, the one with its object. So after `? $a` at 4
+spaces, `->b()` is at 8. Level with `? $a` is reported.
+
+**Why:** A chain's wrapped line continues the line before it, so it's indented once more, as 6.4 indents any line that
+continues another. Lined up with its object, it can't be told from the ternary's own lines.
+
+---
+
 ### `->` at the End of a Line
 
 **Issue:** "Method chaining MAY be put on separate lines, where each subsequent line is indented once. When doing so,

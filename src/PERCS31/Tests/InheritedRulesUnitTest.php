@@ -168,11 +168,6 @@ class InheritedRulesUnitTest extends TestCase
             'SlevomatCodingStandard.Functions.NamedArgumentSpacing.WhitespaceBeforeColon',
             'error',
         ],
-        'a method chain with no indent' => [
-            "<?php\n\n\$a\n->b()\n->c();\n",
-            'PEAR.WhiteSpace.ObjectOperatorIndent.Incorrect',
-            'error',
-        ],
         'exit with no parentheses' => [
             "<?php\n\nexit;\n",
             'Universal.PHP.RequireExitDieParentheses.Missing',

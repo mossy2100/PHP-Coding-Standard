@@ -87,3 +87,23 @@ $value = $this->cache->get($key)
 // Brackets are part of a chain, so its first method is still found.
 $item = $list->all()[$index + 1]
     ->first();
+
+// A chain's lines not indented, and indented too far.
+$a
+->b()
+->c();
+
+$a
+        ->b()
+        ->c();
+
+// A chain in a ternary's branch, or after a wrapped operator, level with the line it starts on.
+$x = $cond
+    ? $a
+    ->b()
+    ->c()
+    : $d;
+
+$total = $base
+    + $this->items
+    ->sum('price');

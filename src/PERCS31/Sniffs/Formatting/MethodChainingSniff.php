@@ -13,29 +13,36 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Requires the first method of a method chain split across lines to be on a line of its own, and disallows a `->` or
- * `?->` at the end of a line.
+ * Checks a method chain split across lines: the first method is on a line of its own, each `->` or `?->` starts its
+ * line, and each of those lines is indented once past the line the chain starts on.
  *
  * PER Coding Style 3.1, section 4.7, says method chaining MAY be put on separate lines, each indented once, and that
- * when it is, the first method MUST be on the next line. PEAR.WhiteSpace.ObjectOperatorIndent checks the indentation,
- * but lets the first method stay on the line with the object. This sniff reports that, and the fix moves it to the next
- * line, indented once.
+ * when it is, the first method MUST be on the next line. Its example starts each wrapped line with the `->`.
  *
  * A chain is every `->` and `?->` in one expression: the part of a statement between the nearest operators, commas or
  * enclosing brackets, at the same parenthesis depth. So in `$a->isValid() && $b->check()`, each call is a chain of its
- * own, where the PEAR sniff takes the whole statement as one. A chain is split if any of its operators starts a line.
- * Property accesses before the first method, as in `$this->query`, can stay on the first line.
+ * own. A chain is split if any of its operators starts a line. Property accesses before the first method, as in
+ * `$this->query`, can stay on the first line.
  *
- * Section 4.7's example starts each wrapped line with the `->`, so one at the end of a line is reported, and the fix
- * moves it to the start of the next line. This replaces the PEAR sniff's StartOfLine check, which skips a statement's
- * first operator, and so every statement with only one. Its fix also leaves a blank line when the operator is alone on
- * its line.
+ * The indent is measured from the line the chain starts on, the one with its object. When the chain is a ternary's
+ * branch, or follows a wrapped operator, that's a continuation line, and the chain's lines are indented once past it,
+ * as section 6.4 indents any line that continues another.
+ *
+ * This replaces PEAR.WhiteSpace.ObjectOperatorIndent, which PERCS31 used for the indent. That sniff has no property for
+ * any of these, and its checks are in one method, so a subclass would have nothing of it left to call:
+ * - It takes every `->` in a statement as one chain, so it measures the indent from the line the statement starts on.
+ *   It reported a chain in a ternary's branch that was indented past its object, and its fix lined the two up.
+ * - It lets the first method stay on the line with the object.
+ * - Its StartOfLine check skips a statement's first operator, and so every statement with only one, and its fix leaves
+ *   a blank line when the operator is alone on its line.
  */
 class MethodChainingSniff implements Sniff
 {
     public const string CODE_FIRST_METHOD_ON_SAME_LINE = 'FirstMethodOnSameLine';
 
     public const string CODE_OPERATOR_AT_END_OF_LINE = 'OperatorAtEndOfLine';
+
+    public const string CODE_INDENT = 'Indent';
 
     /**
      * The object operators that link a chain.
@@ -68,6 +75,7 @@ class MethodChainingSniff implements Sniff
             return;
         }
 
+        $this->checkIndents($phpcsFile, $chain);
         $tokens = $phpcsFile->getTokens();
         foreach ($chain as $operator) {
             $name = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($operator + 1), null, true);
@@ -245,9 +253,50 @@ class MethodChainingSniff implements Sniff
             return;
         }
 
-        // Indent once past the line the statement starts on, as PEAR.WhiteSpace.ObjectOperatorIndent expects.
-        $start = $phpcsFile->findStartOfStatement($operator);
-        $indent = LayoutHelper::lineIndent($phpcsFile, $start) + LayoutHelper::INDENT;
-        FixerHelper::breakLineBefore($phpcsFile, $operator, $indent);
+        FixerHelper::breakLineBefore($phpcsFile, $operator, $this->findChainIndent($phpcsFile, $operator));
+    }
+
+    /**
+     * Report each operator in a chain that starts a line with the wrong indent, and fix it.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param non-empty-list<int> $chain The positions of the chain's operators.
+     */
+    private function checkIndents(File $phpcsFile, array $chain): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $expected = $this->findChainIndent($phpcsFile, $chain[0]);
+        foreach ($chain as $operator) {
+            $found = $tokens[$operator]['column'] - 1;
+            if (!LayoutHelper::startsLine($phpcsFile, $operator) || $found === $expected) {
+                continue;
+            }
+
+            $fix = $phpcsFile->addFixableError(
+                'Object operator not indented correctly; expected %s spaces but found %s',
+                $operator,
+                self::CODE_INDENT,
+                [$expected, $found],
+            );
+            if ($fix) {
+                FixerHelper::setIndent($phpcsFile, $operator, $expected);
+            }
+        }
+    }
+
+    /**
+     * Find the indent of a chain's wrapped lines: once past the line the chain starts on. That's the line with its
+     * object, which is a continuation line itself when the chain is a ternary's branch, or follows a wrapped operator.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $operator The position of one of the chain's operators.
+     * @return int The number of spaces.
+     */
+    private function findChainIndent(File $phpcsFile, int $operator): int
+    {
+        [$start] = $this->findChainBounds($phpcsFile, $operator);
+        $first = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, $start, null, true);
+
+        return LayoutHelper::lineIndent($phpcsFile, ($first === false ? $operator : $first)) + LayoutHelper::INDENT;
     }
 }
