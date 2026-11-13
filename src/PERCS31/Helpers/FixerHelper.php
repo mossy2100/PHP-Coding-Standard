@@ -78,6 +78,48 @@ class FixerHelper
     }
 
     /**
+     * Check whether a token has a single space on one side, or a line break there.
+     *
+     * Indentation at the start of the next line is a separate token, so whitespace in column 1 follows a line break.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $ptr The position of the token.
+     * @param bool $isBefore Whether to check the side before the token, not the side after it.
+     * @return bool True if a single space, or a line break, is there.
+     */
+    public static function hasSingleSpaceBeside(File $phpcsFile, int $ptr, bool $isBefore): bool
+    {
+        $side = $phpcsFile->getTokens()[($isBefore ? ($ptr - 1) : ($ptr + 1))] ?? null;
+
+        if ($side === null || $side['code'] !== T_WHITESPACE) {
+            return false;
+        }
+
+        return $side['content'] === ' ' || $side['column'] === 1 || str_contains($side['content'], $phpcsFile->eolChar);
+    }
+
+    /**
+     * Put a single space on one side of a token, replacing the whitespace there or adding some.
+     *
+     * It doesn't start a changeset, so it can be used inside one.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $ptr The position of the token.
+     * @param bool $isBefore Whether to set the side before the token, not the side after it.
+     */
+    public static function setSingleSpaceBeside(File $phpcsFile, int $ptr, bool $isBefore): void
+    {
+        $sidePtr = $isBefore ? ($ptr - 1) : ($ptr + 1);
+        if (($phpcsFile->getTokens()[$sidePtr]['code'] ?? null) === T_WHITESPACE) {
+            $phpcsFile->fixer->replaceToken($sidePtr, ' ');
+        } elseif ($isBefore) {
+            $phpcsFile->fixer->addContentBefore($ptr, ' ');
+        } else {
+            $phpcsFile->fixer->addContent($ptr, ' ');
+        }
+    }
+
+    /**
      * Empty every token between two tokens, not including them.
      *
      * It doesn't start a changeset, so it can be used inside one. PHP_CodeSniffer's beginChangeset() drops the changes

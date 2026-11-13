@@ -36,27 +36,6 @@ class ClassInstantiationNoBracketsSniff implements Sniff
     public const string CODE_UNNECESSARY = 'NewWithUnnecessaryParentheses';
 
     /**
-     * Tokens that, before a `(`, make it a call's argument list rather than wrapping parentheses.
-     *
-     * @var list<int|string>
-     */
-    private const array BEFORE_CALL = [
-        T_VARIABLE,
-        T_CLOSE_PARENTHESIS,
-        T_CLOSE_SQUARE_BRACKET,
-        T_CLOSE_SHORT_ARRAY,
-        T_CLOSE_CURLY_BRACKET,
-        T_CONSTANT_ENCAPSED_STRING,
-        T_DOUBLE_QUOTED_STRING,
-        T_NEW,
-        T_CLONE,
-        T_ARRAY,
-        T_LIST,
-        T_USE,
-        T_DECLARE,
-    ];
-
-    /**
      * Returns an array of tokens this test wants to listen for.
      *
      * @return array<int|string>
@@ -86,14 +65,13 @@ class ClassInstantiationNoBracketsSniff implements Sniff
             return;
         }
 
+        // A call's argument list, as in `foo(new Foo())->bar()`, or the class expression of `new (...)`. A language
+        // construct such as `include` is read as a call too, as PHP_CodeSniffer does.
         $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
-        if (
-            $previous !== false
-            && (
-                isset(Tokens::FUNCTION_NAME_TOKENS[$tokens[$previous]['code']])
-                || in_array($tokens[$previous]['code'], self::BEFORE_CALL, true)
-            )
-        ) {
+        $isCall = TokenHelper::isArgumentListOpener($phpcsFile, $stackPtr)
+            || ($previous !== false && $tokens[$previous]['code'] === T_NEW)
+            || ($previous !== false && isset(Tokens::FUNCTION_NAME_TOKENS[$tokens[$previous]['code']]));
+        if ($isCall) {
             return;
         }
 

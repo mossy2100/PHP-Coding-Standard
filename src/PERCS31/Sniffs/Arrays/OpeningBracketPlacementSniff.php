@@ -9,7 +9,6 @@ use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
-use PHPCSUtils\Tokens\Collections;
 
 /**
  * Disallows the opening bracket of a multi-line array on a line of its own, e.g. after `=` or `return`, unless the
@@ -140,13 +139,6 @@ class OpeningBracketPlacementSniff implements Sniff
 
         // Parentheses hold an argument list when they follow something that takes arguments, such as a function's
         // name. The parentheses of a `foreach` or a `match` don't.
-        $name = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($container - 1), null, true);
-        if ($tokens[$container]['code'] !== T_OPEN_PARENTHESIS || $name === false) {
-            return false;
-        }
-
-        $code = $tokens[$name]['code'];
-
-        return $code === T_CLONE || isset(Collections::parameterPassingTokens()[$code]);
+        return TokenHelper::isArgumentListOpener($phpcsFile, $container);
     }
 }

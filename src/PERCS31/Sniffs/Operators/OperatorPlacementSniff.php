@@ -13,7 +13,6 @@ use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
-use PHPCSUtils\Tokens\Collections;
 use PHPCSUtils\Utils\Operators;
 use PHPCSUtils\Utils\Parentheses;
 
@@ -336,34 +335,8 @@ class OperatorPlacementSniff implements Sniff
             return false;
         }
 
-        $before = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($ptr - 1), null, true);
-        if ($before === false) {
-            return true;
-        }
-
         // Parentheses after something that can be called, or that takes arguments, hold arguments.
-        $code = $tokens[$before]['code'];
-        $callees = [
-            T_CLOSE_PARENTHESIS,
-            T_CLOSE_SQUARE_BRACKET,
-            T_CLOSE_SHORT_ARRAY,
-            T_CLOSE_CURLY_BRACKET,
-            T_CONSTANT_ENCAPSED_STRING,
-            T_DOUBLE_QUOTED_STRING,
-            T_CLONE,
-            T_EXIT,
-            T_EMPTY,
-            T_EVAL,
-            T_LIST,
-            T_ANON_CLASS,
-            T_FN,
-            T_CLOSURE,
-            T_USE,
-            T_DECLARE,
-            T_CATCH,
-        ];
-
-        return !in_array($code, $callees, true) && !isset(Collections::parameterPassingTokens()[$code]);
+        return !TokenHelper::isArgumentListOpener($phpcsFile, $ptr);
     }
 
     /**

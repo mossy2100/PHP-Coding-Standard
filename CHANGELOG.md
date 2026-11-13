@@ -708,6 +708,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `;` is now only read as a hook's when it isn't a member's.
 - **An upper-case `CASE` or `DEFAULT` was reported twice.** `PERCS31.ControlStructures.SwitchDeclaration`'s
   `caseNotLower` and `defaultNotLower` codes are no longer used, as `PERCS31.PHP.LowerCaseKeyword` reports the same.
+- **An array argument in a call through an array or a string.** In `$handlers['x'](` or `[$object, 'method'](`, a
+  multi-line array argument on a line of its own was reported by `PERCS31.Arrays.OpeningBracketPlacement`, though it's
+  an argument in an argument list. One helper now decides whether parentheses hold arguments, for every sniff that asks.
+  `PERCS31.Classes.ClassInstantiationNoBrackets` also reports `(new Foo())->bar()` straight after a block's closing
+  brace, which it took for a call.
 
 ---
 

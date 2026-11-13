@@ -153,3 +153,29 @@ $commented = // Why.
     [
         1,
     ];
+
+// A call through an array element, an array, a string or a named member takes arguments too.
+$result = $handlers['x'](
+    [
+        1,
+    ],
+    2,
+);
+$result = [$object, 'method'](
+    [
+        1,
+    ],
+    2,
+);
+$result = 'strlen'(
+    [
+        1,
+    ],
+    2,
+);
+$result = $object->{$method}(
+    [
+        1,
+    ],
+    2,
+);

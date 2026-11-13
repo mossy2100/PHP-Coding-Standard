@@ -6,10 +6,12 @@ namespace PERCS31\Helpers;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Tokens\Collections;
 
 /**
  * Helper class for moving between tokens: a bracket's partner, the bracket a token is inside, the end of a `new`
- * expression, the argument list of `clone`, and the `...` of a first-class callable.
+ * expression, the argument list of `clone`, and the `...` of a first-class callable. It also tells a call's argument
+ * list from parentheses that group an expression.
  */
 class TokenHelper
 {
@@ -56,6 +58,85 @@ class TokenHelper
         T_CLOSE_USE_GROUP,
         T_ATTRIBUTE_END,
     ];
+
+    /**
+     * Tokens that, before a `(` with no owner, make it an argument list: the end of an expression that can be called,
+     * or a construct that takes arguments. PHPCSUtils' parameterPassingTokens() covers a name, a variable, `isset`,
+     * `unset` and `array`.
+     *
+     * @var list<int|string>
+     */
+    private const array BEFORE_ARGUMENTS = [
+        T_CLOSE_PARENTHESIS,
+        T_CLOSE_SQUARE_BRACKET,
+        T_CLOSE_SHORT_ARRAY,
+        T_CONSTANT_ENCAPSED_STRING,
+        T_DOUBLE_QUOTED_STRING,
+        T_CLONE,
+        T_EXIT,
+        T_EMPTY,
+        T_EVAL,
+        T_LIST,
+        T_ANON_CLASS,
+        T_FN,
+        T_CLOSURE,
+        T_USE,
+        T_DECLARE,
+        T_CATCH,
+    ];
+
+    /**
+     * Tokens that, before a `{`, make its braces hold a member's or a variable's name, as in `$a->{$name}`.
+     *
+     * @var list<int|string>
+     */
+    private const array BEFORE_NAME_BRACE = [T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR, T_DOUBLE_COLON, T_DOLLAR];
+
+    /**
+     * Check whether an opening parenthesis holds arguments, as a call's does, and doesn't just group an expression.
+     *
+     * That's so after anything that can be called: a name, a variable, a `)`, a `]`, a string, as in `'strlen'(`, or
+     * the brace of `->{$name}`. It's also so after a construct that takes arguments, such as `clone`, `isset` or
+     * `new class`. A control structure's or a declaration's parentheses have an owner, and aren't an argument list.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the opening parenthesis.
+     * @return bool True if the parentheses hold arguments.
+     */
+    public static function isArgumentListOpener(File $phpcsFile, int $opener): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $isUnowned = ($tokens[$opener]['code'] ?? null) === T_OPEN_PARENTHESIS
+            && !isset($tokens[$opener]['parenthesis_owner']);
+        $before = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($opener - 1), null, true);
+        if (!$isUnowned || $before === false) {
+            return false;
+        }
+
+        $code = $tokens[$before]['code'];
+        if ($code === T_CLOSE_CURLY_BRACKET) {
+            return self::isNameBrace($phpcsFile, $before);
+        }
+
+        return in_array($code, self::BEFORE_ARGUMENTS, true) || isset(Collections::parameterPassingTokens()[$code]);
+    }
+
+    /**
+     * Check whether a closing brace ends the braces of `->{$name}`, `::{$name}` or `${$name}`. A block's `}` doesn't,
+     * and can come before a statement that starts with `(`.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $closer The position of the closing brace.
+     * @return bool True if the braces hold a name.
+     */
+    public static function isNameBrace(File $phpcsFile, int $closer): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $brace = $tokens[$closer]['bracket_opener'] ?? null;
+        $owner = is_int($brace) ? $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($brace - 1), null, true) : false;
+
+        return $owner !== false && in_array($tokens[$owner]['code'], self::BEFORE_NAME_BRACE, true);
+    }
 
     /**
      * Find the closer that matches an opening parenthesis, bracket, brace or attribute.

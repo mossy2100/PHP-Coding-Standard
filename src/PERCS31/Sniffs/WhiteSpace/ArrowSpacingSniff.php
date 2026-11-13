@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\WhiteSpace;
 
+use PERCS31\Helpers\FixerHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHPCSUtils\Utils\Arrays;
@@ -208,17 +209,9 @@ class ArrowSpacingSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
         $isWhitespace = $tokens[$sidePtr]['code'] === T_WHITESPACE;
 
-        // One space is correct, or any if more are allowed. A line break is allowed; indentation at the start of a
-        // line is a separate token.
-        if (
-            $isWhitespace
-            && (
-                $minimum
-                || $tokens[$sidePtr]['content'] === ' '
-                || str_contains($tokens[$sidePtr]['content'], "\n")
-                || $tokens[$sidePtr]['column'] === 1
-            )
-        ) {
+        // One space is correct, or any if more are allowed. A line break is allowed too.
+        $isBefore = $side === 'before';
+        if (($isWhitespace && $minimum) || FixerHelper::hasSingleSpaceBeside($phpcsFile, $arrowPtr, $isBefore)) {
             return;
         }
 
@@ -227,19 +220,13 @@ class ArrowSpacingSniff implements Sniff
         $fix = $phpcsFile->addFixableError(
             $error,
             $arrowPtr,
-            $side === 'before' ? self::CODE_SPACING_BEFORE : self::CODE_SPACING_AFTER,
+            $isBefore ? self::CODE_SPACING_BEFORE : self::CODE_SPACING_AFTER,
             [$side, $context, $found],
         );
         if (!$fix) {
             return;
         }
 
-        if ($isWhitespace) {
-            $phpcsFile->fixer->replaceToken($sidePtr, ' ');
-        } elseif ($side === 'before') {
-            $phpcsFile->fixer->addContentBefore($arrowPtr, ' ');
-        } else {
-            $phpcsFile->fixer->addContent($arrowPtr, ' ');
-        }
+        FixerHelper::setSingleSpaceBeside($phpcsFile, $arrowPtr, $isBefore);
     }
 }

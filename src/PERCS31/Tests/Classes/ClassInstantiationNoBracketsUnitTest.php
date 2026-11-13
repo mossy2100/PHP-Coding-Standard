@@ -50,6 +50,8 @@ class ClassInstantiationNoBracketsUnitTest extends AbstractSniffTestCase
             35 => 1,
             36 => 1,
             37 => 1,
+            // After a block's closing brace.
+            55 => 1,
         ];
     }
 }

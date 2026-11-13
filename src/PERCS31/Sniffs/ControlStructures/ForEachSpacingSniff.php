@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\ControlStructures;
 
+use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
@@ -115,15 +116,8 @@ class ForEachSpacingSniff implements Sniff
         $sidePtr = $isBefore ? ($ptr - 1) : ($ptr + 1);
         $isWhitespace = $tokens[$sidePtr]['code'] === T_WHITESPACE;
 
-        // One space is correct, and so is a line break. Indentation at the start of a line is a separate token.
-        if (
-            $isWhitespace
-            && (
-                $tokens[$sidePtr]['content'] === ' '
-                || str_contains($tokens[$sidePtr]['content'], $phpcsFile->eolChar)
-                || $tokens[$sidePtr]['column'] === 1
-            )
-        ) {
+        // One space is correct, and so is a line break.
+        if (FixerHelper::hasSingleSpaceBeside($phpcsFile, $ptr, $isBefore)) {
             return;
         }
 
@@ -137,12 +131,6 @@ class ForEachSpacingSniff implements Sniff
             return;
         }
 
-        if ($isWhitespace) {
-            $phpcsFile->fixer->replaceToken($sidePtr, ' ');
-        } elseif ($isBefore) {
-            $phpcsFile->fixer->addContentBefore($ptr, ' ');
-        } else {
-            $phpcsFile->fixer->addContent($ptr, ' ');
-        }
+        FixerHelper::setSingleSpaceBeside($phpcsFile, $ptr, $isBefore);
     }
 }

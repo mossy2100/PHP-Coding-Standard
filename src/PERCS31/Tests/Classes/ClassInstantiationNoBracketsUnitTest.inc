@@ -47,3 +47,9 @@ $made = "make"(new Foo())->bar();
 $made = $factories['foo'](new Foo())->bar();
 $made = $factory->{$method}(new Foo())->bar();
 $made = (fn($x) => $x)(new Foo())->bar();
+
+// A block's closing brace before the parentheses doesn't make them a call's.
+if ($ready) {
+    run();
+}
+(new Foo())->bar();

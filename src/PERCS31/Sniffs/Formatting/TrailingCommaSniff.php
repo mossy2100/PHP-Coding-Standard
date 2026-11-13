@@ -162,10 +162,7 @@ class TrailingCommaSniff implements Sniff
         if ($code === T_CLOSE_CURLY_BRACKET) {
             // Only the brace of `->{$name}`, `::{$name}` or `${$name}`. A block's `}` can come before a statement
             // that starts with `(`.
-            $brace = $tokens[$before]['bracket_opener'] ?? null;
-            $owner = is_int($brace) ? $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($brace - 1), null, true) : false;
-            $accesses = [T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR, T_DOUBLE_COLON, T_DOLLAR];
-            if ($owner === false || !in_array($tokens[$owner]['code'], $accesses, true)) {
+            if (!TokenHelper::isNameBrace($phpcsFile, $before)) {
                 return false;
             }
         } elseif (!in_array($code, $callees, true)) {
