@@ -685,6 +685,19 @@ It's unclear how the two combine.
 
 ---
 
+### A Wrapped Default Value
+
+**Issue:** 4.5 says each line of a split parameter list "is indented once". 6.4 says the same of a statement split at
+an operator. A default value wrapped at an operator, as in `string $name = 'a'` then `. 'b',`, is covered by both.
+
+**Ruleset:** The wrapped line is indented once past its parameter. Level with the parameter is reported. The same goes
+for a ternary default, and in a closure's or arrow function's parameters.
+
+**Why:** The wrapped line is a continuation of the line before it, not a parameter. 4.5's rule places each parameter,
+and 6.4's places the rest of its expression, as for an operator wrapped in a call's argument.
+
+---
+
 ### A Split Array Default Value
 
 **Issue:** 4.7 lets a single argument, such as an array, split over lines without splitting the argument list. It's

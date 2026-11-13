@@ -533,6 +533,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A default value wrapped at an operator can be written (breaking).** In a multi-line parameter list,
+  `string $name = 'a'` then `. 'b',` was reported whichever way the second line was indented, and `phpcbf` failed on
+  it. It's now indented once past its parameter, as any wrapped operator is. A parameter's own indent is still
+  checked, with the code `PERCS31.Functions.MultiLineFunctionDeclaration.ParameterIndent`, which replaces `Indent`.
 - **`require (...)` and `include (...)` aren't read as calls (breaking).** `PERCS31.Functions.FunctionCallLayout`
   reported the space in `include ($a ? 'x' : 'y') . '.php';`, and the fix removed it. They're language constructs, and
   PER has no rule for them, so they're no longer checked, in PERCS31 or Jumbo.

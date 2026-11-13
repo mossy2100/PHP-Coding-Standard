@@ -107,6 +107,9 @@
     <rule ref="PERCS31.Functions.MultiLineFunctionDeclaration">
         <!-- Replaced by the sniff's own BlankLine check, which allows the blank lines PER does (2.3, 12.2, 12.4) -->
         <exclude name="PERCS31.Functions.MultiLineFunctionDeclaration.EmptyLine"/>
+        <!-- Replaced by the sniff's own ParameterIndent check, which leaves a default value wrapped at an operator to
+             the sniffs for 6.4 -->
+        <exclude name="PERCS31.Functions.MultiLineFunctionDeclaration.Indent"/>
     </rule>
     <rule ref="PERCS31.WhiteSpace.ScopeClosingBrace"/>
 

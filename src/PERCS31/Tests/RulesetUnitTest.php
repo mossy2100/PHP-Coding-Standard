@@ -226,6 +226,43 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a default value wrapped at an operator is indented once past its parameter, as section 6.4 says, in a
+     * method, a closure and an arrow function. The inherited Indent check wanted it level with the parameter, so no
+     * layout passed, and phpcbf failed. A parameter indented wrongly is still reported.
+     */
+    public function testWrappedDefaultValueIsIndentedOncePastItsParameter(): void
+    {
+        $source = "<?php\n\nnamespace Vendor\\Package;\n\nclass Flags\n{\n    public function set(\n"
+            . "        string \$name = 'a'\n            . 'b',\n        int \$mode = self::READ\n"
+            . "            | self::WRITE,\n        int \$size = PHP_INT_SIZE === 8\n            ? 1\n"
+            . "            : 2,\n    ): void {\n        \$closure = function (\n            string \$name = 'a'\n"
+            . "                . 'b',\n        ) {\n            return \$name;\n        };\n"
+            . "        \$arrow = fn(\n            int \$mode = 1\n                + 2,\n        ): int => \$mode;\n"
+            . "    }\n}\n";
+        $level = str_replace("\n            . 'b'", "\n        . 'b'", $source);
+        $file = $this->copyToTempFile(null, $source);
+        $levelFile = $this->copyToTempFile(null, $level);
+        $indented = $this->copyToTempFile(null, "<?php\n\nfunction a(\n        int \$b,\n  int \$c,\n  ): void {}\n");
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            $fixer = $this->runTool('phpcbf', ['--standard=PERCS31', $levelFile]);
+            $fixed = (string) file_get_contents($levelFile);
+            $wrong = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $indented]);
+        } finally {
+            unlink($file);
+            unlink($levelFile);
+            unlink($indented);
+        }
+
+        $this->assertSame(0, $result['exitCode'], $result['output']);
+        $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
+        $this->assertSame($source, $fixed);
+        $this->assertSame(3, substr_count($wrong['output'], 'MultiLineFunctionDeclaration.ParameterIndent'));
+        $this->assertStringNotContainsString('MultiLineFunctionDeclaration.Indent', $wrong['output']);
+    }
+
+    /**
      * Test that a first-class callable split over lines is fixed to `foo(...)`, as section 4.8 requires, with no comma
      * added after the `...`, which Slevomat's trailing comma sniff did. With a comment in the way, it's left alone.
      */

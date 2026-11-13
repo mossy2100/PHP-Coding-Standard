@@ -1774,6 +1774,13 @@ between two parameters, both before an attribute and before a parameter with non
 allowed, as the example shows. Any other is reported, such as two in a row, one straight after `(` or before `)`, one
 after a parameter's attributes, or one between a closure's `use` items.
 
+The parent also wants every line of a multi-line parameter or `use` list at the same indent, so it reports a default
+value wrapped at an operator, as in `string $name = 'a'` then `. 'b',`. That line continues its parameter, so
+[section 6.4](https://www.php-fig.org/per/coding-style/#64-operators-placement) indents it once more. The parent's check can't skip one kind of line, so the ruleset excludes its `Indent`
+code, and this sniff checks the indent itself, as `ParameterIndent`: only a line that starts a parameter, a `use`
+variable or their attributes, and each closing parenthesis. A continuation line is left to
+[`PERCS31.Operators.OperatorPlacement`](#percs31operatorsoperatorplacement) and [`PERCS31.ControlStructures.MultiLineTernaryOperator`](#percs31controlstructuresmultilineternaryoperator).
+
 The parent reads a parameter list split only by an attribute, as in `function a(#[Sensitive]` then `$password)`, as a
 single-line declaration, so the split wasn't reported. This sniff reads any list whose parentheses are on different
 lines as multi-line, so the first parameter goes on the line after `(`, and `) {` on a line of their own, as [section 4.5](https://www.php-fig.org/per/coding-style/#45-method-and-function-parameters)

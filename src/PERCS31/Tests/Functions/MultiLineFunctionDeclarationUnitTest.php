@@ -24,13 +24,14 @@ class MultiLineFunctionDeclarationUnitTest extends AbstractSniffTestCase
             // A multi-line declaration with its brace on the next line.
             30 => 1,
             // Arrow functions: the first parameter on the opening line, two parameters on one line, a double indent,
-            // and the closing parenthesis after the last parameter.
+            // and the closing parenthesis after the last parameter. The double indent is reported twice here, by the
+            // parent's Indent, which the ruleset excludes, and by ParameterIndent.
             41 => 1,
             45 => 1,
-            48 => 1,
+            48 => 2,
             52 => 1,
-            // A parameter indented too far, after a valid one-line promoted hook.
-            71 => 1,
+            // A parameter indented too far, after a valid one-line promoted hook: Indent and ParameterIndent.
+            71 => 2,
             // A closure's use on the line after the closing parenthesis, the last with a comment in the way.
             81 => 1,
             86 => 1,

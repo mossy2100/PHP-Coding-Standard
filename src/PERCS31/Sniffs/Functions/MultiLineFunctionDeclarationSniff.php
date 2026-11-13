@@ -6,7 +6,9 @@ namespace PERCS31\Sniffs\Functions;
 
 use PERCS31\Helpers\EmptyBodyHelper;
 use PERCS31\Helpers\FixerHelper;
+use PERCS31\Helpers\LayoutHelper;
 use PERCS31\Helpers\PropertyHookHelper;
+use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\Squiz\Sniffs\Functions\MultiLineFunctionDeclarationSniff as SquizSniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -28,6 +30,12 @@ use PHP_CodeSniffer\Util\Tokens;
  * lines itself (BlankLine). A single blank line between parameters is allowed, as the example shows. Any other, such
  * as more than one in a row, one before the closing parenthesis, or one between `use` items, is reported.
  *
+ * The parent also wants every line of a multi-line parameter or `use` list at the same indent (Indent), so it reports a
+ * default value wrapped at an operator, as in `string $e = 'a'` then `. 'b',`, which section 6.4 indents once more.
+ * That check can't skip one kind of line, so the PERCS31 ruleset excludes Indent, and this sniff checks the indent
+ * itself (ParameterIndent), only of a line that starts a parameter, a `use` variable or their attributes, and of each
+ * closing parenthesis. A continuation line is left to the sniffs for section 6.4.
+ *
  * The parent reads a parameter list split only by an attribute, as in `function a(#[A]` then `$b)`, as a single-line
  * declaration, so nothing reported it. This sniff reads any list whose parentheses are on different lines as
  * multi-line.
@@ -48,6 +56,8 @@ use PHP_CodeSniffer\Util\Tokens;
 class MultiLineFunctionDeclarationSniff extends SquizSniff
 {
     public const string CODE_BLANK_LINE = 'BlankLine';
+
+    public const string CODE_PARAMETER_INDENT = 'ParameterIndent';
 
     /**
      * Returns an array of tokens this test wants to listen for: the parent's, and an arrow function's `fn`.
@@ -174,6 +184,97 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
         }
 
         parent::processArgumentList($phpcsFile, $stackPtr, $indent, $type);
+        $this->checkParameterIndents($phpcsFile, $stackPtr, $indent);
+    }
+
+    /**
+     * Check the indent of each line that starts a parameter, a `use` variable or their attributes, and of each closing
+     * parenthesis, in a multi-line parameter or `use` list.
+     *
+     * A line that continues a parameter, such as a default value wrapped at an operator, isn't checked here, as
+     * section 6.4 indents it once past its parameter. Nor is a line inside brackets, such as a default array's.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the function keyword.
+     * @param int $indent The number of spaces in one indent level.
+     */
+    private function checkParameterIndents(File $phpcsFile, int $stackPtr, int $indent): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $functionIndent = LayoutHelper::lineIndent($phpcsFile, $stackPtr);
+        $lists = [[$tokens[$stackPtr]['parenthesis_opener'] ?? null, $tokens[$stackPtr]['parenthesis_closer'] ?? null]];
+        $scopeOpener = $tokens[$stackPtr]['scope_opener'] ?? null;
+        if ($tokens[$stackPtr]['code'] === T_CLOSURE && is_int($lists[0][1]) && is_int($scopeOpener)) {
+            $use = $phpcsFile->findNext(T_USE, ($lists[0][1] + 1), $scopeOpener);
+            if ($use !== false) {
+                $lists[] = [$tokens[$use]['parenthesis_opener'] ?? null, $tokens[$use]['parenthesis_closer'] ?? null];
+            }
+        }
+
+        foreach ($lists as [$opener, $closer]) {
+            if (!is_int($opener) || !is_int($closer) || $tokens[$opener]['line'] === $tokens[$closer]['line']) {
+                continue;
+            }
+
+            for ($i = ($opener + 1); $i <= $closer; $i++) {
+                if (!LayoutHelper::startsLine($phpcsFile, $i) || $tokens[$i]['code'] === T_WHITESPACE) {
+                    continue;
+                }
+
+                $expected = $this->findExpectedParameterIndent($phpcsFile, $i, $opener, $closer);
+                $found = $tokens[$i]['column'] - 1;
+                if ($expected === null || ($functionIndent + ($expected * $indent)) === $found) {
+                    continue;
+                }
+
+                $fix = $phpcsFile->addFixableError(
+                    'Multi-line function declaration not indented correctly; expected %s spaces but found %s',
+                    $i,
+                    self::CODE_PARAMETER_INDENT,
+                    [($functionIndent + ($expected * $indent)), $found],
+                );
+                if ($fix) {
+                    FixerHelper::setIndent($phpcsFile, $i, ($functionIndent + ($expected * $indent)));
+                }
+            }
+        }
+    }
+
+    /**
+     * Find how many levels past the function's line a line in a parameter or `use` list is indented, if it's a line
+     * this sniff checks.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $first The position of the line's first token.
+     * @param int $opener The position of the list's opening parenthesis.
+     * @param int $closer The position of the list's closing parenthesis.
+     * @return int|null 0 for the closing parenthesis, 1 for a line that starts an item or its attributes, or null for a
+     *     line that isn't checked.
+     */
+    private function findExpectedParameterIndent(File $phpcsFile, int $first, int $opener, int $closer): ?int
+    {
+        if ($first === $closer) {
+            return 0;
+        }
+
+        // The second and later lines of a comment are left alone, as the parent left a block comment's.
+        $tokens = $phpcsFile->getTokens();
+        $code = $tokens[$first]['code'];
+        $isCommentStart = preg_match('~^(//|#|/\*)~', $tokens[$first]['content']) === 1;
+        if (isset(Tokens::COMMENT_TOKENS[$code]) && !$isCommentStart) {
+            return null;
+        }
+
+        // Inside an attribute's arguments, a default array or a hook list, something else sets the indent.
+        if (TokenHelper::findContainer($phpcsFile, $first) !== $opener) {
+            return null;
+        }
+
+        // An item, or its attributes, follows the opening parenthesis, a comma or an attribute block.
+        $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($first - 1), $opener, true);
+        $starts = [T_COMMA, T_ATTRIBUTE_END];
+
+        return $previous === $opener || in_array($tokens[$previous]['code'] ?? null, $starts, true) ? 1 : null;
     }
 
     /**
