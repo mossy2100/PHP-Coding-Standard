@@ -42,6 +42,10 @@ class OperatorHelper
         T_OPEN_CURLY_BRACKET,
         T_OPEN_TAG,
         T_OPEN_TAG_WITH_ECHO,
+        // Another prefix operator, as in `!-$a`. PHP_CodeSniffer's operator tokens don't include these.
+        T_BOOLEAN_NOT,
+        T_BITWISE_NOT,
+        T_ASPERAND,
     ];
 
     /**

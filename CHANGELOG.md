@@ -701,6 +701,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **The fix for `declare(ticks=1) {echo 1;}` deleted the `;`.** For a block `declare` on one line with no space before
   its closing brace, `PERCS31.Files.DeclareStatement`'s fix replaced the `;` with the brace's indent, leaving a parse
   error. It now gives `declare(ticks=1) {`, then `echo 1;`, then `}`.
+- **A unary `-` or `+` after `!`, `~` or `@`.** `$a = !-$b;` was reported by `PERCS31.Operators.OperatorSpacing` as a
+  binary `-` with no space around it, and fixed to `! - $b`. It now passes.
 
 ---
 

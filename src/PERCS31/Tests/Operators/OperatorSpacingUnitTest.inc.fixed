@@ -123,3 +123,9 @@ $m = match ($b) {
     1 => 2,
 } - 1;
 $n = ${'x'} - 1;
+
+// A unary + or - after another prefix operator isn't binary.
+$a = !-$b;
+$a = ~-$b;
+$a = @-$b;
+$a = !+$b;
