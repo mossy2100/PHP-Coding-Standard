@@ -459,6 +459,8 @@
         <exclude name="Squiz.Arrays.ArrayDeclaration.SpaceInEmptyArray"/>
         <exclude name="Squiz.Arrays.ArrayDeclaration.KeySpecified"/>
         <exclude name="Squiz.Arrays.ArrayDeclaration.NoKeySpecified"/>
+        <!-- Covered by PERCS31.PHP.LowerCaseKeyword, which reports the same keyword (2.5) -->
+        <exclude name="Squiz.Arrays.ArrayDeclaration.NotLowerCase"/>
         <!-- Where an element's comma goes isn't a PER rule, and this check gets a heredoc element wrong. Jumbo uses
              Jumbo.Arrays.ElementComma instead. -->
         <exclude name="Squiz.Arrays.ArrayDeclaration.NoComma"/>
