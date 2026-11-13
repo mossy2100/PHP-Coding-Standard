@@ -37,6 +37,18 @@ class SwitchDeclarationUnitTest extends AbstractSniffTestCase
             ];
         }
 
+        if ($testFile === 'SwitchDeclarationUnitTest.4.inc') {
+            return [
+                // A case body wrapped in braces, before a default.
+                5 => 1,
+                // Both bodies wrapped in braces.
+                15 => 1,
+                19 => 1,
+                // The last case of a switch after them has no terminating statement.
+                27 => 1,
+            ];
+        }
+
         if ($testFile === 'SwitchDeclarationUnitTest.3.inc') {
             return [
                 // A blank line after a label: one, two, before a comment, and before another label.

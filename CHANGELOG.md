@@ -533,6 +533,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A braced `case` body before a `default` no longer stops the run.** `PERCS31.ControlStructures.SwitchDeclaration`
+  crashed on some `switch` statements with a `case` body wrapped in braces, so the rest of the file wasn't checked,
+  and `phpcbf` could end with a fatal error. The braces are now reported, as `WrongOpener`, without the crash. Such a
+  `switch` gets no other check from this sniff until the braces are removed.
 - **A braced `case` body before another label no longer hangs.** `phpcs` never finished on a `switch` whose braced
   `case` body's `}` shared a line with the next `case` or `default`, as in `} default:`, and `phpcbf` could reach
   that state from other code. `PERCS31.WhiteSpace.ScopeIndent` now gets through it, so the braces are reported.

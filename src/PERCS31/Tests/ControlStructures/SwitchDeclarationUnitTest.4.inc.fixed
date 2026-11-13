@@ -1,0 +1,30 @@
+<?php
+
+// A case body wrapped in braces, before a default. The parent sniff crashed on this, so the file's checks stopped.
+switch ($a) {
+    case 2: {
+        echo 2;
+    }
+    default:
+        echo 3;
+    break;
+}
+
+// Both bodies wrapped in braces.
+switch ($a) {
+    case 1: {
+        echo 1;
+        break;
+    }
+    default: {
+        echo 2;
+        break;
+    }
+}
+
+// A switch after them is still checked.
+switch ($a) {
+    case 1:
+        echo 1;
+        break;
+}

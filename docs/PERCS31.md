@@ -1261,6 +1261,10 @@ line is allowed, as in `case 1: // The first.`
 A multi-line `case` condition must also follow the rule for any expression split inside parentheses. The first condition
 must be on the line after `(`, and each line must be indented at least once past the `case`.
 
+A `switch` with a `case` or `default` body wrapped in braces is reported as `WrongOpener`, and gets no other check from
+this sniff until the braces are removed. That works around a bug in the parent (PHP_CodeSniffer 4.0.4), which crashes
+after a braced body, so the rest of the file wasn't checked, and `phpcbf` stopped.
+
 **Auto-fixable:** yes. The fix adds `break;` before the `}`, adds the parentheses, moves the `)` to its own line, moves
 the first condition to the next line, or indents a line. It's left to a person when there's a comment in the way, or the
 `}` follows code on its line. A `default` that falls through isn't fixable, as only a person knows if that's intended.

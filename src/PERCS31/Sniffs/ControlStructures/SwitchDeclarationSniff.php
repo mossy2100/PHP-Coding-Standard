@@ -29,6 +29,11 @@ use PHP_CodeSniffer\Util\Tokens;
  * findNestedTerminator() through Closure::bind, rather than copying it. After a PHP_CodeSniffer upgrade, check that
  * the method still exists with the same signature, as a private method can change without notice.
  *
+ * A switch with a `case` or `default` body wrapped in braces is reported here, with the parent's WrongOpener code, and
+ * the parent isn't run on it. This works around a bug in PSR2.ControlStructures.SwitchDeclaration (PHP_CodeSniffer
+ * 4.0.4): after a braced body, it reads a scope_condition the next label's closer doesn't have, which aborts the
+ * file's checks, and stops phpcbf altogether. So such a switch gets no other check until the braces are removed.
+ *
  * Everything else is left to the parent. That includes the `case` line, which MUST consist only of the keyword, the
  * condition and a colon. The parent's BodyOnNextLine check reports code there, and a blank line straight after the
  * label, which section 5.2's example doesn't have. A comment on the line is allowed.
@@ -48,6 +53,11 @@ class SwitchDeclarationSniff extends Psr2Sniff
     public const string CODE_TERMINATING_COMMENT = 'TerminatingComment';
 
     /**
+     * The parent's code for a body wrapped in braces.
+     */
+    public const string CODE_WRONG_OPENER = 'WrongOpener';
+
+    /**
      * Tokens that end a case, as the tokenizer and the parent define them.
      *
      * @var list<int|string>
@@ -63,15 +73,19 @@ class SwitchDeclarationSniff extends Psr2Sniff
      */
     public function process(File $phpcsFile, int $stackPtr): void
     {
-        parent::process($phpcsFile, $stackPtr);
-
         $tokens = $phpcsFile->getTokens();
         $closer = $tokens[$stackPtr]['scope_closer'] ?? null;
         if (!is_int($closer)) {
+            parent::process($phpcsFile, $stackPtr);
             return;
         }
 
         $cases = $this->findCases($phpcsFile, $stackPtr, $closer);
+        if ($this->reportBracedBodies($phpcsFile, $cases)) {
+            return;
+        }
+
+        parent::process($phpcsFile, $stackPtr);
         foreach ($cases as $index => $case) {
             if ($tokens[$case]['code'] === T_CASE) {
                 $this->checkMultiLineCondition($phpcsFile, $case);
@@ -83,6 +97,35 @@ class SwitchDeclarationSniff extends Psr2Sniff
         if ($cases !== []) {
             $this->checkLastCase($phpcsFile, end($cases), $closer);
         }
+    }
+
+    /**
+     * Report each `case` or `default` whose body is wrapped in braces, as the parent does, with its WrongOpener code.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param list<int> $cases The positions of the switch's `case` and `default` keywords.
+     * @return bool True if any was reported, so the parent, which can crash on such a switch, isn't run.
+     */
+    private function reportBracedBodies(File $phpcsFile, array $cases): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $hasBracedBody = false;
+        foreach ($cases as $case) {
+            $opener = $tokens[$case]['scope_opener'] ?? null;
+            if (!is_int($opener) || $tokens[$opener]['code'] !== T_OPEN_CURLY_BRACKET) {
+                continue;
+            }
+
+            $phpcsFile->addError(
+                '%s statements must not use a braced block after the colon',
+                $case,
+                self::CODE_WRONG_OPENER,
+                [strtoupper($tokens[$case]['content'])],
+            );
+            $hasBracedBody = true;
+        }
+
+        return $hasBracedBody;
     }
 
     /**
