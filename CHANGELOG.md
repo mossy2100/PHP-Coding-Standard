@@ -706,6 +706,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **A property named `get` or `set` in a short hook.** `{ get => $this->set ; }` was reported by
   `PERCS31.Classes.PropertyHookLayout`, as `SpaceBeforeSemicolon`, which is for a hook with no body. The name before the
   `;` is now only read as a hook's when it isn't a member's.
+- **An upper-case `CASE` or `DEFAULT` was reported twice.** `PERCS31.ControlStructures.SwitchDeclaration`'s
+  `caseNotLower` and `defaultNotLower` codes are no longer used, as `PERCS31.PHP.LowerCaseKeyword` reports the same.
 
 ---
 

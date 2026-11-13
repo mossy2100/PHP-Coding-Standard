@@ -360,7 +360,11 @@
 
     <!-- switch rules, including a terminating statement in the last case, and parentheses around a multi-line case
          condition (5.2) -->
-    <rule ref="PERCS31.ControlStructures.SwitchDeclaration"/>
+    <rule ref="PERCS31.ControlStructures.SwitchDeclaration">
+        <!-- Covered by PERCS31.PHP.LowerCaseKeyword, which reports the same keywords (2.5) -->
+        <exclude name="PERCS31.ControlStructures.SwitchDeclaration.caseNotLower"/>
+        <exclude name="PERCS31.ControlStructures.SwitchDeclaration.defaultNotLower"/>
+    </rule>
 
     <!-- Each match arm on a new line, as in the example in 5.2 -->
     <rule ref="PERCS31.ControlStructures.MatchArmPlacement"/>

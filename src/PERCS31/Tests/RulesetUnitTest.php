@@ -580,6 +580,32 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that an upper-case `CASE` or `DEFAULT` in a switch is reported once, by LowerCaseKeyword, and not again by
+     * SwitchDeclaration's own codes for the same keywords.
+     */
+    public function testUpperCaseCaseAndDefaultAreReportedOnce(): void
+    {
+        $source = "<?php\n\nswitch (\$a) {\n    CASE 1:\n        run();\n        break;\n"
+            . "    DEFAULT:\n        break;\n}\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        preg_match_all('/:(\d+):\d+: error - .*\(([\w.]+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
+        $reports = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
+        $code = 'PERCS31.PHP.LowerCaseKeyword.Found';
+
+        $this->assertSame(["4 $code", "7 $code"], $reports, $result['output']);
+        $this->assertSame(strtolower($source), $fixed);
+    }
+
+    /**
      * Test that a comma starting a line in a call's arguments is reported once, including after a heredoc's closing
      * marker, as is the spacing around a comma in an array inside the call, and that the fix corrects each one.
      */

@@ -1303,6 +1303,9 @@ The parent's own `BodyOnNextLineCASE` and `BodyOnNextLineDEFAULT` codes report c
 straight after a label, which section 5.2's example, the template for its rules, doesn't have. A comment on a label's
 line is allowed, as in `case 1: // The first.`
 
+The parent's `caseNotLower` and `defaultNotLower` codes are excluded, as [`PERCS31.PHP.LowerCaseKeyword`](#percs31phplowercasekeyword) reports an
+upper-case `CASE` or `DEFAULT` already.
+
 A multi-line `case` condition must also follow the rule for any expression split inside parentheses. The first condition
 must be on the line after `(`, and each line must be indented at least once past the `case`.
 
