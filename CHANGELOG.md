@@ -533,6 +533,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **`phpcs` never finished on some arrays.** An array with a closure, an arrow function, `array()` or a `match` in one
+  element, and a value wrapped onto the line after `=>` in a later one, made `phpcs` and `phpcbf` run until killed.
+  With Jumbo, so did a condition with an arrow function before a wrapped operator.
+- **The fix for `return(new Foo())->bar()` broke the code.** `PERCS31.Classes.ClassInstantiationNoBrackets` removed the
+  parentheses and left `returnnew Foo()->bar()`, a parse error. The same went for `echo`, `print`, `throw` and `yield`.
+  The fix now leaves a space. `clone(new Foo())->bar` is no longer reported, as those parentheses hold `clone()`'s
+  arguments.
+- **A closure as a property's default value.** PHP 8.5 allows `public Closure $handler = static function () { ... };`.
+  It was reported as a badly laid out hook list, by `PERCS31.Classes.PropertyHookLayout` and, on a promoted parameter,
+  `PERCS31.Classes.PromotedPropertyHooks`, and `phpcbf` failed on it. It now passes.
+- **An upper-case `Array(` was reported twice for its case.** `Squiz.Arrays.ArrayDeclaration.NotLowerCase` is no longer
+  used, as `PERCS31.PHP.LowerCaseKeyword` reports the same.
 - **A chain on a continuation line is indented once past it (breaking).** A split method chain's indent is now
   measured from the line the chain starts on, not the statement's. So a chain in a ternary's branch, as in `? $a` then
   `->b()`, is indented once past `? $a`, where it had to be level with it. `PERCS31.Formatting.MethodChaining` makes
