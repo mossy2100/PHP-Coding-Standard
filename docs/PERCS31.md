@@ -2904,6 +2904,8 @@ These are the original's properties. PER Coding Style 3.1 needs their defaults, 
 - **Whether a fall-through comment is clear (5.2).** Any comment just before the next `case` or `default` passes, as the
   spec doesn't set any wording.
 - **Avoiding abbreviations (2.7).** Whether a name could avoid an abbreviation can't be judged by a sniff.
+- **Short open tags, with `short_open_tag` off (PSR-1, 2.1).** PHP then reads `<?` as text, so it's only reported as
+  a possible short tag, with a warning. With the setting on, it's an error.
 - **Autoloading (PSR-1, 3).** Whether a class's namespace matches its file's path depends on the project's autoload
   roots, which a standard doesn't know. One class per file, in a namespace, is checked.
 - **Consistent property names (PSR-1, 4.2).** Which naming convention a scope uses can't be judged by a sniff.
