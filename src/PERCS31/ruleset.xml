@@ -102,7 +102,8 @@
     <!-- A line indented further than its scope, after a complete statement (2.4, 5) -->
     <rule ref="PERCS31.WhiteSpace.ConsistentIndent"/>
 
-    <!-- Brace sniffs, extended to allow an empty body as {} (4, 4.4, 7, 8) -->
+    <!-- Brace sniffs, extended to allow an empty body as {} (4, 4.4, 7, 8). ClassDeclaration also requires a backed
+         enum's type in lower case (2.5, 9). -->
     <rule ref="PERCS31.Classes.ClassDeclaration"/>
     <rule ref="PERCS31.Functions.MultiLineFunctionDeclaration">
         <!-- Replaced by the sniff's own BlankLine check, which allows the blank lines PER does (2.3, 12.2, 12.4) -->
@@ -337,8 +338,8 @@
     <rule ref="PERCS31.PHP.RequireCloneParentheses"/>
 
     <!-- A call's argument list, including clone()'s, but not a set hook's parameter list (4.7). No blank line between
-         arguments, as 4.7's examples show. PSR-12 turns off the parent's SpaceAfterCloseBracket and OpeningIndent
-         codes. -->
+         arguments, as 4.7's examples show. A first-class callable's ... on the line of its parentheses (4.8). PSR-12
+         turns off the parent's SpaceAfterCloseBracket and OpeningIndent codes. -->
     <rule ref="PERCS31.Functions.FunctionCallLayout">
         <exclude name="PERCS31.Functions.FunctionCallLayout.SpaceAfterCloseBracket"/>
         <exclude name="PERCS31.Functions.FunctionCallLayout.OpeningIndent"/>
@@ -352,7 +353,8 @@
     <!-- A structure's body on the line after its opening brace, allowing an empty body as {} (5) -->
     <rule ref="PERCS31.ControlStructures.BodyOnNextLine"/>
 
-    <!-- A control structure's parentheses, without PSR-12's rules for a multi-line foreach or match (5, 5.2, 5.5) -->
+    <!-- A control structure's parentheses, without PSR-12's rules for a multi-line foreach or match (5, 5.2, 5.5),
+         and one space between a catch's type and its variable (5.6) -->
     <rule ref="PERCS31.ControlStructures.ControlStructureSpacing"/>
 
     <!-- One space, or a line break, before and after a foreach's as and => (5.5) -->
