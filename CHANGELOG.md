@@ -533,6 +533,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A call on one line beside a split chain is left alone.** `PERCS31.Formatting.MethodChaining` took every `->` in a
+  statement as one chain, so in `$a->isValid()` then `&& $b` then `->check()`, it reported `->isValid()` as the first
+  method of a split chain, and the fix moved it. A chain now ends at an operator, a comma or an enclosing bracket.
 - **A braced `case` body before a `default` no longer stops the run.** `PERCS31.ControlStructures.SwitchDeclaration`
   crashed on some `switch` statements with a `case` body wrapped in braces, so the rest of the file wasn't checked,
   and `phpcbf` could end with a fatal error. The braces are now reported, as `WrongOpener`, without the crash. Such a

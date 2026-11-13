@@ -6,6 +6,8 @@ namespace PERCS31\Sniffs\Formatting;
 
 use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\LayoutHelper;
+use PERCS31\Helpers\OperatorHelper;
+use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -19,8 +21,10 @@ use PHP_CodeSniffer\Util\Tokens;
  * but lets the first method stay on the line with the object. This sniff reports that, and the fix moves it to the next
  * line, indented once.
  *
- * A chain is every `->` and `?->` in a statement at the same parenthesis depth, as in the PEAR sniff. It's split if any
- * of them starts a line. Property accesses before the first method, as in `$this->query`, can stay on the first line.
+ * A chain is every `->` and `?->` in one expression: the part of a statement between the nearest operators, commas or
+ * enclosing brackets, at the same parenthesis depth. So in `$a->isValid() && $b->check()`, each call is a chain of its
+ * own, where the PEAR sniff takes the whole statement as one. A chain is split if any of its operators starts a line.
+ * Property accesses before the first method, as in `$this->query`, can stay on the first line.
  *
  * Section 4.7's example starts each wrapped line with the `->`, so one at the end of a line is reported, and the fix
  * moves it to the start of the next line. This replaces the PEAR sniff's StartOfLine check, which skips a statement's
@@ -135,8 +139,7 @@ class MethodChainingSniff implements Sniff
     private function findChain(File $phpcsFile, int $stackPtr): array
     {
         $tokens = $phpcsFile->getTokens();
-        $start = $phpcsFile->findStartOfStatement($stackPtr);
-        $end = $phpcsFile->findEndOfStatement($stackPtr);
+        [$start, $end] = $this->findChainBounds($phpcsFile, $stackPtr);
         $brackets = $tokens[$stackPtr]['nested_parenthesis'] ?? null;
         $conditions = $tokens[$stackPtr]['conditions'];
 
@@ -152,6 +155,60 @@ class MethodChainingSniff implements Sniff
         }
 
         return $chain === [] ? [$stackPtr] : $chain;
+    }
+
+    /**
+     * Find the first and last tokens of the expression an object operator's chain is in: the part of its statement
+     * between the nearest operators, commas or enclosing brackets either side of it. So in `$a->b() && $c->d()`, each
+     * call is a chain of its own.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of an object operator.
+     * @return array{int, int} The positions of the first and last tokens.
+     */
+    private function findChainBounds(File $phpcsFile, int $stackPtr): array
+    {
+        $tokens = $phpcsFile->getTokens();
+        $start = $phpcsFile->findStartOfStatement($stackPtr);
+        $end = $phpcsFile->findEndOfStatement($stackPtr);
+        $boundaries = [
+            ...OperatorHelper::binaryOperators(),
+            ...array_values(Tokens::ASSIGNMENT_TOKENS),
+            T_INLINE_THEN,
+            T_INLINE_ELSE,
+            T_COMMA,
+            T_MATCH_ARROW,
+            T_FN_ARROW,
+        ];
+
+        // Anything in brackets is part of the chain, such as a call's arguments, so it's passed over.
+        for ($i = ($stackPtr - 1); $i >= $start; $i--) {
+            $opener = TokenHelper::findOpener($tokens[$i]);
+            if ($opener !== null && $opener < $i) {
+                $i = $opener;
+                continue;
+            }
+
+            if (in_array($tokens[$i]['code'], $boundaries, true) || TokenHelper::findCloser($tokens[$i]) !== null) {
+                $start = $i + 1;
+                break;
+            }
+        }
+
+        for ($i = ($stackPtr + 1); $i <= $end; $i++) {
+            $closer = TokenHelper::findCloser($tokens[$i]);
+            if ($closer !== null && $closer > $i) {
+                $i = $closer;
+                continue;
+            }
+
+            if (in_array($tokens[$i]['code'], $boundaries, true) || TokenHelper::findOpener($tokens[$i]) !== null) {
+                $end = $i - 1;
+                break;
+            }
+        }
+
+        return [$start, $end];
     }
 
     /**

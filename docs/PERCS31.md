@@ -1523,6 +1523,9 @@ Requires the first method of a method chain split across lines to be on the next
 Property accesses before the first method, as in `$this->query`, can stay on that line. It also disallows a `->` or
 `?->` at the end of a line, reported as `OperatorAtEndOfLine`.
 
+A chain is one expression, so it ends at an operator, a comma or an enclosing bracket. In `$a->isValid()` then `&& $b`
+then `->check()`, the first call is on one line, and isn't part of the chain that's split.
+
 **Why:** [PER Coding Style 3.1, Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) says that when method chaining is put on separate lines, the first method
 MUST be on the next line. `PEAR.WhiteSpace.ObjectOperatorIndent` checks that each line is indented once, but lets the
 first method stay on the object's line.

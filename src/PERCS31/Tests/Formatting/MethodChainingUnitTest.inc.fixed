@@ -70,3 +70,25 @@ $value = $object
 // After a comment, it isn't fixed.
 $user = $repository-> // Why.
     find($id);
+
+// Two chains in one statement: a call on one line isn't part of the chain that's split after an operator.
+$ok = $a->isValid()
+    && $b
+        ->check()
+        ->passes();
+
+$name = $user->isAdmin()
+    ? 'admin'
+    : $user
+        ->profile()
+        ->name();
+
+$value = $this->cache->get($key)
+    ?? $this->loader
+        ->load($key)
+        ->value();
+
+// Brackets are part of a chain, so its first method is still found.
+$item = $list
+    ->all()[$index + 1]
+    ->first();

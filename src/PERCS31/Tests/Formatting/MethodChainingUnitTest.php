@@ -36,6 +36,8 @@ class MethodChainingUnitTest extends AbstractSniffTestCase
             63 => 1,
             // An operator at the end of a line, before a comment.
             67 => 1,
+            // A chain's first method, before brackets, in a statement split after it.
+            88 => 1,
         ];
     }
 
