@@ -568,6 +568,13 @@ class PropertyHookLayoutSniff implements Sniff
                 continue;
             }
 
+            // A member named `get` or `set`, as in `get => $this->set ;`, isn't a hook's name.
+            $beforeName = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($name - 1), $opener, true);
+            $accesses = [T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR, T_DOUBLE_COLON];
+            if ($beforeName !== false && in_array($tokens[$beforeName]['code'], $accesses, true)) {
+                continue;
+            }
+
             $fix = $phpcsFile->addFixableError(
                 'There must be no space before the ";" of a property hook with no body',
                 $i,

@@ -388,3 +388,16 @@ class ClosureDefaults
         },
     ) {}
 }
+
+// A member named get or set before a short hook's `;` isn't a hook with no body.
+class MemberNamedSet
+{
+    public int $a { get => $this->set ; }
+
+    public int $b { get => self::$get ; }
+
+    public int $c {
+        get => $this?->get ;
+        set => $this->set = $value;
+    }
+}

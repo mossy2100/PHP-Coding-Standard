@@ -703,6 +703,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   error. It now gives `declare(ticks=1) {`, then `echo 1;`, then `}`.
 - **A unary `-` or `+` after `!`, `~` or `@`.** `$a = !-$b;` was reported by `PERCS31.Operators.OperatorSpacing` as a
   binary `-` with no space around it, and fixed to `! - $b`. It now passes.
+- **A property named `get` or `set` in a short hook.** `{ get => $this->set ; }` was reported by
+  `PERCS31.Classes.PropertyHookLayout`, as `SpaceBeforeSemicolon`, which is for a hook with no body. The name before the
+  `;` is now only read as a hook's when it isn't a member's.
 
 ---
 
