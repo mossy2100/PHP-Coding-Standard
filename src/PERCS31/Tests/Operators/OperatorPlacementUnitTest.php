@@ -83,6 +83,11 @@ class OperatorPlacementUnitTest extends AbstractSniffTestCase
             ];
         }
 
+        if ($testFile === 'OperatorPlacementUnitTest.7.inc') {
+            // A walk back over fn with requireExactConditionIndent, which once never finished.
+            return [];
+        }
+
         if ($testFile === 'OperatorPlacementUnitTest.6.inc') {
             return [
                 // In a condition, not indented at least once.

@@ -71,6 +71,11 @@ class ConsistentIndentUnitTest extends AbstractSniffTestCase
             ];
         }
 
+        if ($testFile === 'ConsistentIndentUnitTest.6.inc') {
+            // A walk back over a keyword that owns parentheses, which once never finished.
+            return [];
+        }
+
         if ($testFile === 'ConsistentIndentUnitTest.2.inc') {
             return [
                 // After a PHP opening tag at the start of its line, in a file with markup.

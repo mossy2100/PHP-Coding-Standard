@@ -44,6 +44,20 @@ class TokenHelper
     ];
 
     /**
+     * Tokens that close a pair of parentheses, brackets or braces, or an attribute.
+     *
+     * @var list<int|string>
+     */
+    private const array CLOSERS = [
+        T_CLOSE_PARENTHESIS,
+        T_CLOSE_SQUARE_BRACKET,
+        T_CLOSE_SHORT_ARRAY,
+        T_CLOSE_CURLY_BRACKET,
+        T_CLOSE_USE_GROUP,
+        T_ATTRIBUTE_END,
+    ];
+
+    /**
      * Find the closer that matches an opening parenthesis, bracket, brace or attribute.
      *
      * Only one of these is set on any token, so the order doesn't matter. A keyword such as `function` has its
@@ -62,16 +76,20 @@ class TokenHelper
     /**
      * Find the opener that matches a closing parenthesis, bracket, brace or attribute.
      *
+     * Only a closing token has one. A keyword that owns parentheses, such as `fn` or `match`, has a parenthesis_opener
+     * too, which is after it, and so does every token inside an attribute. Neither counts, so a walk back over tokens
+     * that jumps to the opener can never move forward.
+     *
      * @param array<string, mixed> $token The token.
      * @return int|null The opener's position, or null if the token doesn't close anything.
      */
     public static function findOpener(array $token): ?int
     {
-        // Every token inside an attribute has its opener, so only the attribute's `]` counts.
-        $opener = $token['parenthesis_opener'] ?? $token['bracket_opener'] ?? null;
-        if ($opener === null && $token['code'] === T_ATTRIBUTE_END) {
-            $opener = $token['attribute_opener'] ?? null;
+        if (!in_array($token['code'], self::CLOSERS, true)) {
+            return null;
         }
+
+        $opener = $token['parenthesis_opener'] ?? $token['bracket_opener'] ?? $token['attribute_opener'] ?? null;
 
         return is_int($opener) ? $opener : null;
     }
