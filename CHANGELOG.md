@@ -694,6 +694,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `OceanMoon.PHP.DisallowMultiConstantDefinition` is gone. A comma inside parentheses isn't read as a second constant,
   and the fix keeps the type and modifiers, e.g. `final public const int B = 2;`. Update any `phpcs:ignore` comments or
   `<exclude>` rules that name the old code.
+- **The fix for `'make'(new Foo())->bar()` broke the code.** `PERCS31.Classes.ClassInstantiationNoBrackets` took the
+  parentheses of a call through a string or an array, as in `[$factory, 'make'](new Foo())->bar()`, for parentheses
+  around the `new`, and its fix removed them, leaving a parse error. They hold the call's arguments, so they're no
+  longer reported.
 
 ---
 

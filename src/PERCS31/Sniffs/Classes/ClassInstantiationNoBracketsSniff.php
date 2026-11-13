@@ -20,9 +20,10 @@ use PHPCSUtils\Tokens\Collections;
  *
  * Only parentheses holding exactly one `new` expression, followed by `->`, `?->` or `::`, are reported. So
  * `(new Foo() ?: $default)->bar()` is left alone, as removing them would change its meaning, and so is a function
- * call's argument list, as in `new self(new Foo())->bar()` or `clone(new Foo())->bar`. A `new` without an argument
- * list, such as `(new Foo)->bar()`, is left until PSR12.Classes.ClassInstantiation has added the `()`, as PHP needs
- * them.
+ * call's argument list, as in `new self(new Foo())->bar()` or `clone(new Foo())->bar`. That includes a call through
+ * an array or a string, as in `[$factory, 'make'](new Foo())->bar()` or `'make'(new Foo())->bar()`. A `new` without
+ * an argument list, such as `(new Foo)->bar()`, is left until PSR12.Classes.ClassInstantiation has added the `()`, as
+ * PHP needs them.
  *
  * A keyword can come straight before the parentheses, as in `return(new Foo())->bar()`. The fix puts a space in their
  * place there, giving `return new Foo()->bar()`.
@@ -43,7 +44,10 @@ class ClassInstantiationNoBracketsSniff implements Sniff
         T_VARIABLE,
         T_CLOSE_PARENTHESIS,
         T_CLOSE_SQUARE_BRACKET,
+        T_CLOSE_SHORT_ARRAY,
         T_CLOSE_CURLY_BRACKET,
+        T_CONSTANT_ENCAPSED_STRING,
+        T_DOUBLE_QUOTED_STRING,
         T_NEW,
         T_CLONE,
         T_ARRAY,

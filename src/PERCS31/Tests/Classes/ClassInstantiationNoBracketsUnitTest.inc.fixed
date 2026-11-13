@@ -39,3 +39,11 @@ function keywords()
 
 // The parentheses after clone hold its arguments, so they stay.
 $copy = clone(new Foo())->bar;
+
+// A call through an array, a string or an expression. The parentheses hold its arguments, so they stay.
+$made = [$factory, 'make'](new Foo())->bar();
+$made = 'make'(new Foo())->bar();
+$made = "make"(new Foo())->bar();
+$made = $factories['foo'](new Foo())->bar();
+$made = $factory->{$method}(new Foo())->bar();
+$made = (fn($x) => $x)(new Foo())->bar();
