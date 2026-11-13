@@ -355,3 +355,17 @@ final class CodeAfterCloser
         public string $promoted { get => $this->promoted; },
     ) {}
 }
+
+// A closure as a default value (PHP 8.5) has braces of its own, which are not a hook list.
+class ClosureDefaults
+{
+    public \Closure $handler = static function (int $value): int {
+        return $value * 2;
+    };
+
+    public function __construct(
+        public \Closure $promoted = static function (int $value): int {
+            return $value * 2;
+        },
+    ) {}
+}

@@ -339,6 +339,12 @@ class PropertyHookHelper
         for ($next = $varPtr + 1; $next < $phpcsFile->numTokens; $next++) {
             $code = $tokens[$next]['code'];
 
+            // A closure in a default value (PHP 8.5) has braces of its own, which aren't a hook list's.
+            if ($code === T_CLOSURE && isset($tokens[$next]['scope_closer'])) {
+                $next = $tokens[$next]['scope_closer'];
+                continue;
+            }
+
             // Track nesting.
             if ($code === T_OPEN_PARENTHESIS || $code === T_OPEN_SQUARE_BRACKET || $code === T_OPEN_SHORT_ARRAY) {
                 $depth++;
