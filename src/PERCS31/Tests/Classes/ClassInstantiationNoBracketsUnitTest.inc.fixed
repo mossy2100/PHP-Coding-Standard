@@ -26,3 +26,16 @@ $n = new class {
 $o = (/* c1 */ new Foo() /* c2 */)->bar();
 $p = (new Foo() // Why.
 )->bar();
+
+// A keyword straight before the parentheses, where the fix puts a space in their place.
+function keywords()
+{
+    echo new Foo()->bar();
+    print new Foo()->bar();
+    yield new Foo()->bar();
+    throw new Factory()->make();
+    return new Foo()->bar();
+}
+
+// The parentheses after clone hold its arguments, so they stay.
+$copy = clone(new Foo())->bar;

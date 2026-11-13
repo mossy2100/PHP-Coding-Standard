@@ -44,6 +44,12 @@ class ClassInstantiationNoBracketsUnitTest extends AbstractSniffTestCase
             // A comment between the parentheses and the expression (not fixable).
             26 => 1,
             27 => 1,
+            // A keyword straight before the parentheses: echo, print, yield, throw and return.
+            33 => 1,
+            34 => 1,
+            35 => 1,
+            36 => 1,
+            37 => 1,
         ];
     }
 }

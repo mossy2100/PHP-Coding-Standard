@@ -20,8 +20,12 @@ use PHPCSUtils\Tokens\Collections;
  *
  * Only parentheses holding exactly one `new` expression, followed by `->`, `?->` or `::`, are reported. So
  * `(new Foo() ?: $default)->bar()` is left alone, as removing them would change its meaning, and so is a function
- * call's argument list, as in `new self(new Foo())->bar()`. A `new` without an argument list, such as
- * `(new Foo)->bar()`, is left until PSR12.Classes.ClassInstantiation has added the `()`, as PHP needs them.
+ * call's argument list, as in `new self(new Foo())->bar()` or `clone(new Foo())->bar`. A `new` without an argument
+ * list, such as `(new Foo)->bar()`, is left until PSR12.Classes.ClassInstantiation has added the `()`, as PHP needs
+ * them.
+ *
+ * A keyword can come straight before the parentheses, as in `return(new Foo())->bar()`. The fix puts a space in their
+ * place there, giving `return new Foo()->bar()`.
  *
  * SlevomatCodingStandard.PHP.UselessParentheses has a similar check (enableCheckAroundNew), but it misses `::` and
  * removes the parentheses from `(new Foo() ?: new Bar())->baz()`, changing its meaning.
@@ -41,6 +45,7 @@ class ClassInstantiationNoBracketsSniff implements Sniff
         T_CLOSE_SQUARE_BRACKET,
         T_CLOSE_CURLY_BRACKET,
         T_NEW,
+        T_CLONE,
         T_ARRAY,
         T_LIST,
         T_USE,
@@ -113,8 +118,16 @@ class ClassInstantiationNoBracketsSniff implements Sniff
             return;
         }
 
+        // A word straight before the parenthesis, as in `return(new Foo())`, needs a space in its place.
+        $before = $tokens[($stackPtr - 1)];
+        $isGlued = $before['code'] !== T_WHITESPACE && preg_match('/\w$/', $before['content']) === 1;
+
         $phpcsFile->fixer->beginChangeset();
         FixerHelper::blankBetween($phpcsFile, ($stackPtr - 1), $newPtr);
+        if ($isGlued) {
+            $phpcsFile->fixer->addContent(($stackPtr - 1), ' ');
+        }
+
         FixerHelper::blankBetween($phpcsFile, $end, ($closer + 1));
 
         $phpcsFile->fixer->endChangeset();
