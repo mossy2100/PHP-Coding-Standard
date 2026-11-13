@@ -22,6 +22,11 @@ class ScopeIndentUnitTest extends AbstractSniffTestCase
      */
     protected function getErrorList(string $testFile = ''): array
     {
+        // A braced case body before another label, which only has to finish.
+        if ($testFile === 'ScopeIndentUnitTest.3.inc') {
+            return [];
+        }
+
         if ($testFile === 'ScopeIndentUnitTest.2.inc') {
             return [
                 // A body indented too far, and too little, past an indented PHP opening tag.

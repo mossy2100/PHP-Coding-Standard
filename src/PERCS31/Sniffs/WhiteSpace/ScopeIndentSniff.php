@@ -13,6 +13,8 @@
  * - A body's first line is indented exactly once past the line of its opening brace, or of the `)` that brace
  *   follows (sections 2.4 and 5).
  * - A `phpcs:set` for this sniff's own code sets its `exact` property, as one for the original's code does.
+ * - The jump over a scope on one line never moves back. After a braced `case` body, the next label's closer is the
+ *   `}` before it, so the original never finished, as in `} default:`.
  *
  * Apart from the namespace and the import of PropertyHookHelper, every change from upstream is marked with a "PERCS31:"
  * comment, so a diff against the upstream file shows only these. To update the fork to a new PHP_CodeSniffer release,
@@ -1282,7 +1284,10 @@ class ScopeIndentSniff implements Sniff
                         StatusWriter::write("* ignoring single-line $type on line $line *");
                     }
 
-                    $i = $closer;
+                    // PERCS31: never move back. After a braced case body, the next label's closer is the `}` before it, so
+                    // the original's `$i = $closer;` looped forever.
+                    $i = max($i, $closer);
+                    // PERCS31: end of change.
                     continue;
                 }
 

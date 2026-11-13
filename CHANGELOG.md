@@ -533,6 +533,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A braced `case` body before another label no longer hangs.** `phpcs` never finished on a `switch` whose braced
+  `case` body's `}` shared a line with the next `case` or `default`, as in `} default:`, and `phpcbf` could reach
+  that state from other code. `PERCS31.WhiteSpace.ScopeIndent` now gets through it, so the braces are reported.
 - **An acronym check for every name but an upper-case constant (breaking).** `PERCS31.NamingConventions.AcronymCasing`
   skipped a class, interface, trait, enum or enum case with no lower-case letter, such as `class HTTP`. It's now
   reported, as a warning, alongside the PascalCase error. Only a constant in upper case is skipped.
