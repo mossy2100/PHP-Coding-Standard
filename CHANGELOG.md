@@ -544,7 +544,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   checked, with the code `PERCS31.Functions.MultiLineFunctionDeclaration.ParameterIndent`, which replaces `Indent`.
 - **`require (...)` and `include (...)` aren't read as calls (breaking).** `PERCS31.Functions.FunctionCallLayout`
   reported the space in `include ($a ? 'x' : 'y') . '.php';`, and the fix removed it. They're language constructs, and
-  PER has no rule for them, so they're no longer checked, in PERCS31 or Jumbo.
+  PER has no rule for them, so PERCS31 no longer checks them. Jumbo still requires `require $file;`, with no
+  parentheses and one space, through its own sniffs.
 - **A call on one line beside a split chain is left alone.** `PERCS31.Formatting.MethodChaining` took every `->` in a
   statement as one chain, so in `$a->isValid()` then `&& $b` then `->check()`, it reported `->isValid()` as the first
   method of a split chain, and the fix moved it. A chain now ends at an operator, a comma or an enclosing bracket.
