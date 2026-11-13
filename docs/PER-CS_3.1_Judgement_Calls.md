@@ -93,6 +93,8 @@ The method has its `)` and `{` on different lines. This contradicts section 4.5,
 > When the argument list is split across multiple lines, the closing parenthesis and opening brace MUST be placed
 > together on their own line with one space between them.
 
+Its parameter list has no trailing comma either, which contradicts section 2.6, as in the first example.
+
 #### 4.9 Property Hooks
 
 This example is shown:
@@ -109,6 +111,8 @@ class Example
 This contradicts section 2.6, which says:
 
 > If the list is split across multiple lines, then the last item MUST have a trailing comma.
+
+The example after it, marked "not allowed" for its hook, has no trailing comma either.
 
 #### 4.10 Interface and abstract properties
 
@@ -687,8 +691,8 @@ It's unclear how the two combine.
 
 ### A Wrapped Default Value
 
-**Issue:** 4.5 says each line of a split parameter list "is indented once". 6.4 says the same of a statement split at
-an operator. A default value wrapped at an operator, as in `string $name = 'a'` then `. 'b',`, is covered by both.
+**Issue:** 4.5 says each line of a split parameter list "is indented once". 6.4 says the same of a statement split at an
+operator. A default value wrapped at an operator, as in `string $name = 'a'` then `. 'b',`, is covered by both.
 
 **Ruleset:** The wrapped line is indented once past its parameter. Level with the parameter is reported. The same goes
 for a ternary default, and in a closure's or arrow function's parameters.

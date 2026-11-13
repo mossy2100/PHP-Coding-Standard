@@ -288,7 +288,7 @@
         </properties>
     </rule>
 
-    <!-- Properties: no leading underscore, no var, a visibility, and get before set with no bodies (4.3, 4.10) -->
+    <!-- Properties: no leading underscore, no var, a visibility, and get before set (4.3, 4.10) -->
     <rule ref="PERCS31.Classes.PropertyDeclaration">
         <!-- Several properties in one statement are checked by
              SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition. The parent's check also reports every

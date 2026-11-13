@@ -255,8 +255,8 @@ section gives the reason.
 | `PERCS31.Strings.HeredocIndentation`                    | Where a heredoc or nowdoc begins, and its indentation               | Yes     |
 | `PERCS31.TypeHints.CompoundTypeLayout`                  | One type, or one DNF union segment, per line of a split type        | Yes     |
 | `PERCS31.TypeHints.CompoundTypeOperatorSpacing`         | No space around `\|` or `&` in a type, but a split before one       | Yes     |
-| `PERCS31.TypeHints.NullType`                            | `null` last in a union, and `?T` in a constant or hook parameter    | Yes     |
-| `PERCS31.WhiteSpace.ArrowSpacing`                       | One space around `=>` in `match` arms                               | Yes     |
+| `PERCS31.TypeHints.NullType`                            | `null` last in a union, and `?T` for one type with `null`           | Yes     |
+| `PERCS31.WhiteSpace.ArrowSpacing`                       | The space around `=>` in `match` arms and arrays                    | Yes     |
 | `PERCS31.WhiteSpace.ConsistentIndent`                   | No line indented further than its scope, after a statement          | Yes     |
 | `PERCS31.WhiteSpace.ScopeClosingBrace`                  | A closing brace on its own line, allowing `{}`                      | Yes     |
 | `PERCS31.WhiteSpace.ScopeIndent`                        | Indentation, including property hooks and anonymous classes         | Yes     |
@@ -1526,9 +1526,9 @@ then `->check()`, the first call is on one line, and isn't part of the chain tha
 The indent is measured from the line with the chain's object. When the chain is a ternary's branch, or follows a wrapped
 operator, that's a continuation line, and the chain's lines are indented once past it.
 
-**Why:** [PER Coding Style 3.1, Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) says method chaining MAY be put on separate lines, "where each
-subsequent line is indented once", and that the first method MUST then be on the next line. Its example starts each
-wrapped line with the `->`.
+**Why:** [PER Coding Style 3.1, Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) says method chaining MAY be put on separate lines, "where each subsequent
+line is indented once", and that the first method MUST then be on the next line. Its example starts each wrapped line
+with the `->`.
 
 This replaces `PEAR.WhiteSpace.ObjectOperatorIndent`, which has no property for any of these:
 
@@ -2847,6 +2847,8 @@ inside `process()`, which is one long method with no smaller one to override.
   of `?>` isn't checked, as PER has no rule on either. The original reports a `?>` that isn't level with its `<?php`.
 - **`phpcs:set`:** a `phpcs:set` comment for this sniff's own code sets its `exact` property, as one for the original's
   code does there.
+- **A braced `case` body:** after one, the original never finished on `} default:`, as its jump over a scope on one line
+  could move back. The fork's jump never does.
 
 Every change is marked with a `PERCS31:` comment in the source, so a diff against the original shows only these.
 
@@ -2914,8 +2916,8 @@ These are the original's properties. PER Coding Style 3.1 needs their defaults, 
 - **Whether a fall-through comment is clear (5.2).** Any comment just before the next `case` or `default` passes, as the
   spec doesn't set any wording.
 - **Avoiding abbreviations (2.7).** Whether a name could avoid an abbreviation can't be judged by a sniff.
-- **Short open tags, with `short_open_tag` off (PSR-1, 2.1).** PHP then reads `<?` as text, so it's only reported as
-  a possible short tag, with a warning. With the setting on, it's an error.
+- **Short open tags, with `short_open_tag` off (PSR-1, 2.1).** PHP then reads `<?` as text, so it's only reported as a
+  possible short tag, with a warning. With the setting on, it's an error.
 - **Autoloading (PSR-1, 3).** Whether a class's namespace matches its file's path depends on the project's autoload
   roots, which a standard doesn't know. One class per file, in a namespace, is checked.
 - **Consistent property names (PSR-1, 4.2).** Which naming convention a scope uses can't be judged by a sniff.
