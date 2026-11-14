@@ -7,6 +7,7 @@ namespace PERCS31\Sniffs\Functions;
 use PERCS31\Helpers\FixerHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Disallows a space before the semicolon that ends an arrow function's expression.
@@ -15,10 +16,16 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  * preceded by a space. SlevomatCodingStandard.Functions.ArrowFunctionDeclaration checks the spacing around `fn` and
  * `=>`, but not this. Squiz.WhiteSpace.SemicolonSpacing would, but it checks every semicolon, which PER doesn't
  * require. The fix removes the space, or line break, before the semicolon.
+ *
+ * Section 7.1 also says the `fn` keyword MUST NOT be succeeded by a space. The Slevomat sniff checks that, but not when
+ * a line break follows `fn`, as its allowMultiLine property turns that check off, and PERCS31 needs the property on so
+ * that `=>` may start the next line. So this sniff reports a line break after `fn`, and the fix removes it.
  */
 class ArrowFunctionSemicolonSpacingSniff implements Sniff
 {
     public const string CODE_SPACE_BEFORE = 'SpaceBefore';
+
+    public const string CODE_LINE_BREAK_AFTER_FN = 'LineBreakAfterFn';
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -38,6 +45,8 @@ class ArrowFunctionSemicolonSpacingSniff implements Sniff
      */
     public function process(File $phpcsFile, int $stackPtr): void
     {
+        $this->checkLineBreakAfterFn($phpcsFile, $stackPtr);
+
         $tokens = $phpcsFile->getTokens();
         $closer = $tokens[$stackPtr]['scope_closer'] ?? null;
         if (
@@ -70,5 +79,30 @@ class ArrowFunctionSemicolonSpacingSniff implements Sniff
         }
 
         FixerHelper::replaceBetween($phpcsFile, $expressionEnd, $closer, '');
+    }
+
+    /**
+     * Report a line break between `fn` and what follows it, and fix it.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of `fn`.
+     */
+    private function checkLineBreakAfterFn(File $phpcsFile, int $stackPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
+        if ($next === false || $tokens[$next]['line'] === $tokens[$stackPtr]['line']) {
+            return;
+        }
+
+        // A comment between them would be lost, so that's left to a person.
+        $error = 'There must be no line break after "fn"';
+        $isFixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($stackPtr + 1), $next) === false;
+        $code = self::CODE_LINE_BREAK_AFTER_FN;
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $stackPtr, $code)) {
+            return;
+        }
+
+        FixerHelper::replaceBetween($phpcsFile, $stackPtr, $next, '');
     }
 }

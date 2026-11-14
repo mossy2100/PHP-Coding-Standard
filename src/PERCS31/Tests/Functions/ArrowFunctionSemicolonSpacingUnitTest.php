@@ -25,6 +25,10 @@ class ArrowFunctionSemicolonSpacingUnitTest extends AbstractSniffTestCase
             13 => 1,
             // A line break before the semicolon.
             16 => 1,
+            // A line break after fn. The last has a comment in the way, so it isn't fixable.
+            19 => 1,
+            21 => 1,
+            23 => 1,
         ];
     }
 

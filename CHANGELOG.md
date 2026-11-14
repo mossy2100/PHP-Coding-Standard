@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **A line break after `fn` (breaking).** `PERCS31.Functions.ArrowFunctionSemicolonSpacing` now reports a line break
+  between `fn` and its `(`, as `LineBreakAfterFn`. PER Coding Style 3.1 says `fn` MUST NOT be followed by a space, and
+  only a space on the same line was reported. Auto-fixable, unless a comment is in the way.
 - **A blank line after an anonymous class's `new` (breaking).** `PERCS31.Attributes.AttributePlacement` now reports an
   anonymous class's first attribute that isn't on the line straight after `new`, as `AnonClass`. PER Coding Style 3.1
   starts the attributes "on the next line after the `new` keyword", and a blank line there passed. Auto-fixable, unless

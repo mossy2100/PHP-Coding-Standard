@@ -14,3 +14,11 @@ $e = fn($x) => fn($y) => $x + $y ;
 $f = fn($x)
     => $x
 ;
+
+// A line break after fn, without and with a comment in the way.
+$g = fn
+($x) => $x;
+$h = static fn
+    &($x) => $x;
+$i = fn // Why.
+($x) => $x;
