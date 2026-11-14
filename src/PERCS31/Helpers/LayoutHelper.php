@@ -47,6 +47,32 @@ class LayoutHelper
     }
 
     /**
+     * Count the blank lines between two tokens. A line with a comment on it isn't blank.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $from The position of the first token.
+     * @param int $to The position of the second token.
+     * @return int The number of lines between them with only whitespace on.
+     */
+    public static function countBlankLinesBetween(File $phpcsFile, int $from, int $to): int
+    {
+        $tokens = $phpcsFile->getTokens();
+        $usedLines = [];
+        for ($i = ($from + 1); $i < $to; $i++) {
+            if ($tokens[$i]['code'] !== T_WHITESPACE && $tokens[$i]['line'] > $tokens[$from]['line']) {
+                $usedLines[$tokens[$i]['line']] = true;
+            }
+        }
+
+        // Tokens on the same line have no lines between them.
+        $fromLine = $tokens[$from]['line'];
+        $toLine = $tokens[$to]['line'];
+        assert(is_int($fromLine) && is_int($toLine));
+
+        return max(0, ($toLine - $fromLine - 1 - count($usedLines)));
+    }
+
+    /**
      * Check whether a list in brackets is split across lines: its first item starts on a line after the opening
      * bracket, or its closing bracket is on a line after the last item.
      *

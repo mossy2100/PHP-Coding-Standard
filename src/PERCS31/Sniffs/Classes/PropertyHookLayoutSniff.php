@@ -399,33 +399,12 @@ class PropertyHookLayoutSniff implements Sniff
                 continue;
             }
 
-            if ($this->countBlankLines($phpcsFile, $previousEnd, $start) > 1) {
+            if (LayoutHelper::countBlankLinesBetween($phpcsFile, $previousEnd, $start) > 1) {
                 $this->reportTooManyBlankLines($phpcsFile, $previousEnd, $start);
             }
 
             $previousEnd = $hook['end'];
         }
-    }
-
-    /**
-     * Count the blank lines between two tokens on different lines.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $from The position of the first token.
-     * @param int $to The position of the second token.
-     * @return int The number of lines between them with only whitespace on.
-     */
-    private function countBlankLines(File $phpcsFile, int $from, int $to): int
-    {
-        $tokens = $phpcsFile->getTokens();
-        $usedLines = [];
-        for ($i = ($from + 1); $i < $to; $i++) {
-            if ($tokens[$i]['code'] !== T_WHITESPACE && $tokens[$i]['line'] > $tokens[$from]['line']) {
-                $usedLines[$tokens[$i]['line']] = true;
-            }
-        }
-
-        return $tokens[$to]['line'] - $tokens[$from]['line'] - 1 - count($usedLines);
     }
 
     /**

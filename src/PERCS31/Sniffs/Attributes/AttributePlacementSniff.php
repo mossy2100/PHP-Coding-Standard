@@ -340,7 +340,7 @@ class AttributePlacementSniff implements Sniff
             }
         }
 
-        if ($isParameter || ($tokens[$targetPtr]['line'] - $tokens[$closerPtr]['line']) < 2) {
+        if ($isParameter || LayoutHelper::countBlankLinesBetween($phpcsFile, $closerPtr, $targetPtr) === 0) {
             return;
         }
 
@@ -380,7 +380,7 @@ class AttributePlacementSniff implements Sniff
         if (
             $previous === false
             || !in_array($tokens[$previous]['code'], [T_DOC_COMMENT_CLOSE_TAG, T_ATTRIBUTE_END], true)
-            || ($tokens[$stackPtr]['line'] - $tokens[$previous]['line']) < 2
+            || LayoutHelper::countBlankLinesBetween($phpcsFile, $previous, $stackPtr) === 0
         ) {
             return;
         }

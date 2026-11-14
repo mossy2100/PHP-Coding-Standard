@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\Arrays;
 
 use PERCS31\Helpers\FixerHelper;
+use PERCS31\Helpers\LayoutHelper;
 use PHP_CodeSniffer\Files\File;
 use PhpCollective\Sniffs\Arrays\ArrayBracketSpacingSniff as PhpCollectiveSniff;
 use PHPCSUtils\Utils\Arrays;
@@ -58,7 +59,7 @@ class ArrayBracketSpacingSniff extends PhpCollectiveSniff
         // A comment on the bracket's line, or on the line after it, is the first thing in the array.
         $opener = $bounds['opener'];
         $first = $phpcsFile->findNext(T_WHITESPACE, ($opener + 1), $bounds['closer'], true);
-        if ($first === false || ($tokens[$first]['line'] - $tokens[$opener]['line']) < 2) {
+        if ($first === false || LayoutHelper::countBlankLinesBetween($phpcsFile, $opener, $first) === 0) {
             return;
         }
 
