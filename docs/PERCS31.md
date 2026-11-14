@@ -123,13 +123,13 @@ Three custom sniffs extend php-collective sniffs.
 - **Squiz.Arrays.ArrayDeclaration**: Requires the first value of a multi-line array on the next line, and one value per
   line (11), and no trailing comma on a single-line array (2.6). Its other checks aren't PER rules, so they're excluded:
   alignment, spacing around `=>`, mixing keyed and unkeyed values, and which line a comma goes on. Its
-  `SpaceInEmptyArray` code is kept, so an empty array is `[]`, with no space or line break inside (11).
-  Its check for the closing bracket on a new line is excluded too, as `Generic.Arrays.ArrayIndent` reports the same. So
-  is its check of the `array` keyword's case, as [`PERCS31.PHP.LowerCaseKeyword`](#percs31phplowercasekeyword) reports the same. Its comma spacing
-  checks never run on a single-line array, so `Universal.WhiteSpace.CommaSpacing` checks that instead. Its check for a
-  multi-line array's trailing comma is replaced by Slevomat's `Arrays.TrailingArrayComma`, as it missed a keyed last
-  element, and wanted the comma after a heredoc on the next line, as before PHP 7.3. Its `ValueNoNewline` check is
-  replaced by [`PERCS31.Arrays.ValuePerLine`](#percs31arraysvalueperline), as it read an attribute on a value as an earlier value.
+  `SpaceInEmptyArray` code is kept, so an empty array is `[]`, with no space or line break inside (11). Its check for
+  the closing bracket on a new line is excluded too, as `Generic.Arrays.ArrayIndent` reports the same. So is its check
+  of the `array` keyword's case, as [`PERCS31.PHP.LowerCaseKeyword`](#percs31phplowercasekeyword) reports the same. Its comma spacing checks never run
+  on a single-line array, so `Universal.WhiteSpace.CommaSpacing` checks that instead. Its check for a multi-line array's
+  trailing comma is replaced by Slevomat's `Arrays.TrailingArrayComma`, as it missed a keyed last element, and wanted
+  the comma after a heredoc on the next line, as before PHP 7.3. Its `ValueNoNewline` check is replaced by
+  [`PERCS31.Arrays.ValuePerLine`](#percs31arraysvalueperline), as it read an attribute on a value as an earlier value.
 
 ### PHPCSExtra
 
@@ -194,11 +194,13 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
   excluded, as `PSR12.Traits.UseDeclaration` reports the same.
 - **Functions.ArrowFunctionDeclaration**: Requires no space after `fn`, e.g. `fn($x) => $x`. The expression may be on
   the next line (7.1).
-- **Functions.DisallowTrailingCommaInClosureUse** and **...InDeclaration**: Disallow a trailing comma in a single-line
-  list (2.6). For a call, [`PERCS31.Functions.DisallowTrailingCommaInCall`](#percs31functionsdisallowtrailingcommaincall) replaces `...InCall`.
+- **Functions.DisallowTrailingCommaInClosureUse** and **Functions.DisallowTrailingCommaInDeclaration**: Disallow a
+  trailing comma in a single-line list (2.6). For a call, [`PERCS31.Functions.DisallowTrailingCommaInCall`](#percs31functionsdisallowtrailingcommaincall) replaces
+  `Functions.DisallowTrailingCommaInCall`.
 - **Functions.NamedArgumentSpacing**: Requires no space before a named argument's colon, and one after (4.7).
-- **Functions.RequireTrailingCommaInClosureUse** and **...InDeclaration**: Require a trailing comma in a multi-line list
-  (2.6). For a call, [`PERCS31.Functions.RequireTrailingCommaInCall`](#percs31functionsrequiretrailingcommaincall) replaces `...InCall`.
+- **Functions.RequireTrailingCommaInClosureUse** and **Functions.RequireTrailingCommaInDeclaration**: Require a trailing
+  comma in a multi-line list (2.6). For a call, [`PERCS31.Functions.RequireTrailingCommaInCall`](#percs31functionsrequiretrailingcommaincall) replaces
+  `Functions.RequireTrailingCommaInCall`.
 - **TypeHints.DNFTypeHintFormat**: Requires no spaces inside the parentheses (2.5). Its check for spaces around `|` and
   `&` is replaced by [`PERCS31.TypeHints.CompoundTypeOperatorSpacing`](#percs31typehintscompoundtypeoperatorspacing), which allows a split type. Its checks for `null`
   last and for `?T` are replaced by [`PERCS31.TypeHints.NullType`](#percs31typehintsnulltype), which covers every type.
@@ -409,9 +411,9 @@ Requires an attribute to be on the line before its target, as [PER Coding Style 
 is a parameter in a single-line parameter list, whose attribute must be inline.
 
 The attribute must have that line to itself. One that follows other code on its line, as in
-`public int $a = 1; #[Deprecated]`, is reported as `NotOnOwnLine`, and the fix starts a new line before it. That
-covers the same targets as an attribute on its target's line: the ones section 12.2 lists, an enum case, and a hook
-with a body in braces.
+`public int $a = 1; #[Deprecated]`, is reported as `NotOnOwnLine`, and the fix starts a new line before it. That covers
+the same targets as an attribute on its target's line: the ones section 12.2 lists, an enum case, and a hook with a body
+in braces.
 
 A closure or arrow function isn't a structure in section 12.2's list. As a call's argument, its attribute follows the
 rule for a parameter:
@@ -678,8 +680,7 @@ A keyword before the parentheses doesn't make them a call's. So `echo (new Foo()
 `include (new Foo())->path()`, as `include` and `require` aren't functions.
 
 The parentheses in `clone(new Foo())->bar` group `new Foo()` too, as PHP reads that as a clone of `bar`. They're
-reported by [`PERCS31.PHP.RequireCloneParentheses`](#percs31phprequirecloneparentheses), whose fix keeps a pair for `clone`, giving
-`clone(new Foo()->bar)`.
+reported by [`PERCS31.PHP.RequireCloneParentheses`](#percs31phprequirecloneparentheses), whose fix keeps a pair for `clone`, giving `clone(new Foo()->bar)`.
 
 **Auto-fixable:** yes, unless a comment is between the parentheses and the expression.
 
@@ -1094,8 +1095,8 @@ Requires braces on a control structure with no body, so `while (next($items));` 
 `PhpCollective.ControlStructures.ControlStructureEmptyStatement`, from [php-collective/code-sniffer](https://github.com/php-collective/code-sniffer).
 
 **Why:** [PER Coding Style 3.1, Section 5](https://www.php-fig.org/per/coding-style/#5-control-structures) says the body of each structure MUST be enclosed by braces, and makes no
-exception for a structure with no body. `Generic.ControlStructures.InlineControlStructure`, which reports a body
-without braces, skips a structure with no body at all.
+exception for a structure with no body. `Generic.ControlStructures.InlineControlStructure`, which reports a body without
+braces, skips a structure with no body at all.
 
 The parent checks `if`, `elseif`, `for`, `foreach` and `while`, and leaves the `while` that ends a `do` loop alone. It
 looks for the `;` after a structure's closing parenthesis, so it can't see `else;`, which has none, and no property
@@ -1590,8 +1591,8 @@ including a constructor that only promotes properties. [Section 7](https://www.p
 an anonymous class MUST follow the same rules as a closure. No inherited sniff checks any of these. A body containing a
 comment isn't empty.
 
-Section 5 has no rule for a control structure's empty body. It's read as a class's or a function's is, so it SHOULD
-be `{}` too, as in `catch (Exception $e) {}`. The braces on separate lines get a warning.
+Section 5 has no rule for a control structure's empty body. It's read as a class's or a function's is, so it SHOULD be
+`{}` too, as in `catch (Exception $e) {}`. The braces on separate lines get a warning.
 
 Set `strict` to make every empty body that isn't `{}` an error, as the [Jumbo standard](Jumbo.md) does.
 
@@ -2426,10 +2427,10 @@ reports them.
 The parent reads a `+` or `-` that starts a statement, as in `foo();` then `-$a->b();`, as binary, and reports the
 missing space before it. A unary operator is left undefined by section 6, so this sniff skips it.
 
-The parent skips an `=` directly followed by `&`, so this sniff checks it. PHP has no `=&` operator: it reads an `=`
-and a reference `&`, so the `=` needs a space each side like any other. `$x=&$a` and `$x =&$a` are reported, and fixed
-to `$x = &$a`. `$x =& $a` is reported too, and fixed to `$x = & $a`. The space after the `&` isn't checked, as PER has
-no rule for it.
+The parent skips an `=` directly followed by `&`, so this sniff checks it. PHP has no `=&` operator: it reads an `=` and
+a reference `&`, so the `=` needs a space each side like any other. `$x=&$a` and `$x =&$a` are reported, and fixed to
+`$x = &$a`. `$x =& $a` is reported too, and fixed to `$x = & $a`. The space after the `&` isn't checked, as PER has no
+rule for it.
 
 Unlike the PSR-12 sniff, it doesn't check `=>`, which section 6.2 doesn't list. Each use of `=>` has its own sniff, such
 as [`PERCS31.WhiteSpace.ArrowSpacing`](#percs31whitespacearrowspacing) for a `match` arm's and an array's.
@@ -2869,8 +2870,8 @@ appears to imply the same rule as for the `=>` of a property hook (4.9) and an a
 checks a `match` arm, which has its own token, so aligned arms aren't caught.
 
 [Section 11](https://www.php-fig.org/per/coding-style/#11-arrays)'s example, which "shows correct array usage", has one space each side of an array's `=>`, but too few
-examples to rule out lining arrows up. So at least one space is required. The [Jumbo standard](Jumbo.md) turns
-`allowSeveralSpaces` off, to require exactly one.
+examples to rule out lining arrows up. So at least one space is required. The [Jumbo standard](Jumbo.md) turns `allowSeveralSpaces`
+off, to require exactly one.
 
 PER says nothing about a `yield`'s `=>`, so it's treated as an array's is, for consistency: at least one space each
 side, and exactly one with `allowSeveralSpaces` off. A `foreach`'s, an arrow function's and a property hook's `=>` have

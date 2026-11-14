@@ -370,8 +370,8 @@ See [Line Length](LineLength.md) to change the limit.
 
 ### The Indent of a Split Type
 
-**Issue:** 2.5 says how a compound type is split over lines, but not how its lines are indented. Its examples are all
-in parameter lists, where the type starts its line, and each `|` line is level with it.
+**Issue:** 2.5 says how a compound type is split over lines, but not how its lines are indented. Its examples are all in
+parameter lists, where the type starts its line, and each `|` line is level with it.
 
 **Decision:** Each line that starts with a `|` or `&` is indented as the type's first line requires:
 
@@ -649,8 +649,8 @@ depends on the brace:
 - Any other closing brace, such as that of an anonymous class, a closure, a `match` or a control structure, can be
   followed by a comment, but not by a statement. So `} run();` and `} break;` are reported.
 
-The rest of the brace's own statement isn't a new statement, so `} else {`, `} catch (Exception $e) {`,
-`} while ($a);` and `});` are allowed.
+The rest of the brace's own statement isn't a new statement, so `} else {`, `} catch (Exception $e) {`, `} while ($a);`
+and `});` are allowed.
 
 **Why:** The sentence sits in the section on classes, so its ban on comments is read as covering the braces that section
 is about. An anonymous class, a closure or a control structure is part of a larger expression or statement, which often
@@ -669,8 +669,8 @@ parentheses, and a member is accessed straight after them.
 a call's arguments aren't, whatever comes after them.
 
 - A function's name, a variable or another callable before the `(` makes them a call's, as in `make(new Foo())->bar`.
-- A keyword before the `(` doesn't. So they're reported after `echo`, `print`, `return`, `yield`, `throw`, `include`
-  and `require`, and inside `isset()`, `empty()`, `eval()`, `exit()` and `array()`.
+- A keyword before the `(` doesn't. So they're reported after `echo`, `print`, `return`, `yield`, `throw`, `include` and
+  `require`, and inside `isset()`, `empty()`, `eval()`, `exit()` and `array()`.
 - `clone(new Foo())->bar` is reported, and written `clone(new Foo()->bar)`, by the rule for `clone`'s parentheses in
   4.7.
 
@@ -678,8 +678,8 @@ a call's arguments aren't, whatever comes after them.
 unnecessary around `new`. A call's parentheses are part of the call.
 
 PHP reads `clone(new Foo())->bar` as a clone of `bar`, not of the new object, so those parentheses group `new Foo()`
-too. 4.7 says `clone` SHOULD always have parentheses, so they move to hold what is really cloned. The same goes for
-any `clone($a)->b`, which is written `clone($a->b)`, and `clone($a + $b)->c`, which is written `clone(($a + $b)->c)`.
+too. 4.7 says `clone` SHOULD always have parentheses, so they move to hold what is really cloned. The same goes for any
+`clone($a)->b`, which is written `clone($a->b)`, and `clone($a + $b)->c`, which is written `clone(($a + $b)->c)`.
 
 ---
 
@@ -769,8 +769,8 @@ It's unclear how the two combine.
   }
   ```
 
-- After a single-line parameter list, it passes. Each line has one type, as 2.5 requires, and the return type starts
-  on the `)` line, as 4.5 requires:
+- After a single-line parameter list, it passes. Each line has one type, as 2.5 requires, and the return type starts on
+  the `)` line, as 4.5 requires:
 
   ```php
   function a(): int
@@ -911,8 +911,8 @@ allowed form, and no rule covers them.
 **Issue:** When a chain is split, "the first method MUST be on the next line", but the spec doesn't say what counts as
 the start of the chain.
 
-**Decision:** The first method call goes on the next line. Property accesses before it, as in `$this->em`, may stay.
-A static call may stay too, as the receiver, so this passes:
+**Decision:** The first method call goes on the next line. Property accesses before it, as in `$this->em`, may stay. A
+static call may stay too, as the receiver, so this passes:
 
 ```php
 Foo::create()
@@ -1214,9 +1214,9 @@ does. The space between the `&` and what follows it isn't checked.
 | `$x=&$a`    | Reported, fixed to `$x = &$a`  |
 | `$x=& $a`   | Reported, fixed to `$x = & $a` |
 
-**Why:** PHP has no `=&` operator. It reads the `=` and the `&` as separate tokens, even though the `&` changes what
-the assignment does. 6.2 requires a space each side of an assignment operator, and the `=` is one. The fix only adds
-the spaces the `=` needs, so a space after the `&` stays if it was there.
+**Why:** PHP has no `=&` operator. It reads the `=` and the `&` as separate tokens, even though the `&` changes what the
+assignment does. 6.2 requires a space each side of an assignment operator, and the `=` is one. The fix only adds the
+spaces the `=` needs, so a space after the `&` stays if it was there.
 
 ---
 
@@ -1397,8 +1397,8 @@ condition MUST be on the next line".
 - An element of a multi-line array, as in the example.
 - An argument in an argument list. Both `foo([` and the first form below are allowed.
 - A condition of a `match` arm.
-- The first condition of a split `if`, `elseif`, `while`, `switch` or `for`, as in the second form below.
-  `foreach ([` and `match ([` are required, as neither has a split rule.
+- The first condition of a split `if`, `elseif`, `while`, `switch` or `for`, as in the second form below. `foreach ([`
+  and `match ([` are required, as neither has a split rule.
 - A destructuring assignment.
 
 ```php

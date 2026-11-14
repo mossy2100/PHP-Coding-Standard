@@ -511,7 +511,8 @@
 
     <!-- No space inside a single-line array's brackets, as the example in 11 shows. An empty array's are checked by
          Squiz.Arrays.ArrayDeclaration.SpaceInEmptyArray, above, which also reports a line break in one. Its comma
-         checks are left to Universal.WhiteSpace.CommaSpacing, which also covers an array nested in a multi-line one. -->
+         checks are left to Universal.WhiteSpace.CommaSpacing, which also covers an array nested in a multi-line
+         one. -->
     <rule ref="SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace">
         <exclude name="SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace.SpaceBeforeComma"/>
         <exclude name="SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace.SpaceAfterComma"/>

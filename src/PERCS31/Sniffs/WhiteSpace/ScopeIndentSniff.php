@@ -982,8 +982,8 @@ class ScopeIndentSniff implements Sniff
                 $exact = true;
             }
 
-            // PERCS31: a body's first line is indented exactly once past the line its opening brace is on, or that brace's
-            // `)` opens on, as sections 2.4 and 5 require. Nothing else reports one indented too far.
+            // PERCS31: a body's first line is indented exactly once past the line its opening brace is on, or that
+            // brace's `)` opens on, as sections 2.4 and 5 require. Nothing else reports one indented too far.
             if ($checkToken !== null
                 && $exact === false
                 && $this->startsBody($phpcsFile, $checkToken) === true
@@ -1320,8 +1320,8 @@ class ScopeIndentSniff implements Sniff
                         StatusWriter::write("* ignoring single-line $type on line $line *");
                     }
 
-                    // PERCS31: never move back. After a braced case body, the next label's closer is the `}` before it, so
-                    // the original's `$i = $closer;` looped forever.
+                    // PERCS31: never move back. After a braced case body, the next label's closer is the `}` before
+                    // it, so the original's `$i = $closer;` looped forever.
                     $i = max($i, $closer);
                     // PERCS31: end of change.
                     continue;
@@ -1584,8 +1584,8 @@ class ScopeIndentSniff implements Sniff
 
     /**
      * PERCS31: checks whether a block's code starts one level past its opening tag. PER Coding Style 3.1, section 3,
-     * does that in its own example, so a block may use either 0 or 1 levels. It must have a closing tag, so this doesn't
-     * apply to a PHP file's code, and not be inside a scope, where the scope sets the indent.
+     * does that in its own example, so a block may use either 0 or 1 levels. It must have a closing tag, so this
+     * doesn't apply to a PHP file's code, and not be inside a scope, where the scope sets the indent.
      *
      * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
      * @param int                         $tagPtr    The position of the opening tag.
