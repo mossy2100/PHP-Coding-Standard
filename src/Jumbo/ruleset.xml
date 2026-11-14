@@ -18,10 +18,11 @@
 
     <!-- ====== GENERAL (2) ====== -->
 
-    <!-- Line length: a warning over the limit, with no hard limit, and PERCS31's severity 4 warning over 80 -->
-    <rule ref="PERCS31.Files.LineLength">
+    <!-- Line length: PERCS31's warning over the limit, which is the sniff's absoluteLineLimit there, and its
+         severity 4 warning over 80 -->
+    <rule ref="Generic.Files.LineLength">
         <properties>
-            <property name="lineLimit" value="&lineLength;"/>
+            <property name="absoluteLineLimit" value="&lineLength;"/>
         </properties>
     </rule>
 

@@ -40,7 +40,8 @@ The line length limit is 120. To change it, see [Line Length](LineLength.md).
 
 The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-12. These are Jumbo's changes to it:
 
-- `PERCS31.Files.LineLength` has `lineLimit` set from the ruleset's `lineLength` entity. See [Line Length](LineLength.md).
+- `Generic.Files.LineLength` has `absoluteLineLimit`, which holds the soft limit, set from the ruleset's `lineLength`
+  entity. See [Line Length](LineLength.md).
 - `PERCS31.WhiteSpace.ArrowSpacing` requires exactly one space around an array's `=>`, where PERCS31 allows more
   (`allowSeveralSpacesInArray` set to `false`). It replaces Squiz `ArrayDeclaration`'s arrow spacing checks. It also
   requires exactly one space around a `yield`'s `=>`, which PERCS31 doesn't check (`checkYield` set to `true`).

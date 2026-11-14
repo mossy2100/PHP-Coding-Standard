@@ -45,8 +45,6 @@ PERCS31 is installed with the `mossy2100/coding-standard` package, and registere
 
 The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included. These PSR-12 sniffs are replaced by PERCS31 versions:
 
-- **Generic.Files.LineLength**, by [`PERCS31.Files.LineLength`](#percs31fileslinelength), which also warns, at a lower severity, about a line over
-  80 characters.
 - **Generic.Formatting.DisallowMultipleStatements**, by [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements), which allows
   `{ get; set; }` on an abstract or interface property.
 - **Generic.PHP.LowerCaseKeyword**, by [`PERCS31.PHP.LowerCaseKeyword`](#percs31phplowercasekeyword), which also checks a property hook's name.
@@ -111,6 +109,11 @@ Two custom sniffs extend php-collective sniffs.
 - **Generic.Arrays.ArrayIndent**: Indents multi-line array elements one level, with the closing bracket at the indent of
   the statement (11).
 - **Generic.Arrays.DisallowLongArraySyntax**: Requires short array syntax `[]` instead of `array()` (11).
+- **Generic.Files.LineLength**: Warns about a line over 120 characters, and, at a severity of 4, about one over 80
+  (2.3). PSR-12 includes it with one limit of 120. The sniff has one warning limit, so PERCS31 sets its `lineLimit` to
+  80 and its `absoluteLineLimit` to 120, and turns that limit's error into a warning, as PER says there MUST NOT be a
+  hard limit. So a line over 120 is reported as `MaxExceeded`, and one over 80 as `TooLong`, which `phpcs` only shows
+  with `--warning-severity=4`. See [Line Length](LineLength.md).
 - **Generic.Formatting.SpaceAfterCast**: Requires exactly one space after a cast, e.g. `(int) $value` (6.1).
 - **Generic.Strings.UnnecessaryHeredoc**: Warns about a heredoc with no interpolation or escape sequences, which could
   be a nowdoc (10).
@@ -232,7 +235,6 @@ section gives the reason.
 | `PERCS31.Files.DeclareStatement`                        | No spaces in `declare(...)`, with one directive or several          | Yes     |
 | `PERCS31.Files.Encoding`                                | A file is encoded in UTF-8                                          | No      |
 | `PERCS31.Files.FileHeader`                              | The file header, allowing `<?php declare(...) ?>` above markup      | Yes     |
-| `PERCS31.Files.LineLength`                              | A warning over 120 characters, and a hidden one over 80             | No      |
 | `PERCS31.Formatting.AfterClosingBrace`                  | No statement after a `}`, or comment after a class's or function's  | Partly  |
 | `PERCS31.Formatting.DisallowMultipleStatements`         | One statement per line, allowing `{ get; set; }`                    | Yes     |
 | `PERCS31.Formatting.EmptyBody`                          | An empty class, function, closure or anonymous class body is `{}`   | Yes     |
@@ -1419,28 +1421,6 @@ file with more than one namespace is skipped, as each namespace has its own impo
 </body>
 </html>
 ```
-
----
-
-### PERCS31.Files.LineLength
-
-Warns about a line over 120 characters, and, at a severity of 4, about one over 80. This replaces
-`Generic.Files.LineLength`.
-
-**Why:** [PER Coding Style 3.1, Section 2.3](https://www.php-fig.org/per/coding-style/#23-lines) says the soft limit MUST be 120 characters, with no hard limit, and that
-lines SHOULD NOT be longer than 80. The parent has one warning threshold, so it can't check both. The 80-character
-warning's severity of 4 is below `phpcs`'s default of 5, so it's only shown with `--warning-severity=4`. A line is
-measured as by the parent, and gets at most one warning. See [Line Length](LineLength.md).
-
-**Auto-fixable:** no. Only a person can choose where to split a line.
-
-**Configuration:**
-
-| Property               | Type | Default | Description                                                                         |
-| ---------------------- | ---- | ------- | ----------------------------------------------------------------------------------- |
-| `lineLimit`            | int  | 120     | The soft limit, over which a line gets a `TooLong` warning.                         |
-| `recommendedLineLimit` | int  | 80      | The limit over which a line gets an `OverRecommended` warning, or 0 to turn it off. |
-| `absoluteLineLimit`    | int  | 0       | A hard limit, over which a line gets an error. PER says there MUST NOT be one.      |
 
 ---
 

@@ -301,10 +301,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   does, by setting `checkGlobalConstants`, and now requires it of an alias of a constant too. A global `const` is
   reported as `Constants must be uppercase`, with the `ConstantNotUpperCase` code of a `define()` constant, not as a
   class constant.
-- **`PERCS31.Files.LineLength`.** Replaces `Generic.Files.LineLength`. A line over 120 characters still gets a `TooLong`
-  warning, and a line over 80 now gets an `OverRecommended` warning with a severity of 4, as PER Coding Style 3.1 says
-  lines SHOULD NOT be longer than 80. It's hidden by default; run `phpcs --warning-severity=4` to see it. Update any
-  `phpcs:ignore` comments or `<exclude>` rules that name `Generic.Files.LineLength`.
+- **A warning for a line over 80 characters (breaking).** PER Coding Style 3.1 says lines SHOULD NOT be longer than 80.
+  A line over 80 now gets a `Generic.Files.LineLength.TooLong` warning with a severity of 4. It's hidden by default; run
+  `phpcs --warning-severity=4` to see it. A line over 120 characters is still a warning, but its code is now
+  `Generic.Files.LineLength.MaxExceeded`, so update any `phpcs:ignore` comments or `<exclude>` rules that name
+  `TooLong`. The soft limit is now the sniff's `absoluteLineLimit` property (see `docs/LineLength.md`).
 - **The PERCS31 ruleset.** A second ruleset in the package, for [PER Coding Style 3.1](https://www.php-fig.org/per/coding-style/) and nothing more, built on PSR-12.
   Use `<rule ref="PERCS31"/>` to follow PER Coding Style without the extra rules. The Jumbo ruleset is PERCS31 plus
   extra rules. PERCS31's custom sniffs are `PERCS31.*`, and the ones Jumbo adds are `Jumbo.*`. See [PERCS31](docs/PERCS31.md).

@@ -734,20 +734,26 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that PERCS31.Files.LineLength's warning over 80 characters is hidden by default, and shown at severity 4.
+     * Test that a line over 120 characters is a warning, not an error, in both standards, and that the warning over
+     * 80 characters is hidden by default, and shown at severity 4.
      */
-    public function testLineLengthRecommendedLimitNeedsWarningSeverity4(): void
+    public function testLineLengthLimitsAreWarnings(): void
     {
-        $fixture = dirname(__DIR__, 2) . '/PERCS31/Tests/Files/LineLengthUnitTest.inc';
-        $args = ['-s', '--standard=PERCS31', '--sniffs=PERCS31.Files.LineLength', '--report=emacs', $fixture];
-        $default = $this->runTool('phpcs', $args);
-        $severity4 = $this->runTool('phpcs', ['--warning-severity=4', ...$args]);
+        $fixture = __DIR__ . '/Ruleset/LineLength.inc';
+        foreach (['PERCS31', 'Jumbo'] as $standard) {
+            $args = ['-s', "--standard=$standard", '--sniffs=Generic.Files.LineLength', '--report=emacs', $fixture];
+            $default = $this->runTool('phpcs', $args);
+            $severity4 = $this->runTool('phpcs', ['--warning-severity=4', ...$args]);
 
-        $this->assertStringNotContainsString('OverRecommended', $default['output']);
-        foreach ([9, 10, 11] as $line) {
-            $this->assertMatchesRegularExpression("/:$line:\\d+: warning - .*OverRecommended/", $severity4['output']);
+            $this->assertMatchesRegularExpression('/:16:\d+: warning - .*LineLength\.MaxExceeded/', $default['output']);
+            $this->assertStringNotContainsString(' error - ', $default['output']);
+            $this->assertStringNotContainsString('LineLength.TooLong', $default['output']);
+            foreach ([9, 10, 11] as $line) {
+                $pattern = "/:$line:\\d+: warning - .*LineLength\\.TooLong/";
+                $this->assertMatchesRegularExpression($pattern, $severity4['output']);
+            }
+
+            $this->assertStringNotContainsString(':12:', $severity4['output'], 'An unbreakable comment is exempt.');
         }
-
-        $this->assertStringNotContainsString(':12:', $severity4['output'], 'An unbreakable comment is exempt.');
     }
 }
