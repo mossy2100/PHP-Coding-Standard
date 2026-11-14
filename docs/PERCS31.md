@@ -229,8 +229,8 @@ section gives the reason.
 | `PERCS31.Classes.PropertyHookLayout`                       | A hook list's and hook body's braces, and a short hook's `=>`       | Partly  |
 | `PERCS31.Classes.TraitAliasSpacing`                        | One space after a visibility or `final` in a trait's `as` clause    | Yes     |
 | `PERCS31.ControlStructures.BodyOnNextLine`                 | A structure's body on the line after its `{`, allowing `{}`         | Yes     |
-| `PERCS31.ControlStructures.ControlStructureSpacing`        | The parentheses, with no split rule for `foreach` or `match`        | Yes     |
 | `PERCS31.ControlStructures.ControlStructureEmptyStatement` | Braces on a structure with no body, `else` included                 | Yes     |
+| `PERCS31.ControlStructures.ControlStructureSpacing`        | The parentheses, with no split rule for `foreach` or `match`        | Yes     |
 | `PERCS31.ControlStructures.ForEachSpacing`                 | A space or line break each side of a `foreach`'s `as` and `=>`      | Yes     |
 | `PERCS31.ControlStructures.MatchArmPlacement`              | Each `match` arm starts on a new line                               | Yes     |
 | `PERCS31.ControlStructures.MultiLineTernaryOperator`       | A multi-line ternary takes three lines, `?` and `:` leading         | Yes     |
@@ -1074,6 +1074,37 @@ while (next($items)) { count();
 
 ---
 
+### PERCS31.ControlStructures.ControlStructureEmptyStatement
+
+Requires braces on a control structure with no body, so `while (next($items));` is reported. This extends
+`PhpCollective.ControlStructures.ControlStructureEmptyStatement`, from [php-collective/code-sniffer](https://github.com/php-collective/code-sniffer).
+
+**Why:** [PER Coding Style 3.1, Section 5](https://www.php-fig.org/per/coding-style/#5-control-structures) says the body of each structure MUST be enclosed by braces, and makes no
+exception for a structure with no body. `Generic.ControlStructures.InlineControlStructure`, which reports a body
+without braces, skips a structure with no body at all.
+
+The parent checks `if`, `elseif`, `for`, `foreach` and `while`, and leaves the `while` that ends a `do` loop alone. It
+looks for the `;` after a structure's closing parenthesis, so it can't see `else;`, which has none, and no property
+changes that. This subclass adds `else`.
+
+**Auto-fixable:** yes. A structure with parentheses gets its braces on two lines, and `else;` becomes `else {}`.
+[`PERCS31.Formatting.EmptyBody`](#percs31formattingemptybody) then asks for `{}` on one line. An `else` with a comment before its `;` is left to a
+person.
+
+**Good:**
+
+```php
+while (next($items)) {}
+```
+
+**Bad:**
+
+```php
+while (next($items));
+```
+
+---
+
 ### PERCS31.ControlStructures.ControlStructureSpacing
 
 Checks the layout of a control structure's parentheses, as `PSR12.ControlStructures.ControlStructureSpacing` does,
@@ -1132,37 +1163,6 @@ try {
 } catch (PaymentException  $exception) {
     $order->cancel();
 }
-```
-
----
-
-### PERCS31.ControlStructures.ControlStructureEmptyStatement
-
-Requires braces on a control structure with no body, so `while (next($items));` is reported. This extends
-`PhpCollective.ControlStructures.ControlStructureEmptyStatement`, from [php-collective/code-sniffer](https://github.com/php-collective/code-sniffer).
-
-**Why:** [PER Coding Style 3.1, Section 5](https://www.php-fig.org/per/coding-style/#5-control-structures) says the body of each structure MUST be enclosed by braces, and makes no
-exception for a structure with no body. `Generic.ControlStructures.InlineControlStructure`, which reports a body
-without braces, skips a structure with no body at all.
-
-The parent checks `if`, `elseif`, `for`, `foreach` and `while`, and leaves the `while` that ends a `do` loop alone. It
-looks for the `;` after a structure's closing parenthesis, so it can't see `else;`, which has none, and no property
-changes that. This subclass adds `else`.
-
-**Auto-fixable:** yes. A structure with parentheses gets its braces on two lines, and `else;` becomes `else {}`.
-[`PERCS31.Formatting.EmptyBody`](#percs31formattingemptybody) then asks for `{}` on one line. An `else` with a comment before its `;` is left to a
-person.
-
-**Good:**
-
-```php
-while (next($items)) {}
-```
-
-**Bad:**
-
-```php
-while (next($items));
 ```
 
 ---
@@ -3061,11 +3061,9 @@ These are the original's properties. PER Coding Style 3.1 needs their defaults, 
 - **Autoloading (PSR-1, 3).** Whether a class's namespace matches its file's path depends on the project's autoload
   roots, which a standard doesn't know. One class per file, in a namespace, is checked.
 - **Consistent property names (PSR-1, 4.2).** Which naming convention a scope uses can't be judged by a sniff.
-- **A comment or statement after an anonymous class's, closure's or control structure's closing brace (4).** Section 4
-  says "any closing brace", but each of these is part of a larger expression or statement, so this standard reads it as
-  covering classes, methods, functions and property hooks only. After a block `declare` in the file header, a statement
-  is still reported, as section 3 wants a blank line after the block. The [Jumbo standard](Jumbo.md) reports a statement after a
-  control structure's closing brace.
+- **A comment after an anonymous class's, closure's, `match`'s or control structure's closing brace (4).** Section 4
+  says "any closing brace", but each of these is part of a larger expression or statement, so a comment is allowed
+  there. A statement is reported after any closing brace.
 - **The pipe operator `|>` on PHP 8.4.** It's only checked when PHP_CodeSniffer runs on PHP 8.5. On PHP 8.4, where `|>`
   is a parse error, PHP_CodeSniffer reads it as `|` and `>`, and reports them.
 

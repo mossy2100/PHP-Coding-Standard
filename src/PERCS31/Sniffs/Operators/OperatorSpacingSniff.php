@@ -52,7 +52,7 @@ use PHPCSUtils\Utils\Parentheses;
  * - A `match` arm: PERCS31.WhiteSpace.ArrowSpacing.
  * - An arrow function: SlevomatCodingStandard.Functions.ArrowFunctionDeclaration.
  * - A property hook: PERCS31.Classes.PropertyHookLayout.
- * - `yield`: PERCS31.WhiteSpace.ArrowSpacing, in Jumbo only.
+ * - `yield`: PERCS31.WhiteSpace.ArrowSpacing.
  */
 class OperatorSpacingSniff extends SquizSniff
 {
