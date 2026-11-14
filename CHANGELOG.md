@@ -122,8 +122,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   nothing after `<?php` on its line, and nothing before `?>` on its line, with `?>` level with the line `<?php` is on.
   The code is level with that line, or one level past it if markup comes before `<?php`. A short echo tag must be on one
   line. A tag on one line is exempt. Auto-fixable, except a short echo tag. PERCS31 doesn't check this.
-- **`SlevomatCodingStandard.Variables.UnusedVariable` (breaking).** In the Jumbo standard, a variable that's assigned
-  but never used is now an error. Not auto-fixable.
 - **`PERCS31.WhiteSpace.ConsistentIndent` (breaking).** Reports a line indented further than its scope after a complete
   statement, as PER Coding Style 3.1 requires an indent of 4 spaces per level. It extends php-collective's
   `ConsistentIndent`, adding the pipe operator and the other binary operators to the lines it treats as continuation
@@ -520,6 +518,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+- **`SlevomatCodingStandard.Variables.UselessVariable` from Jumbo.** A variable that's assigned and then returned on
+  the next line is no longer reported.
 - **`SlevomatCodingStandard.Arrays.MultiLineArrayEndBracketPlacement` from PERCS31.** It only looks at a nested array
   that starts on its parent's first line, and `PERCS31.Arrays.ValuePerLine` and
   `Squiz.Arrays.ArrayDeclaration.IndexNoNewline` now put every multi-line array's first value on a new line, so it had
