@@ -81,8 +81,12 @@ class OpeningBracketPlacementSniff implements Sniff
             return;
         }
 
+        // A comment before the bracket doesn't change what the bracket follows, so look past it for the statement's
+        // start.
         $code = $tokens[$previous]['code'];
-        if (in_array($code, self::STATEMENT_ENDS, true) || $this->isListItem($phpcsFile, $stackPtr)) {
+        $before = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
+        $startsStatement = $before === false || in_array($tokens[$before]['code'], self::STATEMENT_ENDS, true);
+        if ($startsStatement || $this->isListItem($phpcsFile, $stackPtr)) {
             return;
         }
 

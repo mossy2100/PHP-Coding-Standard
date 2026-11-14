@@ -179,3 +179,20 @@ $result = $object->{$method}(
     ],
     2,
 );
+
+// A destructuring assignment that starts a statement, after a comment or a docblock.
+$a = 1;
+// Destructure the pair.
+[
+    $b,
+    $c,
+] = $list;
+
+function destructure(array $list): void
+{
+    /** @var array{int, int} $list */
+    [
+        $b,
+        $c,
+    ] = $list;
+}

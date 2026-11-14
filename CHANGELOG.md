@@ -557,6 +557,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A destructuring assignment after a comment.** `PERCS31.Arrays.OpeningBracketPlacement` reported a multi-line
+  `[$a, $b] = $c;` that started a statement, when a comment or a docblock was on the line before it.
 - **A `case` that falls through to one with a braced body.** `PERCS31.WhiteSpace.ScopeIndent` reported the braced
   `case`, its body and its closing brace as indented too little, when they were right, and `phpcbf` then failed on the
   file. The braces are still reported, by `PERCS31.ControlStructures.SwitchDeclaration`.
