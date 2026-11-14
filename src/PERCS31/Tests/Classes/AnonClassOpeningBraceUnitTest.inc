@@ -37,3 +37,11 @@ $invalid = new class
 // A named class isn't checked here.
 class Named{
 }
+
+// No space between the arguments and extends or implements.
+$invalid = new class ($a)extends Base {
+    public int $a = 1;
+};
+$invalid = new class ($a)implements \Countable {
+    public int $a = 1;
+};

@@ -218,7 +218,7 @@ section gives the reason.
 | `PERCS31.Attributes.AttributePlacement`                    | An attribute is on its own line, except on a parameter              | Yes     |
 | `PERCS31.Attributes.DisallowMultiLineAttributesJoining`    | One attribute per block when a block spans lines                    | Yes     |
 | `PERCS31.Attributes.DisallowMultipleAttributesPerLine`     | Separate attribute blocks on separate lines                         | Yes     |
-| `PERCS31.Classes.AnonClassOpeningBrace`                    | One space before an anonymous class's `{`, and nothing after it     | Yes     |
+| `PERCS31.Classes.AnonClassOpeningBrace`                    | The space before an anonymous class's `{` and `extends`             | Yes     |
 | `PERCS31.Classes.ClassDeclaration`                         | Class declarations, allowing an empty body as `{}`                  | Yes     |
 | `PERCS31.Classes.ClassInstantiationNoBrackets`             | A warning for `(new Foo())->bar()`                                  | Yes     |
 | `PERCS31.Classes.ConstantDeclaration`                      | One space after a class constant's `const`, and after its type      | Yes     |
@@ -598,12 +598,17 @@ final class Marker {}
 ### PERCS31.Classes.AnonClassOpeningBrace
 
 Requires one space before an anonymous class's opening brace when it's on the declaration's line, and nothing after the
-brace on its line. This extends `Generic.Classes.OpeningBraceSameLine`.
+brace on its line. This extends `Generic.Classes.OpeningBraceSameLine`. It also requires a space between an anonymous
+class's arguments and `extends` or `implements`.
 
 **Why:** [PER Coding Style 3.1, Section 8](https://www.php-fig.org/per/coding-style/#8-anonymous-classes) says anonymous classes MUST follow the same guidelines as closures, and its
 examples show one space before the brace, and the body on the next line. `PSR12.Classes.AnonClassDeclaration` only
 checks which line the brace is on. The Generic sniff makes both checks, but only for a class, interface, trait or enum,
-and has no property to add to those. So this subclass changes one thing: it registers an anonymous class instead.
+and has no property to add to those. So this subclass registers an anonymous class instead.
+
+Section 8's example writes `new class ($a) extends \Foo`, with one space after the arguments.
+`PSR12.Classes.AnonClassDeclaration` reports more than one space there, but not none, so this sniff reports
+`new class ($a)extends Foo`, as `SpaceAfterArguments`. See [After the Arguments](PER-CS_3.1_Judgement_Calls.md#after-the-arguments).
 
 The parent also requires the brace on the declaration's line, as `BraceOnNewLine`. Section 8 allows the next line, and
 requires it after a wrapped list of interfaces, so the ruleset excludes that code. An empty body, `{}`, is left to
@@ -627,6 +632,10 @@ $counter = new class extends Base{
 };
 
 $counter = new class { public int $count = 0;
+};
+
+$counter = new class ($start)extends Base {
+    public int $count = 0;
 };
 ```
 

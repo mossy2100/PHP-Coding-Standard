@@ -445,7 +445,8 @@
     <rule ref="Universal.Classes.DisallowAnonClassParentheses"/>
 
     <!-- One space before an anonymous class's opening brace on the declaration's line, and nothing after the brace, as
-         the examples in 8 show. The brace may be on the next line, so the parent's code for that is excluded. -->
+         the examples in 8 show. The brace may be on the next line, so the parent's code for that is excluded. Also a
+         space between its arguments and extends or implements, as in new class ($a) extends Foo (8). -->
     <rule ref="PERCS31.Classes.AnonClassOpeningBrace">
         <exclude name="PERCS31.Classes.AnonClassOpeningBrace.BraceOnNewLine"/>
     </rule>

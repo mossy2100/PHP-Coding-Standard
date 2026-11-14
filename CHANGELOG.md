@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **A space after an anonymous class's arguments (breaking).** `new class ($a)extends Foo` is now reported, by
+  `PERCS31.Classes.AnonClassOpeningBrace`, as `SpaceAfterArguments`, and so is `new class ($a)implements Foo`. More than
+  one space there was already an error, but none passed. Auto-fixable.
 - **The indent of a split type's lines (breaking).** `PERCS31.TypeHints.CompoundTypeLayout` now reports a line of a
   split compound type that's indented wrongly, as `Indent`. A line starting with `|` or `&` must be level with the
   type's first line when the type starts that line, as in a parameter list or a multi-catch, and indented once past it

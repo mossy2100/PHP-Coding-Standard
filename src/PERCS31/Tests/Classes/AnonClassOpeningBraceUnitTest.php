@@ -28,6 +28,9 @@ class AnonClassOpeningBraceUnitTest extends AbstractSniffTestCase
             // Code, and a comment, after the brace.
             30 => 1,
             33 => 1,
+            // No space between the arguments and extends or implements.
+            42 => 1,
+            45 => 1,
         ];
     }
 

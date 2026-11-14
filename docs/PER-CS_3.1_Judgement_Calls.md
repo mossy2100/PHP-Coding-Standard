@@ -1342,6 +1342,18 @@ examples show both.
 
 ---
 
+### After the Arguments
+
+**Issue:** Section 8's text doesn't say whether a space goes between an anonymous class's arguments and `extends` or
+`implements`. Its example writes `new class ($a) extends \Foo implements`.
+
+**Decision:** Exactly one space is required, so `new class ($a)extends Foo` is reported, as an error, and fixed.
+
+**Why:** The example shows it, and it's the spacing before `extends` and `implements` everywhere else. More than one
+space there was already an error, so none is treated the same way.
+
+---
+
 ## 9. Enumerations
 
 ### Enum Constant Names
