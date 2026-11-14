@@ -171,9 +171,7 @@
         <!-- ?T is checked by PERCS31.TypeHints.NullType too, as this sniff's fix turns a static|null return type into
              ?, a parse error. Its shortNullable property is left unset, which turns the check off. -->
         <properties>
-            <property name="withSpacesAroundOperators" value="no"/>
             <property name="withSpacesInsideParentheses" value="no"/>
-            <property name="nullPosition" value="last"/>
         </properties>
     </rule>
 
