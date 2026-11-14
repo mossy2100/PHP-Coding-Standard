@@ -8,6 +8,19 @@ do {
     run();
 } while ($ready);
 
+// The while that ends a do loop with no braces isn't a loop with no body.
+do
+    $i++;
+while ($i < 10);
+
+do run(); while ($ready);
+
+do if ($ready) {
+    run();
+} while ($other);
+
+do do $i++; while ($ready); while ($other);
+
 if ($ready) {
     run();
 } elseif ($other) {

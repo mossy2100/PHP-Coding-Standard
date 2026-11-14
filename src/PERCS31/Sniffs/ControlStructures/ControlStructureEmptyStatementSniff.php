@@ -18,6 +18,10 @@ use PhpCollective\Sniffs\ControlStructures\ControlStructureEmptyStatementSniff a
  * PhpCollective.ControlStructures.ControlStructureEmptyStatement checks `if`, `elseif`, `for`, `foreach` and `while`.
  * It finds the `;` after a structure's closing parenthesis, so it can't see `else;`, which has no parentheses, and no
  * property changes that. This subclass adds `else`, and leaves everything else to the parent. The fix writes `else {}`.
+ *
+ * The parent only knows the `while` that ends a `do` loop by the closing brace before it. A `do` loop with no braces,
+ * as in `do $i++; while ($i < 10);`, has none, so this subclass skips that `while` too. Its `;` ends the loop, and
+ * replacing it with `{}` is a parse error.
  */
 class ControlStructureEmptyStatementSniff extends PhpCollectiveSniff
 {
@@ -44,7 +48,9 @@ class ControlStructureEmptyStatementSniff extends PhpCollectiveSniff
     {
         $tokens = $phpcsFile->getTokens();
         if ($tokens[$stackPtr]['code'] !== T_ELSE) {
-            parent::process($phpcsFile, $stackPtr);
+            if ($tokens[$stackPtr]['code'] !== T_WHILE || !$this->endsDoWithoutBraces($phpcsFile, $stackPtr)) {
+                parent::process($phpcsFile, $stackPtr);
+            }
 
             return;
         }
@@ -62,5 +68,68 @@ class ControlStructureEmptyStatementSniff extends PhpCollectiveSniff
         }
 
         FixerHelper::replaceBetween($phpcsFile, $stackPtr, ($next + 1), ' {}');
+    }
+
+    /**
+     * Check if a `while` ends a `do` loop that has no braces, as in `do $i++; while ($i < 10);`.
+     *
+     * It looks back through the code at the same level for a `do` with no braces that no earlier `while` has ended. The
+     * loop's body may itself be a structure, as in `do if ($a) { run(); } while ($b);`.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $whilePtr The position of the `while`.
+     * @return bool True if the `while` ends a `do` loop with no braces.
+     */
+    private function endsDoWithoutBraces(File $phpcsFile, int $whilePtr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+
+        // Straight after the closing brace of a `do` loop, it ends that loop.
+        $prev = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($whilePtr - 1), null, true);
+        $owner = $prev === false ? null : ($tokens[$prev]['scope_condition'] ?? null);
+        if ($owner !== null && $tokens[$owner]['code'] === T_DO) {
+            return false;
+        }
+
+        $parentheses = $tokens[$whilePtr]['nested_parenthesis'] ?? [];
+
+        // The number of `while` tokens passed that end a `do` with no braces, each of which pairs with a `do` further
+        // back.
+        $pending = 0;
+        for ($i = ($whilePtr - 1); $i > 0; $i--) {
+            $code = $tokens[$i]['code'];
+
+            // Skip a block at this level.
+            if ($code === T_CLOSE_CURLY_BRACKET && isset($tokens[$i]['bracket_opener'])) {
+                $i = $tokens[$i]['bracket_opener'];
+                continue;
+            }
+
+            // Stop at the start of the block the `while` is in.
+            if ($code === T_OPEN_CURLY_BRACKET) {
+                return false;
+            }
+
+            if (($tokens[$i]['nested_parenthesis'] ?? []) !== $parentheses) {
+                continue;
+            }
+
+            if ($code === T_WHILE && $this->endsDoWithoutBraces($phpcsFile, $i)) {
+                $pending++;
+                continue;
+            }
+
+            if ($code !== T_DO || isset($tokens[$i]['scope_opener'])) {
+                continue;
+            }
+
+            if ($pending === 0) {
+                return true;
+            }
+
+            $pending--;
+        }
+
+        return false;
     }
 }

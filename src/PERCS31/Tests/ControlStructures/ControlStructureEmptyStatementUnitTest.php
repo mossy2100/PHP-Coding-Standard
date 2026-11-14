@@ -20,17 +20,17 @@ class ControlStructureEmptyStatementUnitTest extends AbstractSniffTestCase
     {
         return [
             // A while, for, foreach and if with no body.
-            25 => 1,
-            26 => 1,
-            27 => 1,
-            28 => 1,
-            // An elseif with no body.
-            32 => 1,
-            // An else with no body, without and with a space.
-            36 => 1,
+            38 => 1,
+            39 => 1,
             40 => 1,
+            41 => 1,
+            // An elseif with no body.
+            45 => 1,
+            // An else with no body, without and with a space.
+            49 => 1,
+            53 => 1,
             // An else with a comment before the semicolon: not fixable.
-            44 => 1,
+            57 => 1,
         ];
     }
 

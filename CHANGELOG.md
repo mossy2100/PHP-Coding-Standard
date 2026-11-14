@@ -569,6 +569,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A `do` loop with no braces.** `PERCS31.ControlStructures.ControlStructureEmptyStatement` took the `while` that ends
+  `do $i++; while ($i < 10);` for a loop with no body, and its fix replaced the `;` with `{}`, which is a parse error.
+  That `while` is now left alone, and `phpcbf` gives `do {`, `$i++;`, `} while ($i < 10);`.
 - **An attribute with no space before its target.** `#[Foo]class Demo` was reported by
   `PERCS31.Attributes.AttributePlacement`, but not fixed. It's now moved to its own line, as `#[Foo] class Demo` is.
 - **A function body after a split return type.** After a split parameter list, a return type split over lines is

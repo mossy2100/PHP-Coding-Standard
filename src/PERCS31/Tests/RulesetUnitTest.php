@@ -615,6 +615,29 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a `do` loop with no braces is given them, and that the `while` that ends it isn't taken for a loop with
+     * no body. The fix for that replaced its `;` with `{}`, which is a parse error.
+     */
+    public function testDoLoopWithNoBracesKeepsItsWhile(): void
+    {
+        $source = "<?php\n\ndo\n    \$i++;\nwhile (\$i < 10);\n\ndo run(); while (\$ready);\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        $expected = "<?php\n\ndo {\n    \$i++;\n} while (\$i < 10);\n\ndo {\n    run();\n} while (\$ready);\n";
+
+        $this->assertStringNotContainsString('ControlStructureEmptyStatement', $result['output']);
+        $this->assertSame($expected, $fixed);
+    }
+
+    /**
      * Test that PERCS31 doesn't check a comment's indent or spacing.
      */
     public function testCommentsAreNotChecked(): void
