@@ -739,6 +739,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   has no parentheses of its own there, but it passed. `PERCS31.PHP.RequireCloneParentheses` now reports it as
   `PartOfOperand`, and fixes it to `clone($a->b)`. `clone($a + $b)->c` becomes `clone(($a + $b)->c)`, and
   `clone(new Foo())->bar` becomes `clone(new Foo()->bar)`.
+- A reference assignment written `$x =& $a`. It passed `PERCS31.Operators.OperatorSpacing`, which read `=&` as one
+  operator. PHP has no such operator: it's an `=` and a reference `&`, so the `=` needs a space after it. It's now
+  reported, and fixed to `$x = & $a`.
 
 ---
 

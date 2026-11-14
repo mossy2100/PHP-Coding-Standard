@@ -37,9 +37,9 @@ class ReferenceHooks
     public array $list = [] { &get => $this->list; }
 }
 
-// A reference assignment: valid.
+// A reference assignment: valid, then one with no space after its =.
 $valid = &$a;
-$alsoValid =& $a;
+$glued =& $a;
 $spaced = & $a;
 
 // A reference assignment: no space either side, no space after, and no space before.

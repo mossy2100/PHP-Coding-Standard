@@ -290,8 +290,8 @@ doesn't have.
 **Issue:** PSR-1 says "PHP code MUST use only UTF-8 without BOM". PSR-12 only checks the byte-order mark, and no
 inherited sniff checks the encoding.
 
-**Decision:** `PERCS31.Files.Encoding` reports a file that isn't valid UTF-8, once, at its first invalid line. There's no
-fix.
+**Decision:** `PERCS31.Files.Encoding` reports a file that isn't valid UTF-8, once, at its first invalid line. There's
+no fix.
 
 **Why:** It's a MUST, and it can be checked. The file's real encoding can't be known, so converting it is left to a
 person.
@@ -445,9 +445,9 @@ foo([
 ],);
 ```
 
-**Decision:** An argument list is split when its first argument starts on the line after the `(`, or its `)` is on a line
-of its own. Any other list mustn't have a trailing comma, so the comma after the `]` above is reported. This covers the
-arguments of a call, an attribute, an anonymous class, `clone()`, `exit()` and `die()`.
+**Decision:** An argument list is split when its first argument starts on the line after the `(`, or its `)` is on a
+line of its own. Any other list mustn't have a trailing comma, so the comma after the `]` above is reported. This covers
+the arguments of a call, an attribute, an anonymous class, `clone()`, `exit()` and `die()`.
 
 This is how it should be written:
 
@@ -581,8 +581,8 @@ namespace has its own imports.
 **Issue:** "Declare statements MUST NOT contain any spaces inside the parentheses" doesn't say whether that includes
 after a comma between directives.
 
-**Decision:** It does, so `declare(ticks=1,strict_types=1);`. Several directives and string values are allowed. There are
-no blank lines between `declare` statements.
+**Decision:** It does, so `declare(ticks=1,strict_types=1);`. Several directives and string values are allowed. There
+are no blank lines between `declare` statements.
 
 **Why:** A space after the comma is still inside the parentheses.
 
@@ -631,8 +631,8 @@ line."
 wrapped in parentheses." The spec doesn't say which parentheses wrap. In `make(new Foo())->bar`, a `new` is in
 parentheses, and a member is accessed straight after them.
 
-**Decision:** Only parentheses that group an expression are reported, as in `(new Foo())->bar()`. Parentheses that hold a
-call's arguments aren't, whatever comes after them.
+**Decision:** Only parentheses that group an expression are reported, as in `(new Foo())->bar()`. Parentheses that hold
+a call's arguments aren't, whatever comes after them.
 
 - A function's name, a variable or another callable before the `(` makes them a call's, as in `make(new Foo())->bar`.
 - A keyword before the `(` doesn't. So they're reported after `echo`, `print`, `return`, `yield`, `throw`, `include`
@@ -1031,8 +1031,8 @@ indent of at least one level passes. `case (` with the first condition on the sa
 ### Single-line `match`
 
 **Issue:** 2.6 names "`match()` statement branches" among the lists that take a trailing comma, which suggests a
-single-line `match` is possible, even if extremely rare in practice. Section 5 puts a control structure's body on the line
-after its opening brace.
+single-line `match` is possible, even if extremely rare in practice. Section 5 puts a control structure's body on the
+line after its opening brace.
 
 **Decision:** A `match` on one line is reported.
 
@@ -1103,7 +1103,8 @@ brace (4). PHP_CodeSniffer reads the same PSR-12 rule this way.
 **Issue:** 5.2 requires a comment when a non-empty `case` falls through, and says a `case` body MUST NOT be wrapped in
 `{}`. It doesn't say whether either rule covers `default`.
 
-**Decision:** Both do. A non-empty `default` that falls through needs a comment, and a braced `default` body is reported.
+**Decision:** Both do. A non-empty `default` that falls through needs a comment, and a braced `default` body is
+reported.
 
 **Why:** A `default` is a `case` in all but name. It can fall through, and take braces, just as a `case` can.
 
@@ -1153,16 +1154,21 @@ nothing about a `yield`, so that follows the array rule, for consistency.
 
 **Issue:** It's unclear whether `=&` is one operator or `=` followed by a reference `&`.
 
-**Decision:** It's one operator, so `$x =& $a` passes. Where there is ambiguity regarding whether the `&` attaches to the `=` or the variable, e.g. `$x=&$a` and `$x =&$a`, the variable is assumed; these are fixed to `$x = &$a`.
+**Decision:** It's an `=` followed by a reference `&`, so the `=` needs at least one space each side, as any assignment
+does. The space between the `&` and what follows it isn't checked.
 
-**Why:** Both readings are common, so both spaced forms pass. The unspaced forms break the rule either way.
+| Code        | Result                         |
+| ----------- | ------------------------------ |
+| `$x = &$a`  | Passes                         |
+| `$x = & $a` | Passes                         |
+| `$x =& $a`  | Reported, fixed to `$x = & $a` |
+| `$x =&$a`   | Reported, fixed to `$x = &$a`  |
+| `$x=&$a`    | Reported, fixed to `$x = &$a`  |
+| `$x=& $a`   | Reported, fixed to `$x = & $a` |
 
-> [!Note]
-> `=&` is not an operator in PHP, so this decision was incorrect.
-> Conceptually, the `&` modifies the operation. BUT PHP treats the `=` and `&` as different operators.
-> According to the spec, there should be at least one space around the `=`.
-> So the examples will fix to `$x = & $a` or `$x = &$a` depending if there's already a space after the `&`.
-> Jumbo will also remove any space between the `&` and the operand after it.
+**Why:** PHP has no `=&` operator. It reads the `=` and the `&` as separate tokens, even though the `&` changes what
+the assignment does. 6.2 requires a space each side of an assignment operator, and the `=` is one. The fix only adds
+the spaces the `=` needs, so a space after the `&` stays if it was there.
 
 ---
 

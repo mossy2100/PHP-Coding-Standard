@@ -33,9 +33,9 @@ use PHPCSUtils\Utils\Parentheses;
  * `|`, `&` and `?` of a `set` hook's parameter type, e.g. `set(int|string $value)`, which PHP_CodeSniffer reads as
  * operators. PERCS31.TypeHints.CompoundTypeOperatorSpacing checks them.
  *
- * The parent skips any `=` directly followed by `&`, so `$x=&$a` passes. This sniff checks it, and fixes it to
- * `$x = &$a`. It still skips `$x =& $a`, as that has a space either side if `=&` is read as one operator, and PER
- * doesn't say whether it is.
+ * The parent skips any `=` directly followed by `&`, so `$x=&$a` passes. PHP has no `=&` operator: it reads an `=`
+ * and a reference `&`. So this sniff checks that `=` like any other, and it needs a space each side. `$x=&$a` is fixed
+ * to `$x = &$a`, and `$x =& $a` to `$x = & $a`. The space after the `&` isn't checked, as PER has no rule for it.
  *
  * The parent reads a `+` or `-` that starts a statement, as in `foo();` then `-$a->b();`, as binary, and reports the
  * missing space before it. This sniff skips one that OperatorHelper::isUnary() finds is unary.
@@ -109,8 +109,7 @@ class OperatorSpacingSniff extends SquizSniff
     }
 
     /**
-     * Check whether a token is an operator to check, including an `=` directly followed by `&`, unless it's `=&` with a
-     * space either side.
+     * Check whether a token is an operator to check, including an `=` directly followed by a reference `&`.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the token.
@@ -120,8 +119,7 @@ class OperatorSpacingSniff extends SquizSniff
     {
         $tokens = $phpcsFile->getTokens();
         if ($tokens[$stackPtr]['code'] === T_EQUAL && ($tokens[($stackPtr + 1)]['code'] ?? null) === T_BITWISE_AND) {
-            return $tokens[($stackPtr - 1)]['code'] !== T_WHITESPACE
-                || ($tokens[($stackPtr + 2)]['code'] ?? null) !== T_WHITESPACE;
+            return true;
         }
 
         if ($this->checkDefaultValues && $this->isDefaultValueEquals($phpcsFile, $stackPtr)) {

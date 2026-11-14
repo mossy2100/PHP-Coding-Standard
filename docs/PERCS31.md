@@ -2412,9 +2412,10 @@ reports them.
 The parent reads a `+` or `-` that starts a statement, as in `foo();` then `-$a->b();`, as binary, and reports the
 missing space before it. A unary operator is left undefined by section 6, so this sniff skips it.
 
-The parent skips an `=` directly followed by `&`, so this sniff checks it: `$x=&$a` and `$x =&$a` are reported, and
-fixed to `$x = &$a`. `$x =& $a` passes, as it has a space either side if `=&` is read as one operator, and PER doesn't
-say whether it is.
+The parent skips an `=` directly followed by `&`, so this sniff checks it. PHP has no `=&` operator: it reads an `=`
+and a reference `&`, so the `=` needs a space each side like any other. `$x=&$a` and `$x =&$a` are reported, and fixed
+to `$x = &$a`. `$x =& $a` is reported too, and fixed to `$x = & $a`. The space after the `&` isn't checked, as PER has
+no rule for it.
 
 Unlike the PSR-12 sniff, it doesn't check `=>`, which section 6.2 doesn't list. Each use of `=>` has its own sniff, such
 as [`PERCS31.WhiteSpace.ArrowSpacing`](#percs31whitespacearrowspacing) for a `match` arm's and an array's.

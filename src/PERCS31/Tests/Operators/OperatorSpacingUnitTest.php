@@ -51,6 +51,8 @@ class OperatorSpacingUnitTest extends AbstractSniffTestCase
             16 => 2,
             // Two spaces either side of or.
             17 => 2,
+            // A reference assignment with the & straight after its =.
+            42 => 1,
             // A reference assignment with no space around its =.
             46 => 2,
             47 => 1,
