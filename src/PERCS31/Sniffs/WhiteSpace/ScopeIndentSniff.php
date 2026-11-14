@@ -1031,6 +1031,7 @@ class ScopeIndentSniff implements Sniff
 
             if ($checkToken !== null
                 && isset($this->ignoreIndentation[$tokens[$checkToken]['code']]) === false
+                // PERCS31: a line inside a block comment, after its first, isn't checked.
                 && $this->isInsideBlockComment($tokens, $checkToken) === false
                 && (($tokenIndent !== $checkIndent && $exact === true)
                 || ($tokenIndent < $checkIndent && $exact === false))
@@ -1712,7 +1713,7 @@ class ScopeIndentSniff implements Sniff
     }
 
     /**
-     * Check whether a token is a line of a block comment after its first line.
+     * PERCS31: checks whether a token is a line of a block comment after its first line.
      *
      * @param array<int, array<string, mixed>> $tokens The token stack.
      * @param int $ptr The position of the first token on a line.
