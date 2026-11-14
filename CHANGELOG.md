@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **A blank line after an anonymous class's `new` (breaking).** `PERCS31.Attributes.AttributePlacement` now reports an
+  anonymous class's first attribute that isn't on the line straight after `new`, as `AnonClass`. PER Coding Style 3.1
+  starts the attributes "on the next line after the `new` keyword", and a blank line there passed. Auto-fixable, unless
+  a comment is in the way.
 - **An attribute after other code on its line (breaking).** `PERCS31.Attributes.AttributePlacement` now reports an
   attribute that follows other code on its line, as in `public int $a = 1; #[Deprecated]` with its target on the next
   line, as `NotOnOwnLine`. PER Coding Style 3.1 puts an attribute on its own line, and only one that shared a line with

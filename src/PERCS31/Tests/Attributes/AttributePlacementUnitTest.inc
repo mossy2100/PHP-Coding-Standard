@@ -485,3 +485,15 @@ enum NotOnOwnLineCases
     case Hearts; #[A]
     case Spades;
 }
+
+// === THE FIRST ATTRIBUTE OF AN ANONYMOUS CLASS ===
+
+$blankAfterNew = new
+
+    #[A]
+    class {};
+
+$commentAfterNew = new
+    // Why.
+    #[A]
+    class {};

@@ -434,6 +434,12 @@ class AttributePlacementSniff implements Sniff
             $closer = $tokens[$i]['attribute_closer'];
             $blocks[] = $phpcsFile->getTokensAsString($i, ($closer - $i + 1));
             $isValid = $isValid && $this->startsLineAt($phpcsFile, $i, $previous, strlen($indent));
+
+            // The first block starts on the line after `new`, so not after a blank line or a comment's line.
+            if ($previous === $newPtr) {
+                $isValid = $isValid && $tokens[$i]['line'] === ($tokens[$newPtr]['line'] + 1);
+            }
+
             $previous = $closer;
             $i = $closer;
         }
