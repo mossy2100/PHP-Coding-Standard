@@ -2828,10 +2828,11 @@ checks a `match` arm, which has its own token, so aligned arms aren't caught.
 
 [Section 11](https://www.php-fig.org/per/coding-style/#11-arrays)'s example, which "shows correct array usage", has one space each side of an array's `=>`, but too few
 examples to rule out lining arrows up. So at least one space is required. The [Jumbo standard](Jumbo.md) turns
-`allowSeveralSpacesInArray` off, to require exactly one.
+`allowSeveralSpaces` off, to require exactly one.
 
-PER says nothing about a `yield`'s `=>`, so it isn't checked. The [Jumbo standard](Jumbo.md) turns `checkYield` on, to require
-exactly one space each side. A `foreach`'s, an arrow function's and a property hook's `=>` have their own sniffs.
+PER says nothing about a `yield`'s `=>`, so it's treated as an array's is, for consistency: at least one space each
+side, and exactly one with `allowSeveralSpaces` off. A `foreach`'s, an arrow function's and a property hook's `=>` have
+their own sniffs.
 
 A line break before or after the arrow is allowed, for wrapping a long arm, element or value.
 
@@ -2857,10 +2858,9 @@ $label = match ($size) {
 
 **Configuration:**
 
-| Property                    | Type | Default | Description                                              |
-| --------------------------- | ---- | ------- | -------------------------------------------------------- |
-| `allowSeveralSpacesInArray` | bool | true    | Allow more than one space each side of an array's `=>`.  |
-| `checkYield`                | bool | false   | Require exactly one space each side of a `yield`'s `=>`. |
+| Property             | Type | Default | Description                                                          |
+| -------------------- | ---- | ------- | -------------------------------------------------------------------- |
+| `allowSeveralSpaces` | bool | true    | Allow more than one space each side of an array's or `yield`'s `=>`. |
 
 ---
 

@@ -1,7 +1,7 @@
 <?php
 
-// phpcs:set PERCS31.WhiteSpace.ArrowSpacing allowSeveralSpacesInArray false
-// phpcs:set PERCS31.WhiteSpace.ArrowSpacing checkYield true
+// phpcs:set PERCS31.WhiteSpace.ArrowSpacing allowSeveralSpaces false
+// A yield is checked as an array is.
 
 // Correct spacing.
 $single = ['a' => 1, 'b' => 2];
@@ -52,5 +52,5 @@ foreach ($pairs as $key=>$value) {
 // A long-syntax destructuring list.
 list('q' => $q) = $pair;
 
-// phpcs:set PERCS31.WhiteSpace.ArrowSpacing allowSeveralSpacesInArray true
-// phpcs:set PERCS31.WhiteSpace.ArrowSpacing checkYield false
+// phpcs:set PERCS31.WhiteSpace.ArrowSpacing allowSeveralSpaces true
+// End of the yields.

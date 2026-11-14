@@ -1,5 +1,5 @@
 <?php
-// phpcs:set PERCS31.WhiteSpace.ArrowSpacing allowSeveralSpacesInArray false
+// phpcs:set PERCS31.WhiteSpace.ArrowSpacing allowSeveralSpaces false
 // Correct spacing.
 $label = match ($size) {
     1 => 'one',
@@ -39,12 +39,12 @@ $label = match ($size) {
     default => [],
 };
 
-// phpcs:set PERCS31.WhiteSpace.ArrowSpacing checkYield true
+// A yield is checked as an array is.
 $array = ['a'=>1, 'b'  =>  2];
 function generate(): iterable
 {
     yield 'a'=>1;
 }
 
-// phpcs:set PERCS31.WhiteSpace.ArrowSpacing allowSeveralSpacesInArray true
-// phpcs:set PERCS31.WhiteSpace.ArrowSpacing checkYield false
+// phpcs:set PERCS31.WhiteSpace.ArrowSpacing allowSeveralSpaces true
+// End of the yields.

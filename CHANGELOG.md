@@ -84,9 +84,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`PERCS31.Classes.AnonClassOpeningBrace` (breaking).** Requires one space before an anonymous class's opening brace
   when it's on the declaration's line, and nothing after the brace on its line, as PER Coding Style 3.1's examples show.
   `new class extends Foo{` and `new class { public int $a;` passed. Auto-fixable.
-- **At least one space around an array's `=>` (breaking).** `PERCS31.WhiteSpace.ArrowSpacing` now checks arrays in
-  PERCS31, as PER Coding Style 3.1's array example has a space each side, using the new property
-  `allowSeveralSpacesInArray`, so arrows can still be lined up. Jumbo still requires exactly one. Auto-fixable.
+- **At least one space around an array's or a `yield`'s `=>` (breaking).** `PERCS31.WhiteSpace.ArrowSpacing` now
+  checks both in PERCS31, as PER Coding Style 3.1's array example has a space each side. The new property
+  `allowSeveralSpaces` lets arrows still be lined up. Jumbo still requires exactly one. Auto-fixable.
 - **`Universal.Constants.UppercaseMagicConstants` in Jumbo (breaking).** A magic constant must be in upper case, as in
   `__DIR__`. PHP ignores their case, and PERCS31 doesn't check it. Auto-fixable.
 - **At most one blank line between hooks (breaking).** `PERCS31.Classes.PropertyHookLayout` now reports two or more

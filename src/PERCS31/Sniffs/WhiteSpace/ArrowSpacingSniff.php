@@ -12,8 +12,8 @@ use PHPCSUtils\Utils\Lists;
 use PHPCSUtils\Utils\PassedParameters;
 
 /**
- * Requires exactly one space before and after the `=>` in a `match` arm, and at least one in an array element. In an
- * array, exactly one can be required instead, and a `yield`'s `=>` can be checked too.
+ * Requires exactly one space before and after the `=>` in a `match` arm, and at least one in an array element or a
+ * `yield`. In those two, exactly one can be required instead.
  *
  * PER Coding Style 3.1, section 6.2, doesn't list `=>` among the binary operators, so section 6 leaves its spacing
  * undefined, except where another section gives it a rule:
@@ -22,9 +22,9 @@ use PHPCSUtils\Utils\PassedParameters;
  *   for a property hook's and an arrow function's `=>`.
  * - An array element, including a destructuring assignment's: section 11's example, which "shows correct array usage",
  *   has a space each side, but too few examples to rule out lining arrows up. So at least one space is required, by
- *   default. The Jumbo standard turns allowSeveralSpacesInArray off, to require exactly one.
- * - `yield $key => $value`: PER says nothing, so it isn't checked by default. The Jumbo standard turns checkYield on,
- *   to require exactly one space each side, as for every `=>` PER does set.
+ *   default. The Jumbo standard turns allowSeveralSpaces off, to require exactly one.
+ * - `yield $key => $value`: PER says nothing, so it's treated as an array's is, for consistency: at least one space
+ *   each side by default, and exactly one with allowSeveralSpaces off.
  *
  * Other uses of `=>` have their own sniffs: PERCS31.ControlStructures.ForEachSpacing for `foreach`,
  * SlevomatCodingStandard.Functions.ArrowFunctionDeclaration for an arrow function, and
@@ -56,16 +56,10 @@ class ArrowSpacingSniff implements Sniff
     ];
 
     /**
-     * Whether to allow more than one space each side of an array's `=>`, so arrows can be lined up, as PER Coding Style
-     * 3.1 does. With it off, an array's `=>` needs exactly one, as a `match` arm's does.
+     * Whether to allow more than one space each side of an array's or a `yield`'s `=>`, so arrows can be lined up, as
+     * PER Coding Style 3.1 does. With it off, each needs exactly one, as a `match` arm's does.
      */
-    public bool $allowSeveralSpacesInArray = true;
-
-    /**
-     * Whether to check a `yield`'s `=>`, which then needs exactly one space each side. PER Coding Style 3.1 leaves it
-     * undefined, so it's off by default.
-     */
-    public bool $checkYield = false;
+    public bool $allowSeveralSpaces = true;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -93,7 +87,7 @@ class ArrowSpacingSniff implements Sniff
         }
 
         if ($code === T_YIELD) {
-            $arrow = $this->checkYield ? $this->findYieldArrow($phpcsFile, $stackPtr) : null;
+            $arrow = $this->findYieldArrow($phpcsFile, $stackPtr);
             if ($arrow !== null) {
                 $this->checkArrow($phpcsFile, $arrow, 'yield');
             }
@@ -183,7 +177,7 @@ class ArrowSpacingSniff implements Sniff
      */
     private function checkArrow(File $phpcsFile, int $arrowPtr, string $context): void
     {
-        $minimum = $context === 'array' && $this->allowSeveralSpacesInArray;
+        $minimum = $context !== 'match arm' && $this->allowSeveralSpaces;
         $this->checkSpacing($phpcsFile, $arrowPtr, $arrowPtr - 1, 'before', $context, $minimum);
         $this->checkSpacing($phpcsFile, $arrowPtr, $arrowPtr + 1, 'after', $context, $minimum);
     }

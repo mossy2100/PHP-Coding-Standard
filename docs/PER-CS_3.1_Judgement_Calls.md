@@ -1010,8 +1010,7 @@ try {
 `;` straight after a condition is also easy to add by accident, and to miss when reading.
 
 For an empty body, the spec has no rule in section 5. `{}` is how it writes every other empty body, and it says SHOULD
-for a class's (4) and a function's (4.4), so the same keyword is used here. A MUST would be a rule the spec doesn't
-have, and stronger than the ones it does.
+for a class's (4) and a function's (4.4), so the same severity is used here.
 
 ---
 
@@ -1143,11 +1142,10 @@ place of the space before or after `as` or `=>`. Otherwise it only gets section 
 **Issue:** `=>` isn't one of 6.2's operators. Section 11's array example, which "shows correct array usage", has one
 space each side, but there are too few examples to rule out lining arrows up.
 
-**Decision:** An array's `=>` needs at least one space each side. More is allowed. A `yield`'s `=>` isn't checked.
+**Decision:** An array's `=>` needs at least one space each side. More is allowed. The same goes for a `yield`'s `=>`.
 
-**Why:** The spec always shows a space each side, and never none. It gives too little to forbid alignment.
-
-> [!Note] A yield's arrow must also have at least one space either side, for consistency.
+**Why:** The spec always shows a space each side, and never none. It gives too little to forbid alignment. It says
+nothing about a `yield`, so that follows the array rule, for consistency.
 
 ---
 

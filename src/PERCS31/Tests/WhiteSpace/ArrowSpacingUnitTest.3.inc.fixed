@@ -21,9 +21,9 @@ $value = match ($x) {
 // End of the arrays.
 // End of the file.
 
-// A yield's => isn't checked by default, as PER Coding Style 3.1 leaves it undefined.
+// A yield's => needs at least one space each side, as an array's does.
 function generate(): iterable
 {
-    yield 'a'=>1;
+    yield 'a' => 1;
     yield 'b'   =>   2;
 }
