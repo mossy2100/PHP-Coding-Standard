@@ -557,6 +557,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **An attribute with no space before its target.** `#[Foo]class Demo` was reported by
+  `PERCS31.Attributes.AttributePlacement`, but not fixed. It's now moved to its own line, as `#[Foo] class Demo` is.
 - **A function body after a split return type.** After a split parameter list, a return type split over lines is
   reported, and can't be fixed. `PERCS31.WhiteSpace.ScopeIndent` also reported the body's first line, though it was
   indented correctly, and its fix indented the body further.

@@ -172,15 +172,15 @@ class AttributePlacementSniff implements Sniff
             : 'In a multi-line parameter list, an attribute must be on the line before its parameter.';
 
         // A comment between the attribute and its target would have to move too, so leave that to a person.
-        $nextPtr = $closerPtr + 1;
-        $isFixable = $tokens[$nextPtr]['code'] === T_WHITESPACE && ($nextPtr + 1) === $targetPtr;
+        $isFixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($closerPtr + 1), $targetPtr) === false;
         if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $stackPtr, self::CODE_SAME_LINE)) {
             return;
         }
 
-        // Indent the target as the first token on the attribute's line is indented.
+        // Indent the target as the first token on the attribute's line is indented. There may be no space between
+        // them to replace, as in `#[A]class Foo`.
         $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $stackPtr));
-        $phpcsFile->fixer->replaceToken($nextPtr, $phpcsFile->eolChar . $indent);
+        FixerHelper::replaceBetween($phpcsFile, $closerPtr, $targetPtr, $phpcsFile->eolChar . $indent);
     }
 
     /**

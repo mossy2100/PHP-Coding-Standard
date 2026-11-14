@@ -452,3 +452,9 @@ class BlockHooks
         #[C] set(string $value) => strtolower($value);
     }
 }
+
+// An attribute with no space before its target.
+#[A]class Glued
+{
+    #[B]public int $a = 1;
+}

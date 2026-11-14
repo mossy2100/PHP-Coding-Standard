@@ -110,6 +110,9 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             // A hook with a body in braces: one attribute block on its line, and two.
             432 => 1,
             445 => 1,
+            // An attribute with no space before its target.
+            457 => 1,
+            459 => 1,
         ];
     }
 
