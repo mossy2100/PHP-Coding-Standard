@@ -89,9 +89,9 @@ rules.
 
 ### Squiz
 
-- **Squiz.Arrays.ArrayDeclaration**: The checks PERCS31 leaves out: no space inside an empty array `[]`, and no mix of
-  keyed and unkeyed values. Which line a comma goes on is left to [`Jumbo.Arrays.ElementComma`](#jumboarrayselementcomma). The spacing around `=>`
-  is left to [`PERCS31.WhiteSpace.ArrowSpacing`](PERCS31.md#percs31whitespacearrowspacing), as Squiz only checks it in a single-line array. Its alignment checks and
+- **Squiz.Arrays.ArrayDeclaration**: The check PERCS31 leaves out: no mix of keyed and unkeyed values. Which line a
+  comma goes on is left to [`Jumbo.Arrays.ElementComma`](#jumboarrayselementcomma). The spacing around `=>` is left to
+  [`PERCS31.WhiteSpace.ArrowSpacing`](PERCS31.md#percs31whitespacearrowspacing), as Squiz only checks it in a single-line array. Its alignment checks and
   `SingleLineNotAllowed` stay excluded, so keys, values and arrows are not aligned, and a single-line array with several
   values is allowed. `Jumbo.Arrays.ArrayDeclaration` requires single-line where it fits.
 - **Squiz.NamingConventions.ValidVariableName**: Enforces `$camelCase` for variables, parameters, and properties. Its

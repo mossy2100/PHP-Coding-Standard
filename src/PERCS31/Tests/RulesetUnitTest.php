@@ -606,6 +606,29 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a space or line break inside an empty array's brackets is reported once in both standards, and fixed.
+     */
+    public function testSpaceInEmptyArrayIsReportedOnce(): void
+    {
+        $source = "<?php\n\ndeclare(strict_types=1);\n\necho count([ ]), count([   ]), count(foo([ ]));\n"
+            . "echo count([\n]);\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $perCs = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            $jumbo = $this->runTool('phpcs', ['-s', '--standard=Jumbo', '--report=emacs', $file]);
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame(4, substr_count($perCs['output'], 'SpaceInEmptyArray'), $perCs['output']);
+        $this->assertSame(4, substr_count($jumbo['output'], 'SpaceInEmptyArray'), $jumbo['output']);
+        $this->assertSame(str_replace(['[   ]', '[ ]', "[\n]"], '[]', $source), $fixed);
+    }
+
+    /**
      * Test that a throw expression in a case isn't reported, that a terminating statement sharing a line is reported
      * once, and that the fix puts it on the next line with no blank line before it.
      */

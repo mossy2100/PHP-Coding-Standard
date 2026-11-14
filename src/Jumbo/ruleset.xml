@@ -342,11 +342,8 @@
 
     <!-- ====== ARRAYS (11) ====== -->
 
-    <!-- Arrays: the checks PERCS31 leaves out. No space inside an empty [], and no mix of keyed and unkeyed values. The
-         spacing around => is left to PERCS31.WhiteSpace.ArrowSpacing, which covers every array. -->
-    <rule ref="Squiz.Arrays.ArrayDeclaration.SpaceInEmptyArray">
-        <severity>5</severity>
-    </rule>
+    <!-- Arrays: the check PERCS31 leaves out. No mix of keyed and unkeyed values. The spacing around => is left to
+         PERCS31.WhiteSpace.ArrowSpacing, which covers every array. -->
     <rule ref="Squiz.Arrays.ArrayDeclaration.KeySpecified">
         <severity>5</severity>
     </rule>

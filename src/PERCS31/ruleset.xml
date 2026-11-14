@@ -471,7 +471,6 @@
         <exclude name="Squiz.Arrays.ArrayDeclaration.NoSpaceAfterComma"/>
         <exclude name="Squiz.Arrays.ArrayDeclaration.SpaceAfterComma"/>
         <exclude name="Squiz.Arrays.ArrayDeclaration.SpaceBeforeComma"/>
-        <exclude name="Squiz.Arrays.ArrayDeclaration.SpaceInEmptyArray"/>
         <exclude name="Squiz.Arrays.ArrayDeclaration.KeySpecified"/>
         <exclude name="Squiz.Arrays.ArrayDeclaration.NoKeySpecified"/>
         <!-- Covered by PERCS31.PHP.LowerCaseKeyword, which reports the same keyword (2.5) -->
@@ -487,8 +486,9 @@
         <exclude name="Squiz.Arrays.ArrayDeclaration.ValueNoNewline"/>
     </rule>
 
-    <!-- No space inside a single-line array's brackets, as the example in 11 shows. Its comma checks are left to
-         Universal.WhiteSpace.CommaSpacing, which also covers an array nested in a multi-line one. -->
+    <!-- No space inside a single-line array's brackets, as the example in 11 shows. An empty array's are checked by
+         Squiz.Arrays.ArrayDeclaration.SpaceInEmptyArray, above, which also reports a line break in one. Its comma
+         checks are left to Universal.WhiteSpace.CommaSpacing, which also covers an array nested in a multi-line one. -->
     <rule ref="SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace">
         <exclude name="SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace.SpaceBeforeComma"/>
         <exclude name="SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace.SpaceAfterComma"/>

@@ -119,7 +119,8 @@ Two custom sniffs extend php-collective sniffs.
 
 - **Squiz.Arrays.ArrayDeclaration**: Requires the first value of a multi-line array on the next line, and one value per
   line (11), and no trailing comma on a single-line array (2.6). Its other checks aren't PER rules, so they're excluded:
-  alignment, spacing around `=>`, the spacing in `[]`, mixing keyed and unkeyed values, and which line a comma goes on.
+  alignment, spacing around `=>`, mixing keyed and unkeyed values, and which line a comma goes on. Its
+  `SpaceInEmptyArray` code is kept, so an empty array is `[]`, with no space or line break inside (11).
   Its check for the closing bracket on a new line is excluded too, as `Generic.Arrays.ArrayIndent` reports the same. So
   is its check of the `array` keyword's case, as [`PERCS31.PHP.LowerCaseKeyword`](#percs31phplowercasekeyword) reports the same. Its comma spacing
   checks never run on a single-line array, so `Universal.WhiteSpace.CommaSpacing` checks that instead. Its check for a
@@ -162,8 +163,9 @@ Reference: [PHPCSExtra repository and documentation](https://github.com/PHPCSSta
 Reference: [Slevomat coding standard repository and documentation](https://github.com/slevomat/coding-standard)
 
 - **Arrays.SingleLineArrayWhitespace**: Requires no space inside a single-line array's brackets, as section 11's example
-  shows (11). Its comma checks are excluded, as `Universal.WhiteSpace.CommaSpacing` covers them, including in an array
-  nested in a multi-line one, which this sniff skips.
+  shows (11). An empty array's brackets are checked by `Squiz.Arrays.ArrayDeclaration.SpaceInEmptyArray`. Its comma
+  checks are excluded, as `Universal.WhiteSpace.CommaSpacing` covers them, including in an array nested in a multi-line
+  one, which this sniff skips.
 - **Arrays.TrailingArrayComma**: Requires a trailing comma after the last element of a multi-line array or short
   destructuring list, as in `[$a, $b] = $c;`, including after a heredoc's closing marker (2.6). `list()` is covered by
   [`PERCS31.Formatting.TrailingComma`](#percs31formattingtrailingcomma).

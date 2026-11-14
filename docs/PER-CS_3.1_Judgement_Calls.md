@@ -1240,7 +1240,8 @@ after the `[`, and the `]` "on the next line after the last value", without sayi
 between.
 
 **Decision:** One space after a comma, no space inside the brackets, and no blank line after a multi-line array's `[` or
-before its `]`. A blank line between two values is allowed.
+before its `]`. A blank line between two values is allowed. An empty array has no space or line break inside either, so
+`[]`, not `[ ]`.
 
 **Why:** Section 11 introduces its example as showing "correct array usage". A value two lines after the `[` isn't on
 the next line, and the same goes for the `]`. 2.3 allows blank lines "except where explicitly forbidden", which leaves
