@@ -859,8 +859,8 @@ which Slevomat sniffs make. The last of those, `Multiple`, must stay excluded fo
 hook list as a second property, so it reports every property with hooks. It also excludes the parent's `Underscore`
 warning, which this sniff replaces with a `LeadingUnderscore` error, as section 4.3 says MUST NOT. The parent doesn't
 check a promoted constructor property either, which [PER Coding Style 3.1, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants)'s rules on underscores and
-visibility cover. This sniff also checks that `get` comes before `set` in an abstract or interface property's hooks,
-which no inherited sniff does.
+visibility cover. This sniff also checks that `get` comes before `set` in a property's hooks, which no inherited sniff
+does.
 
 A promoted constructor parameter with no visibility, such as `readonly int $a` or PHP 8.5's `final int $a`, is a
 `ScopeMissing` error too, as section 4.3 says visibility MUST be declared on all properties. A set-visibility alone, as
