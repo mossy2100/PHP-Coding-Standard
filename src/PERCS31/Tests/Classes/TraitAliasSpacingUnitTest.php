@@ -26,6 +26,11 @@ class TraitAliasSpacingUnitTest extends AbstractSniffTestCase
             19 => 1,
             // A comment in the way (not fixable).
             22 => 1,
+            // A space each side of ::, before it, after it, and a line break before it.
+            36 => 2,
+            37 => 1,
+            38 => 1,
+            40 => 1,
         ];
     }
 

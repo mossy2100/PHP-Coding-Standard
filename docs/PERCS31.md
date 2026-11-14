@@ -229,7 +229,7 @@ section gives the reason.
 | `PERCS31.Classes.PromotedPropertyHooks`                    | A hook on a promoted parameter is a single short hook on one line   | No      |
 | `PERCS31.Classes.PropertyDeclaration`                      | No leading `_`, no `var`, a visibility, and `get` before `set`      | Partly  |
 | `PERCS31.Classes.PropertyHookLayout`                       | A hook list's and hook body's braces, and a short hook's `=>`       | Partly  |
-| `PERCS31.Classes.TraitAliasSpacing`                        | One space after a visibility or `final` in a trait's `as` clause    | Yes     |
+| `PERCS31.Classes.TraitAliasSpacing`                        | A trait `use` block's spacing after a modifier, and around `::`     | Yes     |
 | `PERCS31.ControlStructures.BodyOnNextLine`                 | A structure's body on the line after its `{`, allowing `{}`         | Yes     |
 | `PERCS31.ControlStructures.ControlStructureEmptyStatement` | Braces on a structure with no body, `else` included                 | Yes     |
 | `PERCS31.ControlStructures.ControlStructureSpacing`        | The parentheses, with no split rule for `foreach` or `match`        | Yes     |
@@ -1010,12 +1010,15 @@ interface Named
 ### PERCS31.Classes.TraitAliasSpacing
 
 Requires a single space after a visibility or `final` in a trait's `as` clause, as in `sayBye as private myBye;`. A line
-break there is reported too.
+break there is reported too. It also disallows a space, or line break, on either side of the `::` in a trait `use`
+block, so `A :: smallTalk insteadof B;` is reported, as `SpaceAroundDoubleColon`.
 
 **Why:** [PER Coding Style 3.1, Section 4.2](https://www.php-fig.org/per/coding-style/#42-using-traits) says `insteadof` and `as` MUST be used as its example shows, "taking note of
 indentation, spacing, and new lines". `PSR12.Traits.UseDeclaration` checks the space each side of `as` and `insteadof`,
 but not the space after a modifier that follows `as`. `Squiz.WhiteSpace.ScopeKeywordSpacing` checks the space after a
-visibility everywhere else, but skips one after `as`, and has no property to change that.
+visibility everywhere else, but skips one after `as`, and has no property to change that. No inherited sniff checks the
+`::`, which the example writes with no space, as in `A::smallTalk insteadof B;`. A `::` anywhere else isn't checked, as
+section 6 leaves it undefined.
 
 It's a sniff of its own, not a subclass. The Squiz sniff's skip is in the middle of its `process()`, and a subclass of
 the PSR-12 sniff would rename every one of its codes for one new check.
@@ -1043,6 +1046,7 @@ class Talker
 {
     use Greeter {
         sayBye as private  myBye;
+        Greeter :: wave as myWave;
     }
 }
 ```

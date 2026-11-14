@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **A space around `::` in a trait `use` block (breaking).** `PERCS31.Classes.TraitAliasSpacing` now reports a space or
+  line break on either side of the `::` there, as `SpaceAroundDoubleColon`, so `A :: smallTalk insteadof B;` must be
+  `A::smallTalk insteadof B;`. PER Coding Style 3.1 sets the spacing in a trait `use` block by its example. A `::`
+  anywhere else still isn't checked. Auto-fixable.
 - **A line break after `fn` (breaking).** `PERCS31.Functions.ArrowFunctionSemicolonSpacing` now reports a line break
   between `fn` and its `(`, as `LineBreakAfterFn`. PER Coding Style 3.1 says `fn` MUST NOT be followed by a space, and
   only a space on the same line was reported. Auto-fixable, unless a comment is in the way.

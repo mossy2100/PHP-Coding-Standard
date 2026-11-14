@@ -1178,9 +1178,11 @@ place of the space before or after `as` or `=>`. Otherwise it only gets section 
 **Issue:** Section 6 lists operators by kind, but leaves out unary `-`, `!`, `@`, `~`, a reference `&`, spread, `->`,
 `?->` and `::`.
 
-**Decision:** They aren't checked.
+**Decision:** They aren't checked. The one exception is the `::` in a trait `use` block, which takes no space on either
+side, as 4.2's example shows.
 
-**Why:** The spec leaves them undefined, and there's no consistent practice to infer a rule from.
+**Why:** The spec leaves them undefined, and there's no consistent practice to infer a rule from. 4.2 says `insteadof`
+and `as` MUST be used as its example shows, "taking note of indentation, spacing, and new lines".
 
 ---
 
