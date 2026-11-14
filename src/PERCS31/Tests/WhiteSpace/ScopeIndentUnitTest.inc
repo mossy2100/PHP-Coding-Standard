@@ -390,3 +390,24 @@ class HookClosers
         }
     }
 }
+
+// A case that falls through to one with a braced body. The original sniff wanted the braced case indented once more.
+switch ($a) {
+    case 5:
+        $b = 5;
+        // no break
+    case 6: {
+        $b = 6;
+        break;
+    }
+}
+
+switch ($a) {
+    case 5:
+        $b = 5;
+        // no break
+        case 6: {
+            $b = 6;
+            break;
+        }
+}

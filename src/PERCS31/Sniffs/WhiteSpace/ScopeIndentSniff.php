@@ -17,6 +17,9 @@
  * - A `phpcs:set` for this sniff's own code sets its `exact` property, as one for the original's code does.
  * - The jump over a scope on one line never moves back. After a braced `case` body, the next label's closer is the
  *   `}` before it, so the original never finished, as in `} default:`.
+ * - A `case` that falls through to one with a braced body is read as sharing its closer, as any other fall-through is.
+ *   The braced case's closer is its `}`, not the shared `break`, so the original wanted its label, its body and its
+ *   `}` indented once more, and its fix never finished.
  *
  * Apart from the namespace and the import of PropertyHookHelper, every change from upstream is marked with a "PERCS31:"
  * comment, so a diff against the upstream file shows only these. To update the fork to a new PHP_CodeSniffer release,
@@ -769,10 +772,22 @@ class ScopeIndentSniff implements Sniff
                 // CASEs using the same BREAK) needs to reduce the indent level so its
                 // indent is checked correctly. It will then increase the indent again
                 // (as all openers do) after being checked.
+                // PERCS31: a case that falls through to one with a braced body doesn't share its closer, as the braced
+                // case's closer is its `}`. Its own closer is still after the next label, so the label is placed the
+                // same way.
+                $caseTokens      = [T_CASE, T_DEFAULT];
+                $isFallThrough   = $lastOpener !== null
+                    && isset($tokens[$lastOpener]['scope_closer']) === true
+                    && in_array($tokens[$lastOpener]['code'], $caseTokens, true) === true
+                    && in_array($tokens[$checkToken]['code'], $caseTokens, true) === true
+                    && $tokens[$lastOpener]['scope_closer'] > $checkToken;
+                // PERCS31: end of change.
                 if ($lastOpener !== null
                     && isset($tokens[$lastOpener]['scope_closer']) === true
                     && $tokens[$lastOpener]['level'] === $tokens[$checkToken]['level']
-                    && $tokens[$lastOpener]['scope_closer'] === $tokens[$checkToken]['scope_closer']
+                    // PERCS31: also a fall-through case, as above.
+                    && ($tokens[$lastOpener]['scope_closer'] === $tokens[$checkToken]['scope_closer']
+                    || $isFallThrough === true)
                 ) {
                     $currentIndent          -= $this->indent;
                     $setIndents[$lastOpener] = $currentIndent;

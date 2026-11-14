@@ -69,6 +69,10 @@ class ScopeIndentUnitTest extends AbstractSniffTestCase
             // A hook's closing brace, and a hook list's, indented too far.
             384 => 1,
             385 => 1,
+            // A braced case after a fall-through, indented too far: its label, its body and its closing brace.
+            409 => 1,
+            410 => 1,
+            412 => 1,
         ];
     }
 

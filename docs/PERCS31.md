@@ -2981,6 +2981,8 @@ inside `process()`, which is one long method with no smaller one to override.
   code does there.
 - **A braced `case` body:** after one, the original never finished on `} default:`, as its jump over a scope on one line
   could move back. The fork's jump never does.
+- **A fall-through into a braced `case` body:** the original wanted the braced `case`, its body and its `}` indented
+  once more, and its fix never finished. The fork places that label as it places any label after a fall-through.
 - **A block comment's later lines:** a line inside a block comment, after its first, isn't checked. Only the comment's
   first line is placed like code.
 
