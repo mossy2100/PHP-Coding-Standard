@@ -272,15 +272,8 @@ class MethodChainingSniff implements Sniff
                 continue;
             }
 
-            $fix = $phpcsFile->addFixableError(
-                'Object operator not indented correctly; expected %s spaces but found %s',
-                $operator,
-                self::CODE_INDENT,
-                [$expected, $found],
-            );
-            if ($fix) {
-                FixerHelper::setIndent($phpcsFile, $operator, $expected);
-            }
+            $error = 'Object operator not indented correctly; expected %s spaces but found %s';
+            FixerHelper::reportIndent($phpcsFile, $operator, $expected, $error, self::CODE_INDENT, [$expected, $found]);
         }
     }
 

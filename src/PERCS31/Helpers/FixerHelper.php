@@ -185,6 +185,29 @@ class FixerHelper
     }
 
     /**
+     * Report a token that starts its line with the wrong indent, and fix it by setting the indent.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $ptr The position of the token, which the error is on.
+     * @param int $expected The number of spaces it should be indented by.
+     * @param string $error The error message.
+     * @param string $code The error's code.
+     * @param array<int|string, mixed> $data The values for the message's placeholders.
+     */
+    public static function reportIndent(
+        File $phpcsFile,
+        int $ptr,
+        int $expected,
+        string $error,
+        string $code,
+        array $data,
+    ): void {
+        if ($phpcsFile->addFixableError($error, $ptr, $code, $data)) {
+            self::setIndent($phpcsFile, $ptr, $expected);
+        }
+    }
+
+    /**
      * Set the indent of a token that starts its line, replacing the whitespace before it or adding some.
      *
      * @param File $phpcsFile The file being scanned.

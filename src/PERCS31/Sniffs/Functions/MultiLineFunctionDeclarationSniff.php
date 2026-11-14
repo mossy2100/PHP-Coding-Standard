@@ -223,19 +223,14 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
 
                 $expected = $this->findExpectedParameterIndent($phpcsFile, $i, $opener, $closer);
                 $found = $tokens[$i]['column'] - 1;
-                if ($expected === null || ($functionIndent + ($expected * $indent)) === $found) {
+                $spaces = $expected === null ? null : ($functionIndent + ($expected * $indent));
+                if ($spaces === null || $spaces === $found) {
                     continue;
                 }
 
-                $fix = $phpcsFile->addFixableError(
-                    'Multi-line function declaration not indented correctly; expected %s spaces but found %s',
-                    $i,
-                    self::CODE_PARAMETER_INDENT,
-                    [($functionIndent + ($expected * $indent)), $found],
-                );
-                if ($fix) {
-                    FixerHelper::setIndent($phpcsFile, $i, ($functionIndent + ($expected * $indent)));
-                }
+                $error = 'Multi-line function declaration not indented correctly; expected %s spaces but found %s';
+                $code = self::CODE_PARAMETER_INDENT;
+                FixerHelper::reportIndent($phpcsFile, $i, $spaces, $error, $code, [$spaces, $found]);
             }
         }
     }

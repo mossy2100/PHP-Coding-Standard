@@ -426,11 +426,7 @@ class OperatorPlacementSniff implements Sniff
     ): void {
         $operator = $phpcsFile->getTokensAsString($stackPtr, ($lastPtr - $stackPtr + 1));
         $data = [$operator, $expected, $found];
-        if (!$phpcsFile->addFixableError($error, $stackPtr, self::CODE_INDENT, $data)) {
-            return;
-        }
-
-        FixerHelper::setIndent($phpcsFile, $stackPtr, $expected);
+        FixerHelper::reportIndent($phpcsFile, $stackPtr, $expected, $error, self::CODE_INDENT, $data);
     }
 
     /**

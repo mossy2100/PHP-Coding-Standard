@@ -572,16 +572,7 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
      */
     private function reportIndent(File $phpcsFile, int $ptr, int $expected, int $found): void
     {
-        $fix = $phpcsFile->addFixableError(
-            'Line indented incorrectly; expected %s spaces, found %s spaces',
-            $ptr,
-            'Incorrect',
-            [$expected, $found],
-        );
-        if (!$fix) {
-            return;
-        }
-
-        FixerHelper::setIndent($phpcsFile, $ptr, $expected);
+        $error = 'Line indented incorrectly; expected %s spaces, found %s spaces';
+        FixerHelper::reportIndent($phpcsFile, $ptr, $expected, $error, 'Incorrect', [$expected, $found]);
     }
 }

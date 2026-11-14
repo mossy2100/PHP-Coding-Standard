@@ -138,16 +138,10 @@ class CompoundTypeLayoutSniff implements Sniff
      */
     private function reportIndent(File $phpcsFile, int $symbol, int $indent): void
     {
-        $tokens = $phpcsFile->getTokens();
-        $fix = $phpcsFile->addFixableError(
-            'A line of a compound type split across lines is indented incorrectly; expected %s spaces but found %s',
-            $symbol,
-            self::CODE_INDENT,
-            [$indent, ($tokens[$symbol]['column'] - 1)],
-        );
-        if ($fix) {
-            FixerHelper::setIndent($phpcsFile, $symbol, $indent);
-        }
+        $error = 'A line of a compound type split across lines is indented incorrectly; '
+            . 'expected %s spaces but found %s';
+        $found = $phpcsFile->getTokens()[$symbol]['column'] - 1;
+        FixerHelper::reportIndent($phpcsFile, $symbol, $indent, $error, self::CODE_INDENT, [$indent, $found]);
     }
 
     /**
