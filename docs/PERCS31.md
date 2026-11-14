@@ -2974,7 +2974,8 @@ inside `process()`, which is one long method with no smaller one to override.
   section 5.2 shows. PER says nothing about a later condition in an arm, split over lines, so that isn't checked. The
   original only reports indentation that's too small, so nothing else reports an arm indented too far.
 - **A body's first line:** it must be indented exactly once, past the line its `{` is on, or past the line a `)` before
-  the `{` opens on. This includes closures, `case` bodies and property hooks.
+  the `{` opens on. After a return type, that's the parameter or `use` list's `(`, as the type may be split over lines.
+  This includes closures, `case` bodies and property hooks.
 - **PHP in markup:** the code in a PHP block may be level with its opening tag, or indented once past it, and the indent
   of `?>` isn't checked, as PER has no rule on either. The original reports a `?>` that isn't level with its `<?php`.
 - **`phpcs:set`:** a `phpcs:set` comment for this sniff's own code sets its `exact` property, as one for the original's

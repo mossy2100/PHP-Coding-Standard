@@ -557,6 +557,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A function body after a split return type.** After a split parameter list, a return type split over lines is
+  reported, and can't be fixed. `PERCS31.WhiteSpace.ScopeIndent` also reported the body's first line, though it was
+  indented correctly, and its fix indented the body further.
 - **A destructuring assignment after a comment.** `PERCS31.Arrays.OpeningBracketPlacement` reported a multi-line
   `[$a, $b] = $c;` that started a statement, when a comment or a docblock was on the line before it.
 - **A `case` that falls through to one with a braced body.** `PERCS31.WhiteSpace.ScopeIndent` reported the braced

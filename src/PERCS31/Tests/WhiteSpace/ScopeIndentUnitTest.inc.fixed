@@ -411,3 +411,18 @@ switch ($a) {
         break;
     }
 }
+
+// A body after a return type split over lines is measured from the parameter list's line, not the type's last line.
+function splitReturnType(
+    int $x,
+): A
+    |B {
+    return $x;
+}
+
+$splitReturnType = function () use (
+    $x,
+): A
+    |B {
+    return $x;
+};

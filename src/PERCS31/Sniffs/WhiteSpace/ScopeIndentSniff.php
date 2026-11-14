@@ -11,7 +11,8 @@
  * - An anonymous class with attributes, after `new` on an earlier line, is indented once from that line (section 8).
  * - A line starting a `match` arm is indented exactly once past the line of the match's opening brace (section 5.2).
  * - A body's first line is indented exactly once past the line of its opening brace, or of the `)` that brace
- *   follows (sections 2.4 and 5).
+ *   follows (sections 2.4 and 5). After a return type, it's measured from the line the parameter or `use` list opens
+ *   on, as the type may be split over lines.
  * - A line inside a block comment, after its first, isn't checked. Only the comment's first line is placed like code,
  *   and the lines after it are placed against that one, which is left to a sniff for comments.
  * - A `phpcs:set` for this sniff's own code sets its `exact` property, as one for the original's code does.
@@ -991,6 +992,22 @@ class ScopeIndentSniff implements Sniff
                 $before = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($anchor - 1), null, true);
                 if ($tokens[$before]['code'] === T_CLOSE_PARENTHESIS) {
                     $anchor = $tokens[$before]['parenthesis_opener'];
+                } else {
+                    // A return type is between the `)` and the brace, and it may be split over lines, so the brace's
+                    // own line can be a continuation line. Measure from the parameter list's, or the use list's, `(`.
+                    $owner = ($tokens[$anchor]['scope_condition'] ?? null);
+                    if ($owner !== null
+                        && in_array($tokens[$owner]['code'], [T_FUNCTION, T_CLOSURE], true) === true
+                        && isset($tokens[$owner]['parenthesis_opener'], $tokens[$owner]['parenthesis_closer']) === true
+                    ) {
+                        $listOpener = $tokens[$owner]['parenthesis_opener'];
+                        $use        = $phpcsFile->findNext(T_USE, ($tokens[$owner]['parenthesis_closer'] + 1), $anchor);
+                        if ($use !== false && isset($tokens[$use]['parenthesis_opener']) === true) {
+                            $listOpener = $tokens[$use]['parenthesis_opener'];
+                        }
+
+                        $anchor = $listOpener;
+                    }
                 }
 
                 $first       = $this->findFirstCodeOnLine($phpcsFile, $anchor);
