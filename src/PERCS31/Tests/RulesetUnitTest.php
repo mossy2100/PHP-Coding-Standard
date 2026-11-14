@@ -606,6 +606,35 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that PERCS31 doesn't check a comment's indent or spacing, and that Jumbo's comment rules do.
+     */
+    public function testCommentsAreOnlyCheckedInJumbo(): void
+    {
+        $source = "<?php\n\ndeclare(strict_types=1);\n\nfunction foo(): int\n{\n// At column 1.\n"
+            . "    /*\n  Too little.\n    */\n    \$a = 1;// No space.\n    //No space.\n\n    return \$a;\n}\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $perCs = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            $jumbo = $this->runTool('phpcs', ['-s', '--standard=Jumbo', '--report=emacs', $file]);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertStringNotContainsString(' error - ', $perCs['output']);
+        $expected = [
+            ':7:' => 'PERCS31.WhiteSpace.ScopeIndent',
+            ':9:' => 'Jumbo.Commenting.BlockComment.ContentIndent',
+            ':11:' => 'Jumbo.Commenting.TrailingComment.SpacingBefore',
+            ':12:' => 'Squiz.Commenting.InlineComment.NoSpaceBefore',
+        ];
+        foreach ($expected as $line => $code) {
+            $pattern = '/' . $line . '\d+: error - .*' . preg_quote($code, '/') . '/';
+            $this->assertMatchesRegularExpression($pattern, $jumbo['output']);
+        }
+    }
+
+    /**
      * Test that a space or line break inside an empty array's brackets is reported once in both standards, and fixed.
      */
     public function testSpaceInEmptyArrayIsReportedOnce(): void

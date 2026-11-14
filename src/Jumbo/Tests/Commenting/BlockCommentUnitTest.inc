@@ -1,0 +1,68 @@
+<?php
+
+// === VALID ===
+
+/*
+Text at the same indent as the opener.
+
+A blank line is allowed.
+    Indented further is allowed.
+*/
+
+/* Text on the opener's line
+and on the closer's line. */
+
+/*
+ * A star on each line.
+ */
+
+/*
+ * A star on each line, with the closer under the opener.
+*/
+
+/* On one line. */
+
+/** A docblock isn't checked.*/
+
+/**
+   * Nor is one over several lines.
+       */
+
+if ($a) {
+    /*
+    Indented with the code.
+    */
+    $b = /* something */ $a->eatMeal();
+    $c = foo(/* none */ $a, $b /* first */, [/* x */ 1]);
+    $d = $c; /* After a statement. */
+}
+
+// === INVALID ===
+
+if ($a) {
+    /*
+  Indented too little.
+    */
+    $b = 1;
+
+    /*
+    The closer is too far right.
+        */
+    $c = 2;
+
+    /*
+     * A star on each line, with the closer too far right.
+       */
+    $d = 3;
+
+    /* Text on the opener's line
+  and too little indent on the closer's. */
+    $e = 4;
+}
+
+/*No space inside.*/
+/*  Two spaces inside.  */
+$f = 1;/* No space before. */
+$g = 2;    /* Four spaces before. */
+$h = $a/* No space before or after. */->b;
+$i = $a   /* Three spaces either side. */   ->b;

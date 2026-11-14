@@ -1,0 +1,25 @@
+<?php // After the open tag.
+
+// === VALID ===
+
+// On its own line.
+    // Indented, on its own line.
+$a = 1; // One space.
+$b = 2; # One space, with a hash.
+$c = foo(
+    1, // After an argument.
+);
+$d = 4;/* A block comment isn't checked here. */
+
+// === INVALID ===
+
+$e = 5;// No space.
+$f = 6;    // Four spaces.
+$g = 7;# No space, with a hash.
+$h = foo(
+    1,// After an argument.
+    22,   // Lined up.
+);
+if ($a) {// After a brace.
+    $i = 8;
+}

@@ -45,9 +45,11 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
 - `PERCS31.WhiteSpace.ArrowSpacing` requires exactly one space around an array's `=>`, where PERCS31 allows more
   (`allowSeveralSpacesInArray` set to `false`). It replaces Squiz `ArrayDeclaration`'s arrow spacing checks. It also
   requires exactly one space around a `yield`'s `=>`, which PERCS31 doesn't check (`checkYield` set to `true`).
+- `PERCS31.WhiteSpace.ScopeIndent` checks the indent of a comment on its own line, as it does a statement's
+  (`ignoreIndentationTokens` set to docblocks only). PERCS31 doesn't check a comment's indent, as PER has no rule for
+  it. A docblock's indent isn't checked.
 - `PERCS31.WhiteSpace.ConsistentIndent` also reports a comment indented further than its scope, when the line before it
-  ends a statement (`checkComments` set to `true`). PERCS31 doesn't check this, as PER has no rule for a comment's
-  indent. A comment at the top level isn't checked.
+  ends a statement (`checkComments` set to `true`). A comment at the top level isn't checked.
 - `PERCS31.Formatting.EmptyBody` requires a control structure's empty body as `{}`, as in `catch (Exception $e) {}`,
   where PERCS31 also allows the braces on separate lines (`checkControlStructures` set to `true`).
 - `PERCS31.Operators.OperatorPlacement` requires a line in a control structure's condition to be indented exactly once
@@ -90,6 +92,9 @@ rules.
 
 ### Squiz
 
+- **Squiz.Commenting.InlineComment**: Requires one space after `//`, as in `// Text`. Only its `NoSpaceBefore`,
+  `SpacingBefore` and `TabBefore` codes are used, so `//Text`, `//  Text` and `///` are reported. A `#` comment isn't
+  checked.
 - **Squiz.Arrays.ArrayDeclaration**: The check PERCS31 leaves out: no mix of keyed and unkeyed values. Which line a
   comma goes on is left to [`Jumbo.Arrays.ElementComma`](#jumboarrayselementcomma). The spacing around `=>` is left to
   [`PERCS31.WhiteSpace.ArrowSpacing`](PERCS31.md#percs31whitespacearrowspacing), as Squiz only checks it in a single-line array. Its alignment checks and
@@ -232,6 +237,8 @@ gives the reason. The custom sniffs for PER Coding Style itself are in [PERCS31]
 | `Jumbo.Classes.PropertySpacing`                            | Blank lines after a property, safe on the last line             | Yes     |
 | `Jumbo.Classes.RequireSingleLineClassHeader`               | A split class, interface or enum header fits on a line          | Yes     |
 | `Jumbo.Classes.RequireSingleLineMethodSignature`           | A short signature on one line, skipping a promoted hook         | Yes     |
+| `Jumbo.Commenting.BlockComment`                            | A block comment's indents, and the spaces around one on a line  | Yes     |
+| `Jumbo.Commenting.TrailingComment`                         | One space between code and a `//` comment after it              | Yes     |
 | `Jumbo.ControlStructures.LanguageConstructWithParentheses` | No `echo('x')`, allowing `exit()` and `die()`                   | Yes     |
 | `Jumbo.ControlStructures.MatchArmWrapIndent`               | One line if it fits, else a wrapped `match` arm indented once   | Yes     |
 | `Jumbo.ControlStructures.RequireShortTernaryOperator`      | `$a ?: $b`, skipping a nullable type in a `set` hook            | Yes     |
@@ -369,6 +376,83 @@ promoted constructor parameter. This replaces `SlevomatCodingStandard.Classes.Re
 function with one, and leaves everything else to the parent. See [`PERCS31.Classes.PromotedPropertyHooks`](PERCS31.md#percs31classespromotedpropertyhooks).
 
 **Auto-fixable:** yes, as the parent.
+
+---
+
+### Jumbo.Commenting.BlockComment
+
+Checks the layout of a block comment, `/* ... */`. A docblock, `/** ... */`, isn't checked.
+
+**A comment over several lines:**
+
+- Each line after the first is indented at least as far as the line the `/*` is on. A blank line is allowed.
+- A `*/` on a line by itself lines up with the `/*`.
+- Text may share a line with the `/*` or the `*/`.
+- A comment with a `*` starting each line is allowed, and its `*/` may be one column to the right, under the stars.
+
+Where the `/*` itself goes is checked by [`PERCS31.WhiteSpace.ScopeIndent`](PERCS31.md#percs31whitespacescopeindent), as for a statement.
+
+**A comment on one line:**
+
+- One space after `/*`, and one before `*/`, as in `/* Text */`.
+- With code before it on the line, one space before it. With code after it, one space after it.
+- The space between a comment and a bracket, comma or operator beside it, or a semicolon after it, isn't checked here,
+  as the sniffs for those report it. So `foo(/* none */ $a)` has no space after the `(`.
+
+**Why:** PER Coding Style 3.1 has no rule for comments, so this is an extra rule. `Squiz.Commenting.BlockComment` wants
+the text indented four spaces past the `/*`, which isn't this layout.
+
+**Auto-fixable:** yes.
+
+**Good:**
+
+```php
+if ($ready) {
+    /*
+    Start the engine.
+    Then wait.
+    */
+    $speed = /* metres per second */ $engine->start();
+}
+```
+
+**Bad:**
+
+```php
+if ($ready) {
+    /*
+  Start the engine.
+        */
+    $speed =   /*metres per second*/   $engine->start();
+}
+```
+
+---
+
+### Jumbo.Commenting.TrailingComment
+
+Requires a single space between code and a `//` or `#` comment after it on the same line. So comments after code aren't
+lined up in a column.
+
+A comment on a line of its own isn't checked here, nor is a block comment, or a comment after a PHP open tag.
+
+**Why:** PER Coding Style 3.1 has no rule for comments, so this is an extra rule. No inherited sniff checks it: the
+Squiz and Slevomat sniffs for a comment after code disallow it altogether.
+
+**Auto-fixable:** yes.
+
+**Good:**
+
+```php
+$speed = 0; // Not moving.
+```
+
+**Bad:**
+
+```php
+$speed = 0;// Not moving.
+$count = 10;    // Lined up.
+```
 
 ---
 

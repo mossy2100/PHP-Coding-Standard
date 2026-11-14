@@ -12,6 +12,8 @@
  * - A line starting a `match` arm is indented exactly once past the line of the match's opening brace (section 5.2).
  * - A body's first line is indented exactly once past the line of its opening brace, or of the `)` that brace
  *   follows (sections 2.4 and 5).
+ * - A line inside a block comment, after its first, isn't checked. Only the comment's first line is placed like code,
+ *   and the lines after it are placed against that one, which is left to a sniff for comments.
  * - A `phpcs:set` for this sniff's own code sets its `exact` property, as one for the original's code does.
  * - The jump over a scope on one line never moves back. After a braced `case` body, the next label's closer is the
  *   `}` before it, so the original never finished, as in `} default:`.
@@ -997,6 +999,7 @@ class ScopeIndentSniff implements Sniff
 
             if ($checkToken !== null
                 && isset($this->ignoreIndentation[$tokens[$checkToken]['code']]) === false
+                && $this->isInsideBlockComment($tokens, $checkToken) === false
                 && (($tokenIndent !== $checkIndent && $exact === true)
                 || ($tokenIndent < $checkIndent && $exact === false))
             ) {
@@ -1670,6 +1673,28 @@ class ScopeIndentSniff implements Sniff
                 $i = $tokens[$i]['parenthesis_opener'];
             } elseif (isset($tokens[$i]['bracket_opener']) === true && $tokens[$i]['bracket_opener'] < $i) {
                 $i = $tokens[$i]['bracket_opener'];
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check whether a token is a line of a block comment after its first line.
+     *
+     * @param array<int, array<string, mixed>> $tokens The token stack.
+     * @param int $ptr The position of the first token on a line.
+     * @return bool True if it is.
+     */
+    private function isInsideBlockComment(array $tokens, int $ptr): bool
+    {
+        if ($tokens[$ptr]['code'] !== T_COMMENT || str_starts_with($tokens[$ptr]['content'], '/*')) {
+            return false;
+        }
+
+        for ($i = ($ptr - 1); $i >= 0 && $tokens[$i]['code'] === T_COMMENT; $i--) {
+            if (str_starts_with($tokens[$i]['content'], '/*')) {
+                return !str_contains($tokens[$i]['content'], '*/');
             }
         }
 

@@ -41,6 +41,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **A comment indented too far, in Jumbo (breaking).** `PERCS31.WhiteSpace.ConsistentIndent` has a new `checkComments`
   property, which Jumbo turns on. A comment indented further than its scope after a statement is reported as `Comment`.
   Auto-fixable for a comment on one line.
+- **Comment rules in Jumbo (breaking).** A `//` comment must have one space after the slashes, as in `// Text`, reported
+  by `Squiz.Commenting.InlineComment`. A `//` or `#` comment after code must have one space before it, reported by the
+  new `Jumbo.Commenting.TrailingComment`. The new `Jumbo.Commenting.BlockComment` checks a block comment: each line
+  indented at least as far as its `/*`, a `*/` on its own line under the `/*`, and one space inside and around a
+  comment on one line, as in `$a = /* text */ $b;`. A docblock isn't checked. All are auto-fixable.
 - **Several traits in a `use` statement with a block (breaking).** `use A, B { ... }` in a class is now reported, as PER
   Coding Style 3.1 gives each trait its own `use` statement. `SlevomatCodingStandard.Classes.TraitUseDeclaration` makes
   the check, so `PSR12.Traits.UseDeclaration.MultipleImport` is now
@@ -415,6 +420,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- **A comment's indent isn't checked in PERCS31.** PER Coding Style 3.1 has no rule for it, so
+  `PERCS31.WhiteSpace.ScopeIndent` now ignores comments and docblocks, as PSR-12 does. Jumbo still checks a comment on
+  its own line, but no longer a docblock's indent.
 - **A wrapped operator in grouping parentheses lines up with the group's first line (breaking).** In `$a && (` with `$b`
   and `|| $c` on the lines after it, `PERCS31.Operators.OperatorPlacement` wanted `|| $c` indented once past `$b`. Every
   line in grouping parentheses is now indented once past the line with the `(`, so `|| $c` lines up with `$b`, in a

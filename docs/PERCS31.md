@@ -2931,6 +2931,11 @@ inside `process()`, which is one long method with no smaller one to override.
   code does there.
 - **A braced `case` body:** after one, the original never finished on `} default:`, as its jump over a scope on one line
   could move back. The fork's jump never does.
+- **A block comment's later lines:** a line inside a block comment, after its first, isn't checked. Only the comment's
+  first line is placed like code.
+
+A comment's indent isn't checked in PERCS31, as PER has no rule for it. The ruleset sets `ignoreIndentationTokens` to
+`T_COMMENT` and `T_DOC_COMMENT_OPEN_TAG`, as PSR-12 does.
 
 Every change is marked with a `PERCS31:` comment in the source, so a diff against the original shows only these.
 

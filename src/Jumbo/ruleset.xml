@@ -28,8 +28,15 @@
 
     <rule ref="SlevomatCodingStandard.PHP.UselessSemicolon"/>
 
-    <!-- A comment indented further than its scope after a statement, which PERCS31 doesn't check, as PER has no rule
-         for a comment's indent -->
+    <!-- A comment on its own line is indented as a statement would be. PERCS31 doesn't check a comment's indent, as PER
+         has no rule for it. A docblock's isn't checked here either. -->
+    <rule ref="PERCS31.WhiteSpace.ScopeIndent">
+        <properties>
+            <property name="ignoreIndentationTokens" type="array">
+                <element value="T_DOC_COMMENT_OPEN_TAG"/>
+            </property>
+        </properties>
+    </rule>
     <rule ref="PERCS31.WhiteSpace.ConsistentIndent">
         <properties>
             <property name="checkComments" value="true"/>
@@ -388,6 +395,18 @@
     </rule>
 
     <!-- ====== COMMENTS (NOT IN PER) ====== -->
+
+    <!-- One space after //, as in // Text -->
+    <rule ref="Squiz.Commenting.InlineComment.NoSpaceBefore"/>
+    <rule ref="Squiz.Commenting.InlineComment.SpacingBefore"/>
+    <rule ref="Squiz.Commenting.InlineComment.TabBefore"/>
+
+    <!-- One space between code and a // comment after it -->
+    <rule ref="Jumbo.Commenting.TrailingComment"/>
+
+    <!-- A block comment's lines indented at least as far as its /*, its */ lined up, and the spaces around one on a
+         single line -->
+    <rule ref="Jumbo.Commenting.BlockComment"/>
 
     <rule ref="SlevomatCodingStandard.Commenting.AnnotationName"/>
     <rule ref="SlevomatCodingStandard.Commenting.DeprecatedAnnotationDeclaration"/>

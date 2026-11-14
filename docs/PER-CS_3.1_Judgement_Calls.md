@@ -278,7 +278,7 @@ structure.
 
 **Decision:** Only class constants are checked for upper case, and for a leading underscore (4.3). A global constant,
 from `const` or `define()`, is only checked by `PERCS31.NamingConventions.AcronymCasing`, and only if it has a
-lower-case letter. Jumbo requires strict UPPER_SNAKE_CASE for a global constant, with no leading underscore.
+lower-case letter.
 
 **Why:** PSR-1's rule names class constants only. 4.3's rule is about showing visibility, which a global constant
 doesn't have.
@@ -345,13 +345,9 @@ See [Line Length](LineLength.md) to change the limit.
 
 **Issue:** The spec doesn't say how a comment is indented.
 
-**Decision:** A comment indented too little is reported, as code is, and so is one indented too far on a body's first
-line. A comment indented too far after a statement isn't reported. Jumbo reports it, except at the top level.
+**Decision:** A comment's indent isn't checked, whatever kind of comment it is.
 
-**Why:** A comment belongs to the code around it, so the indent checks for code treat it as code. Beyond that, PER has
-no rule for a comment's indent, so PERCS31 has no check of its own for one.
-
-> [!Note] Remove any checks on comment indenting. The spec says nothing about it.
+**Why:** PER has no rule for a comment's indent, or for its layout, so PERCS31 has no check for either.
 
 ---
 
@@ -389,7 +385,7 @@ before a `|`, one type per line, as any union type may.
 **Issue:** 2.5 requires reserved keywords in lower case. PHP's list of reserved keywords includes the magic constants,
 such as `__DIR__`, which are conventionally upper case, and whose case PHP ignores.
 
-**Decision:** Their case isn't checked. Jumbo requires upper case.
+**Decision:** Their case isn't checked.
 
 **Why:** Reading the rule as requiring `__dir__` would go against near-universal practice, and it's unlikely the spec
 means that.
@@ -458,8 +454,7 @@ have no comma.
 **Issue:** 2.6 doesn't say whether a `match` arm's list of conditions is one of its lists. 5.2's example only has
 conditions on one line.
 
-**Decision:** A single-line list of conditions mustn't end in a comma. A split list may end in one or not. Jumbo
-disallows it.
+**Decision:** A single-line list of conditions mustn't end in a comma. A split list may end in one or not.
 
 **Why:** A single-line list never takes a trailing comma. With no example of a split list, both forms are allowed.
 
@@ -647,7 +642,7 @@ statements, and one after the last.
 
 **Issue:** Names "MUST NOT be prefixed with a single underscore". It's unclear whether a double one is covered.
 
-**Decision:** `$__a`, `__A` and `__a()` pass. Jumbo reports `__A`, as it requires strict UPPER_SNAKE_CASE of a constant.
+**Decision:** `$__a`, `__A` and `__a()` pass.
 
 **Why:** "Single" excludes a double underscore, which PHP uses for magic methods. PSR-2's method sniff reads it the same
 way.
@@ -772,8 +767,7 @@ say whether `require ($file)` is a call. Its only example of either is in PSR-1'
 `include "file.php";`.
 
 **Decision:** It isn't checked. `require`, `include` and their `_once` forms may be written with or without parentheses,
-and with a space before them. Jumbo requires the form in PSR-1's example, as in `require $file;`, with no parentheses
-and one space.
+and with a space before them.
 
 **Why:** They're language constructs, not functions, and parentheses after one only group its expression, as in
 `include ($a ? 'x' : 'y') . '.php';`. PSR-1's example is there to show a side effect, not a layout, so it shows one
@@ -903,9 +897,12 @@ as in `while (next($items));`.
 written. It gives `{}` to an empty class (4), function (4.4) and closure (7), and doesn't mention control structures.
 
 **Decision:** An empty body may be written as `{}`, as in `catch (Exception $e) {}`, or with the braces on separate
-lines. Jumbo requires `{}`.
+lines.
 
 **Why:** With no body, there's nothing to put on the next line. `{}` is how the spec writes every other empty body.
+
+> [!Note]
+> An empty body SHOULD be written as `{}`, with the braces on the same line.
 
 ---
 
@@ -926,7 +923,8 @@ indent of at least one level passes. `case (` with the first condition on the sa
 ### Single-line `match`
 
 **Issue:** 2.6 names "`match()` statement branches" among the lists that take a trailing comma, which suggests a
-single-line `match` is possible. Section 5 puts a control structure's body on the line after its opening brace.
+single-line `match` is possible, even if extremely rare in practice. Section 5 puts a control structure's body on the line
+after its opening brace.
 
 **Decision:** A `match` on one line is reported.
 
