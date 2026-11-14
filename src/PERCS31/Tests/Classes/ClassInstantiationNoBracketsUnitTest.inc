@@ -37,7 +37,7 @@ function keywords()
     return(new Foo())->bar();
 }
 
-// The parentheses after clone hold its arguments, so they stay.
+// The parentheses after clone are left to PERCS31.PHP.RequireCloneParentheses.
 $copy = clone(new Foo())->bar;
 
 // A call through an array, a string or an expression. The parentheses hold its arguments, so they stay.
@@ -53,3 +53,9 @@ if ($ready) {
     run();
 }
 (new Foo())->bar();
+
+// include and require are keywords, so the parentheses after them group the expression.
+$loaded = include (new Foo())->path();
+$loaded = include_once(new Foo())->path();
+$loaded = require (new Foo())->path();
+$loaded = require_once(new Foo())->path();

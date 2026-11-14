@@ -436,13 +436,27 @@ parameters, closure `use` lists, arrays, `match` arms, group `use`, `list()`, an
 
 **Issue:** 2.6 requires a trailing comma in a list "split across multiple lines", and forbids one in a list "contained
 on a single line". 4.7 says a single argument split across lines, such as an array or a closure, "does not constitute
-splitting the argument list itself". So `foo([` ... `],);` isn't split, and isn't on a single line either.
+splitting the argument list itself". So this call's argument list isn't split, and isn't on a single line either:
 
-> [!Note] Need a code block for the example here, '`foo([` ... `],);`' isn;t enough.
+```php
+foo([
+    1,
+    2,
+],);
+```
 
 **Decision:** An argument list is split when its first argument starts on the line after the `(`, or its `)` is on a line
-of its own. Any other list mustn't have a trailing comma, so `],);` is reported. This covers the arguments of a call, an
-attribute, an anonymous class, `clone()`, `exit()` and `die()`.
+of its own. Any other list mustn't have a trailing comma, so the comma after the `]` above is reported. This covers the
+arguments of a call, an attribute, an anonymous class, `clone()`, `exit()` and `die()`.
+
+This is how it should be written:
+
+```php
+foo([
+    1,
+    2,
+]);
+```
 
 **Why:** 2.6's two cases are read as "split" and "not split". 4.7's own examples of this shape, `], $baz);` and `});`,
 have no comma.
@@ -608,17 +622,24 @@ line."
 ### Parentheses Around `new`
 
 **Issue:** "When accessing a class member immediately after instantiating a new class, the instantiation SHOULD NOT be
-wrapped in parentheses." The spec doesn't say which parentheses wrap. In `clone(new Foo())->bar` and
-`make(new Foo())->bar`, a `new` is in parentheses, and a member is accessed straight after them.
+wrapped in parentheses." The spec doesn't say which parentheses wrap. In `make(new Foo())->bar`, a `new` is in
+parentheses, and a member is accessed straight after them.
 
 **Decision:** Only parentheses that group an expression are reported, as in `(new Foo())->bar()`. Parentheses that hold a
-call's arguments aren't, whatever comes after them. A name or `clone` before the `(` shows which they are.
+call's arguments aren't, whatever comes after them.
+
+- A function's name, a variable or another callable before the `(` makes them a call's, as in `make(new Foo())->bar`.
+- A keyword before the `(` doesn't. So they're reported after `echo`, `print`, `return`, `yield`, `throw`, `include`
+  and `require`, and inside `isset()`, `empty()`, `eval()`, `exit()` and `array()`.
+- `clone(new Foo())->bar` is reported, and written `clone(new Foo()->bar)`, by the rule for `clone`'s parentheses in
+  4.7.
 
 **Why:** The two kinds do different jobs. Grouping parentheses set the order of operations, and PHP 8.4 made them
-unnecessary around `new`. A call's parentheses are part of the call, and 4.7 says `clone()` SHOULD always have them.
-Removing them from `clone(new Foo())->bar` would clone `bar`, not the new object.
+unnecessary around `new`. A call's parentheses are part of the call.
 
-> [!Note] check if this works as it should for echo, print, return, exit, die, isset. These could all also appear before a `(`
+PHP reads `clone(new Foo())->bar` as a clone of `bar`, not of the new object, so those parentheses group `new Foo()`
+too. 4.7 says `clone` SHOULD always have parentheses, so they move to hold what is really cloned. The same goes for
+any `clone($a)->b`, which is written `clone($a->b)`, and `clone($a + $b)->c`, which is written `clone(($a + $b)->c)`.
 
 ---
 

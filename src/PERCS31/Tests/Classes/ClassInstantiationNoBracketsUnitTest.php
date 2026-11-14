@@ -52,6 +52,11 @@ class ClassInstantiationNoBracketsUnitTest extends AbstractSniffTestCase
             37 => 1,
             // After a block's closing brace.
             55 => 1,
+            // After include, include_once, require and require_once.
+            58 => 1,
+            59 => 1,
+            60 => 1,
+            61 => 1,
         ];
     }
 }

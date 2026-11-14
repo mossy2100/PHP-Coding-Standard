@@ -727,6 +727,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `PERCS31.WhiteSpace.ScopeClosingBrace.ContentBefore`, and `phpcbf` failed to fix the file. `BreakNotNewLine` is now
   excluded, and `ScopeClosingBrace` no longer checks a `case` or `default`, which has no braces. A terminating statement
   that shares a line is still reported, once, and the message no longer calls a `break` a closing brace.
+- Parentheses around `new` after `include` or `require`. `include (new Foo())->path()` wasn't reported by
+  `PERCS31.Classes.ClassInstantiationNoBrackets`, though `include` and `require` are keywords, so the parentheses only
+  group the expression.
+- Parentheses after `clone` that hold part of what is cloned. PHP reads `clone($a)->b` as a clone of `$a->b`, so `clone`
+  has no parentheses of its own there, but it passed. `PERCS31.PHP.RequireCloneParentheses` now reports it as
+  `PartOfOperand`, and fixes it to `clone($a->b)`. `clone($a + $b)->c` becomes `clone(($a + $b)->c)`, and
+  `clone(new Foo())->bar` becomes `clone(new Foo()->bar)`.
 
 ---
 

@@ -20,13 +20,17 @@ use PHPCSUtils\Tokens\Collections;
  *
  * Only parentheses holding exactly one `new` expression, followed by `->`, `?->` or `::`, are reported. So
  * `(new Foo() ?: $default)->bar()` is left alone, as removing them would change its meaning, and so is a function
- * call's argument list, as in `new self(new Foo())->bar()` or `clone(new Foo())->bar`. That includes a call through
+ * call's argument list, as in `new self(new Foo())->bar()` or `make(new Foo())->bar()`. That includes a call through
  * an array or a string, as in `[$factory, 'make'](new Foo())->bar()` or `'make'(new Foo())->bar()`. A `new` without
  * an argument list, such as `(new Foo)->bar()`, is left until PSR12.Classes.ClassInstantiation has added the `()`, as
  * PHP needs them.
  *
  * A keyword can come straight before the parentheses, as in `return(new Foo())->bar()`. The fix puts a space in their
- * place there, giving `return new Foo()->bar()`.
+ * place there, giving `return new Foo()->bar()`. `include` and `require` are keywords too, not functions, so the
+ * parentheses in `include(new Foo())->path()` group the expression, and are reported.
+ *
+ * The parentheses in `clone(new Foo())->bar` group the expression too, but PERCS31.PHP.RequireCloneParentheses reports
+ * them, as its fix has to keep a pair for `clone`.
  *
  * SlevomatCodingStandard.PHP.UselessParentheses has a similar check (enableCheckAroundNew), but it misses `::` and
  * removes the parentheses from `(new Foo() ?: new Bar())->baz()`, changing its meaning.
@@ -65,12 +69,15 @@ class ClassInstantiationNoBracketsSniff implements Sniff
             return;
         }
 
-        // A call's argument list, as in `foo(new Foo())->bar()`, or the class expression of `new (...)`. A language
-        // construct such as `include` is read as a call too, as PHP_CodeSniffer does.
+        // A call's argument list, as in `foo(new Foo())->bar()`, or the class expression of `new (...)`. The
+        // parentheses after `include` or `require` group the expression. Those after `clone` are left to
+        // PERCS31.PHP.RequireCloneParentheses.
         $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
-        $isCall = TokenHelper::isArgumentListOpener($phpcsFile, $stackPtr)
-            || ($previous !== false && $tokens[$previous]['code'] === T_NEW)
-            || ($previous !== false && isset(Tokens::FUNCTION_NAME_TOKENS[$tokens[$previous]['code']]));
+        $previousCode = $previous === false ? null : $tokens[$previous]['code'];
+        $isCall = !isset(Tokens::INCLUDE_TOKENS[$previousCode])
+            && (TokenHelper::isArgumentListOpener($phpcsFile, $stackPtr)
+                || $previousCode === T_NEW
+                || isset(Tokens::FUNCTION_NAME_TOKENS[$previousCode]));
         if ($isCall) {
             return;
         }

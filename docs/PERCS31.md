@@ -654,9 +654,15 @@ Warns about parentheses around a class instantiation that's immediately derefere
 `new Foo()->bar()`. As it's a SHOULD, this is a warning. `SlevomatCodingStandard.PHP.UselessParentheses` has a similar
 check, but it misses `::`, and removes the parentheses from `(new Foo() ?: new Bar())->baz()`, changing its meaning.
 This sniff only reports parentheses that group an expression, and hold exactly one `new` expression. Parentheses that
-hold a call's arguments aren't reported, so `clone(new Foo())->bar` and `make(new Foo())->bar()` pass. A `new` without
-an argument list, such as `(new Foo)->bar()`, is left until `PSR12.Classes.ClassInstantiation` has added the `()`, as
-PHP needs them.
+hold a call's arguments aren't reported, so `make(new Foo())->bar()` passes. A `new` without an argument list, such as
+`(new Foo)->bar()`, is left until `PSR12.Classes.ClassInstantiation` has added the `()`, as PHP needs them.
+
+A keyword before the parentheses doesn't make them a call's. So `echo (new Foo())->bar()` is reported, and so is
+`include (new Foo())->path()`, as `include` and `require` aren't functions.
+
+The parentheses in `clone(new Foo())->bar` group `new Foo()` too, as PHP reads that as a clone of `bar`. They're
+reported by [`PERCS31.PHP.RequireCloneParentheses`](#percs31phprequirecloneparentheses), whose fix keeps a pair for `clone`, giving
+`clone(new Foo()->bar)`.
 
 **Auto-fixable:** yes, unless a comment is between the parentheses and the expression.
 
@@ -2502,14 +2508,19 @@ class Counter
 
 ### PERCS31.PHP.RequireCloneParentheses
 
-Warns about `clone` without parentheses, such as `clone $a`, or with a space before them, such as `clone ($a)`.
+Warns about `clone` without parentheses, such as `clone $a`, or with a space before them, such as `clone ($a)`, or with
+parentheses that hold only part of what is cloned, such as `clone($a)->b`.
 
 **Why:** [PER Coding Style 3.1, Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) says `clone()` SHOULD always be called with parentheses, as it's a function
 as of PHP 8.5. As it's a SHOULD, this is a warning. No inherited sniff checks it.
 
-**Auto-fixable:** yes, when the operand is a variable, name or `new` expression, followed by any `->`, `?->`, `::`, `[]`
-or call. A space before the parentheses isn't removed when something is dereferenced after them, as `clone ($a)->b`
-clones `$a->b` before PHP 8.5.
+PHP reads `clone($a)->b` as a clone of `$a->b`, so those parentheses only group `$a`, and `clone` has none of its own.
+That's reported as `PartOfOperand`. The fix makes the parentheses hold everything that is cloned: `clone($a->b)`. When
+what's inside isn't a simple expression, it keeps its parentheses, so `clone($a + $b)->c` becomes `clone(($a + $b)->c)`.
+
+**Auto-fixable:** yes, when the operand is a variable, variable variable, name or `new` expression, followed by any
+`->`, `?->`, `::`, `[]` or call. A member's name may be in braces, as in `->{$name}`. It's left to a person when a
+comment is between `clone` and what it clones.
 
 **Good:**
 
