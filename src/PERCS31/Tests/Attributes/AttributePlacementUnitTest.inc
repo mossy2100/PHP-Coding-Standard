@@ -458,3 +458,30 @@ class BlockHooks
 {
     #[B]public int $a = 1;
 }
+
+// An attribute after other code on its line.
+class NotOnOwnLine
+{
+    public int $e = 1; #[F]
+    public function g(): void {}
+
+    public const int A = 1; #[G]
+    public const int B = 2;
+
+    public string $k { #[A]
+        get {
+            return $this->k;
+        }
+    }
+
+    // A short hook's attribute may share its line, so it isn't reported here.
+    public string $l {
+        get => $this->l; #[A] set => $value;
+    }
+}
+
+enum NotOnOwnLineCases
+{
+    case Hearts; #[A]
+    case Spades;
+}

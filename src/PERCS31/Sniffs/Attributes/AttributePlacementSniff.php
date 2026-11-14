@@ -22,6 +22,10 @@ use PHPCSUtils\Utils\PassedParameters;
  * property, and before a parameter in a multi-line parameter list. In a single-line parameter list, the attribute must
  * be inline with its parameter.
  *
+ * "Its own line" works both ways. An attribute that shares a line with its target is reported as SameLine, and one
+ * that follows other code on its line, as in `public int $a = 1; #[A]`, as NotOnOwnLine. Both cover the same targets:
+ * the ones section 12.2 lists, an enum case, and a hook with a body in braces.
+ *
  * A closure or arrow function isn't a structure in that list, but as a call's argument, its attribute follows the
  * parameter rule: inline after a single space when the argument list is on one line, and on its own line before the
  * closure, indented the same, when the list is split. A closure split over lines doesn't split the list, as section
@@ -58,6 +62,8 @@ use PHPCSUtils\Utils\PassedParameters;
 class AttributePlacementSniff implements Sniff
 {
     public const string CODE_SAME_LINE = 'SameLine';
+
+    public const string CODE_NOT_ON_OWN_LINE = 'NotOnOwnLine';
 
     public const string CODE_ANON_CLASS = 'AnonClass';
 
@@ -123,6 +129,8 @@ class AttributePlacementSniff implements Sniff
             return;
         }
 
+        $this->checkStartsLine($phpcsFile, $stackPtr);
+
         // Another attribute follows, so the last one in the group is checked against the target. In a single-line
         // list, the blocks stay inline, each followed by a single space.
         if ($tokens[$targetPtr]['code'] === T_ATTRIBUTE) {
@@ -181,6 +189,58 @@ class AttributePlacementSniff implements Sniff
         // them to replace, as in `#[A]class Foo`.
         $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $stackPtr));
         FixerHelper::replaceBetween($phpcsFile, $closerPtr, $targetPtr, $phpcsFile->eolChar . $indent);
+    }
+
+    /**
+     * Report the first attribute block on a class, function, method, constant, property, enum case or hook with a body
+     * in braces, when code comes before it on its line, as in `public int $a = 1; #[A]`. Section 12.2 says these
+     * attributes MUST be on their own line. The fix starts a new line before the attribute, at its target's indent.
+     *
+     * An attribute that may share a line isn't checked: one on a parameter, a closure or arrow function, or a hook
+     * with no body in braces.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the attribute block's opener.
+     */
+    private function checkStartsLine(File $phpcsFile, int $stackPtr): void
+    {
+        $isFirst = AttributeHelper::findFirstAttribute($phpcsFile, $stackPtr) === $stackPtr;
+        if (!$isFirst || LayoutHelper::startsLine($phpcsFile, $stackPtr)) {
+            return;
+        }
+
+        // The target follows the last block of the group.
+        $tokens = $phpcsFile->getTokens();
+        $targetPtr = $stackPtr;
+        while ($targetPtr !== false && $tokens[$targetPtr]['code'] === T_ATTRIBUTE) {
+            $closerPtr = $tokens[$targetPtr]['attribute_closer'] ?? null;
+            if (!is_int($closerPtr)) {
+                return;
+            }
+
+            $targetPtr = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($closerPtr + 1), null, true);
+        }
+
+        if (
+            $targetPtr === false
+            || $this->isClosure($phpcsFile, $targetPtr)
+            || $this->isHookWithoutBlock($phpcsFile, $targetPtr)
+            || AttributeHelper::findParameterListOpener($phpcsFile, $stackPtr) !== null
+        ) {
+            return;
+        }
+
+        $error = 'An attribute must be on its own line, with no code before it.';
+        if (!$phpcsFile->addFixableError($error, $stackPtr, self::CODE_NOT_ON_OWN_LINE)) {
+            return;
+        }
+
+        // When the target shares the attribute's line too, SameLine moves it, to this line's indent.
+        $isTargetOnLine = $tokens[$targetPtr]['line'] === $tokens[$stackPtr]['line'];
+        $indent = LayoutHelper::lineIndent($phpcsFile, ($isTargetOnLine ? $stackPtr : $targetPtr));
+        $phpcsFile->fixer->beginChangeset();
+        FixerHelper::breakLineBefore($phpcsFile, $stackPtr, $indent);
+        $phpcsFile->fixer->endChangeset();
     }
 
     /**

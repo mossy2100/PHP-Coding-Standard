@@ -408,6 +408,11 @@ $values = [1,
 Requires an attribute to be on the line before its target, as [PER Coding Style 3.1, Section 12.2](https://www.php-fig.org/per/coding-style/#122-placement) requires. The exception
 is a parameter in a single-line parameter list, whose attribute must be inline.
 
+The attribute must have that line to itself. One that follows other code on its line, as in
+`public int $a = 1; #[Deprecated]`, is reported as `NotOnOwnLine`, and the fix starts a new line before it. That
+covers the same targets as an attribute on its target's line: the ones section 12.2 lists, an enum case, and a hook
+with a body in braces.
+
 A closure or arrow function isn't a structure in section 12.2's list. As a call's argument, its attribute follows the
 rule for a parameter:
 

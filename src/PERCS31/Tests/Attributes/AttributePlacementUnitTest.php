@@ -113,6 +113,11 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             // An attribute with no space before its target.
             457 => 1,
             459 => 1,
+            // An attribute after other code on its line: on a method, a constant, a hook with a body, and an enum case.
+            465 => 1,
+            468 => 1,
+            471 => 1,
+            485 => 1,
         ];
     }
 

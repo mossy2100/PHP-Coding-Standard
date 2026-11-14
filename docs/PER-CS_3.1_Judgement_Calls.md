@@ -1479,6 +1479,9 @@ mention enum cases, property hooks, or closures.
   single space, or on the line before.
 - A closure as a call's argument follows the parameter rule. Elsewhere, it isn't checked.
 
+An attribute that must be on the line before its target must also have that line to itself, so one that follows other
+code on its line is reported, as in `case Hearts; #[A]`.
+
 **Why:** Section 9 says enums follow the guidelines for class constants, and PHP itself treats an enum case's attribute
 as a constant's. A hook with a body in braces is laid out like a method, so its attribute goes where a method's does. A
 short hook or a hook with no body fits on a line, and a promoted property's hook has to (4.9), so the attribute may

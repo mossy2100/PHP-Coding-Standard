@@ -22,7 +22,9 @@ use SlevomatCodingStandard\Sniffs\Attributes\DisallowMultipleAttributesPerLineSn
  *   each block.
  * - It reports blocks on a property hook, which the parent misses, as PHP_CodeSniffer doesn't know about hooks.
  * - When code comes before the blocks on their line, as in `$f = #[A] #[B] fn() => 1;`, the fix indents the next block
- *   one level past that line, as a continuation of the statement. The parent's fix lines it up with the line.
+ *   one level past that line, as a continuation of the statement. The parent's fix lines it up with the line. Blocks
+ *   after the end of another statement, as in `public int $a = 1; #[A] #[B]`, don't continue it, so the parent's fix
+ *   is used there.
  */
 class DisallowMultipleAttributesPerLineSniff extends SlevomatSniff
 {
@@ -46,7 +48,13 @@ class DisallowMultipleAttributesPerLineSniff extends SlevomatSniff
             && $tokens[$nextPtr]['line'] === $tokens[$closerPtr]['line'];
         $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $attributeOpenerPointer, true);
         assert(is_int($firstOnLine));
-        $isContinued = $tokens[$firstOnLine]['code'] !== T_ATTRIBUTE;
+        // After the end of another statement, as in `public int $a = 1; #[A] #[B]`, the blocks don't continue the
+        // line. PERCS31.Attributes.AttributePlacement moves the first one to its own line.
+        $first = AttributeHelper::findFirstAttribute($phpcsFile, $attributeOpenerPointer);
+        $before = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($first - 1), null, true);
+        $followsStatement = $before !== false
+            && in_array($tokens[$before]['code'], [T_SEMICOLON, T_CLOSE_CURLY_BRACKET], true);
+        $isContinued = $tokens[$firstOnLine]['code'] !== T_ATTRIBUTE && !$followsStatement;
         $isHook = $isNextOnLine && PropertyHookHelper::isInsidePropertyHook($phpcsFile, $attributeOpenerPointer);
         if (!$isNextOnLine || (!$isContinued && !$isHook)) {
             parent::process($phpcsFile, $attributeOpenerPointer);

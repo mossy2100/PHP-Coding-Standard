@@ -541,8 +541,8 @@
     <!-- A doc comment before the attributes, not after (12.2) -->
     <rule ref="SlevomatCodingStandard.Attributes.RequireAttributeAfterDocComment"/>
 
-    <!-- An attribute on the line before its target, except on a parameter in a single-line list, with no blank line
-         or comment between them, and the layout of an anonymous class's attributes (8, 12.2) -->
+    <!-- An attribute on its own line, before its target, except on a parameter in a single-line list, with no blank
+         line or comment between them, and the layout of an anonymous class's attributes (8, 12.2) -->
     <rule ref="PERCS31.Attributes.AttributePlacement"/>
 
     <!-- Separate attribute blocks on separate lines, except in a single-line parameter or argument list (12.2) -->

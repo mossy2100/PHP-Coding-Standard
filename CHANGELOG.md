@@ -10,6 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **An attribute after other code on its line (breaking).** `PERCS31.Attributes.AttributePlacement` now reports an
+  attribute that follows other code on its line, as in `public int $a = 1; #[Deprecated]` with its target on the next
+  line, as `NotOnOwnLine`. PER Coding Style 3.1 puts an attribute on its own line, and only one that shared a line with
+  its target was reported. It covers a class, function, method, constant, property, enum case, and a hook with a body
+  in braces. Auto-fixable.
 - **A space after an anonymous class's arguments (breaking).** `new class ($a)extends Foo` is now reported, by
   `PERCS31.Classes.AnonClassOpeningBrace`, as `SpaceAfterArguments`, and so is `new class ($a)implements Foo`. More than
   one space there was already an error, but none passed. Auto-fixable.
