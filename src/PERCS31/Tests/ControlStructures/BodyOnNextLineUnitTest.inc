@@ -45,7 +45,7 @@ try { run();
 } finally { stop();
 }
 
-// A space between the braces isn't `{}`.
+// An empty body isn't checked here, even with a space between the braces.
 if ($first) { }
 
 // A function's body isn't checked here.

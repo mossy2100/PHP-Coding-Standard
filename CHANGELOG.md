@@ -68,9 +68,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   every other empty body as `{}`. The braces on separate lines still pass. The new
   `PERCS31.ControlStructures.BodyOnNextLine` replaces `Squiz.ControlStructures.ControlSignature.NewlineAfterOpenBrace`,
   so a `phpcs:ignore` for that code needs updating.
-- **`{}` required for an empty control structure body, in Jumbo (breaking).** `PERCS31.Formatting.EmptyBody` has a new
-  `checkControlStructures` property, which Jumbo turns on. An empty `catch`, `while`, `if` or other body with the braces
-  on separate lines is an error there. Auto-fixable.
+- **`{}` for an empty control structure body (breaking).** An empty `catch`, `while`, `if` or other body with the
+  braces on separate lines now gets a warning from `PERCS31.Formatting.EmptyBody`, as the spec writes every other empty
+  body as `{}`. In Jumbo it's an error, and so is an empty class or function body that isn't `{}`, which was a warning.
+  The sniff's new `strict` property, which Jumbo turns on, does that. Auto-fixable.
 - **Blank lines around trait `use` statements, in PERCS31 (breaking).** PERCS31 now reports a blank line between two
   trait `use` statements, which only Jumbo did, and more than one after the last, as PER Coding Style 3.1's examples
   show none between them and one after. `SlevomatCodingStandard.Classes.TraitUseSpacing` makes these checks, so
@@ -149,6 +150,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   up to its value if it fits, and otherwise indented one level past its first line. A comma before an arm's `=>` is also
   an error there, even with its conditions split over lines (new `PERCS31.Formatting.TrailingComma` property
   `disallowInSplitMatchConditions`). Auto-fixable.
+- **Braces on a control structure with no body (breaking).** `while (next($items));` is now reported, and fixed to an
+  empty body in braces, as PER Coding Style 3.1, section 5, says each structure's body MUST be enclosed by braces. This
+  covers `if`, `elseif`, `else`, `for`, `foreach` and `while`.
+  `PERCS31.ControlStructures.ControlStructureEmptyStatement` extends a php-collective sniff to add `else`.
 - **`PERCS31.Formatting.AfterClosingBrace` (breaking).** Replaces `PSR12.Classes.ClosingBrace`, and checks every
   closing brace, as PER Coding Style 3.1, section 4, says "any closing brace". A statement after one on the same line is
   reported as `StatementAfter`, so `} stop();` after an `if` or a loop is an error, and so is `} public int $b = 1;`
@@ -414,9 +419,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   promoted constructor parameter. They skip a function with one, and check everything else as before.
 - **`Squiz.WhiteSpace.ObjectOperatorSpacing` (breaking).** Disallows spaces around `->`, `?->` and `::`, e.g.
   `$a -> b()` or `Foo :: bar()`. A line break before one, in a wrapped method chain, is allowed. Auto-fixable.
-- **`Universal.Constants.ModifierKeywordOrder` (breaking).** In the Jumbo standard, `final` must come before the
-  visibility on a constant, as in `final public const A`, the order PER Coding Style 3.1 sets for classes, properties
-  and methods. Auto-fixable. PERCS31 allows either order, as section 4.6 doesn't name constants.
+- **`Universal.Constants.ModifierKeywordOrder` (breaking).** `final` must come before the visibility on a constant, as
+  in `final public const A`, the order PER Coding Style 3.1, section 4.6, sets for modifier keywords. Auto-fixable, in
+  PERCS31 and Jumbo.
 
 ### Changed
 

@@ -14,13 +14,14 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * PER Coding Style 3.1, section 5, says the body MUST be on the next line after the opening brace. It says nothing
  * about an empty body, which has nothing to put on the next line, so `catch (Exception $e) {}` is allowed, as `{}` is
- * for an empty class, function or closure (4, 4.4, 7).
+ * for an empty class, function or closure (4, 4.4, 7). An empty body isn't checked here at all, as
+ * PERCS31.Formatting.EmptyBody reports one that isn't `{}`.
  *
  * This replaces the NewlineAfterOpenBrace check of Squiz.ControlStructures.ControlSignature, which reports `{}`. That
  * check is in the middle of the Squiz sniff's process(), with no property to change it, so a subclass can't skip it for
  * one case, and the PERCS31 ruleset excludes its code. The check here is copied from PHP_CodeSniffer 4.0.4, with its
- * message and code, and changes one thing: a `}` straight after the `{` isn't reported. After a PHP_CodeSniffer
- * upgrade, compare it with the original.
+ * message and code, and changes one thing: an empty body isn't reported. After a PHP_CodeSniffer upgrade, compare it
+ * with the original.
  */
 class BodyOnNextLineSniff implements Sniff
 {
@@ -46,13 +47,12 @@ class BodyOnNextLineSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
         $opener = $tokens[$stackPtr]['scope_opener'] ?? null;
-        $closer = $tokens[$stackPtr]['scope_closer'] ?? null;
         if (!is_int($opener)) {
             return;
         }
 
-        // An empty body written as `{}`.
-        if ($tokens[$opener]['code'] === T_OPEN_CURLY_BRACKET && $closer === ($opener + 1)) {
+        // An empty body, which PERCS31.Formatting.EmptyBody checks.
+        if ($tokens[$opener]['code'] === T_OPEN_CURLY_BRACKET && EmptyBodyHelper::isEmpty($phpcsFile, $stackPtr)) {
             return;
         }
 

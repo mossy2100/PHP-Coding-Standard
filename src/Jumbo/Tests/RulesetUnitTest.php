@@ -152,8 +152,8 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that a control structure's empty body with the braces on separate lines passes in PERCS31, which has no rule
-     * for it, and is an error in Jumbo, whose fix writes it as `{}`.
+     * Test that a control structure's empty body with the braces on separate lines is a warning in PERCS31 and an
+     * error in Jumbo, whose fix writes it as `{}`.
      */
     public function testEmptyControlStructureBodyMustBeAbbreviatedInJumbo(): void
     {
@@ -170,7 +170,7 @@ class RulesetUnitTest extends TestCase
             unlink($file);
         }
 
-        $this->assertStringNotContainsString('EmptyBody', $per);
+        $this->assertStringContainsString('warning - An empty while body should be written as {}', $per);
         $this->assertStringContainsString('error - An empty while body must be written as {}', $jumbo);
         $this->assertSame($header . "while (next(\$items)) {}\n", $fixed);
     }
@@ -323,14 +323,15 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that `final` must come before a constant's visibility in Jumbo, and that either order passes in PERCS31.
+     * Test that `final` must come before a constant's visibility in both standards, and that the fix reorders them.
      */
-    public function testConstantModifierOrderIsFixedInJumboOnly(): void
+    public function testConstantModifierOrderIsFixedInBothStandards(): void
     {
         $header = "<?php\n\ndeclare(strict_types=1);\n\nnamespace A;\n\nclass B\n{\n";
         $footer = "}\n";
         $code = "    public final const int C = 1;\n";
-        foreach (['Jumbo' => "    final public const int C = 1;\n", 'PERCS31' => $code] as $standard => $expected) {
+        $expected = "    final public const int C = 1;\n";
+        foreach (['Jumbo', 'PERCS31'] as $standard) {
             $file = $this->copyToTempFile(null, $header . $code . $footer);
 
             try {
@@ -341,8 +342,8 @@ class RulesetUnitTest extends TestCase
                 unlink($file);
             }
 
-            $reported = str_contains($result['output'], 'Universal.Constants.ModifierKeywordOrder.Incorrect');
-            $this->assertSame($standard === 'Jumbo', $reported, $result['output']);
+            $errorCode = 'Universal.Constants.ModifierKeywordOrder.Incorrect';
+            $this->assertStringContainsString($errorCode, $result['output']);
             $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
             $this->assertSame($header . $expected . $footer, $fixed);
         }

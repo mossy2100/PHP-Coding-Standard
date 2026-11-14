@@ -1,0 +1,44 @@
+<?php
+
+// === VALID ===
+
+while (next($items)) {}
+
+do {
+    run();
+} while ($ready);
+
+if ($ready) {
+    run();
+} elseif ($other) {
+    run();
+} else {}
+
+if ($ready) {
+    run();
+} else if ($other) {
+    run();
+}
+
+// === INVALID ===
+
+while (next($items));
+for ($i = 0; $i < 10; $i++);
+foreach ($items as $item);
+if ($ready);
+
+if ($ready) {
+    run();
+} elseif ($other);
+
+if ($ready) {
+    run();
+} else;
+
+if ($ready) {
+    run();
+} else ;
+
+if ($ready) {
+    run();
+} else /* Why. */ ;

@@ -532,8 +532,14 @@ doesn't have it either.
 doesn't say how a split one is laid out.
 
 **Decision:** A group `use` is all on one line, or has one name per line, indented once, with the first name on the line
-after the `{`, and the `}` on a line of its own. `use A\{B,` then `C,` then `};` is reported. So is a blank line after
-the `{` or before the `}`, as for an array.
+after the `{`, and the `}` on a line of its own. A blank line after the `{` or before the `}` is reported, as for an
+array. So is this, as the first name is on the `{` line:
+
+```php
+use A\{B,
+    C,
+};
+```
 
 **Why:** The two examples are the only forms the spec shows, and they match its rules for a single-line and a multi-line
 array (11).
@@ -718,9 +724,27 @@ It's unclear how the two combine.
 
 **Decision:**
 
-- `): A` then `|B {` on the next line is reported, as it separates `)` and `{`.
-- `function a(): int` then `|string` then `{` passes with a single-line parameter list. Each line has one type, as 2.5
-  requires, and the return type starts on the `)` line, as 4.5 requires.
+- After a split parameter list, a return type split over lines is reported, as it separates `)` and `{`:
+
+  ```php
+  function a(
+      int $b,
+  ): A
+  |B {
+      // ...
+  }
+  ```
+
+- After a single-line parameter list, it passes. Each line has one type, as 2.5 requires, and the return type starts
+  on the `)` line, as 4.5 requires:
+
+  ```php
+  function a(): int
+  |string
+  {
+      // ...
+  }
+  ```
 
 **Why:** Each rule is followed as written.
 
@@ -729,10 +753,19 @@ It's unclear how the two combine.
 ### A Wrapped Default Value
 
 **Issue:** 4.5 says each line of a split parameter list "is indented once". 6.4 says the same of a statement split at an
-operator. A default value wrapped at an operator, as in `string $name = 'a'` then `. 'b',`, is covered by both.
+operator. A default value wrapped at an operator is covered by both.
 
 **Decision:** The wrapped line is indented once past its parameter. Level with the parameter is reported. The same goes
 for a ternary default, and in a closure's or arrow function's parameters.
+
+```php
+function greet(
+    string $name = 'a'
+        . 'b',
+): void {
+    // ...
+}
+```
 
 **Why:** The wrapped line is a continuation of the line before it, not a parameter. 4.5's rule places each parameter,
 and 6.4's places the rest of its expression, as for an operator wrapped in a call's argument.
@@ -744,9 +777,28 @@ and 6.4's places the rest of its expression, as for an operator wrapped in a cal
 **Issue:** 4.7 lets a single argument, such as an array, split over lines without splitting the argument list. It's
 unclear whether the same applies to a parameter's default value.
 
-**Decision:** It doesn't. `$f = [` then `1,` then `]): void {` splits the parameter list.
+**Decision:** It doesn't. An array default value over several lines splits the parameter list, so this is reported:
 
-> [!Note] Show a code block. This "then" approach to indicating newlines doesn't work for documentation.
+```php
+function foo(int $a, array $f = [
+    1,
+]): void {
+    // ...
+}
+```
+
+It's written as any other split parameter list is, with one parameter per line:
+
+```php
+function foo(
+    int $a,
+    array $f = [
+        1,
+    ],
+): void {
+    // ...
+}
+```
 
 **Why:** 4.7's exemption is only for calls.
 
@@ -756,13 +808,13 @@ unclear whether the same applies to a parameter's default value.
 
 ### Modifier Order on Constants
 
-**Issue:** 4.6 sets the order of modifier keywords for classes, properties and methods, not constants.
+**Issue:** 4.6 sets the order of modifier keywords for "classes, properties, and methods". It doesn't name constants.
 
-**Decision:** A constant's modifier order isn't checked. The space between its keywords is.
+**Decision:** The order is checked everywhere a modifier keyword can be used, so on a constant too. `final` comes before
+the visibility, as in `final public const A`. The single space between keywords is checked there as well.
 
-**Why:** The order rule names its targets. The single space between keywords applies everywhere.
-
-> [!Note] This is incorrect, the order of modifier keywords is checked everywhere.
+**Why:** The order is a property of the keywords, not of what they're on. A constant only takes two of them, an
+inheritance modifier and a visibility, and 4.6 puts those in that order.
 
 ---
 
@@ -812,7 +864,12 @@ allowed form, and no rule covers them.
 the start of the chain.
 
 **Decision:** The first method call goes on the next line. Property accesses before it, as in `$this->em`, may stay.
-`Foo::create()` then `->run()` passes, with the static call as the receiver.
+A static call may stay too, as the receiver, so this passes:
+
+```php
+Foo::create()
+    ->run();
+```
 
 **Why:** The rule is about methods. A property access or a static call is the object the chain starts from.
 
@@ -834,11 +891,16 @@ continues another. Lined up with its object, it can't be told from the ternary's
 ### `->` at the End of a Line
 
 **Issue:** "Method chaining MAY be put on separate lines, where each subsequent line is indented once. When doing so,
-the first method MUST be on the next line." Only the example shows where the `->` goes. `$a->` then `b()` meets the
-text, as the method is on the next line.
+the first method MUST be on the next line." Only the example shows where the `->` goes. This meets the text, as the
+method is on the next line:
 
-**Decision:** A `->` or `?->` starts its line, so one at the end of a line is reported, whether the statement has one or
-several.
+```php
+$a->
+    b();
+```
+
+**Decision:** A `->` or `?->` starts its line, so one at the end of a line, as above, is reported, whether the statement
+has one or several.
 
 **Why:** The example shows it, and 6.4 puts every wrapped operator at the start of a line. One rule for every `->` is
 simpler than a rule that depends on how many a statement has.
@@ -899,31 +961,57 @@ nothing about other hook lists.
 
 ## 5. Control Structures
 
-### A Loop With No Body
+### An Empty Body, or No Body
 
-**Issue:** "The body of each structure MUST be enclosed by braces." The spec doesn't say what a loop with no body needs,
-as in `while (next($items));`.
+**Issue:** "The body of each structure MUST be enclosed by braces", and "the body MUST be on the next line after the
+opening brace". The spec doesn't say what either means for a structure with nothing in it. That comes in two forms: an
+empty body, with braces and nothing between them, and no body at all, as in `while (next($items));`.
 
-**Decision:** It's allowed. No braces are required.
+**Decision:**
 
-**Why:** There's no body to enclose. PHP_CodeSniffer reads the same PSR-12 rule this way.
+- **No body:** the structure MUST have braces, so `while (next($items));` and `else;` are errors.
+- **An empty body:** it SHOULD be written as `{}` on the same line, after a single space. The braces on separate lines
+  get a warning.
 
-> [!Note] This is incorrect. It should be `while (next($items)) {}`
+So these are right:
 
----
+```php
+while (next($items)) {}
 
-### An Empty Body
+try {
+    run();
+} catch (Exception $e) {}
 
-**Issue:** "The body MUST be on the next line after the opening brace", but the spec doesn't say how an empty body is
-written. It gives `{}` to an empty class (4), function (4.4) and closure (7), and doesn't mention control structures.
+if ($ready) {
+    run();
+} else {}
+```
 
-**Decision:** An empty body may be written as `{}`, as in `catch (Exception $e) {}`, or with the braces on separate
-lines.
+These are errors:
 
-**Why:** With no body, there's nothing to put on the next line. `{}` is how the spec writes every other empty body.
+```php
+while (next($items));
 
-> [!Note]
-> An empty body SHOULD be written as `{}`, with the braces on the same line.
+if ($ready) {
+    run();
+} else;
+```
+
+This gets a warning:
+
+```php
+try {
+    run();
+} catch (Exception $e) {
+}
+```
+
+**Why:** The rule says each structure's body MUST be enclosed by braces, and makes no exception for one with no body. A
+`;` straight after a condition is also easy to add by accident, and to miss when reading.
+
+For an empty body, the spec has no rule in section 5. `{}` is how it writes every other empty body, and it says SHOULD
+for a class's (4) and a function's (4.4), so the same keyword is used here. A MUST would be a rule the spec doesn't
+have, and stronger than the ones it does.
 
 ---
 
@@ -972,8 +1060,18 @@ one.
 **Issue:** 5.2 gives `switch` the rule for an expression split inside the parentheses, with the first condition on the
 next line. Of a `match`, it only says it "looks like" its example.
 
-**Decision:** The split rule isn't applied to a `match`, so `match ($this->lookup([` then the argument's lines then
-`])) {` passes. Only the spacing just inside the parentheses is checked.
+**Decision:** The split rule isn't applied to a `match`. Only the spacing just inside the parentheses is checked. So
+this passes:
+
+```php
+$result = match ($this->lookup([
+    'a',
+    'b',
+])) {
+    1 => 'one',
+    default => 'other',
+};
+```
 
 **Why:** The rule applies where the spec states it, which is how "5.4 `for` and 5.5 `foreach`" reads it for `foreach`.
 4.7 says a single argument split over lines doesn't split anything, so this layout is compliant.
@@ -1045,12 +1143,11 @@ place of the space before or after `as` or `=>`. Otherwise it only gets section 
 **Issue:** `=>` isn't one of 6.2's operators. Section 11's array example, which "shows correct array usage", has one
 space each side, but there are too few examples to rule out lining arrows up.
 
-**Decision:** An array's `=>` needs at least one space each side. More is allowed. A
-`yield`'s `=>` isn't checked.
+**Decision:** An array's `=>` needs at least one space each side. More is allowed. A `yield`'s `=>` isn't checked.
 
 **Why:** The spec always shows a space each side, and never none. It gives too little to forbid alignment.
 
-> [!Note] A yield's arrow must also have at least one space either side.
+> [!Note] A yield's arrow must also have at least one space either side, for consistency.
 
 ---
 
@@ -1063,11 +1160,11 @@ space each side, but there are too few examples to rule out lining arrows up.
 **Why:** Both readings are common, so both spaced forms pass. The unspaced forms break the rule either way.
 
 > [!Note]
-> The spec is silent on how assign by reference should be formatted.
-> Conceptually the `&` modifies the `=` operator, not the variable.
-> Decision: treat `=&` as a binary "assign by reference" operator and it must have at least one space either side (exactly one for Jumbo).
-> Therefore any spacing from `$x=&$a` to `$x = & $a`, including `$x = &$a` should be fixed to `$x =& $a`.
-
+> `=&` is not an operator in PHP, so this decision was incorrect.
+> Conceptually, the `&` modifies the operation. BUT PHP treats the `=` and `&` as different operators.
+> According to the spec, there should be at least one space around the `=`.
+> So the examples will fix to `$x = & $a` or `$x = &$a` depending if there's already a space after the `&`.
+> Jumbo will also remove any space between the `&` and the operand after it.
 
 ---
 
@@ -1141,7 +1238,14 @@ starting the second.
 
 **Issue:** 6.4 lets `=` start a wrapped line. Section 10 puts a heredoc on its context's line.
 
-**Decision:** `$x` then `= <<<` on the next line is reported.
+**Decision:** A heredoc after a wrapped `=` is reported:
+
+```php
+$x
+    = <<<EOT
+    Hello $name.
+    EOT;
+```
 
 **Why:** Section 10 is more specific.
 
@@ -1227,11 +1331,29 @@ condition MUST be on the next line".
 **Decision:** The rule is applied after `=`, `=>`, `return` and the like, so `$a = [`. The exceptions are:
 
 - An element of a multi-line array, as in the example.
-- An argument in an argument list, so `foo(` then `[` on the next line is allowed, as is `foo([`.
+- An argument in an argument list. Both `foo([` and the first form below are allowed.
 - A condition of a `match` arm.
-- The first condition of a split `if`, `elseif`, `while`, `switch` or `for`, so `if (` then `[` on the next line is
-  allowed. `foreach ([` and `match ([` are required, as neither has a split rule.
+- The first condition of a split `if`, `elseif`, `while`, `switch` or `for`, as in the second form below.
+  `foreach ([` and `match ([` are required, as neither has a split rule.
 - A destructuring assignment.
+
+```php
+foo(
+    [
+        1,
+        2,
+    ],
+);
+
+if (
+    [
+        1,
+        2,
+    ] === $a
+) {
+    // ...
+}
+```
 
 **Why:** The example shows the elements exception. An argument list split one per line leaves an array argument nowhere
 else to start, short of assigning it to a variable first, which PER doesn't ask for. A `match` arm starts a line, so an

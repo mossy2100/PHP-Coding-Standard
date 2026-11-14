@@ -407,12 +407,12 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that a control structure's empty body passes as `{}`, and with the braces on separate lines, as section 5
-     * has no rule for it. A space between the braces, and a body on the brace's line, are still reported.
+     * Test that a control structure's empty body passes as `{}`. A space between the braces, and a body on the
+     * brace's line, are reported.
      */
     public function testEmptyControlStructureBodyMayBeAbbreviated(): void
     {
-        $valid = "<?php\n\ntry {\n    run();\n} catch (Exception \$e) {} finally {\n}\n\nwhile (next(\$items)) {}\n";
+        $valid = "<?php\n\ntry {\n    run();\n} catch (Exception \$e) {} finally {}\n\nwhile (next(\$items)) {}\n";
         $file = $this->copyToTempFile(null, $valid);
         $invalid = $this->copyToTempFile(null, "<?php\n\nwhile (next(\$items)) { }\n\nif (\$first) { run();\n}\n");
         $args = ['-s', '--standard=PERCS31', '--report=emacs'];
@@ -426,7 +426,8 @@ class RulesetUnitTest extends TestCase
         }
 
         $this->assertSame(0, $result['exitCode'], $result['output']);
-        $this->assertSame(2, substr_count($invalidResult['output'], 'BodyOnNextLine.NewlineAfterOpenBrace'));
+        $this->assertSame(1, substr_count($invalidResult['output'], 'BodyOnNextLine.NewlineAfterOpenBrace'));
+        $this->assertSame(1, substr_count($invalidResult['output'], 'EmptyBody.NotAbbreviated'));
     }
 
     /**
@@ -449,22 +450,6 @@ class RulesetUnitTest extends TestCase
         $this->assertSame(1, substr_count($result['output'], 'DisallowTrailingCommaInCall.DisallowedTrailingComma'));
         $this->assertSame(1, substr_count($result['output'], 'error - '), $result['output']);
         $this->assertSame("<?php\n\n\$a = sum([\n    1,\n    2,\n]);\n$split", $fixed);
-    }
-
-    /**
-     * Test that a loop with no body passes, as there's no body for section 5 to require braces around.
-     */
-    public function testLoopWithNoBodyPasses(): void
-    {
-        $file = $this->copyToTempFile(null, "<?php\n\nwhile (next(\$items));\n\nfor (\$i = 0; \$i < 10; \$i++);\n");
-
-        try {
-            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
-        } finally {
-            unlink($file);
-        }
-
-        $this->assertSame(0, $result['exitCode'], $result['output']);
     }
 
     /**
@@ -603,6 +588,32 @@ class RulesetUnitTest extends TestCase
 
         $this->assertSame(["4 $code", "7 $code"], $reports, $result['output']);
         $this->assertSame(strtolower($source), $fixed);
+    }
+
+    /**
+     * Test that a control structure with no body needs braces in both standards, an `else` included, and that the
+     * `while` of a `do` loop isn't taken for one.
+     */
+    public function testStructureWithNoBodyNeedsBraces(): void
+    {
+        $source = "<?php\n\ndeclare(strict_types=1);\n\nwhile (next(\$items));\n\ndo {\n    run();\n} while (\$a);\n"
+            . "\nif (\$a) {\n    run();\n} else;\n";
+        foreach (['PERCS31', 'Jumbo'] as $standard) {
+            $file = $this->copyToTempFile(null, $source);
+
+            try {
+                $result = $this->runTool('phpcs', ['-s', "--standard=$standard", '--report=emacs', $file]);
+                $this->runTool('phpcbf', ["--standard=$standard", $file]);
+                $fixed = (string) file_get_contents($file);
+            } finally {
+                unlink($file);
+            }
+
+            $this->assertSame(2, substr_count($result['output'], 'ControlStructureEmptyStatement'), $result['output']);
+            $this->assertStringContainsString("} else {}\n", $fixed);
+            $this->assertMatchesRegularExpression('/while \(next\(\$items\)\) \{\s*\}\n\ndo \{/', $fixed);
+            $this->assertStringContainsString("} while (\$a);\n", $fixed);
+        }
     }
 
     /**

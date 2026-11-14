@@ -11,7 +11,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use PHPCSUtils\Utils\MessageHelper;
 
 /**
- * Reports an empty class, function, closure or anonymous class body that isn't written as `{}` after a single space.
+ * Reports an empty class, function, closure, anonymous class or control structure body that isn't written as `{}` after
+ * a single space.
  *
  * PER Coding Style 3.1, sections 4 and 4.4, says an empty class, interface, trait, enum, function or method body
  * should be abbreviated as `{}` on the same line as the previous symbol, separated by a space. It's a SHOULD, so this
@@ -22,19 +23,20 @@ use PHPCSUtils\Utils\MessageHelper;
  * A body after a `//` or `#` comment, as in `function a() // Why.` then `{` and `}`, is reported but not fixed, as the
  * `{}` can't go on the comment's line.
  *
- * Section 5 says nothing about a control structure's empty body, so PERCS31 allows it as `{}` or with the braces on
- * separate lines, and it isn't checked here. With checkControlStructures on, as in the Jumbo standard, `{}` is required
- * there too, as an error.
+ * Section 5 says nothing about a control structure's empty body. It's read as a class's or a function's is, so it
+ * SHOULD be `{}` too, as in `catch (Exception $e) {}`, and this sniff gives a warning.
+ *
+ * With strict on, as in the Jumbo standard, every empty body must be `{}`, so each of these is an error.
  */
 class EmptyBodySniff implements Sniff
 {
     public const string CODE_NOT_ABBREVIATED = 'NotAbbreviated';
 
     /**
-     * Whether to require an empty control structure body as `{}` too, as in `catch (Exception $e) {}`. PER Coding Style
-     * 3.1 has no rule on it, so it's off by default.
+     * Whether every empty body must be `{}`, so one that isn't is an error. PER Coding Style 3.1 only says SHOULD for
+     * a class or function, and nothing for a control structure, so it's off by default.
      */
-    public bool $checkControlStructures = false;
+    public bool $strict = false;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -55,11 +57,6 @@ class EmptyBodySniff implements Sniff
     public function process(File $phpcsFile, int $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
-        $isControlStructure = in_array($tokens[$stackPtr]['code'], EmptyBodyHelper::CONTROL_STRUCTURE_TOKENS, true);
-        if ($isControlStructure && !$this->checkControlStructures) {
-            return;
-        }
-
         if (!EmptyBodyHelper::isEmpty($phpcsFile, $stackPtr)) {
             return;
         }
@@ -78,7 +75,7 @@ class EmptyBodySniff implements Sniff
         $fixable = !$this->isLineComment($phpcsFile, $previous);
         $message = 'An empty %s body %s be written as {} on the same line as the declaration, after a single space.';
         $code = $tokens[$stackPtr]['code'];
-        $isMust = $code === T_CLOSURE || $code === T_ANON_CLASS || $isControlStructure;
+        $isMust = $this->strict || $code === T_CLOSURE || $code === T_ANON_CLASS;
         $data = match ($code) {
             T_CLOSURE => ['closure', 'must'],
             T_ANON_CLASS => ['anonymous class', 'must'],

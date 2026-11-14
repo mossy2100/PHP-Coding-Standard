@@ -26,8 +26,6 @@ class BodyOnNextLineUnitTest extends AbstractSniffTestCase
             43 => 1,
             44 => 1,
             45 => 1,
-            // A space between the braces.
-            49 => 1,
         ];
     }
 

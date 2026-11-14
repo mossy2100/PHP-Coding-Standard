@@ -141,8 +141,6 @@
     </rule>
     <rule ref="SlevomatCodingStandard.Classes.MethodSpacing"/>
     <rule ref="SlevomatCodingStandard.Classes.ModernClassNameReference"/>
-    <!-- final before the visibility on a constant, the order PER sets for classes, properties and methods (4.6) -->
-    <rule ref="Universal.Constants.ModifierKeywordOrder"/>
     <rule ref="SlevomatCodingStandard.Classes.RequireSelfReference"/>
 
     <!-- Global constants in UPPER_CASE too, and every constant in upper case in strict UPPER_SNAKE_CASE, neither of
@@ -210,11 +208,11 @@
 
     <!-- ====== CONTROL STRUCTURES (5) ====== -->
 
-    <!-- An empty control structure body as {}, as in catch (Exception $e) {}, where PERCS31 also allows the braces on
-         separate lines -->
+    <!-- Every empty body as {}, as an error. PERCS31 warns for a class, function or control structure, where PER says
+         SHOULD or nothing. -->
     <rule ref="PERCS31.Formatting.EmptyBody">
         <properties>
-            <property name="checkControlStructures" value="true"/>
+            <property name="strict" value="true"/>
         </properties>
     </rule>
 

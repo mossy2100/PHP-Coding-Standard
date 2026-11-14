@@ -101,13 +101,13 @@ function commentedClosures(): array
     ];
 }
 
-// A control structure's empty body isn't checked by default.
+// A control structure's empty body should be {} too.
 try {
     run();
 } catch (Exception $e) {
 }
 
-// phpcs:set PERCS31.Formatting.EmptyBody checkControlStructures true
+// phpcs:set PERCS31.Formatting.EmptyBody strict true
 try {
     run();
 } catch (Exception $e) {
@@ -127,4 +127,12 @@ if ($first){}
 if ($first) {} else {
     // Why.
 }
-// phpcs:set PERCS31.Formatting.EmptyBody checkControlStructures false
+// With strict on, a class's and a function's empty body must be {} too.
+class StrictClass
+{
+}
+
+function strictFunction(): void
+{
+}
+// phpcs:set PERCS31.Formatting.EmptyBody strict false

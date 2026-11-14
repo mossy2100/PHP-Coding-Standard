@@ -50,8 +50,8 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
   it. A docblock's indent isn't checked.
 - `PERCS31.WhiteSpace.ConsistentIndent` also reports a comment indented further than its scope, when the line before it
   ends a statement (`checkComments` set to `true`). A comment at the top level isn't checked.
-- `PERCS31.Formatting.EmptyBody` requires a control structure's empty body as `{}`, as in `catch (Exception $e) {}`,
-  where PERCS31 also allows the braces on separate lines (`checkControlStructures` set to `true`).
+- `PERCS31.Formatting.EmptyBody` requires every empty body as `{}`, as an error (`strict` set to `true`). PERCS31 only
+  warns for a class, a function or a control structure, where PER says SHOULD, or nothing.
 - `PERCS31.Operators.OperatorPlacement` requires a line in a control structure's condition to be indented exactly once
   past the `(` line if it starts with `&&` or `||`, and exactly once past its operand's line if it starts with any other
   operator. PERCS31 allows at least once (`requireExactConditionIndent` set to `true`).
@@ -114,9 +114,6 @@ rules.
 
 ### PHPCSExtra
 
-- **Universal.Constants.ModifierKeywordOrder**: Requires `final` before the visibility on a constant, as in
-  `final public const A`. Section 4.6 sets that order for classes, properties and methods, but doesn't name constants,
-  so PERCS31 allows either. Auto-fixable.
 - **Universal.Constants.UppercaseMagicConstants**: Requires a magic constant in upper case, as in `__DIR__`, not
   `__dir__`. PHP ignores their case. Section 2.5's rule that keywords are in lower case isn't read as covering them, so
   PERCS31 doesn't check their case. Auto-fixable.

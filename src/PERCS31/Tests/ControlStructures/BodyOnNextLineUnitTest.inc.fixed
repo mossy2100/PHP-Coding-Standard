@@ -51,9 +51,8 @@ report($e);
 stop();
 }
 
-// A space between the braces isn't `{}`.
-if ($first) {
-}
+// An empty body isn't checked here, even with a space between the braces.
+if ($first) { }
 
 // A function's body isn't checked here.
 function first(): void { run();
