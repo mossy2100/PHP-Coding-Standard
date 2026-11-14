@@ -14,8 +14,8 @@ use PHP_CodeSniffer\Files\File;
  * must follow the same rules as a closure. Several inherited sniffs require the braces on separate lines, so the
  * extended versions of them skip a body that this helper says is already on one line.
  *
- * Section 5 says nothing about a control structure's empty body, so PERCS31 allows `{}` there too, and the Jumbo
- * standard requires it.
+ * Section 5 has no rule for a control structure's empty body, so it's read as a class's or a function's is: it SHOULD
+ * be `{}`. The Jumbo standard requires it.
  */
 class EmptyBodyHelper
 {

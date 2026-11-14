@@ -131,8 +131,8 @@
     </rule>
     <rule ref="PERCS31.WhiteSpace.ScopeClosingBrace"/>
 
-    <!-- An empty body as {}: a warning for a class or function (4, 4.4), an error for a closure or anonymous class
-         (7, 8) -->
+    <!-- An empty body as {}: a warning for a class or function (4, 4.4) or a control structure (5), an error for a
+         closure or anonymous class (7, 8) -->
     <rule ref="PERCS31.Formatting.EmptyBody"/>
 
     <!-- Keywords in lower case, including a property hook's get or set (2.5) -->

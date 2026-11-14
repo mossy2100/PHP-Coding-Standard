@@ -1053,17 +1053,17 @@ class Talker
 Requires a control structure's body to start on the line after its opening brace, allowing an empty body as `{}`. This
 replaces the `NewlineAfterOpenBrace` check of `Squiz.ControlStructures.ControlSignature`.
 
-**Why:** [PER Coding Style 3.1, Section 5](https://www.php-fig.org/per/coding-style/#5-control-structures) says the body MUST be on the next line after the opening brace. It says nothing
-about an empty body, which has nothing to put on the next line, so `catch (Exception $e) {}` is allowed, as `{}` is for
-an empty class, function or closure. The braces on separate lines are allowed too.
+**Why:** [PER Coding Style 3.1, Section 5](https://www.php-fig.org/per/coding-style/#5-control-structures) says the body MUST be on the next line after the opening brace. It has no rule
+for an empty body, which has nothing to put on the next line, so an empty body isn't checked here.
+[`PERCS31.Formatting.EmptyBody`](#percs31formattingemptybody) warns about one that isn't `{}`.
 
 The Squiz check reports `{}`. It's in the middle of that sniff's `process()`, with no property to change it, so a
 subclass can't skip it for one case. So the ruleset excludes its code, and this sniff makes the same check, copied from
-PHP_CodeSniffer 4.0.4 with its message and code. It changes one thing: a `}` straight after the `{` isn't reported. No
-other installed sniff makes the check with that exception.
+PHP_CodeSniffer 4.0.4 with its message and code. It changes one thing: an empty body isn't reported. No other installed
+sniff makes the check with that exception.
 
-A comment after the brace on its line is allowed, as by the Squiz check. A space between the braces, `{ }`, isn't `{}`,
-so it's reported. The [Jumbo standard](Jumbo.md) requires `{}` for an empty body.
+A comment after the brace on its line is allowed, as by the Squiz check. An empty body that isn't `{}`, such as `{ }` or
+braces on separate lines, gets a warning from `PERCS31.Formatting.EmptyBody`. The [Jumbo standard](Jumbo.md) makes that an error.
 
 **Auto-fixable:** yes.
 
@@ -1581,9 +1581,9 @@ $a = 1; $b = 2;
 
 ### PERCS31.Formatting.EmptyBody
 
-Reports an empty class, interface, trait, enum, function, method, closure or anonymous class body that isn't written as
-`{}` on the same line as the declaration, after a single space. It's a warning, except for a closure or anonymous class,
-where it's an error.
+Reports an empty class, interface, trait, enum, function, method, closure, anonymous class or control structure body
+that isn't written as `{}` on the same line as the declaration, after a single space. It's a warning, except for a
+closure or anonymous class, where it's an error.
 
 **Why:** [PER Coding Style 3.1, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says an empty class or function body SHOULD be abbreviated that way,
 including a constructor that only promotes properties. [Section 7](https://www.php-fig.org/per/coding-style/#7-closures) says an empty closure body MUST be, and [section 8](https://www.php-fig.org/per/coding-style/#8-anonymous-classes) says
