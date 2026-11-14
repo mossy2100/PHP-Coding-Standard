@@ -48,6 +48,8 @@ use PHPCSUtils\Utils\Conditions;
  */
 class ConsistentIndentSniff extends PhpCollectiveSniff
 {
+    public const string CODE_COMMENT = 'Comment';
+
     /**
      * Whether to report a comment indented further than its scope, after a complete statement. PER Coding Style has no
      * rule for a comment's indent, so it's off by default. The Jumbo standard turns it on.
@@ -225,7 +227,8 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
         // Only the first line of a comment over several lines would move, so that's left to a person.
         $error = 'Comment indented incorrectly; expected %s spaces, found %s spaces';
         $isFixable = $tokens[$next]['code'] === T_COMMENT && !str_starts_with($tokens[$next]['content'], '/*');
-        if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $next, 'Comment', [$expected, $found])) {
+        $data = [$expected, $found];
+        if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $next, self::CODE_COMMENT, $data)) {
             $phpcsFile->fixer->replaceToken($stackPtr, str_repeat(' ', $expected));
         }
 

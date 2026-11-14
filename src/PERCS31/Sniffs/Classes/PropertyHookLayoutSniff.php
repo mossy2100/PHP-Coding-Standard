@@ -49,7 +49,6 @@ class PropertyHookLayoutSniff implements Sniff
 
     public const string CODE_CLOSER_NOT_ON_OWN_LINE = 'CloserNotOnOwnLine';
 
-
     public const string CODE_ARROW_SPACING = 'ArrowSpacing';
 
     public const string CODE_BODY_NOT_ON_SAME_LINE = 'BodyNotOnSameLine';

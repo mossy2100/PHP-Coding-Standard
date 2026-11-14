@@ -36,6 +36,8 @@ class PropertyDeclarationSniff extends Psr2Sniff
 {
     public const string CODE_LEADING_UNDERSCORE = 'LeadingUnderscore';
 
+    public const string CODE_HOOK_ORDER = 'HookOrder';
+
     /**
      * Processes the function tokens within the class.
      *
@@ -77,8 +79,8 @@ class PropertyDeclarationSniff extends Psr2Sniff
      *
      * PER Coding Style 3.1, section 4.10, requires this order for an abstract or interface property with no hook
      * bodies, and every example in section 4.9 follows it, so every hook list is checked, including ones with bodies,
-     * `&` or attributes. The fix swaps the two hooks, with their attributes,
-     * modifiers and bodies. It isn't offered if there's a comment between the hooks.
+     * `&` or attributes. The fix swaps the two hooks, with their attributes, modifiers and bodies. It isn't offered if
+     * there's a comment between the hooks.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the property token.
@@ -116,7 +118,8 @@ class PropertyDeclarationSniff extends Psr2Sniff
         $setHook = $hooks[$setIndex];
         $getHook = $hooks[$getIndex];
         $isFixable = !$this->hasCommentBetweenHooks($phpcsFile, $opener, $closer, $hooks);
-        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $setHook['namePtr'], 'HookOrder')) {
+        $code = self::CODE_HOOK_ORDER;
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $setHook['namePtr'], $code)) {
             return;
         }
 

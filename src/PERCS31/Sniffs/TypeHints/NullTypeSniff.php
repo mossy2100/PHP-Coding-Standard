@@ -20,7 +20,8 @@ use PHPCSUtils\Utils\GetTokensAsString;
  *
  * SlevomatCodingStandard.TypeHints.DNFTypeHintFormat checks both, but gets some cases wrong:
  * - It skips the `null` position in any type with an intersection, such as `null|(A&B)`.
- * - For `null|int`, it only reports the `?T` warning, so the MUST is lost below warning level.
+ * - For `null|int`, it only reports the missing `?T`, not the position. `?T` is a SHOULD, so with that code set to a
+ *   warning, the MUST is lost below warning level.
  * - It doesn't check a typed constant (PHP 8.3), or a `set` hook's parameter, which PHP_CodeSniffer reads as an
  *   expression.
  * - Its `?T` fix deletes `static` from a return type, so `static|null` becomes `?`, which is a parse error.
