@@ -768,4 +768,99 @@ class RulesetUnitTest extends TestCase
     }
 
     #endregion
+
+    #region PERCS31 rules in Jumbo tests.
+
+    /**
+     * Test that a control structure with no body needs braces in Jumbo too, an `else` included, and that the `while`
+     * of a `do` loop isn't taken for one.
+     */
+    public function testStructureWithNoBodyNeedsBraces(): void
+    {
+        $source = "<?php\n\ndeclare(strict_types=1);\n\nwhile (next(\$items));\n\ndo {\n    run();\n} while (\$a);\n"
+            . "\nif (\$a) {\n    run();\n} else;\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=Jumbo', '--report=emacs', $file]);
+            $this->runTool('phpcbf', ['--standard=Jumbo', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame(2, substr_count($result['output'], 'ControlStructureEmptyStatement'), $result['output']);
+        $this->assertStringContainsString("} else {}\n", $fixed);
+        $this->assertMatchesRegularExpression('/while \(next\(\$items\)\) \{\s*\}\n\ndo \{/', $fixed);
+        $this->assertStringContainsString("} while (\$a);\n", $fixed);
+    }
+
+    /**
+     * Test that Jumbo's comment rules report a comment's indent and spacing, which PERCS31 doesn't check.
+     */
+    public function testCommentsAreCheckedInJumbo(): void
+    {
+        $source = "<?php\n\ndeclare(strict_types=1);\n\nfunction foo(): int\n{\n// At column 1.\n"
+            . "    /*\n  Too little.\n    */\n    \$a = 1;// No space.\n    //No space.\n\n    return \$a;\n}\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=Jumbo', '--report=emacs', $file]);
+        } finally {
+            unlink($file);
+        }
+
+        $expected = [
+            ':7:' => 'PERCS31.WhiteSpace.ScopeIndent',
+            ':9:' => 'Jumbo.Commenting.BlockComment.ContentIndent',
+            ':11:' => 'Jumbo.Commenting.TrailingComment.SpacingBefore',
+            ':12:' => 'Squiz.Commenting.InlineComment.NoSpaceBefore',
+        ];
+        foreach ($expected as $line => $code) {
+            $pattern = '/' . $line . '\d+: error - .*' . preg_quote($code, '/') . '/';
+            $this->assertMatchesRegularExpression($pattern, $result['output']);
+        }
+    }
+
+    /**
+     * Test that a space or line break inside an empty array's brackets is reported once in Jumbo too.
+     */
+    public function testSpaceInEmptyArrayIsReportedOnce(): void
+    {
+        $source = "<?php\n\ndeclare(strict_types=1);\n\necho count([ ]), count([   ]), count(foo([ ]));\n"
+            . "echo count([\n]);\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=Jumbo', '--report=emacs', $file]);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame(4, substr_count($result['output'], 'SpaceInEmptyArray'), $result['output']);
+    }
+
+    /**
+     * Test that a line over 120 characters is a warning, not an error, in Jumbo too, and that the warning over 80
+     * characters is hidden by default, and shown at severity 4.
+     */
+    public function testLineLengthLimitsAreWarnings(): void
+    {
+        $fixture = __DIR__ . '/../../PERCS31/Tests/Ruleset/LineLength.inc';
+        $args = ['-s', '--standard=Jumbo', '--sniffs=Generic.Files.LineLength', '--report=emacs', $fixture];
+        $default = $this->runTool('phpcs', $args);
+        $severity4 = $this->runTool('phpcs', ['--warning-severity=4', ...$args]);
+
+        $this->assertMatchesRegularExpression('/:16:\d+: warning - .*LineLength\.MaxExceeded/', $default['output']);
+        $this->assertStringNotContainsString(' error - ', $default['output']);
+        $this->assertStringNotContainsString('LineLength.TooLong', $default['output']);
+        foreach ([9, 10, 11] as $line) {
+            $pattern = "/:$line:\\d+: warning - .*LineLength\\.TooLong/";
+            $this->assertMatchesRegularExpression($pattern, $severity4['output']);
+        }
+
+        $this->assertStringNotContainsString(':12:', $severity4['output'], 'An unbreakable comment is exempt.');
+    }
+
+    #endregion
 }

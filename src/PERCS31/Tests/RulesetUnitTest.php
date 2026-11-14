@@ -591,62 +591,49 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that a control structure with no body needs braces in both standards, an `else` included, and that the
-     * `while` of a `do` loop isn't taken for one.
+     * Test that a control structure with no body needs braces, an `else` included, and that the `while` of a `do` loop
+     * isn't taken for one.
      */
     public function testStructureWithNoBodyNeedsBraces(): void
     {
         $source = "<?php\n\ndeclare(strict_types=1);\n\nwhile (next(\$items));\n\ndo {\n    run();\n} while (\$a);\n"
             . "\nif (\$a) {\n    run();\n} else;\n";
-        foreach (['PERCS31', 'Jumbo'] as $standard) {
-            $file = $this->copyToTempFile(null, $source);
+        $file = $this->copyToTempFile(null, $source);
 
-            try {
-                $result = $this->runTool('phpcs', ['-s', "--standard=$standard", '--report=emacs', $file]);
-                $this->runTool('phpcbf', ["--standard=$standard", $file]);
-                $fixed = (string) file_get_contents($file);
-            } finally {
-                unlink($file);
-            }
-
-            $this->assertSame(2, substr_count($result['output'], 'ControlStructureEmptyStatement'), $result['output']);
-            $this->assertStringContainsString("} else {}\n", $fixed);
-            $this->assertMatchesRegularExpression('/while \(next\(\$items\)\) \{\s*\}\n\ndo \{/', $fixed);
-            $this->assertStringContainsString("} while (\$a);\n", $fixed);
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
         }
+
+        $this->assertSame(2, substr_count($result['output'], 'ControlStructureEmptyStatement'), $result['output']);
+        $this->assertStringContainsString("} else {}\n", $fixed);
+        $this->assertMatchesRegularExpression('/while \(next\(\$items\)\) \{\s*\}\n\ndo \{/', $fixed);
+        $this->assertStringContainsString("} while (\$a);\n", $fixed);
     }
 
     /**
-     * Test that PERCS31 doesn't check a comment's indent or spacing, and that Jumbo's comment rules do.
+     * Test that PERCS31 doesn't check a comment's indent or spacing.
      */
-    public function testCommentsAreOnlyCheckedInJumbo(): void
+    public function testCommentsAreNotChecked(): void
     {
         $source = "<?php\n\ndeclare(strict_types=1);\n\nfunction foo(): int\n{\n// At column 1.\n"
             . "    /*\n  Too little.\n    */\n    \$a = 1;// No space.\n    //No space.\n\n    return \$a;\n}\n";
         $file = $this->copyToTempFile(null, $source);
 
         try {
-            $perCs = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
-            $jumbo = $this->runTool('phpcs', ['-s', '--standard=Jumbo', '--report=emacs', $file]);
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
         } finally {
             unlink($file);
         }
 
-        $this->assertStringNotContainsString(' error - ', $perCs['output']);
-        $expected = [
-            ':7:' => 'PERCS31.WhiteSpace.ScopeIndent',
-            ':9:' => 'Jumbo.Commenting.BlockComment.ContentIndent',
-            ':11:' => 'Jumbo.Commenting.TrailingComment.SpacingBefore',
-            ':12:' => 'Squiz.Commenting.InlineComment.NoSpaceBefore',
-        ];
-        foreach ($expected as $line => $code) {
-            $pattern = '/' . $line . '\d+: error - .*' . preg_quote($code, '/') . '/';
-            $this->assertMatchesRegularExpression($pattern, $jumbo['output']);
-        }
+        $this->assertStringNotContainsString(' error - ', $result['output']);
     }
 
     /**
-     * Test that a space or line break inside an empty array's brackets is reported once in both standards, and fixed.
+     * Test that a space or line break inside an empty array's brackets is reported once, and fixed.
      */
     public function testSpaceInEmptyArrayIsReportedOnce(): void
     {
@@ -655,16 +642,14 @@ class RulesetUnitTest extends TestCase
         $file = $this->copyToTempFile(null, $source);
 
         try {
-            $perCs = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
-            $jumbo = $this->runTool('phpcs', ['-s', '--standard=Jumbo', '--report=emacs', $file]);
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
             $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
             $fixed = (string) file_get_contents($file);
         } finally {
             unlink($file);
         }
 
-        $this->assertSame(4, substr_count($perCs['output'], 'SpaceInEmptyArray'), $perCs['output']);
-        $this->assertSame(4, substr_count($jumbo['output'], 'SpaceInEmptyArray'), $jumbo['output']);
+        $this->assertSame(4, substr_count($result['output'], 'SpaceInEmptyArray'), $result['output']);
         $this->assertSame(str_replace(['[   ]', '[ ]', "[\n]"], '[]', $source), $fixed);
     }
 
@@ -774,26 +759,24 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that a line over 120 characters is a warning, not an error, in both standards, and that the warning over
-     * 80 characters is hidden by default, and shown at severity 4.
+     * Test that a line over 120 characters is a warning, not an error, and that the warning over 80 characters is
+     * hidden by default, and shown at severity 4.
      */
     public function testLineLengthLimitsAreWarnings(): void
     {
         $fixture = __DIR__ . '/Ruleset/LineLength.inc';
-        foreach (['PERCS31', 'Jumbo'] as $standard) {
-            $args = ['-s', "--standard=$standard", '--sniffs=Generic.Files.LineLength', '--report=emacs', $fixture];
-            $default = $this->runTool('phpcs', $args);
-            $severity4 = $this->runTool('phpcs', ['--warning-severity=4', ...$args]);
+        $args = ['-s', '--standard=PERCS31', '--sniffs=Generic.Files.LineLength', '--report=emacs', $fixture];
+        $default = $this->runTool('phpcs', $args);
+        $severity4 = $this->runTool('phpcs', ['--warning-severity=4', ...$args]);
 
-            $this->assertMatchesRegularExpression('/:16:\d+: warning - .*LineLength\.MaxExceeded/', $default['output']);
-            $this->assertStringNotContainsString(' error - ', $default['output']);
-            $this->assertStringNotContainsString('LineLength.TooLong', $default['output']);
-            foreach ([9, 10, 11] as $line) {
-                $pattern = "/:$line:\\d+: warning - .*LineLength\\.TooLong/";
-                $this->assertMatchesRegularExpression($pattern, $severity4['output']);
-            }
-
-            $this->assertStringNotContainsString(':12:', $severity4['output'], 'An unbreakable comment is exempt.');
+        $this->assertMatchesRegularExpression('/:16:\d+: warning - .*LineLength\.MaxExceeded/', $default['output']);
+        $this->assertStringNotContainsString(' error - ', $default['output']);
+        $this->assertStringNotContainsString('LineLength.TooLong', $default['output']);
+        foreach ([9, 10, 11] as $line) {
+            $pattern = "/:$line:\\d+: warning - .*LineLength\\.TooLong/";
+            $this->assertMatchesRegularExpression($pattern, $severity4['output']);
         }
+
+        $this->assertStringNotContainsString(':12:', $severity4['output'], 'An unbreakable comment is exempt.');
     }
 }
