@@ -133,3 +133,56 @@ class HalfSplit
     public static int|string
         |float $a;
 }
+
+// The lines of a split type are level with its first line when the type starts that line, and once past it otherwise.
+class SplitTypeIndent
+{
+    public A
+        |B $right;
+
+    public A
+    |B $level;
+
+    public const A
+            |B TOO_FAR = self::X;
+
+    public function right(
+        A
+        |B $c,
+        private A
+            |B $d,
+    ): void {
+        try {
+            run();
+        } catch (
+            FirstException
+            |SecondException $e
+        ) {
+            run();
+        }
+    }
+
+    public function wrong(
+        A
+|B $c,
+        A
+            |B $d,
+        private A
+        |B $e,
+    ): void {
+        try {
+            run();
+        } catch (
+            FirstException
+                |SecondException $e
+        ) {
+            run();
+        }
+    }
+
+    public function levelReturn(): int
+    |string
+    {
+        return 1;
+    }
+}

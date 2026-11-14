@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **The indent of a split type's lines (breaking).** `PERCS31.TypeHints.CompoundTypeLayout` now reports a line of a
+  split compound type that's indented wrongly, as `Indent`. A line starting with `|` or `&` must be level with the
+  type's first line when the type starts that line, as in a parameter list or a multi-catch, and indented once past it
+  when other code comes first, as in `public A`, `public const A` or `): A`. It wasn't checked. Auto-fixable.
 - **`PERCS31.Classes.TraitAliasSpacing` (breaking).** Requires a single space after a visibility or `final` in a trait's
   `as` clause. `sayBye as private  myBye;` passed, though PER Coding Style 3.1 sets the spacing there by its example.
   Auto-fixable, unless a comment is in the way.

@@ -368,6 +368,40 @@ See [Line Length](LineLength.md) to change the limit.
 
 ## 2.5 Keywords and Types
 
+### The Indent of a Split Type
+
+**Issue:** 2.5 says how a compound type is split over lines, but not how its lines are indented. Its examples are all
+in parameter lists, where the type starts its line, and each `|` line is level with it.
+
+**Decision:** Each line that starts with a `|` or `&` is indented as the type's first line requires:
+
+- Level with it, when the type starts that line, as in a parameter list or a multi-catch.
+- Once past it, when other code comes before the type on that line, as in a property, a constant, a return type or a
+  promoted parameter.
+
+So these are right:
+
+```php
+function reflect(
+    \ReflectionObject
+    |\ReflectionClass $reflect,
+): void {
+    // ...
+}
+
+class Reflector
+{
+    public \ReflectionObject
+        |\ReflectionClass $reflect;
+}
+```
+
+**Why:** The first follows 2.5's examples, and 4.5, which indents each line of a split parameter list once. In the
+second, the `|` line continues a line that starts with something else, so it's indented once more, as 6.4 indents any
+line that continues another.
+
+---
+
 ### `|` in a Multi-catch
 
 **Issue:** PHP calls `catch (A|B $e)` a multi-catch, not a type declaration. It's unclear whether 2.5's rule on compound
@@ -740,7 +774,7 @@ It's unclear how the two combine.
 
   ```php
   function a(): int
-  |string
+      |string
   {
       // ...
   }

@@ -22,8 +22,14 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * PERCS31.TypeHints.CompoundTypeOperatorSpacing checks that last rule. This sniff checks the other two. A type is split
  * if any `|` or `&` outside parentheses starts a line. Then every one of them must start a line, and the fix breaks the
- * line before each that doesn't, lining it up with the first one that does. A `&` inside a DNF type's parentheses must
- * never start a line, and the fix joins it to the line before.
+ * line before each that doesn't. A `&` inside a DNF type's parentheses must never start a line, and the fix joins it to
+ * the line before.
+ *
+ * Section 2.5 doesn't say how a split type's lines are indented. Its examples, "correct ways to format compound types",
+ * are in parameter lists, where the type starts its line, and each `|` line is level with it. So that's required where
+ * a type starts its line, as in a parameter list or a multi-catch. Where other code comes before the type on its line,
+ * as in `public A`, `public const A` or `): A`, each `|` line continues that line, so it's indented once past it, as
+ * section 6.4 indents any line that continues another. The fix sets the indent.
  *
  * It also covers a `set` hook's parameter type, e.g. `set(int|string $value)`, whose symbols and parentheses
  * PHP_CodeSniffer gives other tokens, as it doesn't know about hooks, and a multi-catch's types, e.g.
@@ -34,6 +40,8 @@ class CompoundTypeLayoutSniff implements Sniff
     public const string CODE_MULTIPLE_TYPES_ON_LINE = 'MultipleTypesOnLine';
 
     public const string CODE_SPLIT_INTERSECTION = 'SplitIntersection';
+
+    public const string CODE_INDENT = 'Indent';
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -105,13 +113,40 @@ class CompoundTypeLayoutSniff implements Sniff
         $error = $grouped === []
             ? 'A compound type split across lines must have a single type on each line'
             : 'A compound type split across lines must have a single union segment on each line';
-        // A new line is lined up with the first symbol that already starts one.
-        $aligned = array_find($topLevel, static fn(int $ptr): bool => LayoutHelper::startsLine($phpcsFile, $ptr));
-        $indent = $aligned === null ? 0 : ($tokens[$aligned]['column'] - 1);
+        // Each line is level with the type's first line when the type starts that line, as in a parameter list. When
+        // other code comes first, as in `public A` or `): A`, each line continues that one, so it's indented once more.
+        [$typeStart] = CompoundTypeHelper::findTypeBounds($phpcsFile, $stackPtr, $isHook);
+        $indent = LayoutHelper::lineIndent($phpcsFile, $typeStart);
+        if (!LayoutHelper::startsLine($phpcsFile, $typeStart)) {
+            $indent += LayoutHelper::INDENT;
+        }
         foreach ($topLevel as $symbol) {
             if (!LayoutHelper::startsLine($phpcsFile, $symbol)) {
                 $this->reportMultipleTypesOnLine($phpcsFile, $symbol, $error, $indent);
+            } elseif (($tokens[$symbol]['column'] - 1) !== $indent) {
+                $this->reportIndent($phpcsFile, $symbol, $indent);
             }
+        }
+    }
+
+    /**
+     * Report a line of a split type that isn't indented as the type's first line requires, and fix its indent.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $symbol The position of the symbol that starts the line.
+     * @param int $indent The number of spaces the line should be indented by.
+     */
+    private function reportIndent(File $phpcsFile, int $symbol, int $indent): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $fix = $phpcsFile->addFixableError(
+            'A line of a compound type split across lines is indented incorrectly; expected %s spaces but found %s',
+            $symbol,
+            self::CODE_INDENT,
+            [$indent, ($tokens[$symbol]['column'] - 1)],
+        );
+        if ($fix) {
+            FixerHelper::setIndent($phpcsFile, $symbol, $indent);
         }
     }
 

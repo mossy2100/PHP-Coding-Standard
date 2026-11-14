@@ -2686,10 +2686,17 @@ Requires a compound type split across lines to have one type per line, or for a 
 type is split if any `|` or `&` outside parentheses starts a line. Then every one of them must, and a `&` inside a DNF
 type's parentheses never can.
 
+Each line that starts with a `|` or `&` must be indented as the type's first line requires:
+
+- Level with it, when the type starts that line, as in a parameter list or a multi-catch.
+- Once past it, when other code comes before the type, as in `public A`, `public const A` or `): A`.
+
 **Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says each line of a split union or intersection MUST have a single type, and
 each line of a split DNF type MUST have a single union segment, with all of its intersections on that line. No inherited
 sniff checks it. This includes a `set` hook's parameter type, e.g. `set(int|string $value)`, and a multi-catch's types,
 e.g. `catch (A|B $e)`.
+
+Section 2.5 doesn't set the indent. See [The Indent of a Split Type](PER-CS_3.1_Judgement_Calls.md#the-indent-of-a-split-type).
 
 **Auto-fixable:** yes, unless a comment comes before a `&` that starts a line inside parentheses.
 
@@ -2707,6 +2714,12 @@ function iterate(
     |(ArrayAccess&Traversable)
     |(Traversable&Countable) $input,
 ) {}
+
+class Reflector
+{
+    public \ReflectionObject
+        |\ReflectionClass $reflect;
+}
 ```
 
 **Bad:**
@@ -2722,6 +2735,17 @@ function iterate(
     |(ArrayAccess
     &Traversable) $input,
 ) {}
+
+function indent(
+    array
+        |string $input,
+) {}
+
+class Reflector
+{
+    public \ReflectionObject
+    |\ReflectionClass $reflect;
+}
 ```
 
 ---

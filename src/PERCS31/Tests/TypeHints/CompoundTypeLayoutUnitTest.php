@@ -37,6 +37,17 @@ class CompoundTypeLayoutUnitTest extends AbstractSniffTestCase
             120 => 1,
             // Two types on the first line of a half-split property type.
             133 => 1,
+            // A property's and a constant's type lines, level with the type's line, and indented too far.
+            144 => 1,
+            147 => 1,
+            // A parameter's type lines, indented too little and too far, and a promoted one's, level with its line.
+            167 => 1,
+            169 => 1,
+            171 => 1,
+            // A catch's type line indented too far.
+            177 => 1,
+            // A return type's line, level with its function.
+            184 => 1,
         ];
     }
 

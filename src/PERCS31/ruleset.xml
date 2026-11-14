@@ -180,7 +180,8 @@
     <!-- No space around | or & in a compound type, but a split before one allowed, including the | between a
          multi-catch's types (2.5) -->
     <rule ref="PERCS31.TypeHints.CompoundTypeOperatorSpacing"/>
-    <!-- A compound type split across lines has one type, or one union segment, per line (2.5) -->
+    <!-- A compound type split across lines has one type, or one union segment, per line, each level with the type's
+         first line, or indented once past it when other code comes before the type on that line (2.5) -->
     <rule ref="PERCS31.TypeHints.CompoundTypeLayout"/>
     <!-- null last in a union, and a warning recommending ?T for a union of one type with null, as it's a SHOULD,
          everywhere a type can appear (2.5) -->
