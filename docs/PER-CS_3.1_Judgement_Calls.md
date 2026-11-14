@@ -1479,7 +1479,9 @@ mention enum cases, property hooks, or closures.
 - A hook with a body in braces, as in `get {`: the attribute goes on the line before, as for a method.
 - A short hook, as in `get => 1;`, or one with no body, as in `get;`: the attribute may be on its line, followed by a
   single space, or on the line before.
-- A closure as a call's argument follows the parameter rule. Elsewhere, it isn't checked.
+- A closure as a call's argument follows the parameter rule. Elsewhere, such as in an assignment or an array, its
+  attribute may be on the closure's line or the line before. One on the closure's line is followed by a single space,
+  and two or more blocks go on lines of their own, before the closure.
 
 An attribute that must be on the line before its target must also have that line to itself, so one that follows other
 code on its line is reported, as in `case Hearts; #[A]`.
@@ -1487,7 +1489,8 @@ code on its line is reported, as in `case Hearts; #[A]`.
 **Why:** Section 9 says enums follow the guidelines for class constants, and PHP itself treats an enum case's attribute
 as a constant's. A hook with a body in braces is laid out like a method, so its attribute goes where a method's does. A
 short hook or a hook with no body fits on a line, and a promoted property's hook has to (4.9), so the attribute may
-share it. The single space follows 12.2's rule for a parameter in a single-line list.
+share it. The single space follows 12.2's rule for a parameter in a single-line list. 12.2 puts two blocks "in a
+multi-line context" on separate lines, and a closure outside a single-line list is one.
 
 ---
 

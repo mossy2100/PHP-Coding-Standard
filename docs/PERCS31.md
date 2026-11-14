@@ -427,7 +427,11 @@ A named argument's closure keeps its attribute inline, even in a split list, as 
 Section 4.7 requires a single space between the colon and the value, and PHP doesn't allow the attribute before the
 name.
 
-Anywhere else, such as in an assignment or an array, PER says nothing, so it isn't checked.
+Anywhere else, such as in an assignment or an array, PER says nothing about where the attribute goes, so it may be on
+the closure's line or the line before. Only two things are checked there:
+
+- An attribute on the closure's line is followed by a single space, so `$a = #[Pure]  fn() => 1;` is reported.
+- Two or more blocks go on lines of their own, with the closure on the line after them.
 
 An enum case isn't in section 12.2's list either. It's treated as a constant, so its attribute goes on the line before,
 and `#[Label] case Active;` is reported, and fixed. Nor is a property hook:
