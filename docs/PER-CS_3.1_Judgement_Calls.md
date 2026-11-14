@@ -833,6 +833,20 @@ stops at class constants.
 
 ## 4.7 Method and Function Calls
 
+### A Space Before `clone`'s or `exit`'s Parentheses
+
+**Issue:** 4.7 says there MUST NOT be a space between a function's name and its opening parenthesis. It also says the
+`clone()`, `exit()` and `die()` functions SHOULD be called with parentheses. It's unclear which keyword applies to a
+space before those parentheses, as in `clone ($a)`.
+
+**Decision:** The MUST does. `clone ($a)`, `exit (1)` and `die ('x')` are errors, as `foo ($a)` is. Leaving the
+parentheses out, as in `clone $a` or `exit;`, is a warning.
+
+**Why:** The SHOULD is about whether to use parentheses. With them, each is a function call, which is what the spec
+calls all three, and the rule for a call's parentheses applies.
+
+---
+
 ### `require` and `include` With Parentheses
 
 **Issue:** 4.7 says there MUST NOT be a space between a function's name and its opening parenthesis. The spec doesn't

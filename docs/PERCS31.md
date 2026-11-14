@@ -2544,11 +2544,14 @@ class Counter
 
 ### PERCS31.PHP.RequireCloneParentheses
 
-Warns about `clone` without parentheses, such as `clone $a`, or with a space before them, such as `clone ($a)`, or with
-parentheses that hold only part of what is cloned, such as `clone($a)->b`.
+Warns about `clone` without parentheses, such as `clone $a`, or with parentheses that hold only part of what is cloned,
+such as `clone($a)->b`. Reports a space before the parentheses, such as `clone ($a)`, as an error.
 
 **Why:** [PER Coding Style 3.1, Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) says `clone()` SHOULD always be called with parentheses, as it's a function
-as of PHP 8.5. As it's a SHOULD, this is a warning. No inherited sniff checks it.
+as of PHP 8.5. As it's a SHOULD, that's a warning. No inherited sniff checks it.
+
+With the parentheses, `clone($a)` is a function call, and 4.7 says there MUST NOT be a space between a function's name
+and its opening parenthesis. So `clone ($a)` is an error, as `exit ($a)` is.
 
 PHP reads `clone($a)->b` as a clone of `$a->b`, so those parentheses only group `$a`, and `clone` has none of its own.
 That's reported as `PartOfOperand`. The fix makes the parentheses hold everything that is cloned: `clone($a->b)`. When

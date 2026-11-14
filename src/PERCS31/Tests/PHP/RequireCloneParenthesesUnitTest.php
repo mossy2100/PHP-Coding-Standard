@@ -18,7 +18,10 @@ class RequireCloneParenthesesUnitTest extends AbstractSniffTestCase
      */
     protected function getErrorList(): array
     {
-        return [];
+        return [
+            // A space before the parentheses.
+            18 => 1,
+        ];
     }
 
     /**
@@ -41,8 +44,6 @@ class RequireCloneParenthesesUnitTest extends AbstractSniffTestCase
             16 => 1,
             // A new expression.
             17 => 1,
-            // A space before the parentheses.
-            18 => 1,
             // A space before the parentheses, then a dereference.
             19 => 1,
             // A variable variable.
