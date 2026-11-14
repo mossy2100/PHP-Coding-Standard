@@ -3063,14 +3063,15 @@ class User
 
 **Configuration:**
 
-These are the original's properties. PER Coding Style 3.1 needs their defaults, so the ruleset sets none.
+These are the original's properties. The ruleset sets `ignoreIndentationTokens`, and leaves the rest at their defaults,
+which PER Coding Style 3.1 needs.
 
 | Property                  | Type  | Default | Description                                                             |
 | ------------------------- | ----- | ------- | ----------------------------------------------------------------------- |
 | `indent`                  | int   | 4       | Number of spaces per indentation level.                                 |
 | `exact`                   | bool  | false   | Require exactly the expected indent on every line, not at least it.     |
 | `tabIndent`               | bool  | false   | Fix with tabs, not spaces. PER requires spaces.                         |
-| `ignoreIndentationTokens` | array | `[]`    | Tokens whose indent isn't checked. PSR-12 sets two, for comments.       |
+| `ignoreIndentationTokens` | array | `[]`    | Tokens whose indent isn't checked. PERCS31 sets two, for comments.      |
 
 ```xml
 <rule ref="PERCS31.WhiteSpace.ScopeIndent">
