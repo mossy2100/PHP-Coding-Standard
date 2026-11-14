@@ -511,7 +511,14 @@ class AttributePlacementSniff implements Sniff
             return;
         }
 
-        if (!$this->isArgumentListSplit($phpcsFile, $arguments)) {
+        // The closure is a direct argument, so the innermost parentheses around its attributes are the call's.
+        $listOpener = Parentheses::getLastOpener($phpcsFile, $firstPtr);
+        $listCloser = $listOpener === false ? null : ($tokens[$listOpener]['parenthesis_closer'] ?? null);
+        if (!is_int($listOpener) || !is_int($listCloser)) {
+            return;
+        }
+
+        if (!LayoutHelper::isSplitList($phpcsFile, $listOpener, $listCloser)) {
             $this->checkInlineSpacing($phpcsFile, $closerPtr, $targetPtr, 'In a single-line argument list, a '
                 . 'closure\'s attribute must be inline, after a single space', self::CODE_CLOSURE_SPACING);
             return;
@@ -626,30 +633,6 @@ class AttributePlacementSniff implements Sniff
         }
 
         return null;
-    }
-
-    /**
-     * Check whether a call's argument list is split across lines, as section 4.7 means it: an argument starts a new
-     * line. An argument split over lines, such as a closure, doesn't split the list.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param array<int|string, array<string, int|string>> $arguments The call's arguments, from PHPCSUtils.
-     * @return bool True if the list is split.
-     */
-    private function isArgumentListSplit(File $phpcsFile, array $arguments): bool
-    {
-        $tokens = $phpcsFile->getTokens();
-        foreach ($arguments as $argument) {
-            // A named argument starts at its name.
-            $start = (int) ($argument['name_token'] ?? $argument['start']);
-            $first = $phpcsFile->findNext(T_WHITESPACE, $start, null, true);
-            $before = $first === false ? false : $phpcsFile->findPrevious(T_WHITESPACE, ($first - 1), null, true);
-            if ($first !== false && $before !== false && $tokens[$first]['line'] > $tokens[$before]['line']) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
