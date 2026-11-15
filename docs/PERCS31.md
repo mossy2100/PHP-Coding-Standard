@@ -220,7 +220,7 @@ section gives the reason.
 | `PERCS31.Attributes.AttributePlacement`                    | An attribute is on its own line, except on a parameter              | Yes     |
 | `PERCS31.Attributes.DisallowMultiLineAttributesJoining`    | One attribute per block when a block spans lines                    | Yes     |
 | `PERCS31.Attributes.DisallowMultipleAttributesPerLine`     | Separate attribute blocks on separate lines                         | Yes     |
-| `PERCS31.Classes.AnonClassLayout`                    | The space before an anonymous class's `{` and `extends`             | Yes     |
+| `PERCS31.Classes.AnonClassLayout`                          | The space before an anonymous class's `{` and `extends`             | Yes     |
 | `PERCS31.Classes.ClassDeclaration`                         | Class declarations, allowing an empty body as `{}`                  | Yes     |
 | `PERCS31.Classes.ClassInstantiationNoBrackets`             | A warning for `(new Foo())->bar()`                                  | Yes     |
 | `PERCS31.Classes.ConstantDeclaration`                      | One space after a class constant's `const`, and after its type      | Yes     |
