@@ -38,6 +38,9 @@ class GroupUseLayoutUnitTest extends AbstractSniffTestCase
             53 => 1,
             56 => 1,
             60 => 1,
+            // Names indented too far, and not at all.
+            72 => 1,
+            73 => 1,
         ];
     }
 

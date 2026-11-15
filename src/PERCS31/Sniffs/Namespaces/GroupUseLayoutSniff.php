@@ -12,7 +12,8 @@ use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Requires a group `use` split across lines to have one name per line, with the first on the line after the `{`, and
- * the `}` on a line of its own, and disallows a space just inside the braces of a group `use` on one line.
+ * the `}` on a line of its own, each name indented once past the `use` line, and disallows a space just inside the
+ * braces of a group `use` on one line.
  *
  * PER Coding Style 3.1, section 3, shows a group `use` on one line, as in `use Vendor\Package\{ClassA, ClassB};`, and
  * one split across lines with a name on each line. Its text sets no layout, so the examples are read as the two
@@ -23,10 +24,11 @@ use PHP_CodeSniffer\Util\Tokens;
  * Every single-line example, in section 3 and in the overview, has no space after the `{` or before the `}`, as in
  * `{ClassA as A, ClassB}`. That's read as setting the spacing, as it's how the spec writes every bracketed list.
  *
- * PERCS31.WhiteSpace.ConsistentIndent checks each name's indent, and PERCS31.Formatting.TrailingComma the comma after
- * the last name. Universal.WhiteSpace.CommaSpacing checks the commas, and Universal.UseStatements.KeywordSpacing the
- * space around `as`. No sniff in PHP_CodeSniffer, PHPCSExtra, Slevomat or PhpCollective checks which line a name is
- * on, or the space inside the braces.
+ * Each name's line is indented once past the `use` line, as section 3's example shows, reported as NameIndent.
+ *
+ * PERCS31.Formatting.TrailingComma checks the comma after the last name. Universal.WhiteSpace.CommaSpacing checks the
+ * commas, and Universal.UseStatements.KeywordSpacing the space around `as`. No sniff in PHP_CodeSniffer, PHPCSExtra,
+ * Slevomat or PhpCollective checks which line a name is on, its indent, or the space inside the braces.
  */
 class GroupUseLayoutSniff implements Sniff
 {
@@ -43,6 +45,8 @@ class GroupUseLayoutSniff implements Sniff
     public const string CODE_BLANK_LINE_AFTER_OPEN_BRACE = 'BlankLineAfterOpenBrace';
 
     public const string CODE_BLANK_LINE_BEFORE_CLOSE_BRACE = 'BlankLineBeforeCloseBrace';
+
+    public const string CODE_NAME_INDENT = 'NameIndent';
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -111,6 +115,34 @@ class GroupUseLayoutSniff implements Sniff
             $error = 'There must be no blank line after the opening brace of a group use';
             $code = self::CODE_BLANK_LINE_AFTER_OPEN_BRACE;
             $this->checkNoBlankLine($phpcsFile, $stackPtr, $first, $nameIndent, $error, $code);
+        }
+
+        $this->checkNameIndents($phpcsFile, $stackPtr, $closer, strlen($nameIndent));
+    }
+
+    /**
+     * Check that each line of a group use's names is indented once past the `use` line, as section 3's example shows.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the group's `{`.
+     * @param int $closer The position of the group's `}`.
+     * @param int $expected The number of spaces a name's line is indented by.
+     */
+    private function checkNameIndents(File $phpcsFile, int $opener, int $closer, int $expected): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        for ($i = ($opener + 1); $i < $closer; $i++) {
+            if (isset(Tokens::EMPTY_TOKENS[$tokens[$i]['code']]) || !LayoutHelper::startsLine($phpcsFile, $i)) {
+                continue;
+            }
+
+            $found = $tokens[$i]['column'] - 1;
+            if ($found === $expected) {
+                continue;
+            }
+
+            $error = 'A name in a group use split across lines must be indented once; expected %s spaces, found %s';
+            FixerHelper::reportIndent($phpcsFile, $i, $expected, $error, self::CODE_NAME_INDENT, [$expected, $found]);
         }
     }
 

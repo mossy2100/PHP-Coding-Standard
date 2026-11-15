@@ -42,9 +42,9 @@ use PHPCSUtils\Utils\Conditions;
  * default. With checkComments on, as in the Jumbo standard, a comment indented further than its scope after a complete
  * statement is reported too.
  *
- * Three more lines are checked, each indented exactly as section 2.4 sets: a value wrapped after `=>` in an array, once
- * past the key's line; a group use's items, once past the `use` line, as section 3's example shows; and dead code after
- * a `break` or other statement that ends a switch case, with no case to measure from, level with that statement.
+ * Two more lines are checked, each indented exactly as section 2.4 sets: a value wrapped after `=>` in an array, once
+ * past the key's line, and dead code after a `break` or other statement that ends a switch case, with no case to
+ * measure from, level with that statement. A group use's names are checked by PERCS31.Namespaces.GroupUseLayout.
  */
 class ConsistentIndentSniff extends PhpCollectiveSniff
 {
@@ -68,7 +68,7 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
      */
     public function register(): array
     {
-        return [...parent::register(), T_OPEN_TAG, T_OPEN_TAG_WITH_ECHO, T_DOUBLE_ARROW, T_OPEN_USE_GROUP];
+        return [...parent::register(), T_OPEN_TAG, T_OPEN_TAG_WITH_ECHO, T_DOUBLE_ARROW];
     }
 
     /**
@@ -81,11 +81,9 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
     public function process(File $phpcsFile, $stackPtr): void
     {
         $token = $phpcsFile->getTokens()[$stackPtr];
-        if ($token['code'] === T_DOUBLE_ARROW || $token['code'] === T_OPEN_USE_GROUP) {
-            if (!$this->isAfterIndentedTag && $token['code'] === T_DOUBLE_ARROW) {
+        if ($token['code'] === T_DOUBLE_ARROW) {
+            if (!$this->isAfterIndentedTag) {
                 $this->checkWrappedArrayValue($phpcsFile, $stackPtr);
-            } elseif (!$this->isAfterIndentedTag) {
-                $this->checkGroupUseItems($phpcsFile, $stackPtr);
             }
 
             return;
@@ -533,36 +531,6 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
         }
 
         return false;
-    }
-
-    /**
-     * Check each line of a group use's items, which is indented once past the `use` line, as section 3's example
-     * shows.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $openerPtr The position of the group's `{`.
-     */
-    private function checkGroupUseItems(File $phpcsFile, int $openerPtr): void
-    {
-        $tokens = $phpcsFile->getTokens();
-        $closer = $phpcsFile->findNext(T_CLOSE_USE_GROUP, ($openerPtr + 1));
-        if ($closer === false) {
-            return;
-        }
-
-        $expected = LayoutHelper::lineIndent($phpcsFile, $openerPtr) + LayoutHelper::INDENT;
-        for ($i = ($openerPtr + 1); $i < $closer; $i++) {
-            $isLineStart = $tokens[$i]['line'] !== $tokens[($i - 1)]['line'] || $tokens[($i - 1)]['column'] === 1
-                && $tokens[($i - 1)]['code'] === T_WHITESPACE && $tokens[($i - 1)]['line'] === $tokens[$i]['line'];
-            if (!$isLineStart || isset(Tokens::EMPTY_TOKENS[$tokens[$i]['code']])) {
-                continue;
-            }
-
-            $found = $tokens[$i]['column'] - 1;
-            if ($found !== $expected) {
-                $this->reportIndent($phpcsFile, $i, $expected, $found);
-            }
-        }
     }
 
     /**

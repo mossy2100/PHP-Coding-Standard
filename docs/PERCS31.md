@@ -2049,20 +2049,21 @@ $largest = max(
 
 ### PERCS31.Namespaces.GroupUseLayout
 
-Requires a group `use` split across lines to have one name per line, with the first on the line after the `{`, and the
-`}` on a line of its own, and no blank line after the `{` or before the `}`. In a group `use` on one line, it disallows
-a space after the `{` or before the `}`.
+Requires a group `use` split across lines to have one name per line, indented once past the `use` line, with the first
+on the line after the `{`, and the `}` on a line of its own, and no blank line after the `{` or before the `}`. In a
+group `use` on one line, it disallows a space after the `{` or before the `}`.
 
 **Why:** [PER Coding Style 3.1, Section 3](https://www.php-fig.org/per/coding-style/#3-declare-statements-namespace-and-import-statements) shows a group `use` on one line, and one split with a name on each line. Its
 text sets no layout, so the two examples are read as the two allowed forms, as for a single-line and a multi-line array.
-See [PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md#a-group-use-split-over-lines). No inherited sniff checks which line a name is on, or the space inside the braces.
+See [PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md#a-group-use-split-over-lines). No inherited sniff checks which line a name is on, its indent, or the space inside the
+braces.
 
 Every single-line example, in section 3 and in the overview, is written `{ClassA as A, ClassB}`, with no space inside
 the braces. That's read as setting the spacing, as it's how the spec writes every list in brackets.
 
-`PERCS31.WhiteSpace.ConsistentIndent` checks each name's indent, and [`PERCS31.Formatting.TrailingComma`](#percs31formattingtrailingcomma) the comma after
-the last name. `Universal.WhiteSpace.CommaSpacing` checks the space around each comma, and
-`Universal.UseStatements.KeywordSpacing` the space around `as`.
+A name's indent is reported as `NameIndent`. [`PERCS31.Formatting.TrailingComma`](#percs31formattingtrailingcomma) checks the comma after the last name.
+`Universal.WhiteSpace.CommaSpacing` checks the space around each comma, and `Universal.UseStatements.KeywordSpacing` the
+space around `as`.
 
 **Auto-fixable:** yes, unless a comment is in the way.
 
@@ -2975,11 +2976,10 @@ here. Set `checkComments` to report a comment indented further than its scope af
 [Jumbo standard](Jumbo.md) does. It's reported as `Comment`. A comment at the top level isn't checked, and a comment over several
 lines isn't fixed.
 
-Three more lines are checked, each indented exactly, as section 2.4 sets:
+Two more lines are checked, each indented exactly, as section 2.4 sets:
 
 - **A value wrapped after an array's `=>`:** once past the key's line. A heredoc or nowdoc is left to
   [`PERCS31.Strings.HeredocIndentation`](#percs31stringsheredocindentation).
-- **A group `use`'s items:** once past the `use` line, as section 3's example shows.
 - **Dead code in a `switch`, after the `break`, `return` or other statement that ends a case:** level with that
   statement, as there's no `case` to measure from.
 

@@ -65,3 +65,10 @@ use Vendor\Between\{
 
     ClassB,
 };
+
+// Names indented too far, and not at all.
+use Vendor\Indent\{
+    C,
+            D,
+E,
+};

@@ -51,8 +51,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `ConstantNotUpperSnakeCase`. It covers class constants, global constants from `const` or `define()`, and an enum
   constant that isn't in PascalCase. PERCS31 still allows them.
 - **`PERCS31.Namespaces.GroupUseLayout` (breaking).** A group `use` split across lines must have one name per line, with
-  the first on the line after the `{`, and the `}` on a line of its own, as PER Coding Style 3.1's example shows.
-  `use A\{B,` then `C,` then `};` passed. Auto-fixable, unless a comment is in the way.
+  the first on the line after the `{`, and the `}` on a line of its own, and each name indented once past the `use`
+  line, as `NameIndent`, as PER Coding Style 3.1's example shows. `use A\{B,` then `C,` then `};` passed. Auto-fixable,
+  unless a comment is in the way.
 - **`PERCS31.Classes.ConstantDeclaration` (breaking).** Requires a single space after a class constant's `const`
   keyword, and between its type and its name. `public const  int  A = 1;` passed. PER Coding Style 3.1 sets this spacing
   for keywords and for a property's type, and it's read as covering a constant too. Auto-fixable.
@@ -145,8 +146,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`PERCS31.WhiteSpace.ConsistentIndent` (breaking).** Reports a line indented further than its scope after a complete
   statement, as PER Coding Style 3.1 requires an indent of 4 spaces per level. It extends php-collective's
   `ConsistentIndent`, adding the pipe operator and the other binary operators to the lines it treats as continuation
-  lines. `php-collective/code-sniffer` is now a dependency. It also checks a value wrapped after an array's `=>`, a
-  group `use`'s items, and dead code in a `switch`, each indented exactly. Auto-fixable.
+  lines. `php-collective/code-sniffer` is now a dependency. It also checks a value wrapped after an array's `=>`, and
+  dead code in a `switch`, each indented exactly. Auto-fixable.
 - **`Squiz.PHP.NonExecutableCode` in Jumbo.** A warning for code that can never run, such as code after a `return`.
 - **`Universal.ControlStructures.DisallowAlternativeSyntax` (breaking).** The alternative syntax for a control
   structure, such as `if ($a): ... endif;`, is now reported directly, as PER Coding Style 3.1 says a structure's body

@@ -43,15 +43,12 @@ class ConsistentIndentUnitTest extends AbstractSniffTestCase
 
         if ($testFile === 'ConsistentIndentUnitTest.4.inc') {
             return [
-                // A group use's items, over and under-indented.
-                43 => 1,
-                44 => 1,
                 // A value wrapped after an array's =>, over and under-indented.
-                49 => 1,
-                51 => 1,
+                38 => 1,
+                40 => 1,
                 // Dead code after a break and a return, over and under-indented.
-                58 => 1,
-                62 => 1,
+                47 => 1,
+                51 => 1,
             ];
         }
 

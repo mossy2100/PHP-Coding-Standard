@@ -2,11 +2,6 @@
 
 // === VALID ===
 
-use Foo\{
-    A,
-    B,
-};
-
 $a = [
     'b' =>
         'c',
@@ -37,12 +32,6 @@ switch ($a) {
 }
 
 // === INVALID ===
-
-use Bar\{
-    C,
-    D,
-    E,
-};
 
 $b = [
     'i' =>
