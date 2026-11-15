@@ -220,7 +220,7 @@ section gives the reason.
 | `PERCS31.Attributes.AttributePlacement`                    | An attribute is on its own line, except on a parameter              | Yes     |
 | `PERCS31.Attributes.DisallowMultiLineAttributesJoining`    | One attribute per block when a block spans lines                    | Yes     |
 | `PERCS31.Attributes.DisallowMultipleAttributesPerLine`     | Separate attribute blocks on separate lines                         | Yes     |
-| `PERCS31.Classes.AnonClassOpeningBrace`                    | The space before an anonymous class's `{` and `extends`             | Yes     |
+| `PERCS31.Classes.AnonClassLayout`                    | The space before an anonymous class's `{` and `extends`             | Yes     |
 | `PERCS31.Classes.ClassDeclaration`                         | Class declarations, allowing an empty body as `{}`                  | Yes     |
 | `PERCS31.Classes.ClassInstantiationNoBrackets`             | A warning for `(new Foo())->bar()`                                  | Yes     |
 | `PERCS31.Classes.ConstantDeclaration`                      | One space after a class constant's `const`, and after its type      | Yes     |
@@ -608,11 +608,12 @@ final class Marker {}
 
 ---
 
-### PERCS31.Classes.AnonClassOpeningBrace
+### PERCS31.Classes.AnonClassLayout
 
-Requires one space before an anonymous class's opening brace when it's on the declaration's line, and nothing after the
-brace on its line. This extends `Generic.Classes.OpeningBraceSameLine`. It also requires a space between an anonymous
-class's arguments and `extends` or `implements`.
+Checks the spacing of an anonymous class's declaration: one space before its opening brace when it's on the
+declaration's line, nothing after the brace on its line, and one space between its arguments and `extends` or
+`implements`. This extends `Generic.Classes.OpeningBraceSameLine`, but has a name of its own, as the last check isn't
+about the brace.
 
 **Why:** [PER Coding Style 3.1, Section 8](https://www.php-fig.org/per/coding-style/#8-anonymous-classes) says anonymous classes MUST follow the same guidelines as closures, and its
 examples show one space before the brace, and the body on the next line. `PSR12.Classes.AnonClassDeclaration` only

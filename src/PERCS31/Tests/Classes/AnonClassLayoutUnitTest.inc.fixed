@@ -1,4 +1,4 @@
-<?php // phpcs:disable PERCS31.Classes.AnonClassOpeningBrace.BraceOnNewLine
+<?php // phpcs:disable PERCS31.Classes.AnonClassLayout.BraceOnNewLine
 
 // Valid: one space before a brace on the declaration's line, or the brace on the next line.
 $valid = new class {

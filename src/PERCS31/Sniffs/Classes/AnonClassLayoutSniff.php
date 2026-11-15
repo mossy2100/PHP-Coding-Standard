@@ -9,8 +9,9 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\Generic\Sniffs\Classes\OpeningBraceSameLineSniff as GenericSniff;
 
 /**
- * Requires one space before an anonymous class's opening brace when it's on the declaration's line, and nothing after
- * the brace on its line.
+ * Checks the spacing of an anonymous class's declaration: one space before its opening brace when it's on the
+ * declaration's line, nothing after the brace on its line, and one space between its arguments and `extends` or
+ * `implements`.
  *
  * PER Coding Style 3.1, section 8, says anonymous classes MUST follow the same guidelines as closures, and its examples
  * show one space before the brace, and the body on the next line. PSR12.Classes.AnonClassDeclaration only checks which
@@ -24,8 +25,10 @@ use PHP_CodeSniffer\Standards\Generic\Sniffs\Classes\OpeningBraceSameLineSniff a
  * `new class ($a) extends Foo`, which is how section 8's example writes it. PSR12.Classes.AnonClassDeclaration reports
  * more than one space there, but not none, as in `new class ($a)extends Foo`. Only that case is reported here, as
  * SpaceAfterArguments.
+ *
+ * It's named for what it checks, not after its parent, as the check after the arguments isn't about the brace.
  */
-class AnonClassOpeningBraceSniff extends GenericSniff
+class AnonClassLayoutSniff extends GenericSniff
 {
     public const string CODE_SPACE_AFTER_ARGUMENTS = 'SpaceAfterArguments';
 

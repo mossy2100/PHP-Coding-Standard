@@ -24,8 +24,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   its target was reported. It covers a class, function, method, constant, property, enum case, and a hook with a body
   in braces. Auto-fixable.
 - **A space after an anonymous class's arguments (breaking).** `new class ($a)extends Foo` is now reported, by
-  `PERCS31.Classes.AnonClassOpeningBrace`, as `SpaceAfterArguments`, and so is `new class ($a)implements Foo`. More than
-  one space there was already an error, but none passed. Auto-fixable.
+  `PERCS31.Classes.AnonClassLayout`, as `SpaceAfterArguments`, and so is `new class ($a)implements Foo`. More than one
+  space there was already an error, but none passed. Auto-fixable.
 - **The indent of a split type's lines (breaking).** `PERCS31.TypeHints.CompoundTypeLayout` now reports a line of a
   split compound type that's indented wrongly, as `Indent`. A line starting with `|` or `&` must be level with the
   type's first line when the type starts that line, as in a parameter list or a multi-catch, and indented once past it
@@ -101,8 +101,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   PER Coding Style 3.1 requires keywords in lower case, and calls a hook's name "the hook keyword". The new
   `PERCS31.PHP.LowerCaseKeyword` replaces `Generic.PHP.LowerCaseKeyword`, and checks it too, so a `phpcs:ignore` for
   `Generic.PHP.LowerCaseKeyword.Found` needs updating. Auto-fixable.
-- **`PERCS31.Classes.AnonClassOpeningBrace` (breaking).** Requires one space before an anonymous class's opening brace
-  when it's on the declaration's line, and nothing after the brace on its line, as PER Coding Style 3.1's examples show.
+- **`PERCS31.Classes.AnonClassLayout` (breaking).** Requires one space before an anonymous class's opening brace when
+  it's on the declaration's line, and nothing after the brace on its line, as PER Coding Style 3.1's examples show.
   `new class extends Foo{` and `new class { public int $a;` passed. Auto-fixable.
 - **At least one space around an array's or a `yield`'s `=>` (breaking).** `PERCS31.WhiteSpace.ArrowSpacing` now
   checks both in PERCS31, as PER Coding Style 3.1's array example has a space each side. The new property
@@ -123,8 +123,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `set (string $value)` and `set( string $value )`, as `SpaceBeforeHookParameters` and `SpaceInsideHookParameters`, as
   PER Coding Style 3.1's examples show `set(string $value)`. Auto-fixable.
 - **A backed enum's type in lower case (breaking).** `PERCS31.PHP.LowerCaseType` now reports `enum Suit: STRING`, as
-  `BackingTypeFound`, as PER Coding Style 3.1 requires types in lower case, and `Generic.PHP.LowerCaseType` doesn't check
-  a backing type. Auto-fixable.
+  `BackingTypeFound`, as PER Coding Style 3.1 requires types in lower case, and `Generic.PHP.LowerCaseType` doesn't
+  check a backing type. Auto-fixable.
 - **`PERCS31.TypeHints.NullType` (breaking).** `null` must be the last type in a union everywhere a type can appear, as
   PER Coding Style 3.1 requires: a type with an intersection, such as `null|(A&B)`, a typed constant, and a `set` hook's
   parameter are now checked, and `null|int` is an error, not just the `?T` warning. A warning recommends `?T` in a typed

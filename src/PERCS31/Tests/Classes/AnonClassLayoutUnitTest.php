@@ -7,12 +7,12 @@ namespace PERCS31\Tests\Classes;
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffTestCase;
 
 /**
- * Unit tests for PERCS31.Classes.AnonClassOpeningBrace sniff.
+ * Unit tests for PERCS31.Classes.AnonClassLayout sniff.
  *
  * The fixture turns off the parent's BraceOnNewLine code on its first line, as the PERCS31 ruleset excludes it, and
  * unit tests ignore a ruleset's excludes.
  */
-class AnonClassOpeningBraceUnitTest extends AbstractSniffTestCase
+class AnonClassLayoutUnitTest extends AbstractSniffTestCase
 {
     /**
      * Returns the lines where errors should occur.
