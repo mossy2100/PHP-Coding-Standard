@@ -1135,8 +1135,8 @@ space after the `(` or before the `)`.
 
 For every other control structure, a condition that spans lines is split, even when only a call or array in it does, as
 in `if (foo(`. So its first condition goes on the line after `(`, and `)` with `{` on a line of their own. Section 4.7's
-exemption for a single argument split over lines is only for a call's argument list. See "A Condition Split Only
-Inside a Call" in [PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md#a-condition-split-only-inside-a-call).
+exemption for a single argument split over lines is only for a call's argument list. See "A Condition Split Only Inside
+a Call" in [PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md#a-condition-split-only-inside-a-call).
 
 It also requires one space between a `catch`'s type and its variable, as [section 5.6](https://www.php-fig.org/per/coding-style/#56-try-catch-finally)'s example shows, reported as
 `SpaceBeforeCatchVariable`. No inherited sniff checks it. A line break there is allowed, as a multi-catch's types may be
@@ -2357,8 +2357,8 @@ indent:
 - **Grouping parentheses:** exactly once past the line with the `(`, as in `$x = $a && (`. So when the group's first
   value is on the line after the `(`, a wrapped operator lines up with it.
 - **An arrow function's `=>`:** exactly once past the line its own `fn` starts on, in grouping parentheses or not, so a
-  nested arrow function's wrapped `=>` is indented once more than the one before it, at each level. The same goes for
-  an operator wrapped in its body.
+  nested arrow function's wrapped `=>` is indented once more than the one before it, at each level. The same goes for an
+  operator wrapped in its body.
 - **A control structure's condition:** at least once past the line with the `(`. Set `requireExactConditionIndent` to
   require exactly once for a line starting with a boolean operator, and exactly once past its operand's line for any
   other operator, as the Jumbo standard does. An expression nested in the condition, such as a call's argument, follows

@@ -1109,9 +1109,9 @@ indent of at least one level passes. `case (` with the first condition on the sa
 
 ### A Condition Split Only Inside a Call
 
-**Issue:** A control structure's condition can span lines only because a call or array in it does, as in `if (foo(`.
-4.7 says a single argument split across lines "does not constitute splitting the argument list itself". It's unclear
-whether the same goes for a condition.
+**Issue:** A control structure's condition can span lines only because a call or array in it does, as in `if (foo(`. 4.7
+says a single argument split across lines "does not constitute splitting the argument list itself". It's unclear whether
+the same goes for a condition.
 
 **Decision:** It doesn't. A condition that spans lines is split, wherever the line breaks are, so its first condition
 goes on the line after `(`, and `)` with `{` on a line of their own. The same goes for a `case` condition, which is then
@@ -1353,8 +1353,8 @@ on the lines after it.
 `$b`, and isn't indented once more. That applies in a condition and in any other expression, such as `$x = $a` then
 `&& (` on the next line. A call's argument parentheses aren't a group, so an operator wrapped inside an argument is
 still indented once past the argument's first line. An arrow function's `=>` is always indented once past the line with
-its own `fn`, in a group or not, as is an operator wrapped in its body. So in a nested arrow function, each wrapped
-`=>` is indented once more than the one before it:
+its own `fn`, in a group or not, as is an operator wrapped in its body. So in a nested arrow function, each wrapped `=>`
+is indented once more than the one before it:
 
 ```php
 $sum = fn(int $x)
@@ -1404,8 +1404,8 @@ $x
 **Issue:** 7.1 gives arrow functions few rules of their own.
 
 **Decision:** No space after `fn`. A split parameter list follows the closure rules. No space before the closing
-semicolon. A wrapped `=>` is indented once past the line its own `fn` starts on, so each nested arrow function's
-wrapped `=>` is indented once more than the one before it.
+semicolon. A wrapped `=>` is indented once past the line its own `fn` starts on, so each nested arrow function's wrapped
+`=>` is indented once more than the one before it.
 
 **Why:** An arrow function is a closure, so the closure rules fill the gaps.
 
