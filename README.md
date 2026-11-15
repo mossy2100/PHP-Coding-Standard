@@ -119,8 +119,9 @@ sniffs are listed only where PERCS31 changes or replaces them.
 
 ## Variable and Property Names
 
-Variables, parameters and properties must use `$camelCase`, with no leading underscore. See [Variable and Property Names](docs/VariableAndPropertyNames.md)
-for which sniff checks each kind of name, and why the standard uses camelCase.
+In Jumbo, variables, parameters and properties must use `$camelCase`, with no leading underscore. PERCS31 only checks a
+property's leading underscore, as PER Coding Style has no rule for the rest. See [Variable and Property Names](docs/VariableAndPropertyNames.md) for which
+sniff checks each kind of name, and why Jumbo uses camelCase.
 
 ---
 
