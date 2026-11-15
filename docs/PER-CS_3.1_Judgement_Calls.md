@@ -1190,7 +1190,8 @@ $result = match ($this->lookup([
 ```
 
 **Why:** The rule applies where the spec states it, which is how "5.4 `for` and 5.5 `foreach`" reads it for `foreach`.
-4.7 says a single argument split over lines doesn't split anything, so this layout is compliant.
+Nothing else in 5.2 rules this layout out. A structure that has the rule, such as `switch`, would put the call on the
+line after `(`, as "A Condition Split Only Inside a Call" (5.1) says.
 
 ---
 

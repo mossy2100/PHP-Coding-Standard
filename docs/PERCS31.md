@@ -1139,6 +1139,11 @@ applies one to both anyway, so it rejects an array in the header, and a call wit
 For a multi-line `foreach` or `match`, this sniff only checks what section 5 requires of every control structure: no
 space after the `(` or before the `)`.
 
+For every other control structure, a condition that spans lines is split, even when only a call or array in it does, as
+in `if (foo(`. So its first condition goes on the line after `(`, and `)` with `{` on a line of their own. Section 4.7's
+exemption for a single argument split over lines is only for a call's argument list. See "A Condition Split Only
+Inside a Call" in [PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md#a-condition-split-only-inside-a-call).
+
 It also requires one space between a `catch`'s type and its variable, as [section 5.6](https://www.php-fig.org/per/coding-style/#56-try-catch-finally)'s example shows, reported as
 `SpaceBeforeCatchVariable`. No inherited sniff checks it. A line break there is allowed, as a multi-catch's types may be
 split over lines.
@@ -1162,6 +1167,15 @@ $label = match ($this->lookup([
     default => 'Member',
 };
 
+if (
+    in_array($code, [
+        'gold',
+        'silver',
+    ], true)
+) {
+    $order->upgrade();
+}
+
 try {
     $order->submit();
 } catch (PaymentException $exception) {
@@ -1177,6 +1191,13 @@ foreach ( [
     'second',
 ] as $value ) {
     echo $value;
+}
+
+if (in_array($code, [
+    'gold',
+    'silver',
+], true)) {
+    $order->upgrade();
 }
 
 try {
@@ -1341,7 +1362,9 @@ after the label by `BodyOnNextLineCASE`, after another statement by [`PERCS31.Fo
 after a closing brace by [`PERCS31.Formatting.AfterClosingBrace`](#percs31formattingafterclosingbrace).
 
 A multi-line `case` condition must also follow the rule for any expression split inside parentheses. The first condition
-must be on the line after `(`, and each line must be indented at least once past the `case`.
+must be on the line after `(`, and each line must be indented at least once past the `case`. A condition that spans
+lines only because a call or array in it does is multi-line too, so `case foo(` over several lines is wrapped, as
+`case (`, then `foo(` on the next line.
 
 A `switch` with a `case` or `default` body wrapped in braces is reported as `WrongOpener`, and gets no other check from
 this sniff until the braces are removed. That works around a bug in the parent (PHP_CodeSniffer 4.0.4), which crashes
