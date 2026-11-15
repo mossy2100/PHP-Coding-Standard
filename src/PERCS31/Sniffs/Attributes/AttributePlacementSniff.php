@@ -32,7 +32,9 @@ use PHPCSUtils\Utils\PassedParameters;
  * 4.7 says, so `usort($items, #[Pure] static function ($a, $b) {` keeps its attribute inline. A named argument's
  * closure keeps its attribute inline too, as `callback: #[Pure] function () {`, as section 4.7 requires a single space
  * between the colon and the value, and PHP doesn't allow the attribute before the name. Elsewhere, such as in an
- * assignment or an array, PER says nothing, so it isn't checked.
+ * assignment or an array, PER says nothing about where the attribute goes, so it may be on the closure's line or the
+ * line before. Only two things are checked there: an attribute on the closure's line is followed by a single space, and
+ * two or more blocks go on lines of their own, before the closure.
  *
  * An enum case isn't in section 12.2's list either. It's treated as a constant, which is how PHP targets its
  * attributes, so its attribute goes on the line before. Nor is a property hook. A hook with a body in braces is laid
