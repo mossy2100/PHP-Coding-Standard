@@ -10,7 +10,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Disallows a space before the semicolon that ends an arrow function's expression.
+ * Disallows a space before the semicolon that ends an arrow function's expression, and a line break after `fn`.
  *
  * PER Coding Style 3.1, section 7.1, says the semicolon at the end of a short closure's expression MUST NOT be
  * preceded by a space. SlevomatCodingStandard.Functions.ArrowFunctionDeclaration checks the spacing around `fn` and
@@ -21,7 +21,7 @@ use PHP_CodeSniffer\Util\Tokens;
  * a line break follows `fn`, as its allowMultiLine property turns that check off, and PERCS31 needs the property on so
  * that `=>` may start the next line. So this sniff reports a line break after `fn`, and the fix removes it.
  */
-class ArrowFunctionSemicolonSpacingSniff implements Sniff
+class ArrowFunctionSpacingSniff implements Sniff
 {
     public const string CODE_SPACE_BEFORE = 'SpaceBefore';
 

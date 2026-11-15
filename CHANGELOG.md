@@ -14,9 +14,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   line break on either side of the `::` there, as `SpaceAroundDoubleColon`, so `A :: smallTalk insteadof B;` must be
   `A::smallTalk insteadof B;`. PER Coding Style 3.1 sets the spacing in a trait `use` block by its example. A `::`
   anywhere else still isn't checked. Auto-fixable.
-- **A line break after `fn` (breaking).** `PERCS31.Functions.ArrowFunctionSemicolonSpacing` now reports a line break
-  between `fn` and its `(`, as `LineBreakAfterFn`. PER Coding Style 3.1 says `fn` MUST NOT be followed by a space, and
-  only a space on the same line was reported. Auto-fixable, unless a comment is in the way.
 - **A blank line after an anonymous class's `new` (breaking).** `PERCS31.Attributes.AttributePlacement` now reports an
   anonymous class's first attribute that isn't on the line straight after `new`, as `AnonClass`. PER Coding Style 3.1
   starts the attributes "on the next line after the `new` keyword", and a blank line there passed. Auto-fixable, unless
@@ -270,8 +267,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `:`, as in `$a ? : $b`, is an error (new code `PERCS31.Operators.OperatorPlacement.SplitShortTernary`), as PER Coding
   Style 3.1 treats `?:` as a binary operator, and its examples write it as one. Auto-fixable, unless there's a comment
   between them.
-- **`PERCS31.Functions.ArrowFunctionSemicolonSpacing` (breaking).** No space before the semicolon that ends an arrow
-  function, as PER Coding Style 3.1 requires. Auto-fixable.
+- **`PERCS31.Functions.ArrowFunctionSpacing` (breaking).** No space before the semicolon that ends an arrow function,
+  and no line break between `fn` and its `(`, as PER Coding Style 3.1 requires. A space after `fn` on the same line was
+  already reported, but a line break passed. Auto-fixable, unless a comment follows `fn`.
 - **Arrow function parameter lists (breaking).** `PERCS31.Functions.MultiLineFunctionDeclaration` now checks an arrow
   function's split parameter list, as PER Coding Style 3.1 requires: the first parameter on the next line, one parameter
   per line, each indented once, and the closing parenthesis on a line of its own. Auto-fixable.

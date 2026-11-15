@@ -7,9 +7,9 @@ namespace PERCS31\Tests\Functions;
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffTestCase;
 
 /**
- * Unit tests for PERCS31.Functions.ArrowFunctionSemicolonSpacing sniff.
+ * Unit tests for PERCS31.Functions.ArrowFunctionSpacing sniff.
  */
-class ArrowFunctionSemicolonSpacingUnitTest extends AbstractSniffTestCase
+class ArrowFunctionSpacingUnitTest extends AbstractSniffTestCase
 {
     /**
      * Returns the lines where errors should occur.

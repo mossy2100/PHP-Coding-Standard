@@ -245,7 +245,7 @@ section gives the reason.
 | `PERCS31.Formatting.EmptyBody`                             | An empty class, function, closure or structure body is `{}`         | Yes     |
 | `PERCS31.Formatting.MethodChaining`                        | A split chain's first method, its `->` and their indent             | Yes     |
 | `PERCS31.Formatting.TrailingComma`                         | Trailing commas in `match`, group `use`, `list()` and some calls    | Yes     |
-| `PERCS31.Functions.ArrowFunctionSemicolonSpacing`          | No space before an arrow function's `;`, or line break after `fn`   | Yes     |
+| `PERCS31.Functions.ArrowFunctionSpacing`                   | No space before an arrow function's `;`, or line break after `fn`   | Yes     |
 | `PERCS31.Functions.DisallowTrailingCommaInCall`            | No trailing comma in a call, unless the argument list is split      | Yes     |
 | `PERCS31.Functions.FunctionCallLayout`                     | A call's argument list, including `clone()`'s                       | Yes     |
 | `PERCS31.Functions.MultiLineFunctionDeclaration`           | Function, closure and `fn` declarations, allowing `{}` bodies       | Yes     |
@@ -1777,7 +1777,7 @@ $second = new class (
 
 ---
 
-### PERCS31.Functions.ArrowFunctionSemicolonSpacing
+### PERCS31.Functions.ArrowFunctionSpacing
 
 Disallows a space or line break before the semicolon that ends an arrow function, and a line break after `fn`.
 

@@ -438,7 +438,7 @@
     </rule>
 
     <!-- No space before the semicolon that ends an arrow function, and no line break after fn (7.1) -->
-    <rule ref="PERCS31.Functions.ArrowFunctionSemicolonSpacing"/>
+    <rule ref="PERCS31.Functions.ArrowFunctionSpacing"/>
 
     <!-- No () on an anonymous class without arguments (8) -->
     <rule ref="Universal.Classes.DisallowAnonClassParentheses"/>
