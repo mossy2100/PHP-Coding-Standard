@@ -697,6 +697,27 @@ statements, and one after the last.
 
 ---
 
+### A Comment Before the First `use`
+
+**Issue:** 4.2 says the `use` keyword for traits "MUST be declared on the next line after the opening brace". It doesn't
+say whether a comment may come between.
+
+**Decision:** A comment or docblock may come between the opening brace and the first trait `use`. A blank line, or any
+other code, is reported.
+
+```php
+class Foo
+{
+    /** @use HasItems<Item> */
+    use HasItems;
+}
+```
+
+**Why:** A comment belongs with the code after it, so the `use` is still the first thing in the class. A docblock on a
+trait `use` is the usual way to give a generic trait its types. PHP_CodeSniffer reads the same PSR-12 wording this way.
+
+---
+
 ## 4.3 Properties and Constants
 
 ### A Double Underscore Prefix
@@ -991,6 +1012,18 @@ simpler than a rule that depends on how many a statement has.
 
 **Why:** 4.9's example writes `set(string $value)`, which matches the rule for a method's parameters (4.4). A hook is
 declared like a method, so it isn't read as a call.
+
+---
+
+### Blank Lines Between Hooks
+
+**Issue:** 4.9 says hooks "MUST be separated by at least a single line break", and "MAY be separated by an additional
+blank line to aid readability". 2.3 allows blank lines "except where explicitly forbidden".
+
+**Decision:** No blank line or one between hooks. Two or more are reported.
+
+**Why:** The MAY names the one thing allowed, "an additional blank line", and "a blank line" is read as one, as in
+"Blank Lines Around `use`" (4.2).
 
 ---
 
