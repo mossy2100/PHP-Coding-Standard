@@ -22,7 +22,7 @@ use PhpCollective\Sniffs\ControlStructures\ControlStructureEmptyStatementSniff a
  * It also works around a bug in the parent (php-collective/code-sniffer 0.6.10). The parent only knows the `while` that
  * ends a `do` loop by the closing brace before it. A `do` loop with no braces, as in `do $i++; while ($i < 10);`, has
  * none, so the parent reports that `while`, and its fix replaces the `;` with `{}`, a parse error. This subclass skips
- * that `while`.
+ * that `while`. Generic.ControlStructures.InlineControlStructure reports the loop, and its fix adds the braces.
  */
 class ControlStructureEmptyStatementSniff extends PhpCollectiveSniff
 {

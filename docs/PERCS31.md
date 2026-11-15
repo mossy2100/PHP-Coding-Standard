@@ -1100,7 +1100,13 @@ parenthesis, so it can't see `else;`, which has none, and no property changes th
 It also works around a bug in the parent (php-collective/code-sniffer 0.6.10). The parent only knows the `while` that
 ends a `do` loop by the closing brace before it. A `do` loop with no braces, as in `do $i++; while ($i < 10);`, has
 none, so the parent reports that `while`, and its fix replaces the `;` with `{}`, which PHP rejects. This subclass skips
-it.
+it. The loop itself is reported by `Generic.ControlStructures.InlineControlStructure`, whose fix gives it braces:
+
+```php
+do {
+    $i++;
+} while ($i < 10);
+```
 
 **Auto-fixable:** yes. A structure with parentheses gets its braces on two lines, and `else;` becomes `else {}`.
 [`PERCS31.Formatting.EmptyBody`](#percs31formattingemptybody) then asks for `{}` on one line. An `else` with a comment before its `;` is left to a
