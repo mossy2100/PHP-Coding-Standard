@@ -10,10 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- **A space around `::` in a trait `use` block (breaking).** `PERCS31.Classes.TraitAliasSpacing` now reports a space or
-  line break on either side of the `::` there, as `SpaceAroundDoubleColon`, so `A :: smallTalk insteadof B;` must be
-  `A::smallTalk insteadof B;`. PER Coding Style 3.1 sets the spacing in a trait `use` block by its example. A `::`
-  anywhere else still isn't checked. Auto-fixable.
+- **`PERCS31.WhiteSpace.ObjectOperatorSpacing` (breaking).** Disallows white space around `->`, `?->` and `::`, as
+  every example in PER Coding Style 3.1 writes them, so `$foo -> bar()`, `Foo :: bar()` and `self :: Spades` are
+  reported, as `Before` or `After`. A line break is allowed before `->` or `?->` in a split chain, but never around
+  `::`. Auto-fixable.
 - **A blank line after an anonymous class's `new` (breaking).** `PERCS31.Attributes.AttributePlacement` now reports an
   anonymous class's first attribute that comes after a blank line following `new`, as `AnonClass`. PER Coding Style 3.1
   starts the attributes "on the next line after the `new` keyword", and a blank line there passed. A comment there is
@@ -437,8 +437,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`Jumbo.Classes.RequireSingleLineMethodSignature`, `Jumbo.TypeHints.ParameterTypeHint` and
   `Jumbo.TypeHints.ParameterTypeHintSpacing`.** Replace the Slevomat sniffs of the same names, which misread a hook on a
   promoted constructor parameter. They skip a function with one, and check everything else as before.
-- **`Squiz.WhiteSpace.ObjectOperatorSpacing` (breaking).** Disallows spaces around `->`, `?->` and `::`, e.g.
-  `$a -> b()` or `Foo :: bar()`. A line break before one, in a wrapped method chain, is allowed. Auto-fixable.
 - **`Universal.Constants.ModifierKeywordOrder` (breaking).** `final` must come before the visibility on a constant, as
   in `final public const A`, the order PER Coding Style 3.1, section 4.6, sets for modifier keywords. Auto-fixable, in
   PERCS31 and Jumbo.

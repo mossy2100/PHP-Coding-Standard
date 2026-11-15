@@ -104,8 +104,6 @@ rules.
   Property Names](VariableAndPropertyNames.md).
 - **Squiz.PHP.NonExecutableCode**: A warning for code that can never run, such as code after a `return` or `break`.
 - **Squiz.Strings.DoubleQuoteUsage.NotRequired**: Ensures strings use single quotes unless double quotes are necessary.
-- **Squiz.WhiteSpace.ObjectOperatorSpacing**: Disallows spaces around `->`, `?->` and `::`, e.g. `$a -> b()`. A line
-  break before one, in a wrapped method chain, is allowed.
 - **Squiz.WhiteSpace.OperatorSpacing**: Requires exactly one space around operators, including before `=`, so
   assignments are not aligned. Used through [`PERCS31.Operators.OperatorSpacing`](PERCS31.md#percs31operatorsoperatorspacing), which extends it to `&&`, `||`, `and`,
   `or`, `xor`, `.` and `|>`. PERCS31 excludes its codes for more than one space, and Jumbo turns them back on. `=>` is

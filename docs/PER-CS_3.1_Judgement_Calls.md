@@ -1178,11 +1178,25 @@ place of the space before or after `as` or `=>`. Otherwise it only gets section 
 **Issue:** Section 6 lists operators by kind, but leaves out unary `-`, `!`, `@`, `~`, a reference `&`, spread, `->`,
 `?->` and `::`.
 
-**Decision:** They aren't checked. The one exception is the `::` in a trait `use` block, which takes no space on either
-side, as 4.2's example shows.
+**Decision:**
 
-**Why:** The spec leaves them undefined, and there's no consistent practice to infer a rule from. 4.2 says `insteadof`
-and `as` MUST be used as its example shows, "taking note of indentation, spacing, and new lines".
+- `::` has no white space on either side, not even a line break, as in `Foo::bar()` and `self::Spades`.
+- `->` and `?->` have no white space after them. They have none before them either, unless one starts a line in a split
+  chain, where only the line break and the indent come before it.
+- Each of these is an error.
+- The others, so unary operators other than `++` and `--`, a reference `&` and spread, aren't checked. Jumbo checks
+  them.
+
+**Why:** No rule text covers `::`, `->` or `?->`, but every example writes them with no space around them, as in:
+
+- `BazClass::bar($arg2, $arg3);`, in the overview's example, which "encompasses some rules below".
+- `A::smallTalk insteadof B;` and `C::mediumTalk as FooBar;`, in 4.2, which says `insteadof` and `as` "MUST be used as
+  follows taking note of indentation, spacing, and new lines".
+- `$foo->bar($arg1);` and `Foo::bar($arg2, $arg3);`, in 4.7's "lines [that] show correct calls".
+- `public const Wild = self::Spades;`, in 9's "typical valid Enum".
+
+4.7's chain example starts each line with `->`. 4.2's MUST sets the severity. For the other operators, the spec is
+silent, and its examples show too little to infer a rule from.
 
 ---
 

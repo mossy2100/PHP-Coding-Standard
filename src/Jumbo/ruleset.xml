@@ -199,13 +199,6 @@
     <rule ref="SlevomatCodingStandard.Functions.UselessParameterDefaultValue"/>
     <rule ref="SlevomatCodingStandard.PHP.DisallowDirectMagicInvokeCall"/>
 
-    <!-- No space around ->, ?-> and ::, except a line break in a wrapped chain -->
-    <rule ref="Squiz.WhiteSpace.ObjectOperatorSpacing">
-        <properties>
-            <property name="ignoreNewlines" value="true"/>
-        </properties>
-    </rule>
-
     <!-- ====== CONTROL STRUCTURES (5) ====== -->
 
     <!-- Every empty body as {}, as an error. PERCS31 warns for a class, function or control structure, where PER says

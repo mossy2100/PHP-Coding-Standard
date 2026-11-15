@@ -279,9 +279,8 @@
     <!-- One trait per use statement, including one with a { } block, as in use A, B { ... } (4.2) -->
     <rule ref="SlevomatCodingStandard.Classes.TraitUseDeclaration"/>
 
-    <!-- One space after a visibility or final in a trait's as clause, as in sayBye as private myBye;, and no space
-         around the :: in a trait use block (4.2). PSR12.Traits.UseDeclaration checks the space each side of as and
-         insteadof. -->
+    <!-- One space after a visibility or final in a trait's as clause, as in sayBye as private myBye; (4.2).
+         PSR12.Traits.UseDeclaration checks the space each side of as and insteadof. -->
     <rule ref="PERCS31.Classes.TraitAliasSpacing"/>
 
     <!-- abstract or final before readonly on a class (4.6) -->
@@ -417,6 +416,10 @@
         <exclude name="PERCS31.Operators.OperatorSpacing.SpacingBeforeAmp"/>
         <exclude name="PERCS31.Operators.OperatorSpacing.SpacingAfterAmp"/>
     </rule>
+
+    <!-- No white space around ->, ?-> and ::, except a line break before -> or ?-> in a split chain, as every
+         example writes them (4.2, 4.7, 9) -->
+    <rule ref="PERCS31.WhiteSpace.ObjectOperatorSpacing"/>
 
     <!-- A ternary split at ? or : takes three lines, with ? and : leading, indented once (6.4) -->
     <rule ref="PERCS31.ControlStructures.MultiLineTernaryOperator"/>

@@ -10,14 +10,12 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Requires a single space after a visibility or `final` in a trait's `as` clause, as in `sayBye as private myBye;`, and
- * no space around the `::` in a trait `use` block, as in `A::smallTalk insteadof B;`.
+ * Requires a single space after a visibility or `final` in a trait's `as` clause, as in `sayBye as private myBye;`.
  *
  * PER Coding Style 3.1, section 4.2, says `insteadof` and `as` MUST be used as its example shows, "taking note of
  * indentation, spacing, and new lines". PSR12.Traits.UseDeclaration checks the space each side of `as`, but not the
  * space after a modifier that follows it. Squiz.WhiteSpace.ScopeKeywordSpacing checks the space after a visibility
- * everywhere else, but returns early for one after `as`, with no property to change that. Neither checks the `::`
- * between a trait and its method, which the example writes with no space.
+ * everywhere else, but returns early for one after `as`, with no property to change that.
  *
  * It's a sniff of its own, not a subclass of either. The Squiz sniff's skip is in the middle of its process(), and a
  * subclass of the PSR-12 sniff would rename every one of its codes for the sake of one new check.
@@ -26,8 +24,6 @@ class TraitAliasSpacingSniff implements Sniff
 {
     public const string CODE_SPACE_AFTER_MODIFIER = 'SpaceAfterModifier';
 
-    public const string CODE_SPACE_AROUND_DOUBLE_COLON = 'SpaceAroundDoubleColon';
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -35,7 +31,7 @@ class TraitAliasSpacingSniff implements Sniff
      */
     public function register(): array
     {
-        return [T_AS, T_DOUBLE_COLON];
+        return [T_AS];
     }
 
     /**
@@ -47,12 +43,6 @@ class TraitAliasSpacingSniff implements Sniff
     public function process(File $phpcsFile, int $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
-        if ($tokens[$stackPtr]['code'] === T_DOUBLE_COLON) {
-            $this->processDoubleColon($phpcsFile, $stackPtr);
-
-            return;
-        }
-
         $modifiers = Tokens::SCOPE_MODIFIERS + [T_FINAL => T_FINAL];
 
         // Only a trait's `as` can be followed by a modifier. A `foreach`'s or an import's can't.
@@ -75,43 +65,5 @@ class TraitAliasSpacingSniff implements Sniff
             self::CODE_SPACE_AFTER_MODIFIER,
             data: [strtolower($tokens[$modifier]['content'])],
         );
-    }
-
-    /**
-     * Report white space on either side of a `::` in a trait `use` block, and fix it.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $stackPtr The position of the `::`.
-     */
-    private function processDoubleColon(File $phpcsFile, int $stackPtr): void
-    {
-        $tokens = $phpcsFile->getTokens();
-
-        // Only a `::` straight inside the braces of a trait `use` is checked. Any other is left undefined by PER.
-        $conditions = $tokens[$stackPtr]['conditions'];
-        if ($conditions === [] || end($conditions) !== T_USE) {
-            return;
-        }
-
-        $before = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
-        $after = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
-        $error = 'Expected no space %s "::" in a trait use block';
-        $code = self::CODE_SPACE_AROUND_DOUBLE_COLON;
-
-        if (
-            $before !== false
-            && $before !== ($stackPtr - 1)
-            && $phpcsFile->addFixableError($error, $stackPtr, $code, ['before'])
-        ) {
-            FixerHelper::replaceBetween($phpcsFile, $before, $stackPtr, '');
-        }
-
-        if (
-            $after !== false
-            && $after !== ($stackPtr + 1)
-            && $phpcsFile->addFixableError($error, $stackPtr, $code, ['after'])
-        ) {
-            FixerHelper::replaceBetween($phpcsFile, $stackPtr, $after, '');
-        }
     }
 }

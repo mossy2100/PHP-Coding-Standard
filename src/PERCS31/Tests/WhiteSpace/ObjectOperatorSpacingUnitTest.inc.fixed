@@ -1,0 +1,50 @@
+<?php
+
+// === VALID ===
+
+$foo->bar($arg1);
+$foo?->bar($arg1);
+Foo::bar($arg2, $arg3);
+$a = self::Spades . static::NAME . Foo::$count . Foo::class;
+$b = $foo->bar->baz;
+
+$someInstance
+    ->create()
+    ?->prepare()
+    ->run();
+
+class Talker
+{
+    use A, B {
+        A::smallTalk insteadof B;
+    }
+}
+
+// === INVALID ===
+
+// A space around ->, each side and both.
+$foo->bar();
+$foo->bar();
+$foo->bar;
+
+// A space around ?->.
+$foo?->bar();
+$foo?->bar();
+
+// A space around ::, each side and both.
+Foo::bar();
+Foo::bar();
+$c = self::Spades;
+$d = Foo::class;
+
+// A line break around ::.
+Foo::bar();
+Foo::bar();
+
+// A space around :: in a trait use block.
+class Chatter
+{
+    use A, B {
+        B::bigTalk insteadof A;
+    }
+}

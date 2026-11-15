@@ -229,7 +229,7 @@ section gives the reason.
 | `PERCS31.Classes.PromotedPropertyHooks`                    | A hook on a promoted parameter is a single short hook on one line   | No      |
 | `PERCS31.Classes.PropertyDeclaration`                      | No leading `_`, no `var`, a visibility, and `get` before `set`      | Partly  |
 | `PERCS31.Classes.PropertyHookLayout`                       | A hook list's and hook body's braces, and a short hook's `=>`       | Partly  |
-| `PERCS31.Classes.TraitAliasSpacing`                        | A trait `use` block's spacing after a modifier, and around `::`     | Yes     |
+| `PERCS31.Classes.TraitAliasSpacing`                        | One space after a visibility or `final` in a trait's `as` clause    | Yes     |
 | `PERCS31.ControlStructures.BodyOnNextLine`                 | A structure's body on the line after its `{`, allowing `{}`         | Yes     |
 | `PERCS31.ControlStructures.ControlStructureEmptyStatement` | Braces on a structure with no body, `else` included                 | Yes     |
 | `PERCS31.ControlStructures.ControlStructureSpacing`        | The parentheses, with no split rule for `foreach` or `match`        | Yes     |
@@ -269,6 +269,7 @@ section gives the reason.
 | `PERCS31.TypeHints.NullType`                               | `null` last in a union, and `?T` for one type with `null`           | Yes     |
 | `PERCS31.WhiteSpace.ArrowSpacing`                          | The space around `=>` in `match` arms and arrays                    | Yes     |
 | `PERCS31.WhiteSpace.ConsistentIndent`                      | No line indented further than its scope, after a statement          | Yes     |
+| `PERCS31.WhiteSpace.ObjectOperatorSpacing`                 | No white space around `->`, `?->` and `::`                          | Yes     |
 | `PERCS31.WhiteSpace.ScopeClosingBrace`                     | A closing brace on its own line, allowing `{}`                      | Yes     |
 | `PERCS31.WhiteSpace.ScopeIndent`                           | Indentation, including property hooks and anonymous classes         | Yes     |
 
@@ -1015,15 +1016,12 @@ interface Named
 ### PERCS31.Classes.TraitAliasSpacing
 
 Requires a single space after a visibility or `final` in a trait's `as` clause, as in `sayBye as private myBye;`. A line
-break there is reported too. It also disallows a space, or line break, on either side of the `::` in a trait `use`
-block, so `A :: smallTalk insteadof B;` is reported, as `SpaceAroundDoubleColon`.
+break there is reported too.
 
 **Why:** [PER Coding Style 3.1, Section 4.2](https://www.php-fig.org/per/coding-style/#42-using-traits) says `insteadof` and `as` MUST be used as its example shows, "taking note of
 indentation, spacing, and new lines". `PSR12.Traits.UseDeclaration` checks the space each side of `as` and `insteadof`,
 but not the space after a modifier that follows `as`. `Squiz.WhiteSpace.ScopeKeywordSpacing` checks the space after a
-visibility everywhere else, but skips one after `as`, and has no property to change that. No inherited sniff checks the
-`::`, which the example writes with no space, as in `A::smallTalk insteadof B;`. A `::` anywhere else isn't checked, as
-section 6 leaves it undefined.
+visibility everywhere else, but skips one after `as`, and has no property to change that.
 
 It's a sniff of its own, not a subclass. The Squiz sniff's skip is in the middle of its `process()`, and a subclass of
 the PSR-12 sniff would rename every one of its codes for one new check.
@@ -1051,7 +1049,6 @@ class Talker
 {
     use Greeter {
         sayBye as private  myBye;
-        Greeter :: wave as myWave;
     }
 }
 ```
@@ -2991,6 +2988,47 @@ function total(array $items): int
 | Property        | Type | Default | Description                                                          |
 | --------------- | ---- | ------- | -------------------------------------------------------------------- |
 | `checkComments` | bool | false   | Report a comment indented further than its scope, after a statement. |
+
+---
+
+### PERCS31.WhiteSpace.ObjectOperatorSpacing
+
+Disallows white space around `->`, `?->` and `::`, except a line break before `->` or `?->` that starts a line in a
+split chain. A line break around `::` is reported. This replaces `Squiz.WhiteSpace.ObjectOperatorSpacing`, which it
+extends.
+
+**Why:** PER Coding Style 3.1 has no rule text for these, but every example writes them with no space around them, as in
+`Foo::bar($arg2, $arg3);` and `$foo->bar($arg1);` ([Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls)), `A::smallTalk insteadof B;` ([Section 4.2](https://www.php-fig.org/per/coding-style/#42-using-traits)), and
+`self::Spades` ([Section 9](https://www.php-fig.org/per/coding-style/#9-enumerations)). See "Operators Not Listed" in [PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md#operators-not-listed).
+
+The Squiz sniff's `ignoreNewlines` property allows a line break around all three, or none. A split chain needs one
+before `->` and `?->`, but `::` takes none, so this sniff turns the property on by default, and off for `::`. A `->` at
+the end of a line is reported by [`PERCS31.Formatting.MethodChaining`](#percs31formattingmethodchaining).
+
+**Auto-fixable:** yes, as the parent.
+
+**Good:**
+
+```php
+$user = $repository->find($id);
+$name = $user?->name;
+$limit = self::LIMIT;
+
+$repository
+    ->query()
+    ->run();
+```
+
+**Bad:**
+
+```php
+$user = $repository -> find($id);
+$name = $user?-> name;
+$limit = self :: LIMIT;
+
+$limit = self
+    ::LIMIT;
+```
 
 ---
 
