@@ -65,6 +65,11 @@ $add = fn(int $x)
     => fn(int $y)
         => $x + $y;
 
+$sum = fn(int $x)
+    => fn(int $y)
+        => fn(int $z)
+            => $x + $y + $z;
+
 $adders = array_map(
     fn(int $x)
         => fn(int $y)
@@ -127,3 +132,9 @@ $callback = (
 $add = fn(int $x)
     => fn(int $y)
     => $x + $y;
+
+// A third nested arrow function's => lined up with the second.
+$sum = fn(int $x)
+    => fn(int $y)
+        => fn(int $z)
+        => $x + $y + $z;

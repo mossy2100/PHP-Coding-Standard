@@ -1353,13 +1353,14 @@ on the lines after it.
 `$b`, and isn't indented once more. That applies in a condition and in any other expression, such as `$x = $a` then
 `&& (` on the next line. A call's argument parentheses aren't a group, so an operator wrapped inside an argument is
 still indented once past the argument's first line. An arrow function's `=>` is always indented once past the line with
-its own `fn`, in a group or not, as is an operator wrapped in its body. So in a nested arrow function, the inner `=>` is
-indented once more than the outer one:
+its own `fn`, in a group or not, as is an operator wrapped in its body. So in a nested arrow function, each wrapped
+`=>` is indented once more than the one before it:
 
 ```php
-$add = fn(int $x)
+$sum = fn(int $x)
     => fn(int $y)
-        => $x + $y;
+        => fn(int $z)
+            => $x + $y + $z;
 ```
 
 **Why:** It's the layout 5.1's example gives a condition's own parentheses, one level down. The lines in a group read as
@@ -1403,8 +1404,8 @@ $x
 **Issue:** 7.1 gives arrow functions few rules of their own.
 
 **Decision:** No space after `fn`. A split parameter list follows the closure rules. No space before the closing
-semicolon. A wrapped `=>` is indented once past the line its own `fn` starts on, so a nested arrow function's `=>` is
-indented once more than the outer one's.
+semicolon. A wrapped `=>` is indented once past the line its own `fn` starts on, so each nested arrow function's
+wrapped `=>` is indented once more than the one before it.
 
 **Why:** An arrow function is a closure, so the closure rules fill the gaps.
 
