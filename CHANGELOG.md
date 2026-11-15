@@ -797,15 +797,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- **`PERCS31.Classes.TraitAliasSpacing` (breaking).** Requires a single space after a visibility or `final` in a
-  trait's `as` clause. `sayBye as private  myBye;` passed, though PER Coding Style 3.1 sets the spacing there by its
-  example. Auto-fixable, unless a comment is in the way.
-- **A blank line just inside a multi-line array or a split group `use` (breaking).** A blank line after a multi-line
-  array's `[` is now reported, by `PERCS31.Arrays.ArrayBracketSpacing`, as `BlankLineAfterOpener`. PER Coding Style 3.1
-  puts the first value on the next line, and only a blank line before the `]` was reported. A blank line after a split
-  group `use`'s `{`, or before its `}`, is reported too, by `PERCS31.Namespaces.GroupUseLayout`, as
-  `BlankLineAfterOpenBrace` or `BlankLineBeforeCloseBrace`. A blank line between values or names is still allowed. All
-  are auto-fixable.
 - **`OceanMoon.PHP.DisallowMultiConstantDefinition`**: disallows defining multiple constants in one statement (e.g.
   `const A = 1, B = 2;`), for both class constants and namespace/file-scope constants. A fork of
   `SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition`, which was removed in `2.0.1` because it false-
@@ -951,15 +942,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- **`PERCS31.Classes.TraitAliasSpacing` (breaking).** Requires a single space after a visibility or `final` in a
-  trait's `as` clause. `sayBye as private  myBye;` passed, though PER Coding Style 3.1 sets the spacing there by its
-  example. Auto-fixable, unless a comment is in the way.
-- **A blank line just inside a multi-line array or a split group `use` (breaking).** A blank line after a multi-line
-  array's `[` is now reported, by `PERCS31.Arrays.ArrayBracketSpacing`, as `BlankLineAfterOpener`. PER Coding Style 3.1
-  puts the first value on the next line, and only a blank line before the `]` was reported. A blank line after a split
-  group `use`'s `{`, or before its `}`, is reported too, by `PERCS31.Namespaces.GroupUseLayout`, as
-  `BlankLineAfterOpenBrace` or `BlankLineBeforeCloseBrace`. A blank line between values or names is still allowed. All
-  are auto-fixable.
 - **Grid format** for scalar list arrays too long for a single line, with items arranged in uniformly padded rows.
 - **One-per-line format** for non-scalar list arrays: function calls, expressions, etc. always formatted one element
   per line with trailing comma, regardless of length.
@@ -1012,15 +994,6 @@ This is the first stable release of Galaxon Coding Standard, ready for publicati
 
 ### Added
 
-- **`PERCS31.Classes.TraitAliasSpacing` (breaking).** Requires a single space after a visibility or `final` in a
-  trait's `as` clause. `sayBye as private  myBye;` passed, though PER Coding Style 3.1 sets the spacing there by its
-  example. Auto-fixable, unless a comment is in the way.
-- **A blank line just inside a multi-line array or a split group `use` (breaking).** A blank line after a multi-line
-  array's `[` is now reported, by `PERCS31.Arrays.ArrayBracketSpacing`, as `BlankLineAfterOpener`. PER Coding Style 3.1
-  puts the first value on the next line, and only a blank line before the `]` was reported. A blank line after a split
-  group `use`'s `{`, or before its `}`, is reported too, by `PERCS31.Namespaces.GroupUseLayout`, as
-  `BlankLineAfterOpenBrace` or `BlankLineBeforeCloseBrace`. A blank line between values or names is still allowed. All
-  are auto-fixable.
 - Custom `Galaxon.Arrays.ArrayDeclaration` sniff for consistent array formatting:
   - Simple list arrays: single line if possible, no trailing comma
   - List of arrays: one element per line, trailing comma required
@@ -1033,15 +1006,6 @@ This is the first stable release of Galaxon Coding Standard, ready for publicati
 
 ### Added
 
-- **`PERCS31.Classes.TraitAliasSpacing` (breaking).** Requires a single space after a visibility or `final` in a
-  trait's `as` clause. `sayBye as private  myBye;` passed, though PER Coding Style 3.1 sets the spacing there by its
-  example. Auto-fixable, unless a comment is in the way.
-- **A blank line just inside a multi-line array or a split group `use` (breaking).** A blank line after a multi-line
-  array's `[` is now reported, by `PERCS31.Arrays.ArrayBracketSpacing`, as `BlankLineAfterOpener`. PER Coding Style 3.1
-  puts the first value on the next line, and only a blank line before the `]` was reported. A blank line after a split
-  group `use`'s `{`, or before its `}`, is reported too, by `PERCS31.Namespaces.GroupUseLayout`, as
-  `BlankLineAfterOpenBrace` or `BlankLineBeforeCloseBrace`. A blank line between values or names is still allowed. All
-  are auto-fixable.
 - Integrated Slevomat Coding Standard with 89 comprehensive sniffs covering:
   - Arrays (4 sniffs)
   - Attributes (5 sniffs)
@@ -1082,15 +1046,6 @@ This is the first stable release of Galaxon Coding Standard, ready for publicati
 
 ### Added
 
-- **`PERCS31.Classes.TraitAliasSpacing` (breaking).** Requires a single space after a visibility or `final` in a
-  trait's `as` clause. `sayBye as private  myBye;` passed, though PER Coding Style 3.1 sets the spacing there by its
-  example. Auto-fixable, unless a comment is in the way.
-- **A blank line just inside a multi-line array or a split group `use` (breaking).** A blank line after a multi-line
-  array's `[` is now reported, by `PERCS31.Arrays.ArrayBracketSpacing`, as `BlankLineAfterOpener`. PER Coding Style 3.1
-  puts the first value on the next line, and only a blank line before the `]` was reported. A blank line after a split
-  group `use`'s `{`, or before its `}`, is reported too, by `PERCS31.Namespaces.GroupUseLayout`, as
-  `BlankLineAfterOpenBrace` or `BlankLineBeforeCloseBrace`. A blank line between values or names is still allowed. All
-  are auto-fixable.
 - Initial release
 - `Galaxon.NamingConventions.ValidVariableName` sniff - enforces `$lowerCamelCase` variable naming without leading
   underscores
