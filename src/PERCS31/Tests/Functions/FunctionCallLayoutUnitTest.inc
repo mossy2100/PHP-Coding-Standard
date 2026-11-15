@@ -50,7 +50,7 @@ final class Hooks
     }
 }
 
-// A first-class callable has no whitespace around its ..., so it can't be split over lines.
+// A first-class callable split over lines is left to Universal.WhiteSpace.FirstClassCallableSpacing.
 $a = strlen(...);
 $a = $b->c(...);
 $a = strlen(
@@ -62,7 +62,7 @@ $a = $b->c(
 $a = D::e(
     ...);
 
-// A comment in the way stops the fix.
+// With a comment too.
 $a = strlen(
     // Why.
     ...

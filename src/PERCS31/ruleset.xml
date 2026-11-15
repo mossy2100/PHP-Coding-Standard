@@ -358,12 +358,15 @@
     <rule ref="PERCS31.PHP.RequireCloneParentheses"/>
 
     <!-- A call's argument list, including clone()'s, but not a set hook's parameter list (4.7). No blank line between
-         arguments, as 4.7's examples show. A first-class callable's ... on the line of its parentheses (4.8). PSR-12
-         turns off the parent's SpaceAfterCloseBracket and OpeningIndent codes. -->
+         arguments, as 4.7's examples show. PSR-12 turns off the parent's SpaceAfterCloseBracket and OpeningIndent
+         codes. -->
     <rule ref="PERCS31.Functions.FunctionCallLayout">
         <exclude name="PERCS31.Functions.FunctionCallLayout.SpaceAfterCloseBracket"/>
         <exclude name="PERCS31.Functions.FunctionCallLayout.OpeningIndent"/>
     </rule>
+
+    <!-- A first-class callable written as (...), with no white space or line break inside (4.8) -->
+    <rule ref="Universal.WhiteSpace.FirstClassCallableSpacing"/>
 
     <!-- ====== CONTROL STRUCTURES (5) ====== -->
 

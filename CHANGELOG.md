@@ -711,9 +711,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`phpcbf` no longer breaks a first-class callable split over lines (breaking).**
   `SlevomatCodingStandard.Functions.RequireTrailingCommaInCall` added a comma after the `...` in `foo(` then `...` then
   `)`, a parse error. The new `PERCS31.Functions.RequireTrailingCommaInCall` replaces it, and skips a first-class
-  callable, so a `phpcs:ignore` for the Slevomat code needs updating. `PERCS31.Functions.FunctionCallLayout` now reports
-  the split, as `SplitFirstClassCallable`, as PER Coding Style 3.1 allows no whitespace around the `...`, and fixes it
-  to `foo(...)`.
+  callable, so a `phpcs:ignore` for the Slevomat code needs updating. `Universal.WhiteSpace.FirstClassCallableSpacing`
+  now reports the split, as PER Coding Style 3.1 allows no whitespace around the `...`, and fixes it to `foo(...)`.
 - **`phpcbf` no longer breaks a `static|null` return type (breaking).** The `?T` fix from
   `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat` changed `static|null` to `?`, a parse error, and `null|static` to
   `?null`. `PERCS31.TypeHints.NullType` now makes the `?T` check for every type, as `ShortNullable`, and fixes both to

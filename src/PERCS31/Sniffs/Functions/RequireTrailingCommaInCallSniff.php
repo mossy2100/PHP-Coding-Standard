@@ -16,7 +16,7 @@ use SlevomatCodingStandard\Sniffs\Functions\RequireTrailingCommaInCallSniff as S
  * extends SlevomatCodingStandard.Functions.RequireTrailingCommaInCall, and changes one thing: it skips a first-class
  * callable, as in `foo(...)`. The parent reads the `...` as the last argument, so when one is split over lines, its fix
  * adds a comma after it, giving `...,`, which is a parse error. The parent has no property to turn that off, so this
- * needs a subclass. PERCS31.Functions.FunctionCallLayout reports the split, and fixes it to `foo(...)`.
+ * needs a subclass. Universal.WhiteSpace.FirstClassCallableSpacing reports the split, and fixes it to `foo(...)`.
  */
 class RequireTrailingCommaInCallSniff extends SlevomatSniff
 {

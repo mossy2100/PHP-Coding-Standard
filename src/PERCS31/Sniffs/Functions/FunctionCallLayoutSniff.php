@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Functions;
 
-use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\PropertyHookHelper;
 use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
@@ -23,9 +22,11 @@ use PHP_CodeSniffer\Util\Tokens;
  *   reported as SpaceBeforeOpenBracket, as for any other call.
  * - It skips a `set` hook's parameter list, as in `set (string $value)`, which PHP_CodeSniffer reads as a call to
  *   `set()`. It's part of the hook's declaration, not a call, so PERCS31.Classes.PropertyHookLayout checks it.
- * - It reports a first-class callable split over lines, as in `foo(` then `...` then `)`. Section 4.8 says the `...`
- *   MUST NOT have whitespace before or after it. The parent reads the `...` as an argument on a line of its own, which
- *   is how a split argument list is written, so it says nothing. On one line, the parent reports `foo( ... )`.
+ * - It skips a first-class callable split over lines, as in `foo(` then `...` then `)`, which
+ *   Universal.WhiteSpace.FirstClassCallableSpacing reports, as section 4.8 says the `...` MUST NOT have whitespace
+ *   before or after it. The parent reads the `...` as an argument on a line of its own, and its fixes fight that
+ *   sniff's when a comment comes before the `...`. On one line, the parent reports `foo( ... )` too, and the two
+ *   fixes agree.
  * - It skips `require`, `include` and their `_once` forms, which the parent registers as function names. They're
  *   language constructs, and parentheses after one only group its expression, as in
  *   `include ($a ? 'x' : 'y') . '.php';`. PER has no rule for them.
@@ -34,8 +35,6 @@ use PHP_CodeSniffer\Util\Tokens;
  */
 class FunctionCallLayoutSniff extends Psr2Sniff
 {
-    public const string CODE_SPLIT_FIRST_CLASS_CALLABLE = 'SplitFirstClassCallable';
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -73,7 +72,7 @@ class FunctionCallLayoutSniff extends Psr2Sniff
                 return;
             }
 
-            if ($opener !== false && $this->checkSplitCallable($phpcsFile, $opener)) {
+            if ($opener !== false && $this->isSplitCallable($phpcsFile, $opener)) {
                 return;
             }
         }
@@ -82,42 +81,19 @@ class FunctionCallLayoutSniff extends Psr2Sniff
     }
 
     /**
-     * Report a first-class callable whose `...` isn't on the line of both its parentheses, and fix it to `(...)`.
+     * Check whether parentheses hold a first-class callable that isn't on one line, as in `foo(` then `...` then `)`.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $opener The position of the token after the function's name.
-     * @return bool True if it was reported, so the parent's checks for a split argument list are skipped.
+     * @return bool True if it is, so the parent's checks for a split argument list are skipped.
      */
-    private function checkSplitCallable(File $phpcsFile, int $opener): bool
+    private function isSplitCallable(File $phpcsFile, int $opener): bool
     {
         $tokens = $phpcsFile->getTokens();
-        $ellipsis = TokenHelper::findCallableEllipsis($phpcsFile, $opener);
-        if ($ellipsis === null) {
-            return false;
-        }
+        $closer = $tokens[$opener]['parenthesis_closer'] ?? null;
 
-        $closer = $tokens[$opener]['parenthesis_closer'];
-        assert(is_int($closer));
-        if ($tokens[$opener]['line'] === $tokens[$closer]['line']) {
-            return false;
-        }
-
-        $error = 'A first-class callable must be written as (...), with no whitespace before or after the ...';
-
-        // A comment in the parentheses would be lost.
-        if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($opener + 1), $closer) !== false) {
-            $phpcsFile->addError($error, $ellipsis, self::CODE_SPLIT_FIRST_CLASS_CALLABLE);
-
-            return true;
-        }
-
-        if ($phpcsFile->addFixableError($error, $ellipsis, self::CODE_SPLIT_FIRST_CLASS_CALLABLE)) {
-            $phpcsFile->fixer->beginChangeset();
-            FixerHelper::blankBetween($phpcsFile, $opener, $ellipsis);
-            FixerHelper::blankBetween($phpcsFile, $ellipsis, $closer);
-            $phpcsFile->fixer->endChangeset();
-        }
-
-        return true;
+        return is_int($closer)
+            && $tokens[$opener]['line'] !== $tokens[$closer]['line']
+            && TokenHelper::findCallableEllipsis($phpcsFile, $opener) !== null;
     }
 }

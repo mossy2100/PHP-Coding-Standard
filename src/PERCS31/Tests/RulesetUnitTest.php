@@ -264,7 +264,8 @@ class RulesetUnitTest extends TestCase
 
     /**
      * Test that a first-class callable split over lines is fixed to `foo(...)`, as section 4.8 requires, with no comma
-     * added after the `...`, which Slevomat's trailing comma sniff did. With a comment in the way, it's left alone.
+     * added after the `...`, which Slevomat's trailing comma sniff did. With a comment before the `...`, only the side
+     * after it is fixed, and phpcbf doesn't fail.
      */
     public function testSplitFirstClassCallableIsJoinedWithNoComma(): void
     {
@@ -279,9 +280,11 @@ class RulesetUnitTest extends TestCase
             unlink($file);
         }
 
-        $this->assertSame(2, substr_count($result['output'], 'FunctionCallLayout.SplitFirstClassCallable'));
+        $this->assertSame(2, substr_count($result['output'], 'FirstClassCallableSpacing.SpacingBefore'));
+        $this->assertSame(2, substr_count($result['output'], 'FirstClassCallableSpacing.SpacingAfter'));
         $this->assertStringNotContainsString('MissingTrailingComma', $result['output']);
-        $this->assertSame("<?php\n\n\$a = strlen(...);\n$commented", $fixed);
+        $this->assertStringNotContainsString('FunctionCallLayout', $result['output']);
+        $this->assertSame("<?php\n\n\$a = strlen(...);\n\$b = strlen(\n    // Why.\n    ...);\n", $fixed);
     }
 
     /**

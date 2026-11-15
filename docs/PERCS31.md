@@ -155,6 +155,8 @@ Reference: [PHPCSExtra repository and documentation](https://github.com/PHPCSSta
   `as`, in an import, as in `use Vendor\Package\{ClassA as A, ClassB};` (3).
 - **Universal.UseStatements.LowercaseFunctionConst**: Requires `function` and `const` in lower case in a `use` statement
   (2.5).
+- **Universal.WhiteSpace.FirstClassCallableSpacing**: Requires a first-class callable written as `foo(...)`, with no
+  white space or line break inside the parentheses (4.8). Auto-fixable.
 - **Universal.WhiteSpace.CommaSpacing**: Requires no space before a comma and one after, in an attribute block, e.g.
   `#[Foo, Bar]` (12.3), and in any other list, such as an array, group `use`, `match` conditions or `clone()`, as the
   examples show (3, 5.2, 11). Its codes ending in `InFunctionCall` check a comma inside a call's parentheses (4.7). They
@@ -1876,9 +1878,9 @@ and when split, the first argument on the next line and one per line. The parent
 - It reads a `set` hook's parameter list, as in `set (string $value)`, as a call to `set()`. That list is part of the
   hook's declaration, so this sniff skips it, and [`PERCS31.Classes.PropertyHookLayout`](#percs31classespropertyhooklayout) checks it instead.
 - It reads the `...` of a first-class callable split over lines, as in `foo(` then `...` then `)`, as an argument on a
-  line of its own, which is how a split argument list is written. [Section 4.8](https://www.php-fig.org/per/coding-style/#48-function-callable-references) says the `...` MUST NOT have whitespace
-  before or after it, so this sniff reports it as `SplitFirstClassCallable`, and fixes it to `foo(...)`. With a comment
-  in the parentheses, it's reported but not fixed. On one line, the parent already reports `foo( ... )`.
+  line of its own, and its fixes fight those of `Universal.WhiteSpace.FirstClassCallableSpacing`, which reports the
+  split, as [Section 4.8](https://www.php-fig.org/per/coding-style/#48-function-callable-references) says the `...` MUST NOT have whitespace before or after it. So this sniff skips such a call. On
+  one line, the parent reports `foo( ... )` too, and the two fixes agree.
 - It reads `require`, `include` and their `_once` forms as function names, so it reports the space in
   `include ($a ? 'x' : 'y') . '.php';`. They're language constructs, and the parentheses only group an expression. PER
   has no rule for them, so this sniff skips them.
@@ -1907,10 +1909,6 @@ $copy = clone( $original );
 $copy = clone ($original);
 $copy = clone($original,
     ['name' => 'Copy'],
-);
-
-$length = strlen(
-    ...
 );
 ```
 
@@ -2013,8 +2011,8 @@ callable. This replaces `SlevomatCodingStandard.Functions.RequireTrailingCommaIn
 **Why:** [PER Coding Style 3.1, Section 2.6](https://www.php-fig.org/per/coding-style/#26-trailing-commas) says the last item of a list split across lines MUST have a trailing comma.
 The Slevomat sniff checks that, but reads the `...` of a first-class callable as the last argument. So for one split
 over lines, its fix adds a comma, giving `...,`, which is a parse error. It has no property to turn that off, so this
-subclass skips a first-class callable, and leaves everything else to the parent. [`PERCS31.Functions.FunctionCallLayout`](#percs31functionsfunctioncalllayout)
-reports the split, and fixes it to `foo(...)`.
+subclass skips a first-class callable, and leaves everything else to the parent.
+`Universal.WhiteSpace.FirstClassCallableSpacing` reports the split, and fixes it to `foo(...)`.
 
 **Auto-fixable:** yes, as the parent.
 
