@@ -64,9 +64,9 @@ class SpecExamplesUnitTest extends TestCase
         // An empty constructor body not written as {} (4.4).
         '72-8.inc' => ['17 PERCS31.Formatting.EmptyBody.NotAbbreviated'],
         // Not allowed: a nowdoc on the line after its context.
-        '75-10.inc' => ['4 PERCS31.Strings.HeredocIndentation.NotOnContextLine'],
+        '75-10.inc' => ['4 PERCS31.Strings.HeredocLayout.NotOnContextLine'],
         // Not allowed: a nowdoc not indented past its scope.
-        '76-10.inc' => ['10 PERCS31.Strings.HeredocIndentation.Indent'],
+        '76-10.inc' => ['10 PERCS31.Strings.HeredocLayout.Indent'],
         // A heredoc with nothing to interpolate, which SHOULD be a nowdoc (10).
         '77-10.inc' => ['5 Generic.Strings.UnnecessaryHeredoc.Found'],
     ];

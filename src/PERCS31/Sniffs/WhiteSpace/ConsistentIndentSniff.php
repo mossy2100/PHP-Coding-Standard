@@ -474,7 +474,7 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
     /**
      * Check a value wrapped onto the line after an array's `=>`, which is indented once past the key's line.
      *
-     * A heredoc or nowdoc is left to PERCS31.Strings.HeredocIndentation.
+     * A heredoc or nowdoc is left to PERCS31.Strings.HeredocLayout.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $arrowPtr The position of the `=>`.

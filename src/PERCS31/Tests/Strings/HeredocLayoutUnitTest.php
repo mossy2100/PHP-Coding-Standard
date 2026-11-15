@@ -7,9 +7,9 @@ namespace PERCS31\Tests\Strings;
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffTestCase;
 
 /**
- * Unit tests for PERCS31.Strings.HeredocIndentation sniff.
+ * Unit tests for PERCS31.Strings.HeredocLayout sniff.
  */
-class HeredocIndentationUnitTest extends AbstractSniffTestCase
+class HeredocLayoutUnitTest extends AbstractSniffTestCase
 {
     /**
      * Returns the lines where errors should occur.

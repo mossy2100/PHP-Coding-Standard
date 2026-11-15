@@ -505,7 +505,7 @@ class RulesetUnitTest extends TestCase
         }
 
         $this->assertSame("<?php\n\n\$a = $body\n\$b = $body", $fixed);
-        $this->assertStringNotContainsString('HeredocIndentation', $result['output']);
+        $this->assertStringNotContainsString('HeredocLayout', $result['output']);
         $this->assertStringNotContainsString('OperatorPlacement', $result['output']);
     }
 

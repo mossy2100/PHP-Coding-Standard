@@ -21,15 +21,17 @@ use PHP_CodeSniffer\Util\Tokens;
  * example has a call's argument on its own line, so one after `(`, `,` or `[` is allowed. One after a binary operator
  * is allowed too, as that operator's own sniff moves it to the start of the line, as in `. <<<`.
  *
- * Section 10 also says subsequent lines in a heredoc or nowdoc MUST be indented once past the scope
- * indentation they're declared in. Its examples indent them once past the line holding `<<<`, whether that's an
- * assignment or a function call's argument. Since PHP 7.3, PHP removes the closing marker's indentation from every
- * body line, and rejects a body line indented less than the marker, so this sniff checks the marker. The fix moves the
- * marker and every body line by the same amount, keeping any extra indentation within the text.
+ * Section 10 also says subsequent lines in a heredoc or nowdoc MUST be indented once past the scope indentation
+ * they're declared in. Its examples indent them once past the line holding `<<<`, whether that's an assignment or a
+ * function call's argument. Since PHP 7.3, PHP removes the closing marker's indentation from every body line, and
+ * rejects a body line indented less than the marker, so this sniff checks the marker. The fix moves the marker and
+ * every body line by the same amount, keeping any extra indentation within the text.
  *
  * An indent is 4 spaces, as PER Coding Style 3.1, section 2.4, requires.
+ *
+ * It's named Layout, not Indentation, as which line `<<<` is on isn't a matter of indentation.
  */
-class HeredocIndentationSniff implements Sniff
+class HeredocLayoutSniff implements Sniff
 {
     public const string CODE_INDENT = 'Indent';
 

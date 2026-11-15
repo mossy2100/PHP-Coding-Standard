@@ -469,8 +469,9 @@
 
     <!-- ====== HEREDOC AND NOWDOC (10) ====== -->
 
-    <!-- A heredoc's or nowdoc's body and closing marker indented once past the line it starts on (10) -->
-    <rule ref="PERCS31.Strings.HeredocIndentation"/>
+    <!-- A heredoc or nowdoc begins on its context's line, and its body and closing marker are indented once past that
+         line (10) -->
+    <rule ref="PERCS31.Strings.HeredocLayout"/>
 
     <!-- A warning for a heredoc that could be a nowdoc (10) -->
     <rule ref="Generic.Strings.UnnecessaryHeredoc"/>

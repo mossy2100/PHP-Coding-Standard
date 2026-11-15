@@ -263,7 +263,7 @@ section gives the reason.
 | `PERCS31.PHP.LowerCaseType`                                | Types in lower case, including a `set` hook's and an enum's type    | Yes     |
 | `PERCS31.PHP.RequireCloneParentheses`                      | A warning for `clone $a`, or `clone($a)->b`, not `clone($a)`        | Yes     |
 | `PERCS31.PHP.TypeCast`                                     | `(bool)`, `(int)`, `(float)` and `(string)` in a cast               | Yes     |
-| `PERCS31.Strings.HeredocIndentation`                       | Where a heredoc or nowdoc begins, and its indentation               | Yes     |
+| `PERCS31.Strings.HeredocLayout`                            | Where a heredoc or nowdoc begins, and its indentation               | Yes     |
 | `PERCS31.TypeHints.CompoundTypeLayout`                     | One type, or one DNF union segment, per line of a split type        | Yes     |
 | `PERCS31.TypeHints.CompoundTypeOperatorSpacing`            | No space around `\|` or `&` in a type, but a split before one       | Yes     |
 | `PERCS31.TypeHints.NullType`                               | `null` last in a union, and `?T` for one type with `null`           | Yes     |
@@ -2662,7 +2662,7 @@ $name = (binary) $input;
 
 ---
 
-### PERCS31.Strings.HeredocIndentation
+### PERCS31.Strings.HeredocLayout
 
 Requires a heredoc or nowdoc to begin on the line of its context, and its body and closing marker to be indented once
 past the line the `<<<` is on.
@@ -2979,7 +2979,7 @@ lines isn't fixed.
 Two more lines are checked, each indented exactly, as section 2.4 sets:
 
 - **A value wrapped after an array's `=>`:** once past the key's line. A heredoc or nowdoc is left to
-  [`PERCS31.Strings.HeredocIndentation`](#percs31stringsheredocindentation).
+  [`PERCS31.Strings.HeredocLayout`](#percs31stringsheredoclayout).
 - **Dead code in a `switch`, after the `break`, `return` or other statement that ends a case:** level with that
   statement, as there's no `case` to measure from.
 

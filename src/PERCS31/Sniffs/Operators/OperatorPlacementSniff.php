@@ -49,7 +49,7 @@ use PHPCSUtils\Utils\Parentheses;
  * `&&` or `||` in a control structure's condition, checked by PSR12.ControlStructures.BooleanOperatorPlacement. The
  * full ternary is checked by PERCS31.ControlStructures.MultiLineTernaryOperator, and section 6.2 doesn't list `=>`, so
  * one in an array or `match` arm isn't checked. An assignment operator or arrow function's `=>` before a heredoc or
- * nowdoc is left to PERCS31.Strings.HeredocIndentation, as section 10 says it must begin on the same line as the
+ * nowdoc is left to PERCS31.Strings.HeredocLayout, as section 10 says it must begin on the same line as the
  * variable it's set against. An assignment operator before a multi-line array's `[` on the next line is left to
  * PERCS31.Arrays.OpeningBracketPlacement, which joins the `[` to the operator's line.
  *
