@@ -526,8 +526,9 @@
          One whose values all have keys is checked by Squiz.Arrays.ArrayDeclaration, above. -->
     <rule ref="PERCS31.Arrays.ValuePerLine"/>
 
-    <!-- A multi-line array's [ not on a line of its own, except as an element of a multi-line array, an argument, or
-         a match arm's condition (11) -->
+    <!-- A multi-line array's [ not on a line of its own, except as an element of a multi-line array, an argument, a
+         match arm's condition, the first condition of a split if, elseif, while, switch or for, or a destructuring
+         assignment (11) -->
     <rule ref="PERCS31.Arrays.OpeningBracketPlacement"/>
 
     <!-- No blank line after a multi-line array's opening bracket, or before its closing bracket (11) -->

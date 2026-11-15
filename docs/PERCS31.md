@@ -234,7 +234,7 @@ section gives the reason.
 | `PERCS31.Classes.TraitAliasSpacing`                        | One space after a visibility or `final` in a trait's `as` clause    | Yes     |
 | `PERCS31.ControlStructures.BodyOnNextLine`                 | A structure's body on the line after its `{`, allowing `{}`         | Yes     |
 | `PERCS31.ControlStructures.ControlStructureEmptyStatement` | Braces on a structure with no body, `else` included                 | Yes     |
-| `PERCS31.ControlStructures.ControlStructureSpacing`        | The parentheses, with no split rule for `foreach` or `match`        | Yes     |
+| `PERCS31.ControlStructures.ControlStructureSpacing`        | The parentheses, and the space before a `catch`'s variable          | Yes     |
 | `PERCS31.ControlStructures.ForEachSpacing`                 | A space or line break each side of a `foreach`'s `as` and `=>`      | Yes     |
 | `PERCS31.ControlStructures.MatchArmPlacement`              | Each `match` arm starts on a new line                               | Yes     |
 | `PERCS31.ControlStructures.MultiLineTernaryOperator`       | A multi-line ternary takes three lines, `?` and `:` leading         | Yes     |
