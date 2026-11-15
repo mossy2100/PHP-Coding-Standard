@@ -267,7 +267,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `requireExactConditionIndent`). A `case` condition isn't checked. New code
   `PERCS31.Operators.OperatorPlacement.Indent`. Auto-fixable.
 - **A short ternary must be written `?:` (breaking).** A space, line break or comment between a short ternary's `?` and
-  `:`, as in `$a ? : $b`, is an error (new code `PERCS31.Operators.OperatorPlacement.SplitShortTernary`), as PER Coding
+  `:`, as in `$a ? : $b`, is an error (new code `PERCS31.Operators.OperatorSpacing.SplitShortTernary`), as PER Coding
   Style 3.1 treats `?:` as a binary operator, and its examples write it as one. Auto-fixable, unless there's a comment
   between them.
 - **`PERCS31.Functions.ArrowFunctionSpacing` (breaking).** No space before the semicolon that ends an arrow function,

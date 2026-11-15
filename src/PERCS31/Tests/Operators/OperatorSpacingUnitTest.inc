@@ -129,3 +129,14 @@ $a = !-$b;
 $a = ~-$b;
 $a = @-$b;
 $a = !+$b;
+
+// A short ternary split between ? and :. Anything between them is reported, and a comment isn't fixable.
+$g = $h ? : $i;
+$g = $h ?
+    : $i;
+$g = $h
+    ? : $i;
+$g = $h ? /* c */ : $i;
+$g = $a ? $b ? : $c : $d;
+$g = $h ? // Why.
+    : $i;

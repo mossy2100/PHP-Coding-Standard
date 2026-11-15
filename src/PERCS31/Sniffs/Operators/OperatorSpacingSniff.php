@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\Operators;
 
 use PERCS31\Helpers\CompoundTypeHelper;
+use PERCS31\Helpers\FixerHelper;
 use PERCS31\Helpers\OperatorHelper;
 use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\OperatorSpacingSniff as SquizSniff;
 use PHP_CodeSniffer\Util\Tokens;
 use PHPCSUtils\Tokens\Collections;
+use PHPCSUtils\Utils\Operators;
 use PHPCSUtils\Utils\Parentheses;
 
 /**
@@ -45,6 +47,11 @@ use PHPCSUtils\Utils\Parentheses;
  * codes, and this sniff checks it, unless checkDefaultValues is off. A standard that wants exactly one space, as Jumbo
  * does, turns those codes back on and this property off.
  *
+ * A short ternary must be written `?:`, with nothing between the `?` and `:`. Section 6.3 says it follows the rules for
+ * other binary operators, and its examples write it as one. A space, line break or comment between them, as in
+ * `$a ? : $b`, is reported as SplitShortTernary. The fix joins them where the `:` is, so a `?` at the end of a line
+ * moves to the start of the next, as section 6.4 requires.
+ *
  * `=>` isn't registered, although PHP_CodeSniffer counts it as an assignment token. Section 6.2 doesn't list it, so
  * section 6 leaves its spacing undefined. Each use has its own sniff:
  * - An array: PERCS31.WhiteSpace.ArrowSpacing.
@@ -56,6 +63,8 @@ use PHPCSUtils\Utils\Parentheses;
  */
 class OperatorSpacingSniff extends SquizSniff
 {
+    public const string CODE_SPLIT_SHORT_TERNARY = 'SplitShortTernary';
+
     /**
      * Whether to check the `=` of a parameter's default value.
      */
@@ -103,9 +112,67 @@ class OperatorSpacingSniff extends SquizSniff
             return null;
         }
 
+        $this->checkShortTernary($phpcsFile, $stackPtr);
+
         $result = parent::process($phpcsFile, $stackPtr);
 
         return is_int($result) ? $result : null;
+    }
+
+    /**
+     * Report a short ternary whose `?` and `:` aren't together, as in `$a ? : $b`.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the current token, which may be a short ternary's `?`.
+     */
+    private function checkShortTernary(File $phpcsFile, int $stackPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        if ($tokens[$stackPtr]['code'] !== T_INLINE_THEN || !Operators::isShortTernary($phpcsFile, $stackPtr)) {
+            return;
+        }
+
+        $elsePtr = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
+        if ($elsePtr !== false && $elsePtr !== ($stackPtr + 1)) {
+            $this->reportSplitShortTernary($phpcsFile, $stackPtr, $elsePtr);
+        }
+    }
+
+    /**
+     * Report a short ternary with a space, line break or comment between its `?` and `:`. The fix joins them where the
+     * `:` is, so a `?` at the end of a line moves to the start of the next, as section 6.4 requires.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $thenPtr The position of the `?`.
+     * @param int $elsePtr The position of the `:`.
+     */
+    private function reportSplitShortTernary(File $phpcsFile, int $thenPtr, int $elsePtr): void
+    {
+        $error = 'The short ternary operator must be written "?:", with nothing between "?" and ":"';
+        $isFixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($thenPtr + 1), $elsePtr) === false;
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $thenPtr, self::CODE_SPLIT_SHORT_TERNARY)) {
+            return;
+        }
+
+        $tokens = $phpcsFile->getTokens();
+        $before = $phpcsFile->findPrevious(T_WHITESPACE, ($thenPtr - 1), null, true);
+        $endsLine = $before !== false
+            && $tokens[$before]['line'] === $tokens[$thenPtr]['line']
+            && $tokens[$elsePtr]['line'] !== $tokens[$thenPtr]['line'];
+
+        $phpcsFile->fixer->beginChangeset();
+        if ($endsLine) {
+            // `$a ?` then `: $b` on the next line: the `?` moves down to join the `:`.
+            for ($i = ($before + 1); $i <= $thenPtr; $i++) {
+                $phpcsFile->fixer->replaceToken($i, '');
+            }
+
+            $phpcsFile->fixer->replaceToken($elsePtr, '?:');
+        } else {
+            FixerHelper::blankBetween($phpcsFile, $thenPtr, $elsePtr);
+        }
+
+        $phpcsFile->fixer->endChangeset();
     }
 
     /**

@@ -161,15 +161,8 @@ class OperatorPlacementUnitTest extends AbstractSniffTestCase
             53 => 1,
             // A comment after the operator (not fixable).
             55 => 1,
-            // A short ternary split between ? and :, by a space, a line break or a comment.
-            70 => 1,
-            71 => 1,
-            74 => 1,
-            75 => 1,
-            76 => 1,
-            77 => 1,
             // An assignment before a single-line array on the next line. Before a multi-line one, it's left alone.
-            88 => 1,
+            77 => 1,
         ];
     }
 

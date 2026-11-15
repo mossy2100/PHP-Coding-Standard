@@ -73,6 +73,13 @@ class OperatorSpacingUnitTest extends AbstractSniffTestCase
             // No space after a binary - that follows a match's and a variable variable's closing brace.
             124 => 1,
             125 => 1,
+            // A short ternary split between ? and :, by a space, a line break or a comment.
+            134 => 1,
+            135 => 1,
+            138 => 1,
+            139 => 1,
+            140 => 1,
+            141 => 1,
         ];
     }
 

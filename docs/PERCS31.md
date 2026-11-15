@@ -2289,9 +2289,8 @@ It checks the indent of all of them, including `.`. Section 6.2 doesn't list `=>
 isn't checked. An assignment operator before a multi-line array's `[` on the next line is left to
 [`PERCS31.Arrays.MultiLineArrayLayout`](#percs31arraysmultilinearraylayout), whose fix gives `$a = [`.
 
-A short ternary must be written `?:`, with nothing between the `?` and `:`, as [section 6.3](https://www.php-fig.org/per/coding-style/#63-ternary-operators) says it follows the rules for
-other binary operators, and its examples write it as one. Anything between them, such as `$a ? : $b`, is reported as
-`SplitShortTernary`, and the fix joins them where the `:` is.
+A short ternary with something between its `?` and `:`, such as `$a ? : $b`, is joined by
+[`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing) first, and checked here as `?:`.
 
 **A full ternary.** Section 6.4 says a multi-line ternary MUST occupy three lines, never two. So a ternary split at its
 `?` or `:` takes three lines, with `?` and `:` each starting a line, indented once, reported as `TernaryLayout`.
@@ -2316,8 +2315,8 @@ $label = $isActive
 The indentation is always 4 spaces, as [PER Coding Style 3.1, Section 2.4](https://www.php-fig.org/per/coding-style/#24-indenting) requires. This sniff doesn't use the `indent`
 property of `PERCS31.WhiteSpace.ScopeIndent`.
 
-**Auto-fixable:** yes, unless a comment follows an operator at the end of a line, is between a short ternary's `?` and
-`:`, or is next to a full ternary's `?` or `:`.
+**Auto-fixable:** yes, unless a comment follows an operator at the end of a line, or is next to a full ternary's `?` or
+`:`.
 
 **Good:**
 
@@ -2428,18 +2427,24 @@ The `&` of a by-reference hook, e.g. `&get => $this->items;`, isn't an operator 
 `PERCS31.Operators.OperatorPlacement`. So are the `|`, `&` and `?` of a `set` hook's parameter type, e.g.
 `set(int|string $value)`, which `PERCS31.TypeHints.CompoundTypeLayout` checks instead.
 
-**Auto-fixable:** yes, as the parent.
+A short ternary must be written `?:`, with nothing between the `?` and `:`, as [section 6.3](https://www.php-fig.org/per/coding-style/#63-ternary-operators) says it follows the rules for
+other binary operators, and its examples write it as one. Anything between them, such as `$a ? : $b`, is reported as
+`SplitShortTernary`. That includes a line break. The fix joins them where the `:` is.
+
+**Auto-fixable:** yes, as the parent, unless a comment is between a short ternary's `?` and `:`.
 
 **Good:**
 
 ```php
 $slug = $title |> trim(...) |> strtolower(...);
+$name = $given ?: $default;
 ```
 
 **Bad:**
 
 ```php
 $slug = $title|>trim(...)|>strtolower(...);
+$name = $given ? : $default;
 ```
 
 **Configuration:**

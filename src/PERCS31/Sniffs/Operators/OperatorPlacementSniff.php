@@ -60,8 +60,8 @@ use SlevomatCodingStandard\Helpers\TernaryOperatorHelper;
  * to it, about 30 lines. The exceptions before that, and the indent check, would stay here, and the codes would be
  * the parent's Incorrect and IncorrectWithComment.
  *
- * A short ternary must be written `?:`, with nothing between the `?` and `:`, as SplitShortTernary. Section 6.3 says it
- * follows the rules for other binary operators, and its examples write it as one, `?:`.
+ * A short ternary with something between its `?` and `:`, as in `$a ? : $b`, is left to
+ * PERCS31.Operators.OperatorSpacing, which joins them. Its placement is checked here once it's written `?:`.
  *
  * A full ternary: section 6.4 says a multi-line ternary MUST occupy 3 lines, never 2. So one split at its `?` or `:`
  * takes three lines, with `?` and `:` each starting a line, indented once, reported as TernaryLayout.
@@ -85,8 +85,6 @@ class OperatorPlacementSniff implements Sniff
     public const string CODE_AT_END_OF_LINE = 'AtEndOfLine';
 
     public const string CODE_INDENT = 'Indent';
-
-    public const string CODE_SPLIT_SHORT_TERNARY = 'SplitShortTernary';
 
     public const string CODE_TERNARY_LAYOUT = 'TernaryLayout';
 
@@ -163,8 +161,8 @@ class OperatorPlacementSniff implements Sniff
 
             $lastPtr = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
             assert(is_int($lastPtr));
+            // A `?` and `:` with something between them are joined by PERCS31.Operators.OperatorSpacing first.
             if ($lastPtr !== ($stackPtr + 1)) {
-                $this->reportSplitShortTernary($phpcsFile, $stackPtr, $lastPtr);
                 return;
             }
         }
@@ -226,43 +224,6 @@ class OperatorPlacementSniff implements Sniff
         }
 
         $phpcsFile->fixer->addContentBefore($next, $operator . ' ');
-        $phpcsFile->fixer->endChangeset();
-    }
-
-    /**
-     * Report a short ternary with a space, line break or comment between its `?` and `:`. The fix joins them where the
-     * `:` is, so a `?` at the end of a line moves to the start of the next, as section 6.4 requires.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $thenPtr The position of the `?`.
-     * @param int $elsePtr The position of the `:`.
-     */
-    private function reportSplitShortTernary(File $phpcsFile, int $thenPtr, int $elsePtr): void
-    {
-        $error = 'The short ternary operator must be written "?:", with nothing between "?" and ":"';
-        $isFixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($thenPtr + 1), $elsePtr) === false;
-        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $thenPtr, self::CODE_SPLIT_SHORT_TERNARY)) {
-            return;
-        }
-
-        $tokens = $phpcsFile->getTokens();
-        $before = $phpcsFile->findPrevious(T_WHITESPACE, ($thenPtr - 1), null, true);
-        $endsLine = $before !== false
-            && $tokens[$before]['line'] === $tokens[$thenPtr]['line']
-            && $tokens[$elsePtr]['line'] !== $tokens[$thenPtr]['line'];
-
-        $phpcsFile->fixer->beginChangeset();
-        if ($endsLine) {
-            // `$a ?` then `: $b` on the next line: the `?` moves down to join the `:`.
-            for ($i = ($before + 1); $i <= $thenPtr; $i++) {
-                $phpcsFile->fixer->replaceToken($i, '');
-            }
-
-            $phpcsFile->fixer->replaceToken($elsePtr, '?:');
-        } else {
-            FixerHelper::blankBetween($phpcsFile, $thenPtr, $elsePtr);
-        }
-
         $phpcsFile->fixer->endChangeset();
     }
 
