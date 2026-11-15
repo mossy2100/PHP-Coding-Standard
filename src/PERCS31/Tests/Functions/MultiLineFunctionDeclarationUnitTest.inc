@@ -51,7 +51,7 @@ $closeWithLast = fn(
     int $a,
     int $b): int => $a + $b;
 
-// A promoted parameter's multi-line hook list isn't indented as a parameter. PromotedPropertyHooks reports it.
+// A promoted parameter's multi-line hook list isn't indented as a parameter. PropertyHooks reports it.
 class PromotedHookList
 {
     public function __construct(

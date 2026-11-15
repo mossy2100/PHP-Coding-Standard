@@ -20,7 +20,7 @@ use PHP_CodeSniffer\Util\Tokens;
  *   PSR2.Methods.MethodDeclaration reads the same rule that way for methods. The parent's Underscore check can't skip
  *   it, so the ruleset excludes that code.
  *
- * `get` before `set` in a property's hooks is checked by PERCS31.Classes.PropertyHookLayout.
+ * `get` before `set` in a property's hooks is checked by PERCS31.Classes.PropertyHooks.
  *
  * The ruleset excludes the parent's checks that Slevomat sniffs make: modifier order, and the spacing after the type,
  * by SlevomatCodingStandard.Classes.PropertyDeclaration, and several properties in one statement, by

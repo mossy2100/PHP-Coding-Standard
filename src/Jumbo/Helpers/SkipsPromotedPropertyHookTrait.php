@@ -11,7 +11,7 @@ use PHP_CodeSniffer\Files\File;
  * Skips a function with a hook on a promoted constructor parameter, which a Slevomat sniff misreads.
  *
  * PHP_CodeSniffer's tokenizer doesn't know about property hooks, so Slevomat's function sniffs read a hook's code as
- * part of the parameter list. PERCS31.Classes.PromotedPropertyHooks checks those parameters instead.
+ * part of the parameter list. PERCS31.Classes.PropertyHooks checks those parameters instead.
  */
 trait SkipsPromotedPropertyHookTrait
 {

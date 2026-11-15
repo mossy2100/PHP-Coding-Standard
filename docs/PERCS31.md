@@ -228,9 +228,8 @@ section gives the reason.
 | `PERCS31.Classes.ConstantDeclaration`                      | One space after a class constant's `const`, and after its type      | Yes     |
 | `PERCS31.Classes.DynamicClassInstantiation`                | An argument list after `new (expression)`                           | Yes     |
 | `PERCS31.Classes.EnumMemberVisibility`                     | `private`, not `protected`, for a method or constant in an enum     | Yes     |
-| `PERCS31.Classes.PromotedPropertyHooks`                    | A hook on a promoted parameter is a single short hook on one line   | No      |
 | `PERCS31.Classes.PropertyDeclaration`                      | No leading `_`, no `var`, and a visibility on a property            | No      |
-| `PERCS31.Classes.PropertyHookLayout`                       | A hook list's braces and spacing, a short hook's `=>`, `get` first  | Partly  |
+| `PERCS31.Classes.PropertyHooks`                            | A hook list's layout, `get` first, and a promoted parameter's hooks | Partly  |
 | `PERCS31.Classes.TraitAliasSpacing`                        | One space after a visibility or `final` in a trait's `as` clause    | Yes     |
 | `PERCS31.ControlStructures.BodyOnNextLine`                 | A structure's body on the line after its `{`, allowing `{}`         | Yes     |
 | `PERCS31.ControlStructures.ControlStructureEmptyStatement` | Braces on a structure with no body, `else` included                 | Yes     |
@@ -817,44 +816,6 @@ enum Suit
 
 ---
 
-### PERCS31.Classes.PromotedPropertyHooks
-
-Allows a property hook on a promoted constructor parameter only if it's a single hook with a short `=>` body, on one
-line. Otherwise, declare the property in the class body.
-
-**Why:** [PER Coding Style 3.1, Section 4.9](https://www.php-fig.org/per/coding-style/#49-property-hooks) says hooks on a constructor-promoted property MUST be only a single hook,
-with a short-syntax body, defined on a single line, and that otherwise the property MUST NOT have hooks. No inherited
-sniff checks it.
-
-**Auto-fixable:** no. Moving a property and its hooks into the class body is a bigger rewrite than a fixer should risk.
-
-**Good:**
-
-```php
-class User
-{
-    public function __construct(
-        public string $name { set => trim($value); },
-    ) {}
-}
-```
-
-**Bad:**
-
-```php
-class User
-{
-    public function __construct(
-        public string $name {
-            set => trim($value);
-            get => ucfirst($this->name);
-        },
-    ) {}
-}
-```
-
----
-
 ### PERCS31.Classes.PropertyDeclaration
 
 Verifies that properties are declared correctly. This replaces `PSR2.Classes.PropertyDeclaration`, which it extends.
@@ -866,7 +827,7 @@ which Slevomat sniffs make. The last of those, `Multiple`, must stay excluded fo
 hook list as a second property, so it reports every property with hooks. It also excludes the parent's `Underscore`
 warning, which this sniff replaces with a `LeadingUnderscore` error, as section 4.3 says MUST NOT. The parent doesn't
 check a promoted constructor property either, which [PER Coding Style 3.1, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants)'s rules on underscores and
-visibility cover. `get` before `set` in a property's hooks is checked by [`PERCS31.Classes.PropertyHookLayout`](#percs31classespropertyhooklayout).
+visibility cover. `get` before `set` in a property's hooks is checked by [`PERCS31.Classes.PropertyHooks`](#percs31classespropertyhooks).
 
 A promoted constructor parameter with no visibility, such as `readonly int $a` or PHP 8.5's `final int $a`, is a
 `ScopeMissing` error too, as section 4.3 says visibility MUST be declared on all properties. A set-visibility alone, as
@@ -912,9 +873,10 @@ class User
 
 ---
 
-### PERCS31.Classes.PropertyHookLayout
+### PERCS31.Classes.PropertyHooks
 
-Checks the layout of a property's hook list: its braces, and the `=>` of a short hook.
+Checks a property's hooks: the layout of the hook list, its braces and a short hook's `=>`, `get` before `set`, and
+which hooks a promoted constructor parameter may have.
 
 **Why:** [PER Coding Style 3.1, Section 4.9](https://www.php-fig.org/per/coding-style/#49-property-hooks) sets the layout of property hooks, and no inherited sniff knows about them.
 This sniff checks:
@@ -937,9 +899,13 @@ This sniff checks:
   property, e.g. `{ get; set; }`, and every example in section 4.9 has `get` first too. So every hook list is checked,
   including ones with bodies, `&` or attributes. It's fixed unless there's a comment between the hooks.
 
+Section 4.9 also says hooks on a constructor-promoted property MUST be only a single hook, with a short-syntax body,
+defined on a single line, and that otherwise the property MUST NOT have hooks. Anything else there is reported as
+`TooComplex`. It isn't fixed, as moving a property and its hooks into the class body is a bigger rewrite than a fixer
+should risk.
+
 Indentation is checked by `PERCS31.WhiteSpace.ScopeIndent`, and several statements on a line by
-`PERCS31.Formatting.DisallowMultipleStatements`. A hook on a promoted constructor parameter is reported by
-`PERCS31.Classes.PromotedPropertyHooks`.
+`PERCS31.Formatting.DisallowMultipleStatements`.
 
 Section 4.9's text doesn't say where a hook's own `{` goes, how a `set` hook's parameter list is spaced, or whether a
 by-reference hook's `&` is followed by a space. Its examples show `get {` and `set(string $value)`, and section 4.5 puts
@@ -949,7 +915,7 @@ no space after a by-reference parameter's `&`. So this sniff also requires:
 - A `set` hook's parameter list spaced like a method's: no space after `set`, and none just inside the parentheses.
 - No space after a by-reference hook's `&`, as in `&get`.
 
-**Auto-fixable:** yes, except a comment after the closing brace, or a comment in the way.
+**Auto-fixable:** yes, except `TooComplex`, or with a comment in the way.
 
 **Good:**
 
@@ -962,6 +928,10 @@ class User
     }
 
     public string $email { get => strtolower($this->email); }
+
+    public function __construct(
+        public string $nickname { set => trim($value); },
+    ) {}
 }
 
 interface Named
@@ -988,6 +958,13 @@ class User
     }
 
     public string $city { get { return $this->city; } }
+
+    public function __construct(
+        public string $nickname {
+            get => ucfirst($this->nickname);
+            set => trim($value);
+        },
+    ) {}
 }
 
 interface Named
@@ -1558,7 +1535,7 @@ Also allowed after a brace:
 - A closing PHP tag.
 - Another closing brace, which [`PERCS31.WhiteSpace.ScopeClosingBrace`](#percs31whitespacescopeclosingbrace) reports.
 - The `,` or `)` after a promoted property's hook list. A comment after that comma is still reported.
-- The next hook after a hook's body, which [`PERCS31.Classes.PropertyHookLayout`](#percs31classespropertyhooklayout) reports.
+- The next hook after a hook's body, which [`PERCS31.Classes.PropertyHooks`](#percs31classespropertyhooks) reports.
 
 A block `declare` in the file header is skipped, as [`PERCS31.Files.FileHeader`](#percs31filesfileheader) reports what follows it.
 
@@ -1604,8 +1581,8 @@ statements on one line. [PER Coding Style 3.1, Section 4.10](https://www.php-fig
 ends a `get` or `set` operation when the previous one does too, and leaves everything else to the Generic sniff.
 
 It also skips the hooks of a promoted constructor parameter. Section 4.9 only allows a single short hook there, and
-[`PERCS31.Classes.PromotedPropertyHooks`](#percs31classespromotedpropertyhooks) reports anything else, which a person has to move to the class body. Splitting
-the hooks over lines first would only leave a layout nobody wants.
+[`PERCS31.Classes.PropertyHooks`](#percs31classespropertyhooks) reports anything else, which a person has to move to the class body. Splitting the hooks
+over lines first would only leave a layout nobody wants.
 
 **Auto-fixable:** yes.
 
@@ -1908,7 +1885,7 @@ and when split, the first argument on the next line and one per line. The parent
 - Its fix for a space before a call's parentheses deletes a comment there, as in `foo /* Why. */ ($a)`. This sniff
   reports that case with no fix, and leaves the call's other checks until the comment is moved.
 - It reads a `set` hook's parameter list, as in `set (string $value)`, as a call to `set()`. That list is part of the
-  hook's declaration, so this sniff skips it, and [`PERCS31.Classes.PropertyHookLayout`](#percs31classespropertyhooklayout) checks it instead.
+  hook's declaration, so this sniff skips it, and [`PERCS31.Classes.PropertyHooks`](#percs31classespropertyhooks) checks it instead.
 - It reads the `...` of a first-class callable split over lines, as in `foo(` then `...` then `)`, as an argument on a
   line of its own, and its fixes fight those of `Universal.WhiteSpace.FirstClassCallableSpacing`, which reports the
   split, as [Section 4.8](https://www.php-fig.org/per/coding-style/#48-function-callable-references) says the `...` MUST NOT have whitespace before or after it. So this sniff skips such a call. On
@@ -1986,8 +1963,8 @@ this sniff checks its split parameter list too:
 An arrow function has no braces, so the brace checks don't apply.
 
 The parent would also indent every line of a promoted parameter's multi-line hook list as a parameter, fighting
-[`PERCS31.WhiteSpace.ScopeIndent`](#percs31whitespacescopeindent) until `phpcbf` fails. [`PERCS31.Classes.PromotedPropertyHooks`](#percs31classespromotedpropertyhooks) already reports that
-code, which has to be rewritten, so this sniff leaves that parameter list alone.
+[`PERCS31.WhiteSpace.ScopeIndent`](#percs31whitespacescopeindent) until `phpcbf` fails. [`PERCS31.Classes.PropertyHooks`](#percs31classespropertyhooks) already reports that code, which
+has to be rewritten, so this sniff leaves that parameter list alone.
 
 The parent's fix for a closure's `use` on the line after the closing parenthesis never finished. One of its fixes added
 a space before `use`, leaving it on its line, and another indented that line, each undoing the other until `phpcbf`

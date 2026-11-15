@@ -23,7 +23,7 @@ use PHP_CodeSniffer\Util\Tokens;
  * - It doesn't fix a space before a call's parentheses that has a comment in it, which the parent's fix deletes. It's
  *   reported with no fix, and the call gets no other check from the parent until the comment is moved.
  * - It skips a `set` hook's parameter list, as in `set (string $value)`, which PHP_CodeSniffer reads as a call to
- *   `set()`. It's part of the hook's declaration, not a call, so PERCS31.Classes.PropertyHookLayout checks it.
+ *   `set()`. It's part of the hook's declaration, not a call, so PERCS31.Classes.PropertyHooks checks it.
  * - It skips a first-class callable split over lines, as in `foo(` then `...` then `)`, which
  *   Universal.WhiteSpace.FirstClassCallableSpacing reports, as section 4.8 says the `...` MUST NOT have whitespace
  *   before or after it. The parent reads the `...` as an argument on a line of its own, and its fixes fight that

@@ -13,7 +13,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Checks the layout of a property's hook list: its braces, and the `=>` of a short hook.
+ * Checks a property's hooks: the layout of the hook list, its braces and a short hook's `=>`, `get` before `set`, and
+ * which hooks a promoted constructor parameter may have.
  *
  * PER Coding Style 3.1, section 4.9, says:
  * - The opening brace MUST be on the same line as the property, after a single space.
@@ -39,12 +40,16 @@ use PHP_CodeSniffer\Util\Tokens;
  * puts no space after a by-reference parameter's `&`, so all three are checked: one space before a hook's `{`, a `set`
  * hook's parameter list spaced like a method's, and no space after `&`.
  *
- * A hook on a promoted constructor parameter is reported by PERCS31.Classes.PromotedPropertyHooks, so its body isn't
- * checked here. Indentation is checked by PERCS31.WhiteSpace.ScopeIndent, several statements on a line by
+ * Section 4.9 also says hooks on a constructor-promoted property MUST be only a single hook, with a short-syntax body,
+ * defined on a single line, e.g. `public string $name { set => ucfirst($value); }`. Anything else is reported as
+ * TooComplex, with no fix, and the property should be declared in the class body. Such a hook list's bodies aren't
+ * checked any further.
+ *
+ * Indentation is checked by PERCS31.WhiteSpace.ScopeIndent, several statements on a line by
  * PERCS31.Formatting.DisallowMultipleStatements, and a comment or code after the closing brace by
  * PERCS31.Formatting.AfterClosingBrace.
  */
-class PropertyHookLayoutSniff implements Sniff
+class PropertyHooksSniff implements Sniff
 {
     public const string CODE_OPENER_NOT_ON_SAME_LINE = 'OpenerNotOnSameLine';
 
@@ -80,6 +85,8 @@ class PropertyHookLayoutSniff implements Sniff
 
     public const string CODE_HOOK_ORDER = 'HookOrder';
 
+    public const string CODE_TOO_COMPLEX = 'TooComplex';
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -109,6 +116,7 @@ class PropertyHookLayoutSniff implements Sniff
 
         [$opener, $closer] = $hookList;
 
+        $this->checkPromoted($phpcsFile, $stackPtr, $opener, $closer);
         $this->checkOpener($phpcsFile, $opener);
         $this->checkReferences($phpcsFile, $opener, $closer);
         $this->checkHookOrder($phpcsFile, $opener, $closer);
@@ -148,6 +156,40 @@ class PropertyHookLayoutSniff implements Sniff
         } elseif ($arrows !== []) {
             $this->checkInlineSpacing($phpcsFile, $opener, $closer);
         }
+    }
+
+    /**
+     * Report hooks on a promoted constructor parameter that aren't a single short hook on one line.
+     *
+     * It isn't fixed, as moving the property and its hooks into the class body is a bigger rewrite than a fixer should
+     * risk.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the property's variable.
+     * @param int $opener The position of the hook list's opening brace.
+     * @param int $closer The position of the hook list's closing brace.
+     */
+    private function checkPromoted(File $phpcsFile, int $stackPtr, int $opener, int $closer): void
+    {
+        // A property inside parentheses is a promoted constructor parameter.
+        $tokens = $phpcsFile->getTokens();
+        if (!isset($tokens[$stackPtr]['nested_parenthesis'])) {
+            return;
+        }
+
+        $hooks = PropertyHookHelper::parseHooks($phpcsFile, $opener, $closer);
+        $isSingleShortHook = $hooks !== null && count($hooks) === 1 && $hooks[0]['bodyOpener'] === null;
+        if ($isSingleShortHook && $tokens[$opener]['line'] === $tokens[$closer]['line']) {
+            return;
+        }
+
+        $phpcsFile->addError(
+            'A hook on a promoted constructor parameter must be a single hook with a short body, on one line; '
+                . 'declare the property "%s" in the class body instead.',
+            $stackPtr,
+            self::CODE_TOO_COMPLEX,
+            [$tokens[$stackPtr]['content']],
+        );
     }
 
     /**

@@ -34,7 +34,7 @@ use PHP_CodeSniffer\Util\Tokens;
  * - A closing PHP tag.
  * - Another closing brace, which PERCS31.WhiteSpace.ScopeClosingBrace reports.
  * - The `,` or `)` after a promoted property's hook list, which is part of the parameter list.
- * - The next hook after a hook's body, which PERCS31.Classes.PropertyHookLayout reports.
+ * - The next hook after a hook's body, which PERCS31.Classes.PropertyHooks reports.
  *
  * A block `declare` in the file header is skipped, as PERCS31.Files.FileHeader reports what follows it on the same
  * line.
@@ -164,7 +164,7 @@ class AfterClosingBraceSniff implements Sniff
             $bodyOpener = $hook['bodyOpener'];
             $bodyCloser = $bodyOpener === null ? null : ($tokens[$bodyOpener]['bracket_closer'] ?? null);
             if (is_int($bodyCloser)) {
-                // Only another hook can follow a hook's body, and PropertyHookLayout puts each on its own line.
+                // Only another hook can follow a hook's body, and PropertyHooks puts each on its own line.
                 $this->checkAfter($phpcsFile, $bodyCloser, true, null);
             }
         }

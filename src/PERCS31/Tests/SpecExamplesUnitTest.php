@@ -56,7 +56,7 @@ class SpecExamplesUnitTest extends TestCase
         '41-4.9.inc' => ['6 SlevomatCodingStandard.Functions.RequireTrailingCommaInDeclaration.MissingTrailingComma'],
         // Not allowed: a promoted hook that's too complex. It has no trailing comma either (2.6).
         '42-4.9.inc' => [
-            '6 PERCS31.Classes.PromotedPropertyHooks.TooComplex',
+            '6 PERCS31.Classes.PropertyHooks.TooComplex',
             '13 SlevomatCodingStandard.Functions.RequireTrailingCommaInDeclaration.MissingTrailingComma',
         ],
         // abstract class Example { has its brace on the class's line (4.1).

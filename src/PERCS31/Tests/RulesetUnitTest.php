@@ -85,7 +85,7 @@ class RulesetUnitTest extends TestCase
 
     /**
      * Test that phpcbf puts two short hooks on one line on lines of their own. DisallowMultipleStatements only moves
-     * the second, so PropertyHookLayout has to move the first.
+     * the second, so PropertyHooks has to move the first.
      */
     public function testPhpcbfSplitsTwoShortHooksOnOneLine(): void
     {
@@ -123,7 +123,7 @@ class RulesetUnitTest extends TestCase
         }
 
         $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
-        $this->assertStringContainsString('PromotedPropertyHooks.TooComplex', $result['output']);
+        $this->assertStringContainsString('PropertyHooks.TooComplex', $result['output']);
         $this->assertStringNotContainsString('MultiLineFunctionDeclaration.Indent', $result['output']);
     }
 
@@ -146,7 +146,7 @@ class RulesetUnitTest extends TestCase
         }
 
         $this->assertSame($source, $fixed);
-        $this->assertStringContainsString('PromotedPropertyHooks.TooComplex', $result['output']);
+        $this->assertStringContainsString('PropertyHooks.TooComplex', $result['output']);
     }
 
     /**

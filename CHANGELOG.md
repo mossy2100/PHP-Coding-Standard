@@ -71,7 +71,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   Coding Style 3.1 gives each trait its own `use` statement. `SlevomatCodingStandard.Classes.TraitUseDeclaration` makes
   the check, so `PSR12.Traits.UseDeclaration.MultipleImport` is now
   `SlevomatCodingStandard.Classes.TraitUseDeclaration.MultipleTraitsPerDeclaration`. `use A, B;` is still fixed.
-- **A short hook on the opening brace's line (breaking).** `PERCS31.Classes.PropertyHookLayout` now reports a hook that
+- **A short hook on the opening brace's line (breaking).** `PERCS31.Classes.PropertyHooks` now reports a hook that
   shares the `{`'s line in a list over several lines, as in `{ get => 1;` then `set => $value;`, as `HookNotOnOwnLine`.
   PER Coding Style 3.1 only lets a single short hook that doesn't wrap be inline. The fix for
   `{ get => 1; set => $value; }` used to leave that layout. Auto-fixable.
@@ -110,9 +110,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `allowSeveralSpaces` lets arrows still be lined up. Jumbo still requires exactly one. Auto-fixable.
 - **`Universal.Constants.UppercaseMagicConstants` in Jumbo (breaking).** A magic constant must be in upper case, as in
   `__DIR__`. PHP ignores their case, and PERCS31 doesn't check it. Auto-fixable.
-- **At most one blank line between hooks (breaking).** `PERCS31.Classes.PropertyHookLayout` now reports two or more
-  blank lines between the hooks of a list over several lines, as `TooManyBlankLinesBetweenHooks`, as PER Coding Style
-  3.1 allows no blank line or one. Auto-fixable, unless a comment is between the hooks.
+- **At most one blank line between hooks (breaking).** `PERCS31.Classes.PropertyHooks` now reports two or more blank
+  lines between the hooks of a list over several lines, as `TooManyBlankLinesBetweenHooks`, as PER Coding Style 3.1
+  allows no blank line or one. Auto-fixable, unless a comment is between the hooks.
 - **An import after the rest of the code (breaking).** `PERCS31.Files.FileHeader` now reports a `use` import after the
   file's code, as `ImportAfterCode`, as PER Coding Style 3.1 puts imports in the header. A file with more than one
   namespace is skipped. Not auto-fixable.
@@ -122,7 +122,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   object, as in `clone ($a)->b`. A space before `clone`'s parentheses, as in `clone ($a)`, is an error, as
   `SpaceBeforeOpenBracket`, as for any other call. And it no longer reads a `set` hook's parameter list as a call.
   Auto-fixable, except a space before the parentheses with a comment in it, which the PSR-2 sniff's fix deleted.
-- **A `set` hook's parameter list spaced like a method's (breaking).** `PERCS31.Classes.PropertyHookLayout` reports
+- **A `set` hook's parameter list spaced like a method's (breaking).** `PERCS31.Classes.PropertyHooks` reports
   `set (string $value)` and `set( string $value )`, as `SpaceBeforeHookParameters` and `SpaceInsideHookParameters`, as
   PER Coding Style 3.1's examples show `set(string $value)`. Auto-fixable.
 - **A backed enum's type in lower case (breaking).** `PERCS31.PHP.LowerCaseType` now reports `enum Suit: STRING`, as
@@ -220,8 +220,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   least one space. `PERCS31.Operators.OperatorSpacing` now checks it, with the new property `checkDefaultValues`, in
   place of `Squiz.Functions.FunctionDeclarationArgumentSpacing`. The Jumbo standard still requires exactly one space.
 - **A hook's own `{` must be one space after its name (breaking).** `get{`, `get  {` and `{` on the next line are errors
-  in `PERCS31.Classes.PropertyHookLayout`, as PER Coding Style 3.1's examples show `get {`. Auto-fixable, unless a
-  comment is in the way.
+  in `PERCS31.Classes.PropertyHooks`, as PER Coding Style 3.1's examples show `get {`. Auto-fixable, unless a comment is
+  in the way.
 - **A multi-line `case` condition must start on the next line and be indented (breaking).**
   `PERCS31.ControlStructures.SwitchDeclaration` reports `case ($a`, and a line not indented past the `case`, as PER
   Coding Style 3.1, section 5.2, requires. Auto-fixable, unless a comment is in the way.
@@ -298,7 +298,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   past the line it starts on, as PER Coding Style 3.1 requires. Auto-fixable, keeping any extra indentation within the
   text. A heredoc or nowdoc must also begin on the line of its context, so `return` or `$x =` followed by `<<<` on the
   next line is an error, and so is `$x` followed by `= <<<`. Auto-fixable, except a comment in the way.
-- **`PERCS31.Classes.PropertyHookLayout` (breaking).** Checks the layout of a property's hooks, as PER Coding Style 3.1
+- **`PERCS31.Classes.PropertyHooks` (breaking).** Checks the layout of a property's hooks, as PER Coding Style 3.1
   requires: the opening brace on the property's line after a single space, the closing brace of a multi-line list on its
   own line with no comment after it, a single space either side of a short hook's `=>` with its body on the same line,
   and a single space inside the braces of an inline hook. In a list with a `{}` body, each hook starts on its own line,
@@ -432,10 +432,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`PERCS31.WhiteSpace.ArrowSpacing` (breaking).** Requires one space before and after `=>` in a `match` arm, so arms
   aren't aligned, and at least one in an array. No stock sniff checks these. Jumbo requires exactly one in an array too,
   so array arrows are never aligned, and in a `yield`, which PER Coding Style 3.1 leaves undefined. Auto-fixable.
-- **`PERCS31.Classes.PromotedPropertyHooks` (breaking).** A hook on a promoted constructor parameter must be a single
-  hook with a short `=>` body, on one line, as PER Coding Style 3.1 requires, e.g.
+- **A hook on a promoted constructor parameter (breaking).** It must be a single hook with a short `=>` body, on one
+  line, as PER Coding Style 3.1 requires, e.g.
   `public function __construct(public string $name { set => trim($value); })`. Otherwise, declare the property in the
-  class body. Not auto-fixable.
+  class body. `PERCS31.Classes.PropertyHooks` reports it as `TooComplex`. Not auto-fixable.
 - **`Jumbo.Classes.RequireSingleLineMethodSignature`, `Jumbo.TypeHints.ParameterTypeHint` and
   `Jumbo.TypeHints.ParameterTypeHintSpacing`.** Replace the Slevomat sniffs of the same names, which misread a hook on a
   promoted constructor parameter. They skip a function with one, and check everything else as before.
@@ -510,10 +510,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`null` must be last in a union type (breaking).** `int|null` and `null|int|string` are now errors, as PER Coding
   Style 3.1 requires `null` last. Set by `nullPosition` on `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat`.
   Auto-fixable.
-- **`PERCS31.Classes.PropertyHookLayout` checks `get` before `set` (breaking).** When a property has both hooks, `set`
-  before `get` is now an error (`HookOrder`), in every hook list. PER Coding Style 3.1 requires `{ get; set; }` on an
-  abstract or interface property, and every example in its section 4.9 has `get` first too. Auto-fixable, unless there's
-  a comment between the hooks.
+- **`PERCS31.Classes.PropertyHooks` checks `get` before `set` (breaking).** When a property has both hooks, `set` before
+  `get` is now an error (`HookOrder`), in every hook list. PER Coding Style 3.1 requires `{ get; set; }` on an abstract
+  or interface property, and every example in its section 4.9 has `get` first too. Auto-fixable, unless there's a
+  comment between the hooks.
 - **An arrow function may span lines.** Its expression can go on the next line, as PER Coding Style 3.1 allows.
   `SlevomatCodingStandard.Functions.ArrowFunctionDeclaration` previously required it on one line.
 - **Array formatting follows PER Coding Style, with no alignment (breaking).** `Jumbo.Arrays.ArrayDeclaration` was
@@ -550,8 +550,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   nothing left to report.
 - **Four duplicate messages.** Each of these was reported twice. The second report is gone, so a `phpcs:ignore` for it
   can be removed:
-  - `PERCS31.Classes.PropertyHookLayout.CommentAfterCloser`, as `PERCS31.Formatting.AfterClosingBrace` reports a
-    comment after a hook list's closing brace.
+  - `PERCS31.Classes.PropertyHooks.CommentAfterCloser`, as `PERCS31.Formatting.AfterClosingBrace` reports a comment
+    after a hook list's closing brace.
   - `SlevomatCodingStandard.Classes.BackedEnumTypeSpacing.IncorrectSpacesBeforeType`, as
     `PERCS31.Classes.ClassDeclaration` reports the space after an enum's colon.
   - `Squiz.Arrays.ArrayDeclaration.CloseBraceNewLine`, as `Generic.Arrays.ArrayIndent` reports a closing bracket that
@@ -602,8 +602,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   The fix now leaves a space. `clone(new Foo())->bar` is no longer reported, as those parentheses hold `clone()`'s
   arguments.
 - **A closure as a property's default value.** PHP 8.5 allows `public Closure $handler = static function () { ... };`.
-  It was reported as a badly laid out hook list, by `PERCS31.Classes.PropertyHookLayout` and, on a promoted parameter,
-  `PERCS31.Classes.PromotedPropertyHooks`, and `phpcbf` failed on it. It now passes.
+  It was reported as a badly laid out hook list, by `PERCS31.Classes.PropertyHooks`, and `phpcbf` failed on it. It now
+  passes.
 - **An upper-case `Array(` was reported twice for its case.** `Squiz.Arrays.ArrayDeclaration.NotLowerCase` is no longer
   used, as `PERCS31.PHP.LowerCaseKeyword` reports the same.
 - **A chain on a continuation line is indented once past it (breaking).** A split method chain's indent is now
@@ -633,8 +633,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   skipped a class, interface, trait, enum or enum case with no lower-case letter, such as `class HTTP`. It's now
   reported, as a warning, alongside the PascalCase error. Only a constant in upper case is skipped.
 - **Two hooks on a promoted parameter are left alone.** `phpcbf` split `{ get => 'a'; set => ucfirst($value); }` on a
-  promoted constructor parameter over lines, though `PERCS31.Classes.PromotedPropertyHooks` still said to move the
-  property to the class body. `PERCS31.Formatting.DisallowMultipleStatements` now skips a promoted parameter's hooks.
+  promoted constructor parameter over lines, though `PERCS31.Classes.PropertyHooks` still said to move the property to
+  the class body. `PERCS31.Formatting.DisallowMultipleStatements` now skips a promoted parameter's hooks.
 - **An upper-case keyword is reported once (breaking).** `IF`, `FUNCTION`, `PUBLIC` and the like got a second error,
   from `Squiz.ControlStructures.LowercaseDeclaration` or `Squiz.Functions.LowercaseFunctionKeywords`. Both are now
   excluded, as `PERCS31.PHP.LowerCaseKeyword` reports the same keywords, so update any `phpcs:ignore` comments or
@@ -755,8 +755,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **A unary `-` or `+` after `!`, `~` or `@`.** `$a = !-$b;` was reported by `PERCS31.Operators.OperatorSpacing` as a
   binary `-` with no space around it, and fixed to `! - $b`. It now passes.
 - **A property named `get` or `set` in a short hook.** `{ get => $this->set ; }` was reported by
-  `PERCS31.Classes.PropertyHookLayout`, as `SpaceBeforeSemicolon`, which is for a hook with no body. The name before the
-  `;` is now only read as a hook's when it isn't a member's.
+  `PERCS31.Classes.PropertyHooks`, as `SpaceBeforeSemicolon`, which is for a hook with no body. The name before the `;`
+  is now only read as a hook's when it isn't a member's.
 - **An upper-case `CASE` or `DEFAULT` was reported twice.** `PERCS31.ControlStructures.SwitchDeclaration`'s
   `caseNotLower` and `defaultNotLower` codes are no longer used, as `PERCS31.PHP.LowerCaseKeyword` reports the same.
 - **An array argument in a call through an array or a string.** In `$handlers['x'](` or `[$object, 'method'](`, a

@@ -17,7 +17,7 @@ use PHP_CodeSniffer\Util\Tokens;
  * that ends a `get` or `set` operation when the previous one does too, and leaves everything else to the parent.
  *
  * It also skips a semicolon in the hooks of a promoted constructor parameter. Section 4.9 only allows a single short
- * hook on one line there, and PERCS31.Classes.PromotedPropertyHooks reports anything else, which a person has to move
+ * hook on one line there, and PERCS31.Classes.PropertyHooks reports anything else, which a person has to move
  * to the class body. The parent's fix would split the hooks over lines first, leaving a layout nobody wants.
  */
 class DisallowMultipleStatementsSniff extends GenericSniff

@@ -34,7 +34,7 @@ abstract class Invalid
     abstract public string $mixed { get => 'x'; set; }
 }
 
-// === VALID: the hooks of a promoted parameter, which PERCS31.Classes.PromotedPropertyHooks reports ===
+// === VALID: the hooks of a promoted parameter, which PERCS31.Classes.PropertyHooks reports ===
 
 class Promoted
 {

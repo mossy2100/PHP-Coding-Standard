@@ -328,11 +328,9 @@
 
     <!-- The layout of a property's hook list: its braces, a short hook's =>, and get before set (4.9, 4.10). One space
          before a hook's own {, and a set hook's parameter list spaced like a method's, as the examples in 4.9 show. No
-         space after a by-reference hook's &, as for a by-reference parameter (4.5). -->
-    <rule ref="PERCS31.Classes.PropertyHookLayout"/>
-
-    <!-- A hook on a promoted constructor parameter only as a single short hook on one line (4.9) -->
-    <rule ref="PERCS31.Classes.PromotedPropertyHooks"/>
+         space after a by-reference hook's &, as for a by-reference parameter (4.5). A hook on a promoted constructor
+         parameter only as a single short hook on one line (4.9). -->
+    <rule ref="PERCS31.Classes.PropertyHooks"/>
 
     <!-- ====== FUNCTIONS AND CALLS (4.7) ====== -->
 

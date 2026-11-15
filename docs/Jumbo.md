@@ -365,7 +365,7 @@ promoted constructor parameter. This replaces `SlevomatCodingStandard.Classes.Re
 **Why:** the parent takes the `;` in a hook on a promoted constructor parameter, e.g.
 `public string $name { set => trim($value); }`, as the end of the signature, so its fix joins only part of it, and
 `phpcbf` can't finish. [PER Coding Style 3.1, Section 4.9](https://www.php-fig.org/per/coding-style/#49-property-hooks) allows a single short hook there, so this sniff skips a
-function with one, and leaves everything else to the parent. See [`PERCS31.Classes.PromotedPropertyHooks`](PERCS31.md#percs31classespromotedpropertyhooks).
+function with one, and leaves everything else to the parent. See [`PERCS31.Classes.PropertyHooks`](PERCS31.md#percs31classespropertyhooks).
 
 **Auto-fixable:** yes, as the parent.
 
@@ -850,7 +850,7 @@ replaces `SlevomatCodingStandard.TypeHints.ParameterTypeHint`.
 **Why:** the parent treats every variable between a function's parentheses as a parameter, so `$value` or `$this` in a
 hook on a promoted constructor parameter is reported as a parameter with no type hint. The other parameters of that
 function aren't checked either. [PER Coding Style 3.1, Section 4.9](https://www.php-fig.org/per/coding-style/#49-property-hooks) allows a single short hook there, so this sniff skips
-a function with one, and leaves everything else to the parent. See [`PERCS31.Classes.PromotedPropertyHooks`](PERCS31.md#percs31classespromotedpropertyhooks).
+a function with one, and leaves everything else to the parent. See [`PERCS31.Classes.PropertyHooks`](PERCS31.md#percs31classespropertyhooks).
 
 **Auto-fixable:** yes, as the parent.
 
@@ -864,7 +864,7 @@ This replaces `SlevomatCodingStandard.TypeHints.ParameterTypeHintSpacing`.
 **Why:** the parent treats every variable between a function's parentheses as a parameter, so `$value` or `$this` in a
 hook on a promoted constructor parameter is reported as a parameter with bad spacing. The other parameters of that
 function aren't checked either. [PER Coding Style 3.1, Section 4.9](https://www.php-fig.org/per/coding-style/#49-property-hooks) allows a single short hook there, so this sniff skips
-a function with one, and leaves everything else to the parent. See [`PERCS31.Classes.PromotedPropertyHooks`](PERCS31.md#percs31classespromotedpropertyhooks).
+a function with one, and leaves everything else to the parent. See [`PERCS31.Classes.PropertyHooks`](PERCS31.md#percs31classespropertyhooks).
 
 **Auto-fixable:** yes, as the parent.
 

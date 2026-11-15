@@ -51,7 +51,7 @@ use PHPCSUtils\Utils\Parentheses;
  * - `foreach`: PERCS31.ControlStructures.ForEachSpacing.
  * - A `match` arm: PERCS31.WhiteSpace.ArrowSpacing.
  * - An arrow function: SlevomatCodingStandard.Functions.ArrowFunctionDeclaration.
- * - A property hook: PERCS31.Classes.PropertyHookLayout.
+ * - A property hook: PERCS31.Classes.PropertyHooks.
  * - `yield`: PERCS31.WhiteSpace.ArrowSpacing.
  */
 class OperatorSpacingSniff extends SquizSniff

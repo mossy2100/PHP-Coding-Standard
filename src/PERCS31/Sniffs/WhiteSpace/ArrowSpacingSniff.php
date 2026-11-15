@@ -28,7 +28,7 @@ use PHPCSUtils\Utils\PassedParameters;
  *
  * Other uses of `=>` have their own sniffs: PERCS31.ControlStructures.ForEachSpacing for `foreach`,
  * SlevomatCodingStandard.Functions.ArrowFunctionDeclaration for an arrow function, and
- * PERCS31.Classes.PropertyHookLayout for a property hook.
+ * PERCS31.Classes.PropertyHooks for a property hook.
  *
  * A line break before or after the arrow is allowed, so a long arm, element or yield can be wrapped. For an array, this
  * replaces Squiz.Arrays.ArrayDeclaration's arrow spacing checks, which cover only a single-line array, and in a

@@ -44,7 +44,7 @@ use PHP_CodeSniffer\Util\Tokens;
  * sniff registers `fn` too, and checks a split parameter list. It has no braces, so the brace checks don't apply.
  *
  * The parent would also indent every line of a promoted parameter's multi-line hook list as a parameter, fighting
- * PERCS31.WhiteSpace.ScopeIndent until phpcbf fails. PERCS31.Classes.PromotedPropertyHooks already reports that code,
+ * PERCS31.WhiteSpace.ScopeIndent until phpcbf fails. PERCS31.Classes.PropertyHooks already reports that code,
  * and it has to be rewritten, so this sniff leaves its parameter list alone.
  *
  * The parent's fix for a closure's `use` on the line after the closing parenthesis never finishes. Its SpaceBeforeUse

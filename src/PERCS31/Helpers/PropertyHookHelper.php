@@ -386,7 +386,7 @@ class PropertyHookHelper
 
     /**
      * Check whether a function's parameter list has a promoted constructor parameter with a hook list over several
-     * lines, which PERCS31.Classes.PromotedPropertyHooks reports.
+     * lines, which PERCS31.Classes.PropertyHooks reports.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $functionPtr The position of the function keyword.

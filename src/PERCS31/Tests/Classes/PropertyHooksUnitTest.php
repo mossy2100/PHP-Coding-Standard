@@ -7,17 +7,32 @@ namespace PERCS31\Tests\Classes;
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffTestCase;
 
 /**
- * Unit tests for PERCS31.Classes.PropertyHookLayout sniff.
+ * Unit tests for PERCS31.Classes.PropertyHooks sniff.
  */
-class PropertyHookLayoutUnitTest extends AbstractSniffTestCase
+class PropertyHooksUnitTest extends AbstractSniffTestCase
 {
     /**
      * Returns the lines where errors should occur.
      *
+     * @param string $testFile The name of the fixture file.
      * @return array<int, int> Line number => error count.
      */
-    protected function getErrorList(): array
+    protected function getErrorList(string $testFile = ''): array
     {
+        // A promoted constructor parameter's hooks.
+        if ($testFile === 'PropertyHooksUnitTest.2.inc') {
+            return [
+                // A block body.
+                40 => 1,
+                // Two hooks.
+                42 => 1,
+                // Over several lines.
+                44 => 1,
+                // A block body over several lines.
+                48 => 1,
+            ];
+        }
+
         return [
             // The opening brace on the next line.
             33 => 1,

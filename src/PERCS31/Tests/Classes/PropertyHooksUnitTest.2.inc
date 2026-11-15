@@ -6,8 +6,8 @@ class Valid
 {
     // A hooked property declared in the class body.
     public string $title {
-        set => trim($value);
         get => strtoupper($this->title);
+        set => trim($value);
     }
 
     public function __construct(
