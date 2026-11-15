@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\ControlStructures;
 
-use PERCS31\Helpers\FixerHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\PSR12\Sniffs\ControlStructures\ControlStructureSpacingSniff as Psr12Sniff;
-use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Checks the layout of a control structure's parentheses, without PSR-12's rules for a multi-line `foreach` or
@@ -21,18 +19,12 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * For a multi-line `foreach` or `match`, this sniff only checks what section 5 requires of every control structure: no
  * space after the `(` or before the `)`. Everything else is left to the parent.
- *
- * It also requires one space between a `catch`'s type and its variable. Section 5.6 shows `catch (FirstThrowableType
- * $e)`, and says to "note the placement of parentheses, spaces, and braces". No inherited sniff checks that space, and
- * this sniff already visits every `catch`.
  */
 class ControlStructureSpacingSniff extends Psr12Sniff
 {
     public const string CODE_SPACE_AFTER_OPEN = 'SpacingAfterOpenBrace';
 
     public const string CODE_SPACE_BEFORE_CLOSE = 'SpaceBeforeCloseBrace';
-
-    public const string CODE_SPACE_BEFORE_CATCH_VARIABLE = 'SpaceBeforeCatchVariable';
 
     /**
      * Processes a control structure.
@@ -45,9 +37,6 @@ class ControlStructureSpacingSniff extends Psr12Sniff
         $tokens = $phpcsFile->getTokens();
         $opener = $tokens[$stackPtr]['parenthesis_opener'] ?? null;
         $closer = $tokens[$stackPtr]['parenthesis_closer'] ?? null;
-        if ($tokens[$stackPtr]['code'] === T_CATCH && is_int($opener) && is_int($closer)) {
-            $this->checkCatchVariable($phpcsFile, $opener, $closer);
-        }
 
         if (
             !in_array($tokens[$stackPtr]['code'], [T_FOREACH, T_MATCH], true)
@@ -65,39 +54,6 @@ class ControlStructureSpacingSniff extends Psr12Sniff
         }
 
         $this->checkSpace($phpcsFile, $stackPtr, ($closer - 1), 'before the closing', self::CODE_SPACE_BEFORE_CLOSE);
-    }
-
-    /**
-     * Require one space between a `catch`'s type and its variable. A line break is allowed, as a multi-catch's types
-     * may be split over lines.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $opener The position of the `catch`'s opening parenthesis.
-     * @param int $closer The position of the `catch`'s closing parenthesis.
-     */
-    private function checkCatchVariable(File $phpcsFile, int $opener, int $closer): void
-    {
-        $tokens = $phpcsFile->getTokens();
-        $variable = $phpcsFile->findPrevious(T_WHITESPACE, ($closer - 1), $opener, true);
-        if ($variable === false || $tokens[$variable]['code'] !== T_VARIABLE) {
-            return;
-        }
-
-        // Anything but whitespace before the variable is the type, or a comment, which is left alone.
-        $type = $phpcsFile->findPrevious(T_WHITESPACE, ($variable - 1), $opener, true);
-        if (
-            $type === false
-            || $tokens[$type]['line'] !== $tokens[$variable]['line']
-            || isset(Tokens::COMMENT_TOKENS[$tokens[$type]['code']])
-        ) {
-            return;
-        }
-
-        // Only whitespace is between them, as the type is the code or comment just before the variable.
-        $found = strlen($phpcsFile->getTokensAsString(($type + 1), ($variable - $type - 1)));
-        $error = 'Expected 1 space between the type and the variable of a catch; %s found';
-        $code = self::CODE_SPACE_BEFORE_CATCH_VARIABLE;
-        FixerHelper::requireSingleSpace($phpcsFile, $type, $variable, $error, $code, data: [$found]);
     }
 
     /**

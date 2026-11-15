@@ -375,9 +375,11 @@
     <!-- A structure's body on the line after its opening brace, allowing an empty body as {} (5) -->
     <rule ref="PERCS31.ControlStructures.BodyOnNextLine"/>
 
-    <!-- A control structure's parentheses, without PSR-12's rules for a multi-line foreach or match (5, 5.2, 5.5),
-         and one space between a catch's type and its variable (5.6) -->
+    <!-- A control structure's parentheses, without PSR-12's rules for a multi-line foreach or match (5, 5.2, 5.5) -->
     <rule ref="PERCS31.ControlStructures.ControlStructureSpacing"/>
+
+    <!-- One space between a catch's type and its variable, as the example in 5.6 shows -->
+    <rule ref="PERCS31.ControlStructures.CatchVariableSpacing"/>
 
     <!-- One space, or a line break, before and after a foreach's as and => (5.5) -->
     <rule ref="PERCS31.ControlStructures.ForEachSpacing"/>

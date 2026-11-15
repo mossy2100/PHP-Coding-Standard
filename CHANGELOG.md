@@ -644,9 +644,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `PERCS31.Formatting.MethodChaining`, as `OperatorAtEndOfLine`, for every `->` and `?->`, and the PEAR code is
   excluded, so update any `phpcs:ignore` comments or `<exclude>` rules that name it. The fix no longer leaves a blank
   line when the operator is alone on its line. Auto-fixable, unless a comment follows the operator.
-- **The space before a `catch`'s variable (breaking).** `catch (Exception  $e)` and `catch (Exception$e)` passed.
-  `PERCS31.ControlStructures.ControlStructureSpacing` now requires one space between the type and the variable, as
-  `SpaceBeforeCatchVariable`, as PER Coding Style 3.1's example shows. Auto-fixable.
+- **`PERCS31.ControlStructures.CatchVariableSpacing` (breaking).** `catch (Exception  $e)` and `catch (Exception$e)`
+  passed. It requires one space between the type and the variable, as `SpaceBeforeVariable`, as PER Coding Style 3.1's
+  example shows. Auto-fixable.
 - **A hook's closing brace indented too far (breaking).** `PERCS31.WhiteSpace.ScopeIndent` only reported a property
   hook's `}`, or a hook list's, when it was indented too little. One indented too far is now reported, and fixed.
 - **A trailing comma in a call through an expression (breaking).** `$handlers[$name](`, `[$object, 'method'](`,

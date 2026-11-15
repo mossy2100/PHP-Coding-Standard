@@ -234,7 +234,8 @@ section gives the reason.
 | `PERCS31.Classes.TraitAliasSpacing`                        | One space after a visibility or `final` in a trait's `as` clause    | Yes     |
 | `PERCS31.ControlStructures.BodyOnNextLine`                 | A structure's body on the line after its `{`, allowing `{}`         | Yes     |
 | `PERCS31.ControlStructures.ControlStructureEmptyStatement` | Braces on a structure with no body, `else` included                 | Yes     |
-| `PERCS31.ControlStructures.ControlStructureSpacing`        | The parentheses, and the space before a `catch`'s variable          | Yes     |
+| `PERCS31.ControlStructures.CatchVariableSpacing`           | One space between a `catch`'s type and its variable                 | Yes     |
+| `PERCS31.ControlStructures.ControlStructureSpacing`        | The parentheses, with no split rule for `foreach` or `match`        | Yes     |
 | `PERCS31.ControlStructures.ForEachSpacing`                 | A space or line break each side of a `foreach`'s `as` and `=>`      | Yes     |
 | `PERCS31.ControlStructures.MatchArmPlacement`              | Each `match` arm starts on a new line                               | Yes     |
 | `PERCS31.ControlStructures.MultiLineTernaryOperator`       | A multi-line ternary takes three lines, `?` and `:` leading         | Yes     |
@@ -1085,6 +1086,42 @@ while (next($items)) { count();
 
 ---
 
+### PERCS31.ControlStructures.CatchVariableSpacing
+
+Requires one space between a `catch`'s type and its variable, as in `catch (Exception $e)`.
+
+**Why:** [PER Coding Style 3.1, Section 5.6](https://www.php-fig.org/per/coding-style/#56-try-catch-finally) shows `catch (FirstThrowableType $e)`, and says to note the placement of
+spaces. A catch's parentheses are laid out like a function's parameter list with one parameter, but the inherited sniffs
+that check the space between a parameter's type and its name, `Squiz.Functions.FunctionDeclarationArgumentSpacing` and
+`SlevomatCodingStandard.TypeHints.ParameterTypeHintSpacing`, read the parameters with a function's own parser, which
+doesn't accept a `catch`.
+
+A line break before the variable is allowed, as a multi-catch's types may be split over lines.
+
+**Auto-fixable:** yes, unless a comment is in the way.
+
+**Good:**
+
+```php
+try {
+    $order->submit();
+} catch (PaymentException $exception) {
+    $order->cancel();
+}
+```
+
+**Bad:**
+
+```php
+try {
+    $order->submit();
+} catch (PaymentException  $exception) {
+    $order->cancel();
+}
+```
+
+---
+
 ### PERCS31.ControlStructures.ControlStructureEmptyStatement
 
 Requires braces on a control structure with no body, so `while (next($items));` is reported. This extends
@@ -1144,10 +1181,6 @@ in `if (foo(`. So its first condition goes on the line after `(`, and `)` with `
 exemption for a single argument split over lines is only for a call's argument list. See "A Condition Split Only Inside
 a Call" in [PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md#a-condition-split-only-inside-a-call).
 
-It also requires one space between a `catch`'s type and its variable, as [section 5.6](https://www.php-fig.org/per/coding-style/#56-try-catch-finally)'s example shows, reported as
-`SpaceBeforeCatchVariable`. No inherited sniff checks it. A line break there is allowed, as a multi-catch's types may be
-split over lines.
-
 **Auto-fixable:** yes.
 
 **Good:**
@@ -1175,12 +1208,6 @@ if (
 ) {
     $order->upgrade();
 }
-
-try {
-    $order->submit();
-} catch (PaymentException $exception) {
-    $order->cancel();
-}
 ```
 
 **Bad:**
@@ -1198,12 +1225,6 @@ if (in_array($code, [
     'silver',
 ], true)) {
     $order->upgrade();
-}
-
-try {
-    $order->submit();
-} catch (PaymentException  $exception) {
-    $order->cancel();
 }
 ```
 
