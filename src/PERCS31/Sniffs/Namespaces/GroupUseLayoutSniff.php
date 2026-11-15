@@ -165,15 +165,12 @@ class GroupUseLayoutSniff implements Sniff
         string $error,
         string $code,
     ): void {
-        $tokens = $phpcsFile->getTokens();
-
-        // A `//` comment's token holds its own line break, so it ends on the line after it starts.
-        $endsLine = str_ends_with($tokens[$previous]['content'], $phpcsFile->eolChar);
-        $previousLine = $tokens[$previous]['line'] + ($endsLine ? 1 : 0);
-        if (($tokens[$ptr]['line'] - $previousLine) < ($endsLine ? 1 : 2)) {
+        if (LayoutHelper::countBlankLinesBetween($phpcsFile, $previous, $ptr) === 0) {
             return;
         }
 
+        // A `//` comment's token holds its own line break, so the fix doesn't add one after it.
+        $endsLine = str_ends_with($phpcsFile->getTokens()[$previous]['content'], $phpcsFile->eolChar);
         if ($phpcsFile->addFixableError($error, $ptr, $code)) {
             $break = $endsLine ? '' : $phpcsFile->eolChar;
             FixerHelper::replaceBetween($phpcsFile, $previous, $ptr, $break . $indent);
