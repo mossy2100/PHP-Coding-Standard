@@ -1107,6 +1107,42 @@ indent of at least one level passes. `case (` with the first condition on the sa
 
 ---
 
+### A Condition Split Only Inside a Call
+
+**Issue:** A control structure's condition can span lines only because a call or array in it does, as in `if (foo(`.
+4.7 says a single argument split across lines "does not constitute splitting the argument list itself". It's unclear
+whether the same goes for a condition.
+
+**Decision:** It doesn't. A condition that spans lines is split, wherever the line breaks are, so its first condition
+goes on the line after `(`, and `)` with `{` on a line of their own. The same goes for a `case` condition, which is then
+wrapped in parentheses:
+
+```php
+if (
+    $a && foo(
+        $b,
+    )
+) {
+    run();
+}
+
+switch (true) {
+    case (
+        foo(
+            $a,
+        )
+    ):
+        run();
+        break;
+}
+```
+
+**Why:** 4.7's exemption is only for a call's argument list, as "A Split Array Default Value" (4.5) and "One Value Split
+Over Lines" (11) read it too. Each control structure's rule is about its expression spanning lines, not about where the
+breaks fall.
+
+---
+
 ## 5.2 `switch`, `case`, `match`
 
 ### Single-line `match`
