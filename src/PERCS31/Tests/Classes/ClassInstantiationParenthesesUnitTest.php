@@ -7,27 +7,45 @@ namespace PERCS31\Tests\Classes;
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffTestCase;
 
 /**
- * Unit tests for PERCS31.Classes.ClassInstantiationNoBrackets sniff.
+ * Unit tests for PERCS31.Classes.ClassInstantiationParentheses sniff.
  */
-class ClassInstantiationNoBracketsUnitTest extends AbstractSniffTestCase
+class ClassInstantiationParenthesesUnitTest extends AbstractSniffTestCase
 {
     /**
      * Returns the lines where errors should occur.
      *
+     * @param string $testFile The name of the fixture file.
      * @return array<int, int> Line number => error count.
      */
-    protected function getErrorList(): array
+    protected function getErrorList(string $testFile = ''): array
     {
+        // An argument list after new (expression).
+        if ($testFile === 'ClassInstantiationParenthesesUnitTest.2.inc') {
+            return [
+                // new (expression) with no argument list.
+                18 => 1,
+                19 => 1,
+                // Two in an array, and one with comments.
+                20 => 2,
+                21 => 1,
+            ];
+        }
+
         return [];
     }
 
     /**
      * Returns the lines where warnings should occur.
      *
+     * @param string $testFile The name of the fixture file.
      * @return array<int, int> Line number => warning count.
      */
-    protected function getWarningList(): array
+    protected function getWarningList(string $testFile = ''): array
     {
+        if ($testFile === 'ClassInstantiationParenthesesUnitTest.2.inc') {
+            return [];
+        }
+
         return [
             // ->.
             16 => 1,

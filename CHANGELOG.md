@@ -487,7 +487,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `OceanMoon.WhiteSpace.ScopeIndent` is now `PERCS31.WhiteSpace.ScopeIndent`, and `OceanMoon\Sniffs\...` is now
   `PERCS31\Sniffs\...`, or `Jumbo\Sniffs\...` for a sniff only Jumbo uses. Update any `phpcs:ignore` comments or
   `<exclude>` rules that name them.
-- **`PERCS31.Classes.ClassInstantiationNoBrackets` is now a warning, and safer.** Renamed from
+- **`PERCS31.Classes.ClassInstantiationParentheses` is now a warning, and safer.** Renamed from
   `OceanMoon.Classes.ClassInstantiationNoBrackets`. As PER Coding Style 3.1 says SHOULD, `(new Foo())->bar()` is now a
   warning, not an error, fixed to `new Foo()->bar()`. It now covers `::` as well as `->` and `?->`, and only reports
   parentheses holding exactly one `new` expression, so `(new Foo() ?: $default)->bar()` and `new self(new Foo())->bar()`
@@ -598,7 +598,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`phpcs` never finished on some arrays.** An array with a closure, an arrow function, `array()` or a `match` in one
   element, and a value wrapped onto the line after `=>` in a later one, made `phpcs` and `phpcbf` run until killed. With
   Jumbo, so did a condition with an arrow function before a wrapped operator.
-- **The fix for `return(new Foo())->bar()` broke the code.** `PERCS31.Classes.ClassInstantiationNoBrackets` removed the
+- **The fix for `return(new Foo())->bar()` broke the code.** `PERCS31.Classes.ClassInstantiationParentheses` removed the
   parentheses and left `returnnew Foo()->bar()`, a parse error. The same went for `echo`, `print`, `throw` and `yield`.
   The fix now leaves a space. `clone(new Foo())->bar` is no longer reported, as those parentheses hold `clone()`'s
   arguments.
@@ -654,8 +654,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `$object->{$method}(` and `'strlen'(` weren't checked, so a split argument list with no trailing comma passed, as did
   a comma on one line. `PERCS31.Formatting.TrailingComma` now checks them. Auto-fixable.
 - **`new (expression)` with no argument list (breaking).** `new (className())` passed, though PER Coding Style 3.1
-  requires the parentheses of an argument list on every instantiation. The new
-  `PERCS31.Classes.DynamicClassInstantiation` reports it, and fixes it to `new (className())()`.
+  requires the parentheses of an argument list on every instantiation. `PERCS31.Classes.ClassInstantiationParentheses`
+  reports it, as `MissingParentheses`, and fixes it to `new (className())()`.
 - **A `match` whose subject spans lines.** `match ($this->lookup([` then the argument's lines then `])) {` was reported
   by `PERCS31.ControlStructures.ControlStructureSpacing`, and the fix moved the call onto a line of its own. PER Coding
   Style 3.1 only gives that rule to `if`, `switch`, `while` and `for`, so a multi-line `match` now only has the spaces
@@ -745,10 +745,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `OceanMoon.PHP.DisallowMultiConstantDefinition` is gone. A comma inside parentheses isn't read as a second constant,
   and the fix keeps the type and modifiers, e.g. `final public const int B = 2;`. Update any `phpcs:ignore` comments or
   `<exclude>` rules that name the old code.
-- **The fix for `'make'(new Foo())->bar()` broke the code.** `PERCS31.Classes.ClassInstantiationNoBrackets` took the
-  parentheses of a call through a string or an array, as in `[$factory, 'make'](new Foo())->bar()`, for parentheses
-  around the `new`, and its fix removed them, leaving a parse error. They hold the call's arguments, so they're no
-  longer reported.
+- **The fix for `'make'(new Foo())->bar()` broke the code.** `PERCS31.Classes.ClassInstantiationParentheses` took the
+  parentheses of a call through a string or an array, as in `[$factory, 'make'](new Foo())->bar()`, for parentheses around the
+  `new`, and its fix removed them, leaving a parse error. They hold the call's arguments, so they're no longer reported.
 - **The fix for `declare(ticks=1) {echo 1;}` deleted the `;`.** For a block `declare` on one line with no space before
   its closing brace, `PERCS31.Files.DeclareStatement`'s fix replaced the `;` with the brace's indent, leaving a parse
   error. It now gives `declare(ticks=1) {`, then `echo 1;`, then `}`.
@@ -762,7 +761,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **An array argument in a call through an array or a string.** In `$handlers['x'](` or `[$object, 'method'](`, a
   multi-line array argument on a line of its own was reported by `PERCS31.Arrays.MultiLineArrayLayout`, though it's an
   argument in an argument list. One helper now decides whether parentheses hold arguments, for every sniff that asks.
-  `PERCS31.Classes.ClassInstantiationNoBrackets` also reports `(new Foo())->bar()` straight after a block's closing
+  `PERCS31.Classes.ClassInstantiationParentheses` also reports `(new Foo())->bar()` straight after a block's closing
   brace, which it took for a call.
 - A `throw` or `exit` expression in a `case`. `$b = foo() ?? throw new Exception();` in a `case` was reported twice, by
   `PERCS31.ControlStructures.SwitchDeclaration.BreakNotNewLine` and
@@ -770,7 +769,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   excluded, and `ScopeClosingBrace` no longer checks a `case` or `default`, which has no braces. A terminating statement
   that shares a line is still reported, once, and the message no longer calls a `break` a closing brace.
 - Parentheses around `new` after `include` or `require`. `include (new Foo())->path()` wasn't reported by
-  `PERCS31.Classes.ClassInstantiationNoBrackets`, though `include` and `require` are keywords, so the parentheses only
+  `PERCS31.Classes.ClassInstantiationParentheses`, though `include` and `require` are keywords, so the parentheses only
   group the expression.
 - Parentheses after `clone` that hold part of what is cloned. PHP reads `clone($a)->b` as a clone of `$a->b`, so `clone`
   has no parentheses of its own there, but it passed. `PERCS31.PHP.RequireCloneParentheses` now reports it as

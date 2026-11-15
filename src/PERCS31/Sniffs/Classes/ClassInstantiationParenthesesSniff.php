@@ -12,11 +12,12 @@ use PHP_CodeSniffer\Util\Tokens;
 use PHPCSUtils\Tokens\Collections;
 
 /**
- * Warns about parentheses around a class instantiation that's immediately dereferenced, e.g. `(new Foo())->bar()`.
+ * Checks the parentheses of a class instantiation: none around one that's immediately dereferenced, as in
+ * `(new Foo())->bar()`, and an argument list after `new (expression)`, as in `new (className())()`.
  *
- * PER Coding Style 3.1, section 4, says that when accessing a class member immediately after instantiating a class,
- * the instantiation SHOULD NOT be wrapped in parentheses. PHP 8.4 allows `new Foo()->bar()`. It's a SHOULD, so this is
- * a warning.
+ * Unnecessary parentheses: PER Coding Style 3.1, section 4, says that when accessing a class member immediately after
+ * instantiating a class, the instantiation SHOULD NOT be wrapped in parentheses. PHP 8.4 allows `new Foo()->bar()`.
+ * It's a SHOULD, so this is a warning.
  *
  * Only parentheses holding exactly one `new` expression, followed by `->`, `?->` or `::`, are reported. So
  * `(new Foo() ?: $default)->bar()` is left alone, as removing them would change its meaning, and so is a function
@@ -34,10 +35,20 @@ use PHPCSUtils\Tokens\Collections;
  *
  * SlevomatCodingStandard.PHP.UselessParentheses has a similar check (enableCheckAroundNew), but it misses `::` and
  * removes the parentheses from `(new Foo() ?: new Bar())->baz()`, changing its meaning.
+ *
+ * A missing argument list: section 4 also says that when instantiating a new class, parentheses MUST always be
+ * present, even when there are no arguments passed to the constructor. PSR12.Classes.ClassInstantiation checks that,
+ * but it stops at the first `(` after `new`, and takes it for the argument list. In `new (className())`, the
+ * parentheses hold the expression that gives the class, and there's no argument list, so it passes. This sniff reports
+ * it, as MissingParentheses, an error. It only looks at a `new` followed by `(`, and leaves every other form to the
+ * PSR-12 sniff. SlevomatCodingStandard.ControlStructures.NewWithParentheses reports it too, but its fix turns
+ * `new Foo instanceof Bar` into `new Foo instanceof Bar()`, which PHP rejects.
  */
-class ClassInstantiationNoBracketsSniff implements Sniff
+class ClassInstantiationParenthesesSniff implements Sniff
 {
     public const string CODE_UNNECESSARY = 'NewWithUnnecessaryParentheses';
+
+    public const string CODE_MISSING_PARENTHESES = 'MissingParentheses';
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -46,7 +57,7 @@ class ClassInstantiationNoBracketsSniff implements Sniff
      */
     public function register(): array
     {
-        return [T_OPEN_PARENTHESIS];
+        return [T_OPEN_PARENTHESIS, T_NEW];
     }
 
     /**
@@ -56,6 +67,21 @@ class ClassInstantiationNoBracketsSniff implements Sniff
      * @param int $stackPtr The position of the current token in the stack.
      */
     public function process(File $phpcsFile, int $stackPtr): void
+    {
+        if ($phpcsFile->getTokens()[$stackPtr]['code'] === T_NEW) {
+            $this->checkDynamicClass($phpcsFile, $stackPtr);
+        } else {
+            $this->checkGrouping($phpcsFile, $stackPtr);
+        }
+    }
+
+    /**
+     * Warn about parentheses that only group a `new` expression that's then dereferenced, and fix it by removing them.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the opening parenthesis.
+     */
+    private function checkGrouping(File $phpcsFile, int $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
         $closer = $tokens[$stackPtr]['parenthesis_closer'] ?? null;
@@ -120,5 +146,36 @@ class ClassInstantiationNoBracketsSniff implements Sniff
         FixerHelper::blankBetween($phpcsFile, $end, ($closer + 1));
 
         $phpcsFile->fixer->endChangeset();
+    }
+
+    /**
+     * Report `new (expression)` with no argument list after it, and fix it by adding `()`.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of `new`.
+     */
+    private function checkDynamicClass(File $phpcsFile, int $stackPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $opener = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
+        if ($opener === false || $tokens[$opener]['code'] !== T_OPEN_PARENTHESIS) {
+            return;
+        }
+
+        // The parentheses hold the class, and the argument list follows them.
+        $closer = $tokens[$opener]['parenthesis_closer'] ?? null;
+        if (!is_int($closer)) {
+            return;
+        }
+
+        $after = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($closer + 1), null, true);
+        if ($after !== false && $tokens[$after]['code'] === T_OPEN_PARENTHESIS) {
+            return;
+        }
+
+        $error = 'Parentheses must be used when instantiating a new class';
+        if ($phpcsFile->addFixableError($error, $stackPtr, self::CODE_MISSING_PARENTHESES)) {
+            $phpcsFile->fixer->addContent($closer, '()');
+        }
     }
 }

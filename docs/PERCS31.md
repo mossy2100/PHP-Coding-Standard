@@ -223,9 +223,8 @@ section gives the reason.
 | `PERCS31.Attributes.DisallowMultipleAttributesPerLine`     | Separate attribute blocks on separate lines                         | Yes     |
 | `PERCS31.Classes.AnonClassLayout`                          | The space before an anonymous class's `{` and `extends`             | Yes     |
 | `PERCS31.Classes.ClassDeclaration`                         | Class declarations, allowing an empty body as `{}`                  | Yes     |
-| `PERCS31.Classes.ClassInstantiationNoBrackets`             | A warning for `(new Foo())->bar()`                                  | Yes     |
+| `PERCS31.Classes.ClassInstantiationParentheses`            | No `(new Foo())->bar()`, and an argument list after `new (...)`     | Yes     |
 | `PERCS31.Classes.ConstantDeclaration`                      | One space after a class constant's `const`, and after its type      | Yes     |
-| `PERCS31.Classes.DynamicClassInstantiation`                | An argument list after `new (expression)`                           | Yes     |
 | `PERCS31.Classes.EnumMemberVisibility`                     | `private`, not `protected`, for a method or constant in an enum     | Yes     |
 | `PERCS31.Classes.PropertyDeclaration`                      | No leading `_`, no `var`, and a visibility on a property            | No      |
 | `PERCS31.Classes.PropertyHooks`                            | A hook list's layout, `get` first, and a promoted parameter's hooks | Partly  |
@@ -658,10 +657,13 @@ empty body, the checks on `extends` and `implements` still run. See [PERCS31.For
 
 ---
 
-### PERCS31.Classes.ClassInstantiationNoBrackets
+### PERCS31.Classes.ClassInstantiationParentheses
 
-Warns about parentheses around a class instantiation that's immediately dereferenced with `->`, `?->` or `::`, such as
-`(new Foo())->bar()`.
+Checks the parentheses of a class instantiation: none around one that's immediately dereferenced, and an argument list
+after `new (expression)`.
+
+**Unnecessary parentheses.** Parentheses around a class instantiation that's immediately dereferenced with `->`, `?->`
+or `::`, such as `(new Foo())->bar()`, get a warning, as `NewWithUnnecessaryParentheses`.
 
 **Why:** [PER Coding Style 3.1, Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says the instantiation SHOULD NOT be wrapped in parentheses, and PHP 8.4 allows
 `new Foo()->bar()`. As it's a SHOULD, this is a warning. `SlevomatCodingStandard.PHP.UselessParentheses` has a similar
@@ -676,7 +678,17 @@ A keyword before the parentheses doesn't make them a call's. So `echo (new Foo()
 The parentheses in `clone(new Foo())->bar` group `new Foo()` too, as PHP reads that as a clone of `bar`. They're
 reported by [`PERCS31.PHP.RequireCloneParentheses`](#percs31phprequirecloneparentheses), whose fix keeps a pair for `clone`, giving `clone(new Foo()->bar)`.
 
-**Auto-fixable:** yes, unless a comment is between the parentheses and the expression.
+**A missing argument list.** `new (expression)` needs an argument list after it, as in `new (className())()`. Without
+one, it's reported as `MissingParentheses`, an error.
+
+**Why:** Section 4 also says parentheses MUST always be present when instantiating a class, even with no arguments.
+`PSR12.Classes.ClassInstantiation` checks that, but it takes the first `(` after `new` for the argument list. In
+`new (className())`, the parentheses hold the expression that gives the class, so it passes.
+`SlevomatCodingStandard.ControlStructures.NewWithParentheses` reports it, but its fix turns `new Foo instanceof Bar`
+into `new Foo instanceof Bar()`, which PHP rejects. This check only looks at a `new` followed by `(`, so the PSR-12
+sniff still checks every other form.
+
+**Auto-fixable:** yes, unless a comment is between the unnecessary parentheses and the expression.
 
 **Good:**
 
@@ -684,12 +696,16 @@ reported by [`PERCS31.PHP.RequireCloneParentheses`](#percs31phprequirecloneparen
 $total = new Calculator()->add(1, 2);
 
 $fallback = ($cached ?: new Calculator())->add(1, 2);
+
+$handler = new ($this->handlerClass($request))();
 ```
 
 **Bad:**
 
 ```php
 $total = (new Calculator())->add(1, 2);
+
+$handler = new ($this->handlerClass($request));
 ```
 
 ---
@@ -728,35 +744,6 @@ final class Config
 {
     public const  int  LIMIT = 10;
 }
-```
-
----
-
-### PERCS31.Classes.DynamicClassInstantiation
-
-Requires an argument list after `new (expression)`, as in `new (className())()`.
-
-**Why:** [PER Coding Style 3.1, Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says parentheses MUST always be present when instantiating a class, even with
-no arguments. `PSR12.Classes.ClassInstantiation` checks that, but it takes the first `(` after `new` for the argument
-list. In `new (className())`, the parentheses hold the expression that gives the class, so it passes.
-`SlevomatCodingStandard.ControlStructures.NewWithParentheses` reports it, but its fix turns `new Foo instanceof Bar`
-into `new Foo instanceof Bar()`, which PHP rejects.
-
-This sniff only looks at a `new` followed by `(`. It's a sniff of its own, not a subclass, so the PSR-12 sniff still
-checks every other form.
-
-**Auto-fixable:** yes.
-
-**Good:**
-
-```php
-$handler = new ($this->handlerClass($request))();
-```
-
-**Bad:**
-
-```php
-$handler = new ($this->handlerClass($request));
 ```
 
 ---

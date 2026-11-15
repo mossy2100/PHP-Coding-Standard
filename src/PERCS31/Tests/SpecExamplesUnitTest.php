@@ -51,7 +51,7 @@ class SpecExamplesUnitTest extends TestCase
         // Not allowed: too many namespace segments in a group.
         '06-3.inc' => ['5 PSR12.Namespaces.CompoundNamespaceDepth.TooDeep'],
         // SHOULD be avoided: (new Foo())->someMethod().
-        '12-4.inc' => ['3 PERCS31.Classes.ClassInstantiationNoBrackets.NewWithUnnecessaryParentheses'],
+        '12-4.inc' => ['3 PERCS31.Classes.ClassInstantiationParentheses.NewWithUnnecessaryParentheses'],
         // A promoted hook with no trailing comma (2.6).
         '41-4.9.inc' => ['6 SlevomatCodingStandard.Functions.RequireTrailingCommaInDeclaration.MissingTrailingComma'],
         // Not allowed: a promoted hook that's too complex. It has no trailing comma either (2.6).
