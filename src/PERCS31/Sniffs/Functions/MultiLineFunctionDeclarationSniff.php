@@ -123,13 +123,8 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
     {
         $tokens = $phpcsFile->getTokens();
         $closer = $tokens[$stackPtr]['parenthesis_closer'] ?? null;
-        $opener = $tokens[$stackPtr]['scope_opener'] ?? null;
-        if ($tokens[$stackPtr]['code'] !== T_CLOSURE || !is_int($closer) || !is_int($opener)) {
-            return false;
-        }
-
-        $use = $phpcsFile->findNext(T_USE, ($closer + 1), $opener);
-        if ($use === false || $tokens[$use]['line'] === $tokens[$closer]['line']) {
+        $use = $this->findUse($phpcsFile, $stackPtr);
+        if (!is_int($closer) || $use === null || $tokens[$use]['line'] === $tokens[$closer]['line']) {
             return false;
         }
 
@@ -141,6 +136,27 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
         }
 
         return true;
+    }
+
+    /**
+     * Find a closure's `use`, between its parameter list and its body.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the function keyword.
+     * @return int|null The position of `use`, or null if it isn't a closure, or has no `use`.
+     */
+    private function findUse(File $phpcsFile, int $stackPtr): ?int
+    {
+        $tokens = $phpcsFile->getTokens();
+        $closer = $tokens[$stackPtr]['parenthesis_closer'] ?? null;
+        $opener = $tokens[$stackPtr]['scope_opener'] ?? null;
+        if ($tokens[$stackPtr]['code'] !== T_CLOSURE || !is_int($closer) || !is_int($opener)) {
+            return null;
+        }
+
+        $use = $phpcsFile->findNext(T_USE, ($closer + 1), $opener);
+
+        return $use === false ? null : $use;
     }
 
     /**
@@ -203,12 +219,9 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
         $tokens = $phpcsFile->getTokens();
         $functionIndent = LayoutHelper::lineIndent($phpcsFile, $stackPtr);
         $lists = [[$tokens[$stackPtr]['parenthesis_opener'] ?? null, $tokens[$stackPtr]['parenthesis_closer'] ?? null]];
-        $scopeOpener = $tokens[$stackPtr]['scope_opener'] ?? null;
-        if ($tokens[$stackPtr]['code'] === T_CLOSURE && is_int($lists[0][1]) && is_int($scopeOpener)) {
-            $use = $phpcsFile->findNext(T_USE, ($lists[0][1] + 1), $scopeOpener);
-            if ($use !== false) {
-                $lists[] = [$tokens[$use]['parenthesis_opener'] ?? null, $tokens[$use]['parenthesis_closer'] ?? null];
-            }
+        $use = $this->findUse($phpcsFile, $stackPtr);
+        if ($use !== null) {
+            $lists[] = [$tokens[$use]['parenthesis_opener'] ?? null, $tokens[$use]['parenthesis_closer'] ?? null];
         }
 
         foreach ($lists as [$opener, $closer]) {
@@ -319,12 +332,9 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
         }
 
         // A closure's use list is checked too, as the parent does.
-        $scopeOpener = $tokens[$stackPtr]['scope_opener'] ?? null;
-        if ($tokens[$stackPtr]['code'] === T_CLOSURE && is_int($scopeOpener)) {
-            $use = $phpcsFile->findNext(T_USE, ($closer + 1), $scopeOpener);
-            $useCloser = $use === false ? null : ($tokens[$use]['parenthesis_closer'] ?? null);
-            $closer = is_int($useCloser) ? $useCloser : $closer;
-        }
+        $use = $this->findUse($phpcsFile, $stackPtr);
+        $useCloser = $use === null ? null : ($tokens[$use]['parenthesis_closer'] ?? null);
+        $closer = is_int($useCloser) ? $useCloser : $closer;
 
         $parameterCloser = $tokens[$opener]['parenthesis_closer'];
         for ($i = ($opener + 1); $i < $closer; $i++) {
