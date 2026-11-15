@@ -260,7 +260,7 @@ section gives the reason.
 | `PERCS31.Operators.OperatorPlacement`                      | A wrapped binary operator starts the next line, indented once       | Yes     |
 | `PERCS31.Operators.OperatorSpacing`                        | At least one space around binary operators, including `\|>`         | Yes     |
 | `PERCS31.PHP.LowerCaseKeyword`                             | Keywords in lower case, including a property hook's `get` or `set`  | Yes     |
-| `PERCS31.PHP.LowerCaseType`                                | Types in lower case, including a `set` hook's parameter type        | Yes     |
+| `PERCS31.PHP.LowerCaseType`                                | Types in lower case, including a `set` hook's and an enum's type    | Yes     |
 | `PERCS31.PHP.RequireCloneParentheses`                      | A warning for `clone $a`, not `clone($a)`                           | Yes     |
 | `PERCS31.PHP.TypeCast`                                     | `(bool)`, `(int)`, `(float)` and `(string)` in a cast               | Yes     |
 | `PERCS31.Strings.HeredocIndentation`                       | Where a heredoc or nowdoc begins, and its indentation               | Yes     |
@@ -662,9 +662,6 @@ written as `{}` on one line, e.g. `class Foo {}`. This replaces `PSR2.Classes.Cl
 **Why:** `PSR2.Classes.ClassDeclaration` rejects an empty body written as `{}` on one line, which
 [PER Coding Style 3.1, Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the parent. For an
 empty body, the checks on `extends` and `implements` still run. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
-
-It also requires a backed enum's type in lower case, as in `enum Suit: string`, as [Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says all types MUST be in
-lower case. `Generic.PHP.LowerCaseType` doesn't check a backing type.
 
 **Auto-fixable:** yes.
 
@@ -2553,11 +2550,11 @@ class Counter
 
 ### PERCS31.PHP.LowerCaseType
 
-Requires PHP's types in lower case, including in a `set` hook's parameter. This replaces `Generic.PHP.LowerCaseType`,
-which it extends.
+Requires PHP's types in lower case, including in a `set` hook's parameter and a backed enum's type. This replaces
+`Generic.PHP.LowerCaseType`, which it extends.
 
 **Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says all PHP types MUST be in lower case. The Generic sniff checks
-parameters, return types, properties, typed constants and casts, with two gaps:
+parameters, return types, properties, typed constants and casts, with three gaps:
 
 - It doesn't see the type of a `set` hook's parameter, as in `set(INT $value)`. PHP_CodeSniffer doesn't know about
   hooks, so it reads that type as an expression. This sniff checks it, with the parent's `ParamTypeFound` code. A type
@@ -2565,8 +2562,8 @@ parameters, return types, properties, typed constants and casts, with two gaps:
   `Generic.PHP.LowerCaseConstant`.
 - After an attribute, as in `set(#[Sensitive] INT $value)`, it reads the parameter as a property, and reports its type
   as `PropertyTypeFound`. This sniff drops that report, and makes its own.
-
-A backed enum's type is checked by [`PERCS31.Classes.ClassDeclaration`](#percs31classesclassdeclaration).
+- It doesn't check a backed enum's type, as in `enum Suit: STRING`. This sniff does, as `BackingTypeFound`, in the
+  parent's style.
 
 **Auto-fixable:** yes, as the parent.
 

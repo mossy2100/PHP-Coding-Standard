@@ -30,6 +30,9 @@ class LowerCaseTypeUnitTest extends AbstractSniffTestCase
             47 => 2,
             // After an attribute, once.
             52 => 1,
+            // A backed enum's type.
+            68 => 1,
+            73 => 1,
         ];
     }
 

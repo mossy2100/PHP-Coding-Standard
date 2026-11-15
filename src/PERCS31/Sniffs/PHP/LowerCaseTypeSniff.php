@@ -10,16 +10,18 @@ use PHP_CodeSniffer\Standards\Generic\Sniffs\PHP\LowerCaseTypeSniff as GenericSn
 use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Requires PHP's types in lower case, including in a `set` hook's parameter.
+ * Requires PHP's types in lower case, including in a `set` hook's parameter and a backed enum's type.
  *
  * PER Coding Style 3.1, section 2.5, says all PHP types MUST be in lower case. This extends Generic.PHP.LowerCaseType,
- * and changes two things:
+ * and changes three things:
  * - It checks the type of a `set` hook's parameter, as in `set(INT $value)`. PHP_CodeSniffer doesn't know about
  *   property hooks (PHP 8.4), so it reads that type as an expression, and the parent doesn't see it. Only a type read
  *   as a plain name is checked. One read as a keyword, such as `SELF` or `NULL`, is already reported there by
  *   PERCS31.PHP.LowerCaseKeyword or Generic.PHP.LowerCaseConstant.
  * - It drops the parent's reports for a `set` hook's parameter after an attribute, as in `set(#[A] INT $value)`. There,
  *   the parent reads the parameter as a property, and reports its type as PropertyTypeFound.
+ * - It checks a backed enum's type, as in `enum Suit: STRING`, which the parent doesn't. That's reported as
+ *   BackingTypeFound, in the parent's style.
  */
 class LowerCaseTypeSniff extends GenericSniff
 {
@@ -70,6 +72,9 @@ class LowerCaseTypeSniff extends GenericSniff
         $tokens = $phpcsFile->getTokens();
         if ($tokens[$stackPtr]['code'] !== T_STRING) {
             parent::process($phpcsFile, $stackPtr);
+            if ($tokens[$stackPtr]['code'] === T_ENUM) {
+                $this->checkBackingType($phpcsFile, $stackPtr);
+            }
 
             return;
         }
@@ -98,6 +103,30 @@ class LowerCaseTypeSniff extends GenericSniff
                 $this->processType($phpcsFile, $i, $content, $error, 'ParamTypeFound');
             }
         }
+    }
+
+    /**
+     * Report a backed enum's type that isn't in lower case, as in `enum Suit: STRING`, and fix it by lowering it.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $enumPtr The position of the `enum` keyword.
+     */
+    private function checkBackingType(File $phpcsFile, int $enumPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $name = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($enumPtr + 1), null, true);
+        $colon = $name === false ? false : $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($name + 1), null, true);
+        if ($colon === false || $tokens[$colon]['code'] !== T_COLON) {
+            return;
+        }
+
+        $type = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($colon + 1), null, true);
+        if ($type === false || $tokens[$type]['code'] !== T_STRING) {
+            return;
+        }
+
+        $error = 'PHP enum backing type declarations must be lowercase; expected "%s" but found "%s"';
+        $this->processType($phpcsFile, $type, $tokens[$type]['content'], $error, 'BackingTypeFound');
     }
 
     /**

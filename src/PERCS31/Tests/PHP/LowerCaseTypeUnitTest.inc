@@ -58,3 +58,16 @@ final class Hooks
         return set($a);
     }
 }
+
+// A backed enum's type.
+enum Lower: string
+{
+    case A = 'a';
+}
+
+enum Upper: STRING
+{
+    case A = 'a';
+}
+
+enum Mixed: Int {}

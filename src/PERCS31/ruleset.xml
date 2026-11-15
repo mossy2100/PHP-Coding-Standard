@@ -119,8 +119,7 @@
     <!-- A line indented further than its scope, after a complete statement (2.4, 5) -->
     <rule ref="PERCS31.WhiteSpace.ConsistentIndent"/>
 
-    <!-- Brace sniffs, extended to allow an empty body as {} (4, 4.4, 7, 8). ClassDeclaration also requires a backed
-         enum's type in lower case (2.5, 9). -->
+    <!-- Brace sniffs, extended to allow an empty body as {} (4, 4.4, 7, 8) -->
     <rule ref="PERCS31.Classes.ClassDeclaration"/>
     <rule ref="PERCS31.Functions.MultiLineFunctionDeclaration">
         <!-- Replaced by the sniff's own BlankLine check, which allows the blank lines PER does (2.3, 12.2, 12.4) -->
@@ -153,7 +152,7 @@
 
     <!-- ====== TYPES (2.5) ====== -->
 
-    <!-- Types in lower case, including in a set hook's parameter (2.5) -->
+    <!-- Types in lower case, including in a set hook's parameter and a backed enum's type (2.5, 9) -->
     <rule ref="PERCS31.PHP.LowerCaseType"/>
 
     <!-- The canonical form of a type in a cast: (bool), (int), (float) and (string), not (boolean), (integer), (double)
