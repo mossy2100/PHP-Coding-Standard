@@ -510,10 +510,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`null` must be last in a union type (breaking).** `int|null` and `null|int|string` are now errors, as PER Coding
   Style 3.1 requires `null` last. Set by `nullPosition` on `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat`.
   Auto-fixable.
-- **`PERCS31.Classes.PropertyDeclaration` checks `get` before `set` (breaking).** When a property has both hooks, `set`
-  before `get` is now an error (`HookOrder`). PER Coding Style 3.1 requires `{ get; set; }` on an abstract or interface
-  property, so PERCS31 only checks a hook list with no bodies, and the Jumbo standard checks every hook list.
-  Auto-fixable, unless there's a comment between the hooks.
+- **`PERCS31.Classes.PropertyHookLayout` checks `get` before `set` (breaking).** When a property has both hooks, `set`
+  before `get` is now an error (`HookOrder`), in every hook list. PER Coding Style 3.1 requires `{ get; set; }` on an
+  abstract or interface property, and every example in its section 4.9 has `get` first too. Auto-fixable, unless there's
+  a comment between the hooks.
 - **An arrow function may span lines.** Its expression can go on the next line, as PER Coding Style 3.1 allows.
   `SlevomatCodingStandard.Functions.ArrowFunctionDeclaration` previously required it on one line.
 - **Array formatting follows PER Coding Style, with no alignment (breaking).** `Jumbo.Arrays.ArrayDeclaration` was

@@ -227,8 +227,8 @@ section gives the reason.
 | `PERCS31.Classes.DynamicClassInstantiation`                | An argument list after `new (expression)`                           | Yes     |
 | `PERCS31.Classes.EnumMemberVisibility`                     | `private`, not `protected`, for a method or constant in an enum     | Yes     |
 | `PERCS31.Classes.PromotedPropertyHooks`                    | A hook on a promoted parameter is a single short hook on one line   | No      |
-| `PERCS31.Classes.PropertyDeclaration`                      | No leading `_`, no `var`, a visibility, and `get` before `set`      | Partly  |
-| `PERCS31.Classes.PropertyHookLayout`                       | A hook list's and hook body's braces, and a short hook's `=>`       | Partly  |
+| `PERCS31.Classes.PropertyDeclaration`                      | No leading `_`, no `var`, and a visibility on a property            | No      |
+| `PERCS31.Classes.PropertyHookLayout`                       | A hook list's braces and spacing, a short hook's `=>`, `get` first  | Partly  |
 | `PERCS31.Classes.TraitAliasSpacing`                        | One space after a visibility or `final` in a trait's `as` clause    | Yes     |
 | `PERCS31.ControlStructures.BodyOnNextLine`                 | A structure's body on the line after its `{`, allowing `{}`         | Yes     |
 | `PERCS31.ControlStructures.ControlStructureEmptyStatement` | Braces on a structure with no body, `else` included                 | Yes     |
@@ -864,14 +864,13 @@ which Slevomat sniffs make. The last of those, `Multiple`, must stay excluded fo
 hook list as a second property, so it reports every property with hooks. It also excludes the parent's `Underscore`
 warning, which this sniff replaces with a `LeadingUnderscore` error, as section 4.3 says MUST NOT. The parent doesn't
 check a promoted constructor property either, which [PER Coding Style 3.1, Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants)'s rules on underscores and
-visibility cover. This sniff also checks that `get` comes before `set` in a property's hooks, which no inherited sniff
-does.
+visibility cover. `get` before `set` in a property's hooks is checked by [`PERCS31.Classes.PropertyHookLayout`](#percs31classespropertyhooklayout).
 
 A promoted constructor parameter with no visibility, such as `readonly int $a` or PHP 8.5's `final int $a`, is a
 `ScopeMissing` error too, as section 4.3 says visibility MUST be declared on all properties. A set-visibility alone, as
 in `private(set) int $a`, is allowed, as the public get-visibility MAY then be left out.
 
-**Auto-fixable:** only `HookOrder`, unless there's a comment between the hooks.
+**Auto-fixable:** no.
 
 It reports:
 
@@ -879,9 +878,6 @@ It reports:
   parameters. Section 4.3 says "a single underscore", so a double one, as in `$__a`, passes, as it does on a method.
 - The `var` keyword (`VarUsed`).
 - A property with no visibility (`ScopeMissing`).
-- `set` before `get` in a property's hooks (`HookOrder`). [PER Coding Style 3.1, Section 4.10](https://www.php-fig.org/per/coding-style/#410-interface-and-abstract-properties) requires `get` first for an
-  abstract or interface property with no hook bodies, e.g. `{ get; set; }`, and every example in section 4.9 has `get`
-  first too. So every hook list is checked, including ones with bodies, `&` or attributes.
 
 `SlevomatCodingStandard.Classes.PropertyDeclaration` checks modifier order and the spacing after the type, and
 `SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition` checks for several properties in one statement.
@@ -896,11 +892,6 @@ class User
 
     public function __construct(private int $id) {}
 }
-
-interface Named
-{
-    public string $name { get; set; }
-}
 ```
 
 **Bad:**
@@ -914,12 +905,6 @@ class User
 
     // Leading underscore on a promoted parameter.
     public function __construct(private int $_id) {}
-}
-
-interface Named
-{
-    // The set hook before the get hook.
-    public string $name { set; get; }
 }
 ```
 
@@ -946,6 +931,9 @@ This sniff checks:
 - A list with no bodies, as on an interface or abstract property, is on one line, written as `{ get; set; }`: a single
   space inside each brace, no space before each `;`, and a single space between operations ([Section 4.10](https://www.php-fig.org/per/coding-style/#410-interface-and-abstract-properties)).
 - A bodiless hook in a list with bodies has no space before its `;`.
+- `get` comes before `set`, reported as `HookOrder`. Section 4.10 requires `get` first for an abstract or interface
+  property, e.g. `{ get; set; }`, and every example in section 4.9 has `get` first too. So every hook list is checked,
+  including ones with bodies, `&` or attributes. It's fixed unless there's a comment between the hooks.
 
 Indentation is checked by `PERCS31.WhiteSpace.ScopeIndent`, and several statements on a line by
 `PERCS31.Formatting.DisallowMultipleStatements`. A hook on a promoted constructor parameter is reported by
@@ -1006,6 +994,8 @@ interface Named
         get ;
         set;
     }
+
+    public string $email { set; get; }
 }
 ```
 

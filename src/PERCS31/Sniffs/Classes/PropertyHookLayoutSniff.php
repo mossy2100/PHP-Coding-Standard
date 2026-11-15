@@ -27,6 +27,9 @@ use PHP_CodeSniffer\Util\Tokens;
  *   single hook whose expression doesn't wrap may be inline, so in a list of short hooks over several lines, each hook
  *   starts on its own line too.
  *
+ * Section 4.10 requires `get` before `set` on an abstract or interface property, and every example in section 4.9 has
+ * `get` first too, so every hook list is checked for it, as HookOrder.
+ *
  * Section 4.10 says a list with no hook bodies, as on an interface or abstract property, MUST be on one line, as
  * `{ get; set; }`: a single space inside each brace, no space before each `;`, and a single space between operations.
  * A bodiless hook in a list with bodies also has no space before its `;`.
@@ -38,8 +41,8 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * A hook on a promoted constructor parameter is reported by PERCS31.Classes.PromotedPropertyHooks, so its body isn't
  * checked here. Indentation is checked by PERCS31.WhiteSpace.ScopeIndent, several statements on a line by
- * PERCS31.Formatting.DisallowMultipleStatements, `get` before `set` by PERCS31.Classes.PropertyDeclaration, and a
- * comment or code after the closing brace by PERCS31.Formatting.AfterClosingBrace.
+ * PERCS31.Formatting.DisallowMultipleStatements, and a comment or code after the closing brace by
+ * PERCS31.Formatting.AfterClosingBrace.
  */
 class PropertyHookLayoutSniff implements Sniff
 {
@@ -75,6 +78,8 @@ class PropertyHookLayoutSniff implements Sniff
 
     public const string CODE_SPACE_INSIDE_HOOK_PARAMETERS = 'SpaceInsideHookParameters';
 
+    public const string CODE_HOOK_ORDER = 'HookOrder';
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -106,6 +111,7 @@ class PropertyHookLayoutSniff implements Sniff
 
         $this->checkOpener($phpcsFile, $opener);
         $this->checkReferences($phpcsFile, $opener, $closer);
+        $this->checkHookOrder($phpcsFile, $opener, $closer);
 
         $this->checkHookParameters($phpcsFile, $opener, $closer);
 
@@ -697,6 +703,85 @@ class PropertyHookLayoutSniff implements Sniff
                 $phpcsFile->eolChar . str_repeat(' ', $hookIndent),
             );
         }
+    }
+
+    /**
+     * Check that the `get` hook comes before the `set` hook, when a property has both.
+     *
+     * PER Coding Style 3.1, section 4.10, requires this order for an abstract or interface property with no hook
+     * bodies, and every example in section 4.9 follows it, so every hook list is checked, including ones with bodies,
+     * `&` or attributes. The fix swaps the two hooks, with their attributes, modifiers and bodies. It isn't offered if
+     * there's a comment between the hooks.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the hook list's opening brace.
+     * @param int $closer The position of the hook list's closing brace.
+     */
+    private function checkHookOrder(File $phpcsFile, int $opener, int $closer): void
+    {
+        $hooks = PropertyHookHelper::parseHooks($phpcsFile, $opener, $closer);
+        if ($hooks === null) {
+            return;
+        }
+
+        $getIndex = null;
+        $setIndex = null;
+        foreach ($hooks as $index => $hook) {
+            if ($hook['name'] === 'get') {
+                $getIndex = $index;
+            } elseif ($hook['name'] === 'set') {
+                $setIndex = $index;
+            }
+        }
+
+        if ($getIndex === null || $setIndex === null || $getIndex < $setIndex) {
+            return;
+        }
+
+        $error = 'The get hook must come before the set hook';
+        $setHook = $hooks[$setIndex];
+        $getHook = $hooks[$getIndex];
+        $isFixable = !$this->hasCommentBetweenHooks($phpcsFile, $opener, $closer, $hooks);
+        $code = self::CODE_HOOK_ORDER;
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $setHook['namePtr'], $code)) {
+            return;
+        }
+
+        $setText = $phpcsFile->getTokensAsString($setHook['start'], ($setHook['end'] - $setHook['start'] + 1));
+        $getText = $phpcsFile->getTokensAsString($getHook['start'], ($getHook['end'] - $getHook['start'] + 1));
+        $phpcsFile->fixer->beginChangeset();
+        foreach ([[$setHook, $getText], [$getHook, $setText]] as [$hook, $text]) {
+            $phpcsFile->fixer->replaceToken($hook['start'], $text);
+            for ($i = ($hook['start'] + 1); $i <= $hook['end']; $i++) {
+                $phpcsFile->fixer->replaceToken($i, '');
+            }
+        }
+
+        $phpcsFile->fixer->endChangeset();
+    }
+
+    /**
+     * Check whether there's a comment in the hook list outside the hooks themselves.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the hook list's opening brace.
+     * @param int $closer The position of the hook list's closing brace.
+     * @param list<array{name: string, start: int, end: int, namePtr: int, hasBody: bool, arrowPtr: int|null,
+     *     bodyOpener: int|null}> $hooks The hooks.
+     * @return bool True if there's a comment between, before or after the hooks.
+     */
+    private function hasCommentBetweenHooks(File $phpcsFile, int $opener, int $closer, array $hooks): bool
+    {
+        $from = $opener + 1;
+        foreach ([...$hooks, ['start' => $closer, 'end' => $closer]] as $hook) {
+            if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, $from, $hook['start']) !== false) {
+                return true;
+            }
+
+            $from = $hook['end'] + 1;
+        }
+
+        return false;
     }
 
     /**

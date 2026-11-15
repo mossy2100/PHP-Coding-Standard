@@ -312,7 +312,7 @@
         </properties>
     </rule>
 
-    <!-- Properties: no leading underscore, no var, a visibility, and get before set (4.3, 4.10) -->
+    <!-- Properties: no leading underscore, no var, and a visibility (4.3) -->
     <rule ref="PERCS31.Classes.PropertyDeclaration">
         <!-- Several properties in one statement are checked by
              SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition. The parent's check also reports every
@@ -331,9 +331,9 @@
         <exclude name="PERCS31.Classes.PropertyDeclaration.Underscore"/>
     </rule>
 
-    <!-- The layout of a property's hook list: its braces, and a short hook's => (4.9, 4.10). One space before a hook's
-         own {, and a set hook's parameter list spaced like a method's, as the examples in 4.9 show. No space after a
-         by-reference hook's &, as for a by-reference parameter (4.5). -->
+    <!-- The layout of a property's hook list: its braces, a short hook's =>, and get before set (4.9, 4.10). One space
+         before a hook's own {, and a set hook's parameter list spaced like a method's, as the examples in 4.9 show. No
+         space after a by-reference hook's &, as for a by-reference parameter (4.5). -->
     <rule ref="PERCS31.Classes.PropertyHookLayout"/>
 
     <!-- A hook on a promoted constructor parameter only as a single short hook on one line (4.9) -->

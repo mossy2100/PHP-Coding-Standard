@@ -382,3 +382,62 @@ class MemberNamedSet
         set => $this->set = $value;
     }
 }
+
+// === get before set (HookOrder) ===
+
+interface HookOrder
+{
+    // Valid.
+    public string $getFirst { get; set; }
+
+    // HookOrder: set before get.
+    public string $setFirst { set; get; }
+
+    // HookOrder: set before get, with &.
+    public string $byReference { set; &get; }
+
+    // HookOrder: set before get, with an attribute.
+    public string $withAttribute { #[Pure] set; get; }
+}
+
+// A hook list with bodies is checked too, as every example in 4.9 has get first.
+class HookOrderWithBodiesDefault
+{
+    public string $notChecked {
+        set => $value;
+        get => 'x';
+    }
+}
+
+// More hook lists with bodies.
+
+abstract class HookOrderWithBodies
+{
+    // HookOrder: arrow hooks.
+    public string $arrows {
+        set => $value;
+        get => 'x';
+    }
+
+    // HookOrder: block hooks, with a parameter list.
+    public string $blocks {
+        set(string $value) {
+            $this->blocks = $value;
+        }
+        get {
+            return $this->blocks;
+        }
+    }
+
+    // HookOrder: a comment between the hooks (not fixable).
+    public string $commented {
+        set => $value; // Why.
+        get => 'x';
+    }
+
+    // Valid.
+    public string $ordered {
+        get => 'x';
+        set => $value;
+    }
+}

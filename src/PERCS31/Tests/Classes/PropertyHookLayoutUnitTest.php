@@ -82,6 +82,16 @@ class PropertyHookLayoutUnitTest extends AbstractSniffTestCase
             // A short hook on the opening brace's line, in a list over several lines.
             326 => 1,
             330 => 1,
+            // HookOrder: bodiless, with &, and with an attribute.
+            394 => 1,
+            397 => 1,
+            400 => 1,
+            // HookOrder in a hook list with bodies.
+            407 => 1,
+            // HookOrder: arrow hooks, block hooks, and a comment between the hooks.
+            418 => 1,
+            424 => 1,
+            434 => 1,
         ];
     }
 
