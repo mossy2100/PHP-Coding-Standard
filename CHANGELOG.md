@@ -14,15 +14,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   every example in PER Coding Style 3.1 writes them, so `$foo -> bar()`, `Foo :: bar()` and `self :: Spades` are
   reported, as `Before` or `After`. A line break is allowed before `->` or `?->` in a split chain, but never around
   `::`. Auto-fixable.
-- **A blank line after an anonymous class's `new` (breaking).** `PERCS31.Attributes.AttributePlacement` now reports an
+- **A blank line after an anonymous class's `new` (breaking).** `PERCS31.Attributes.AttributeLayout` now reports an
   anonymous class's first attribute that comes after a blank line following `new`, as `AnonClass`. PER Coding Style 3.1
   starts the attributes "on the next line after the `new` keyword", and a blank line there passed. A comment there is
   still allowed. Auto-fixable, unless a comment is in the way.
-- **An attribute after other code on its line (breaking).** `PERCS31.Attributes.AttributePlacement` now reports an
+- **An attribute after other code on its line (breaking).** `PERCS31.Attributes.AttributeLayout` now reports an
   attribute that follows other code on its line, as in `public int $a = 1; #[Deprecated]` with its target on the next
   line, as `NotOnOwnLine`. PER Coding Style 3.1 puts an attribute on its own line, and only one that shared a line with
-  its target was reported. It covers a class, function, method, constant, property, enum case, and a hook with a body
-  in braces. Auto-fixable.
+  its target was reported. It covers a class, function, method, constant, property, enum case, and a hook with a body in
+  braces. Auto-fixable.
 - **A space after an anonymous class's arguments (breaking).** `new class ($a)extends Foo` is now reported, by
   `PERCS31.Classes.AnonClassLayout`, as `SpaceAfterArguments`, and so is `new class ($a)implements Foo`. More than one
   space there was already an error, but none passed. Auto-fixable.
@@ -199,7 +199,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   replaces `PSR12.ControlStructures.ControlStructureSpacing`, so update any `phpcs:ignore` comments or `<exclude>` rules
   that name it.
 - **A comment on its own line between an attribute and its parameter is an error (breaking).** Reported by
-  `PERCS31.Attributes.AttributePlacement`. Not auto-fixable.
+  `PERCS31.Attributes.AttributeLayout`. Not auto-fixable.
 - **An attribute can be on a short property hook's line.** Section 12.2 of PER Coding Style 3.1 doesn't list a hook, and
   a short hook, as in `#[A] get => 1;`, fits on a line. An attribute on a hook's parameter now follows the parameter
   rule, instead of being reported.
@@ -213,9 +213,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `PERCS31.Attributes.DisallowMultipleAttributesPerLine`, which replaces the Slevomat sniff of the same name.
   Auto-fixable.
 - **One space after an attribute on its target's line (breaking).** On a short property hook or a closure outside a
-  call, `PERCS31.Attributes.AttributePlacement` requires a single space, as PER Coding Style 3.1 does for a parameter in
-  a single-line list. An enum case is treated as a constant, and a hook with a body in braces, as in `get {`, as a
-  method, so the attribute on either must be on the line before. Auto-fixable.
+  call, `PERCS31.Attributes.AttributeLayout` requires a single space, as PER Coding Style 3.1 does for a parameter in a
+  single-line list. An enum case is treated as a constant, and a hook with a body in braces, as in `get {`, as a method,
+  so the attribute on either must be on the line before. Auto-fixable.
 - **A default value's `=` can be aligned in PERCS31.** It's a binary operator, so PER Coding Style 3.1 only requires at
   least one space. `PERCS31.Operators.OperatorSpacing` now checks it, with the new property `checkDefaultValues`, in
   place of `Squiz.Functions.FunctionDeclarationArgumentSpacing`. The Jumbo standard still requires exactly one space.
@@ -286,7 +286,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`Universal.Attributes.TrailingComma` (breaking).** A trailing comma in an attribute block on one line is an error,
   and so is a missing one in a split block of several attributes, as PER Coding Style 3.1 requires. Auto-fixable.
 - **Blank lines and spacing around attributes (breaking).** As PER Coding Style 3.1 requires,
-  `PERCS31.Attributes.AttributePlacement` now reports a blank line between a docblock and the attributes after it, or
+  `PERCS31.Attributes.AttributeLayout` now reports a blank line between a docblock and the attributes after it, or
   between two attribute blocks, and anything but a single space between an attribute and its parameter on the same line.
   A closure that's a call's argument follows the parameter rule: its attribute is inline after a single space when the
   argument list is on one line, and on its own line before it when the list is split. Auto-fixable.
@@ -366,9 +366,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   3.1 says `clone()` SHOULD be called with parentheses. Auto-fixable.
 - **`Generic.Strings.UnnecessaryHeredoc`.** A warning for a heredoc with no interpolation or escape sequences, which
   could be a nowdoc, as PER Coding Style 3.1 says a nowdoc SHOULD be used wherever possible. Auto-fixable.
-- **`PERCS31.Attributes.DisallowMultiLineAttributesJoining` (breaking).** An attribute block split over several lines
-  must have one attribute per block, as PER Coding Style 3.1 requires. A joined block on one line, such as
-  `#[Attribute, Deprecated]`, is still allowed. Auto-fixable.
+- **One attribute per block in a block split over lines (breaking).** An attribute block split over several lines must
+  have one attribute per block, as PER Coding Style 3.1 requires. A joined block on one line, such as
+  `#[Attribute, Deprecated]`, is still allowed. `PERCS31.Attributes.AttributeLayout` reports it, as `Joined`.
+  Auto-fixable.
 - **`PERCS31.Classes.EnumMemberVisibility` (breaking).** Requires a non-public method or constant in an enum to be
   `private`, not `protected`, as PER Coding Style 3.1 requires. Auto-fixable.
 - **`PERCS31.NamingConventions.ValidEnumCaseName` (breaking).** Requires enum case names to be in PascalCase, as PER
@@ -418,9 +419,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`PERCS31.Formatting.DisallowMultipleStatements`.** Replaces `Generic.Formatting.DisallowMultipleStatements`, which
   reported `{ get; set; }` on an abstract or interface property as two statements on one line. PER Coding Style 3.1
   requires them on one line. Update any `phpcs:ignore` comments or `<exclude>` rules that name the Generic code.
-- **`PERCS31.Attributes.AttributePlacement` (breaking).** Requires an attribute to be on the line before its target,
-  except on a parameter in a single-line parameter list, where it must be inline, as PER Coding Style 3.1 requires. It
-  also reports a blank line, or a comment on a line of its own, between an attribute and its target, replacing
+- **`PERCS31.Attributes.AttributeLayout` (breaking).** Requires an attribute to be on the line before its target, except
+  on a parameter in a single-line parameter list, where it must be inline, as PER Coding Style 3.1 requires. It also
+  reports a blank line, or a comment on a line of its own, between an attribute and its target, replacing
   `SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing`, whose fix deleted such a comment. Attributes on an
   anonymous class follow PER Coding Style 3.1 instead: starting on the line after `new`, indented once, with `class` on
   the line after them. `PERCS31.WhiteSpace.ScopeIndent` indents the class body to match. Auto-fixable.
@@ -586,7 +587,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `do $i++; while ($i < 10);` for a loop with no body, and its fix replaced the `;` with `{}`, which is a parse error.
   That `while` is now left alone, and `phpcbf` gives `do {`, `$i++;`, `} while ($i < 10);`.
 - **An attribute with no space before its target.** `#[Foo]class Demo` was reported by
-  `PERCS31.Attributes.AttributePlacement`, but not fixed. It's now moved to its own line, as `#[Foo] class Demo` is.
+  `PERCS31.Attributes.AttributeLayout`, but not fixed. It's now moved to its own line, as `#[Foo] class Demo` is.
 - **A function body after a split return type.** After a split parameter list, a return type split over lines is
   reported, and can't be fixed. `PERCS31.WhiteSpace.ScopeIndent` also reported the body's first line, though it was
   indented correctly, and its fix indented the body further.
@@ -687,7 +688,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   too, so a `phpcs:ignore` for a `Generic.PHP.LowerCaseType` code needs updating. Auto-fixable.
 - **A trait alias in an anonymous class passed as an argument.** `PERCS31.NamingConventions.AcronymCasing` skipped an
   alias such as `hello as sayHTTPHello` there, as it took any `as` in parentheses for a `foreach`'s. It's now reported.
-- **An attribute on a `readonly` anonymous class.** `PERCS31.Attributes.AttributePlacement` didn't see the class behind
+- **An attribute on a `readonly` anonymous class.** `PERCS31.Attributes.AttributeLayout` didn't see the class behind
   `readonly`, so `new #[A] readonly class {` was fixed to a layout PER Coding Style 3.1 doesn't allow, which then
   passed. The attributes now go on the lines after `new`, with `readonly class` after them, as for any anonymous class.
 - **An import in a file that starts with markup (breaking).** `PERCS31.Files.FileHeader` now reports a `use` import in a

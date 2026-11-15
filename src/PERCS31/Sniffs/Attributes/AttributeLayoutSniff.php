@@ -12,11 +12,13 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 use PHPCSUtils\Tokens\Collections;
+use PHPCSUtils\Utils\AttributeBlock;
 use PHPCSUtils\Utils\Parentheses;
 use PHPCSUtils\Utils\PassedParameters;
 
 /**
- * Requires an attribute to be on the line before its target, except on a parameter in a single-line parameter list.
+ * Checks the layout of attribute blocks: each is on the line before its target, except on a parameter in a single-line
+ * parameter list, and a block split over lines holds one attribute.
  *
  * PER Coding Style 3.1, section 12.2, puts an attribute on its own line before a class, function, method, constant or
  * property, and before a parameter in a multi-line parameter list. In a single-line parameter list, the attribute must
@@ -60,8 +62,14 @@ use PHPCSUtils\Utils\PassedParameters;
  *
  * Section 12.2 only puts two attribute blocks on separate lines "in a multi-line context". So in a single-line
  * parameter or argument list, two or more blocks stay inline, each followed by a single space.
+ *
+ * Section 12.3 allows several attributes in one block, e.g. `#[Attribute, Deprecated]`, but says that if the list is
+ * split into multiple lines, the attributes MUST be in separate blocks. That's reported as Joined.
+ * SlevomatCodingStandard.Attributes.DisallowAttributesJoining disallows joining altogether, and its fix leaves a block
+ * written over several lines in a poor layout, so it isn't used. The fix here puts each attribute in its own block, on
+ * its own line, at the block's indentation.
  */
-class AttributePlacementSniff implements Sniff
+class AttributeLayoutSniff implements Sniff
 {
     public const string CODE_SAME_LINE = 'SameLine';
 
@@ -84,6 +92,8 @@ class AttributePlacementSniff implements Sniff
     public const string CODE_SAME_LINE_SPACING = 'SameLineSpacing';
 
     public const string CODE_BLOCK_SPACING = 'BlockSpacing';
+
+    public const string CODE_JOINED = 'Joined';
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -110,6 +120,7 @@ class AttributePlacementSniff implements Sniff
             return;
         }
 
+        $this->checkJoined($phpcsFile, $stackPtr);
         $this->checkBlankLineBefore($phpcsFile, $stackPtr);
         $closerPtr = $tokens[$stackPtr]['attribute_closer'];
         $targetPtr = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($closerPtr + 1), null, true);
@@ -682,5 +693,51 @@ class AttributePlacementSniff implements Sniff
         }
 
         return $class !== false && $tokens[$class]['code'] === T_ANON_CLASS ? $next : null;
+    }
+
+    /**
+     * Report several attributes in one block that spans more than one line, and fix it by putting each attribute in its
+     * own block, on its own line, at the block's indentation.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the attribute block's opener.
+     */
+    private function checkJoined(File $phpcsFile, int $stackPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $closer = $tokens[$stackPtr]['attribute_closer'] ?? null;
+        if (!is_int($closer) || $tokens[$closer]['line'] === $tokens[$stackPtr]['line']) {
+            return;
+        }
+
+        $attributes = [];
+        foreach (AttributeBlock::getAttributes($phpcsFile, $stackPtr) as $attribute) {
+            $start = $attribute['start'];
+            $end = $attribute['end'];
+            if (is_int($start) && is_int($end)) {
+                $attributes[] = trim($phpcsFile->getTokensAsString($start, ($end - $start + 1)));
+            }
+        }
+        if (count($attributes) < 2) {
+            return;
+        }
+
+        // A comment outside an attribute would be lost or misplaced by the fix, so leave that to a person.
+        $error = 'Attributes in a block split over several lines must be in separate blocks';
+        $isFixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, $stackPtr, $closer) === false;
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $stackPtr, self::CODE_JOINED)) {
+            return;
+        }
+
+        $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $stackPtr));
+        $blocks = array_map(static fn(string $attribute): string => '#[' . $attribute . ']', $attributes);
+
+        $phpcsFile->fixer->beginChangeset();
+        $phpcsFile->fixer->replaceToken($stackPtr, implode($phpcsFile->eolChar . $indent, $blocks));
+        for ($i = ($stackPtr + 1); $i <= $closer; $i++) {
+            $phpcsFile->fixer->replaceToken($i, '');
+        }
+
+        $phpcsFile->fixer->endChangeset();
     }
 }

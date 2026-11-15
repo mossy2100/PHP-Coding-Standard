@@ -18,7 +18,7 @@ use SlevomatCodingStandard\Sniffs\Attributes\DisallowMultipleAttributesPerLineSn
  * PER Coding Style 3.1, section 12.2, says two separate attribute blocks in a multi-line context MUST be on separate
  * lines. This extends SlevomatCodingStandard.Attributes.DisallowMultipleAttributesPerLine, and changes three things:
  * - It skips blocks on a parameter or argument in a single-line list, which isn't a multi-line context. Section 12.2
- *   requires a parameter's attribute inline there. PERCS31.Attributes.AttributePlacement checks the single space after
+ *   requires a parameter's attribute inline there. PERCS31.Attributes.AttributeLayout checks the single space after
  *   each block.
  * - It reports blocks on a property hook, which the parent misses, as PHP_CodeSniffer doesn't know about hooks.
  * - When code comes before the blocks on their line, as in `$f = #[A] #[B] fn() => 1;`, the fix indents the next block
@@ -49,7 +49,7 @@ class DisallowMultipleAttributesPerLineSniff extends SlevomatSniff
         $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $attributeOpenerPointer, true);
         assert(is_int($firstOnLine));
         // After the end of another statement, as in `public int $a = 1; #[A] #[B]`, the blocks don't continue the
-        // line. PERCS31.Attributes.AttributePlacement moves the first one to its own line.
+        // line. PERCS31.Attributes.AttributeLayout moves the first one to its own line.
         $first = AttributeHelper::findFirstAttribute($phpcsFile, $attributeOpenerPointer);
         $before = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($first - 1), null, true);
         $followsStatement = $before !== false

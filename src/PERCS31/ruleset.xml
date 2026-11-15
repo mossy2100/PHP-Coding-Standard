@@ -538,14 +538,12 @@
     <rule ref="SlevomatCodingStandard.Attributes.RequireAttributeAfterDocComment"/>
 
     <!-- An attribute on its own line, before its target, except on a parameter in a single-line list, with no blank
-         line or comment between them, and the layout of an anonymous class's attributes (8, 12.2) -->
-    <rule ref="PERCS31.Attributes.AttributePlacement"/>
+         line or comment between them, and the layout of an anonymous class's attributes (8, 12.2). Several attributes
+         may share a block on one line, but not one split over lines (12.3). -->
+    <rule ref="PERCS31.Attributes.AttributeLayout"/>
 
     <!-- Separate attribute blocks on separate lines, except in a single-line parameter or argument list (12.2) -->
     <rule ref="PERCS31.Attributes.DisallowMultipleAttributesPerLine"/>
-
-    <!-- Several attributes may share a block on one line, but not one split over lines (12.3) -->
-    <rule ref="PERCS31.Attributes.DisallowMultiLineAttributesJoining"/>
 
     <!-- A comma in an attribute block with no space before it and one after (12.3) -->
     <rule ref="Universal.WhiteSpace.CommaSpacing.SpaceBeforeInAttributeBlock"/>

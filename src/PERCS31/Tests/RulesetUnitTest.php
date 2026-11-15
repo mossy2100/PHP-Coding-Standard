@@ -781,7 +781,7 @@ class RulesetUnitTest extends TestCase
         $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $fixture]);
 
         $this->assertStringNotContainsString('MultiLineFunctionDeclaration', $result['output']);
-        $this->assertStringNotContainsString('AttributePlacement', $result['output']);
+        $this->assertStringNotContainsString('AttributeLayout', $result['output']);
     }
 
     /**

@@ -14,7 +14,7 @@ enum OneBlockCase
     #[A, B] case Z;
 }
 
-// A single-line list is left to PERCS31.Attributes.AttributePlacement, which splits it.
+// A single-line list is left to PERCS31.Attributes.AttributeLayout, which splits it.
 function inList(#[A] #[B] int $c): void {}
 
 usort($items, #[A] #[B] fn($x) => $x);

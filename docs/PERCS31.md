@@ -218,8 +218,7 @@ section gives the reason.
 | ---------------------------------------------------------- | ------------------------------------------------------------------- | ------- |
 | `PERCS31.Arrays.ArrayBracketSpacing`                       | No blank line after a multi-line array's `[`, or before its `]`     | Yes     |
 | `PERCS31.Arrays.MultiLineArrayLayout`                      | A multi-line array's `[` not on its own line, and a value per line  | Yes     |
-| `PERCS31.Attributes.AttributePlacement`                    | An attribute is on its own line, except on a parameter              | Yes     |
-| `PERCS31.Attributes.DisallowMultiLineAttributesJoining`    | One attribute per block when a block spans lines                    | Yes     |
+| `PERCS31.Attributes.AttributeLayout`                       | An attribute on its own line, and one per block in a split block    | Yes     |
 | `PERCS31.Attributes.DisallowMultipleAttributesPerLine`     | Separate attribute blocks on separate lines                         | Yes     |
 | `PERCS31.Classes.AnonClassLayout`                          | The space before an anonymous class's `{` and `extends`             | Yes     |
 | `PERCS31.Classes.ClassDeclaration`                         | Class declarations, allowing an empty body as `{}`                  | Yes     |
@@ -230,8 +229,8 @@ section gives the reason.
 | `PERCS31.Classes.PropertyHooks`                            | A hook list's layout, `get` first, and a promoted parameter's hooks | Partly  |
 | `PERCS31.Classes.TraitAliasSpacing`                        | One space after a visibility or `final` in a trait's `as` clause    | Yes     |
 | `PERCS31.ControlStructures.BodyOnNextLine`                 | A structure's body on the line after its `{`, allowing `{}`         | Yes     |
-| `PERCS31.ControlStructures.ControlStructureEmptyStatement` | Braces on a structure with no body, `else` included                 | Yes     |
 | `PERCS31.ControlStructures.CatchVariableSpacing`           | One space between a `catch`'s type and its variable                 | Yes     |
+| `PERCS31.ControlStructures.ControlStructureEmptyStatement` | Braces on a structure with no body, `else` included                 | Yes     |
 | `PERCS31.ControlStructures.ControlStructureSpacing`        | The parentheses, with no split rule for `foreach` or `match`        | Yes     |
 | `PERCS31.ControlStructures.ForEachSpacing`                 | A space or line break each side of a `foreach`'s `as` and `=>`      | Yes     |
 | `PERCS31.ControlStructures.MatchArmPlacement`              | Each `match` arm starts on a new line                               | Yes     |
@@ -395,10 +394,12 @@ $values = [1,
 
 ---
 
-### PERCS31.Attributes.AttributePlacement
+### PERCS31.Attributes.AttributeLayout
 
-Requires an attribute to be on the line before its target, as [PER Coding Style 3.1, Section 12.2](https://www.php-fig.org/per/coding-style/#122-placement) requires. The exception
-is a parameter in a single-line parameter list, whose attribute must be inline.
+Checks the layout of attribute blocks: where each goes, and that a block split over lines holds one attribute.
+
+An attribute must be on the line before its target, as [PER Coding Style 3.1, Section 12.2](https://www.php-fig.org/per/coding-style/#122-placement) requires. The exception is a
+parameter in a single-line parameter list, whose attribute must be inline.
 
 The attribute must have that line to itself. One that follows other code on its line, as in
 `public int $a = 1; #[Deprecated]`, is reported as `NotOnOwnLine`, and the fix starts a new line before it. That covers
@@ -470,8 +471,15 @@ the attributes go immediately prior to the structure. A comment at the end of th
 `#[Override] // Stringable`, is fine. Section 12.2 only says "prior to the parameter", but a comment before a parameter
 is reported too. A blank line between a parameter and the next parameter's attributes is allowed, as 12.2 also says.
 
-**Auto-fixable:** yes, unless a comment is between the attribute and its target. For an anonymous class, the fix puts
-each attribute block on its own line.
+**A block split over lines.** Several attributes in one block that spans more than one line are reported as `Joined`. A
+block on one line, such as `#[Attribute, AllowDynamicProperties]`, is allowed. [PER Coding Style 3.1, Section 12.3](https://www.php-fig.org/per/coding-style/#123-compound-attributes) allows
+several attributes in one block, but says that if the list is split into multiple lines, the attributes MUST be in
+separate blocks. `SlevomatCodingStandard.Attributes.DisallowAttributesJoining` disallows joining altogether, and its fix
+leaves a block written over several lines in a poor layout, so it isn't used.
+
+**Auto-fixable:** yes, unless a comment is between the attribute and its target, or in a joined block. For an anonymous
+class, the fix puts each attribute block on its own line. For a joined block, it puts each attribute in its own block,
+on its own line.
 
 **Good:**
 
@@ -499,6 +507,13 @@ $handler = new
     class {
         public int $retries = 3;
     };
+
+#[Attribute, AllowDynamicProperties]
+final class Marker {}
+
+#[Attribute(Attribute::TARGET_METHOD)]
+#[AllowDynamicProperties]
+final class MethodMarker {}
 ```
 
 **Bad:**
@@ -522,38 +537,7 @@ $handler = new
 $handler = new #[Attribute] class {
     public int $retries = 3;
 };
-```
 
----
-
-### PERCS31.Attributes.DisallowMultiLineAttributesJoining
-
-Disallows several attributes in one attribute block when the block spans more than one line. A block on one line, such
-as `#[Attribute, AllowDynamicProperties]`, is allowed. This replaces
-`SlevomatCodingStandard.Attributes.DisallowAttributesJoining`.
-
-**Why:** [PER Coding Style 3.1, Section 12.3](https://www.php-fig.org/per/coding-style/#123-compound-attributes) allows several attributes in one block, but says that if the list is split
-into multiple lines, the attributes MUST be in separate blocks. The Slevomat sniff disallows joining altogether, and its
-fix leaves a block written over several lines in a poor layout. No other sniff in PHPCS, Slevomat, PHPCSExtra or the
-other standards checked covers it.
-
-**Auto-fixable:** yes, unless there's a comment in the block. The fix puts each attribute in its own block, on its own
-line.
-
-**Good:**
-
-```php
-#[Attribute, AllowDynamicProperties]
-final class Marker {}
-
-#[Attribute(Attribute::TARGET_METHOD)]
-#[AllowDynamicProperties]
-final class MethodMarker {}
-```
-
-**Bad:**
-
-```php
 #[
     Attribute(Attribute::TARGET_METHOD),
     AllowDynamicProperties,
@@ -573,7 +557,7 @@ sniff checks this, with three problems:
 
 - It reports blocks in a single-line parameter or argument list, as in `function f(#[A] #[B] int $c) {}`. Section 12.2
   only separates blocks "in a multi-line context", and requires a parameter's attribute inline in a single-line list, so
-  this sniff skips that case. [`AttributePlacement`](#percs31attributesattributeplacement) checks the single space after each block.
+  this sniff skips that case. [`AttributeLayout`](#percs31attributesattributelayout) checks the single space after each block.
 - It misses blocks on a property hook, as PHP_CodeSniffer doesn't know about hooks. This sniff reports them.
 - When code comes before the blocks on their line, as in `$pure = #[A] #[B]`, its fix lines the next block up with the
   line. This sniff indents it one level more, as a continuation of the statement.
@@ -3017,7 +3001,7 @@ inside `process()`, which is one long method with no smaller one to override.
 - **Property hooks:** PHP_CodeSniffer's tokenizer doesn't treat property hook braces as scopes, so the original doesn't
   check the indentation inside a hook.
 - **An anonymous class with attributes:** [Section 8](https://www.php-fig.org/per/coding-style/#8-anonymous-classes) indents it once from the line with `new`, and its body from `class`.
-  The original expects `class` at the statement's indent. See [PERCS31.Attributes.AttributePlacement](#percs31attributesattributeplacement).
+  The original expects `class` at the statement's indent. See [PERCS31.Attributes.AttributeLayout](#percs31attributesattributelayout).
 - **A `match` arm:** a line starting an arm must be indented exactly once past the line the `match`'s `{` is on, as
   section 5.2 shows. PER says nothing about a later condition in an arm, split over lines, so that isn't checked. The
   original only reports indentation that's too small, so nothing else reports an arm indented too far.

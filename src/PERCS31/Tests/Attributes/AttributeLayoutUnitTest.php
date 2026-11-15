@@ -7,17 +7,32 @@ namespace PERCS31\Tests\Attributes;
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffTestCase;
 
 /**
- * Unit tests for PERCS31.Attributes.AttributePlacement sniff.
+ * Unit tests for PERCS31.Attributes.AttributeLayout sniff.
  */
-class AttributePlacementUnitTest extends AbstractSniffTestCase
+class AttributeLayoutUnitTest extends AbstractSniffTestCase
 {
     /**
      * Returns the lines where errors should occur.
      *
+     * @param string $testFile The name of the fixture file.
      * @return array<int, int> Line number => error count.
      */
-    protected function getErrorList(): array
+    protected function getErrorList(string $testFile = ''): array
     {
+        // Several attributes in a block split over lines.
+        if ($testFile === 'AttributeLayoutUnitTest.2.inc') {
+            return [
+                // A block split over lines, one attribute per line.
+                19 => 1,
+                // A block split by an attribute's argument list.
+                25 => 1,
+                // A method's attributes, with arguments.
+                32 => 1,
+                // A comment between the attributes (not fixable).
+                39 => 1,
+            ];
+        }
+
         return [
             // Class.
             42 => 1,
