@@ -1875,6 +1875,8 @@ and when split, the first argument on the next line and one per line. The parent
 - It doesn't check `clone()`, which section 4.7 calls a function. This sniff does. Parentheses that may only group the
   object, as in `clone ($a)->b`, aren't an argument list. A space before the parentheses, as in `clone ($a)`, is
   reported as `SpaceBeforeOpenBracket`, as for any other call.
+- Its fix for a space before a call's parentheses deletes a comment there, as in `foo /* Why. */ ($a)`. This sniff
+  reports that case with no fix, and leaves the call's other checks until the comment is moved.
 - It reads a `set` hook's parameter list, as in `set (string $value)`, as a call to `set()`. That list is part of the
   hook's declaration, so this sniff skips it, and [`PERCS31.Classes.PropertyHookLayout`](#percs31classespropertyhooklayout) checks it instead.
 - It reads the `...` of a first-class callable split over lines, as in `foo(` then `...` then `)`, as an argument on a

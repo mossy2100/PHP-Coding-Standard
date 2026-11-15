@@ -74,3 +74,7 @@ $a = strlen(
 $b = include ($a ? 'x' : 'y') . '.php';
 require_once (__DIR__) . '/x.php';
 $c = require ($base . '/file.php');
+
+// A comment before the parentheses is reported, but left to a person.
+$a = clone /* Why. */ ($b);
+$a = foo /* Why. */ ($b);

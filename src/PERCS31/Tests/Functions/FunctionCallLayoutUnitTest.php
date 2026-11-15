@@ -30,6 +30,9 @@ class FunctionCallLayoutUnitTest extends AbstractSniffTestCase
             33 => 1,
             // Indented twice.
             36 => 1,
+            // A comment before the parentheses, reported with no fix.
+            77 => 1,
+            78 => 1,
         ];
     }
 

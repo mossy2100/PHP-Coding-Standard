@@ -121,7 +121,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `clone()`'s argument list, as PER Coding Style 3.1 calls it a function, skipping parentheses that only group the
   object, as in `clone ($a)->b`. A space before `clone`'s parentheses, as in `clone ($a)`, is an error, as
   `SpaceBeforeOpenBracket`, as for any other call. And it no longer reads a `set` hook's parameter list as a call.
-  Auto-fixable.
+  Auto-fixable, except a space before the parentheses with a comment in it, which the PSR-2 sniff's fix deleted.
 - **A `set` hook's parameter list spaced like a method's (breaking).** `PERCS31.Classes.PropertyHookLayout` reports
   `set (string $value)` and `set( string $value )`, as `SpaceBeforeHookParameters` and `SpaceInsideHookParameters`, as
   PER Coding Style 3.1's examples show `set(string $value)`. Auto-fixable.
