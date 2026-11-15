@@ -1356,6 +1356,27 @@ space there was already an error, so none is treated the same way.
 
 ---
 
+### A Comment Before an Anonymous Class's Attributes
+
+**Issue:** An anonymous class's attributes "MUST be placed starting on the next line after the `new` keyword". The spec
+doesn't say whether a comment may come between.
+
+**Decision:** A comment on the lines between `new` and the first attribute is allowed. A blank line is reported.
+
+```php
+$example = new
+    // Handles the event.
+    #[Attribute]
+    class {
+        // ...
+    };
+```
+
+**Why:** A comment belongs with the code after it, so the attributes still start the class's own lines. A blank line
+puts the attributes further from `new` for no purpose.
+
+---
+
 ## 9. Enumerations
 
 ### Enum Constant Names

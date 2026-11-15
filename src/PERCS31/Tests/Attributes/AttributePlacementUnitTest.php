@@ -118,9 +118,9 @@ class AttributePlacementUnitTest extends AbstractSniffTestCase
             468 => 1,
             471 => 1,
             485 => 1,
-            // An anonymous class's first attribute after a blank line, and after a comment's line: not fixable.
+            // An anonymous class's first attribute after a blank line, without and with a comment (not fixable).
             491 => 1,
-            496 => 1,
+            502 => 1,
         ];
     }
 

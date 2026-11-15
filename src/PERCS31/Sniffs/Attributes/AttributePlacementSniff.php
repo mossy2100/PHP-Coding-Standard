@@ -435,9 +435,10 @@ class AttributePlacementSniff implements Sniff
             $blocks[] = $phpcsFile->getTokensAsString($i, ($closer - $i + 1));
             $isValid = $isValid && $this->startsLineAt($phpcsFile, $i, $previous, strlen($indent));
 
-            // The first block starts on the line after `new`, so not after a blank line or a comment's line.
+            // The first block starts on the line after `new`, or after comments on the lines between, but not after a
+            // blank line.
             if ($previous === $newPtr) {
-                $isValid = $isValid && $tokens[$i]['line'] === ($tokens[$newPtr]['line'] + 1);
+                $isValid = $isValid && !$this->hasBlankLineBetween($phpcsFile, $newPtr, $i);
             }
 
             $previous = $closer;
@@ -468,6 +469,35 @@ class AttributePlacementSniff implements Sniff
 
         $phpcsFile->fixer->addContent($newPtr, $layout . $phpcsFile->eolChar . $indent);
         $phpcsFile->fixer->endChangeset();
+    }
+
+    /**
+     * Check if a blank line comes between two tokens, so a line between them with no comment on it.
+     *
+     * PHP_CodeSniffer gives each line of a comment a token of its own, so every line with a comment has one.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $from The position of the first token.
+     * @param int $to The position of the last token.
+     * @return bool True if a line between them has no comment.
+     */
+    private function hasBlankLineBetween(File $phpcsFile, int $from, int $to): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $commentLines = [];
+        for ($i = ($from + 1); $i < $to; $i++) {
+            if (isset(Tokens::COMMENT_TOKENS[$tokens[$i]['code']])) {
+                $commentLines[$tokens[$i]['line']] = true;
+            }
+        }
+
+        for ($line = ($tokens[$from]['line'] + 1); $line < $tokens[$to]['line']; $line++) {
+            if (!isset($commentLines[$line])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

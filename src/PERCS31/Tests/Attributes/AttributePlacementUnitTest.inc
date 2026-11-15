@@ -493,7 +493,14 @@ $blankAfterNew = new
     #[A]
     class {};
 
+// A comment between them is allowed.
 $commentAfterNew = new
     // Why.
+    #[A]
+    class {};
+
+$blankAfterComment = new
+    // Why.
+
     #[A]
     class {};
