@@ -142,6 +142,36 @@ class CompoundTypeHelper
     }
 
     /**
+     * Split a type's `|` and `&` symbols into those outside any parentheses, and those inside a DNF type's parentheses.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $start The position of the type's first token.
+     * @param int $end The position of the type's last token.
+     * @return array{list<int>, list<int>} The positions of the symbols outside parentheses, and of those inside.
+     */
+    public static function splitSymbols(File $phpcsFile, int $start, int $end): array
+    {
+        $tokens = $phpcsFile->getTokens();
+        $topLevel = [];
+        $grouped = [];
+        $depth = 0;
+        for ($i = $start; $i <= $end; $i++) {
+            $code = $tokens[$i]['code'];
+            if ($code === T_TYPE_OPEN_PARENTHESIS || $code === T_OPEN_PARENTHESIS) {
+                $depth++;
+            } elseif ($code === T_TYPE_CLOSE_PARENTHESIS || $code === T_CLOSE_PARENTHESIS) {
+                $depth--;
+            } elseif (self::isSymbol($code) && $depth === 0) {
+                $topLevel[] = $i;
+            } elseif (self::isSymbol($code)) {
+                $grouped[] = $i;
+            }
+        }
+
+        return [$topLevel, $grouped];
+    }
+
+    /**
      * Find the first and last tokens of the type a symbol belongs to, leaving out whitespace and comments around it.
      *
      * PHPCSUtils finds the type of a parameter, property, typed constant or return type. A `set` hook's parameter type

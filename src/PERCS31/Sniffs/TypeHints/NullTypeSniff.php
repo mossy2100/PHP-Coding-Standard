@@ -101,37 +101,22 @@ class NullTypeSniff implements Sniff
     private function findMembers(File $phpcsFile, int $start, int $end): array
     {
         $tokens = $phpcsFile->getTokens();
+        [$topLevel] = CompoundTypeHelper::splitSymbols($phpcsFile, $start, $end);
+        $unions = array_filter(
+            $topLevel,
+            static fn(int $symbol): bool => in_array($tokens[$symbol]['code'], [T_TYPE_UNION, T_BITWISE_OR], true),
+        );
+
         $members = [];
-        $depth = 0;
-        $first = null;
-        $last = null;
-        for ($i = $start; $i <= $end; $i++) {
-            $code = $tokens[$i]['code'];
-            if (isset(Tokens::EMPTY_TOKENS[$code])) {
-                continue;
+        $from = $start;
+        foreach ([...$unions, ($end + 1)] as $to) {
+            $first = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, $from, $to, true);
+            $last = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($to - 1), $from, true);
+            if ($first !== false && $last !== false) {
+                $members[] = [$first, $last];
             }
 
-            if ($depth === 0 && ($code === T_TYPE_UNION || $code === T_BITWISE_OR)) {
-                if ($first !== null && $last !== null) {
-                    $members[] = [$first, $last];
-                }
-
-                $first = null;
-                continue;
-            }
-
-            if ($code === T_TYPE_OPEN_PARENTHESIS || $code === T_OPEN_PARENTHESIS) {
-                $depth++;
-            } elseif ($code === T_TYPE_CLOSE_PARENTHESIS || $code === T_CLOSE_PARENTHESIS) {
-                $depth--;
-            }
-
-            $first ??= $i;
-            $last = $i;
-        }
-
-        if ($first !== null && $last !== null) {
-            $members[] = [$first, $last];
+            $from = $to + 1;
         }
 
         return $members;
