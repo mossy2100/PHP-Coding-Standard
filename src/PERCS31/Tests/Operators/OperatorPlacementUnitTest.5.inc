@@ -60,6 +60,19 @@ $total = (
     + $tax
 );
 
+// A nested arrow function's => is indented once past the line with its own fn, and so is its body.
+$add = fn(int $x)
+    => fn(int $y)
+        => $x + $y;
+
+$adders = array_map(
+    fn(int $x)
+        => fn(int $y)
+            => $x
+            + $y,
+    $list,
+);
+
 // === INVALID ===
 
 // Indented twice past the ( line, and not indented.
@@ -109,3 +122,8 @@ $callback = (
     fn(int $y): int => $y
     + 1
 );
+
+// A nested arrow function's => lined up with the outer one.
+$add = fn(int $x)
+    => fn(int $y)
+    => $x + $y;

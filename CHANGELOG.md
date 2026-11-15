@@ -443,6 +443,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- **A nested arrow function's `=>` (breaking).** `PERCS31.Operators.OperatorPlacement` now wants a wrapped `=>` indented
+  once past the line with its own `fn`, so a nested arrow function's `=>` goes one level deeper than the outer one's. It
+  had to be level with the outer `=>`. Auto-fixable.
 - **A comment's indent isn't checked in PERCS31.** PER Coding Style 3.1 has no rule for it, so
   `PERCS31.WhiteSpace.ScopeIndent` now ignores comments and docblocks, as PSR-12 does. Jumbo still checks a comment on
   its own line, but no longer a docblock's indent.

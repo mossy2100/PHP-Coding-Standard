@@ -2339,8 +2339,9 @@ indent:
   an array element or a `match` arm.
 - **Grouping parentheses:** exactly once past the line with the `(`, as in `$x = $a && (`. So when the group's first
   value is on the line after the `(`, a wrapped operator lines up with it.
-- **An arrow function's `=>`:** exactly once past the line `fn` starts on, in grouping parentheses or not. The same goes
-  for an operator wrapped in its body.
+- **An arrow function's `=>`:** exactly once past the line its own `fn` starts on, in grouping parentheses or not, so a
+  nested arrow function's `=>` is indented once more than the outer one's. The same goes for an operator wrapped in its
+  body.
 - **A control structure's condition:** at least once past the line with the `(`. Set `requireExactConditionIndent` to
   require exactly once for a line starting with a boolean operator, and exactly once past its operand's line for any
   other operator, as the Jumbo standard does. An expression nested in the condition, such as a call's argument, follows

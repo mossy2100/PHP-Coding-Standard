@@ -43,19 +43,21 @@ class OperatorPlacementUnitTest extends AbstractSniffTestCase
         if ($testFile === 'OperatorPlacementUnitTest.5.inc') {
             return [
                 // In grouping parentheses, indented twice past the ( line, and not indented.
-                68 => 1,
-                73 => 1,
+                81 => 1,
+                86 => 1,
                 // Not indented once past the ( line.
-                77 => 1,
-                80 => 1,
+                90 => 1,
+                93 => 1,
                 // In a group that continues a statement, and one nested in a call argument, indented twice.
-                85 => 1,
-                91 => 1,
+                98 => 1,
+                104 => 1,
                 // An index, lined up with its first line.
-                99 => 1,
+                112 => 1,
                 // An arrow function's => and body lined up with fn.
-                105 => 1,
-                110 => 1,
+                118 => 1,
+                123 => 1,
+                // A nested arrow function's => lined up with the outer one.
+                129 => 1,
             ];
         }
 
