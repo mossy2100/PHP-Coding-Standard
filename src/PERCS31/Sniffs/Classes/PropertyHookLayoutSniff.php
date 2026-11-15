@@ -199,12 +199,8 @@ class PropertyHookLayoutSniff implements Sniff
         $hasComment = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($previous + 1), $opener) !== false;
         if ($tokens[$previous]['line'] !== $tokens[$opener]['line']) {
             $error = 'The opening brace of a property\'s hooks must be on the same line as the property';
-            if ($hasComment) {
-                $phpcsFile->addError($error, $opener, self::CODE_OPENER_NOT_ON_SAME_LINE);
-                return;
-            }
-
-            if ($phpcsFile->addFixableError($error, $opener, self::CODE_OPENER_NOT_ON_SAME_LINE)) {
+            $code = self::CODE_OPENER_NOT_ON_SAME_LINE;
+            if (FixerHelper::addFixableErrorIf($phpcsFile, !$hasComment, $error, $opener, $code)) {
                 FixerHelper::replaceBetween($phpcsFile, $previous, $opener, ' ');
             }
 
@@ -243,9 +239,8 @@ class PropertyHookLayoutSniff implements Sniff
         $hasComment = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($name + 1), $body) !== false;
         if ($tokens[$body]['line'] !== $tokens[$arrow]['line']) {
             $error = 'The body of a short property hook must begin on the same line as its "=>"';
-            if ($hasComment) {
-                $phpcsFile->addError($error, $arrow, self::CODE_BODY_NOT_ON_SAME_LINE);
-            } elseif ($phpcsFile->addFixableError($error, $arrow, self::CODE_BODY_NOT_ON_SAME_LINE)) {
+            $code = self::CODE_BODY_NOT_ON_SAME_LINE;
+            if (FixerHelper::addFixableErrorIf($phpcsFile, !$hasComment, $error, $arrow, $code)) {
                 FixerHelper::replaceBetween($phpcsFile, $arrow, $body, ' ');
             }
 
@@ -285,9 +280,9 @@ class PropertyHookLayoutSniff implements Sniff
         $previous = $phpcsFile->findPrevious(T_WHITESPACE, ($closer - 1), $opener, true);
         if ($previous !== false && $tokens[$previous]['line'] === $tokens[$closer]['line']) {
             $error = 'The closing brace of a property\'s hooks must be on its own line';
-            if (isset(Tokens::COMMENT_TOKENS[$tokens[$previous]['code']])) {
-                $phpcsFile->addError($error, $closer, self::CODE_CLOSER_NOT_ON_OWN_LINE);
-            } elseif ($phpcsFile->addFixableError($error, $closer, self::CODE_CLOSER_NOT_ON_OWN_LINE)) {
+            $isFixable = !isset(Tokens::COMMENT_TOKENS[$tokens[$previous]['code']]);
+            $code = self::CODE_CLOSER_NOT_ON_OWN_LINE;
+            if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $closer, $code)) {
                 $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $opener));
                 FixerHelper::replaceBetween($phpcsFile, $previous, $closer, $phpcsFile->eolChar . $indent);
             }
@@ -371,12 +366,8 @@ class PropertyHookLayoutSniff implements Sniff
         string $error,
         string $code,
     ): void {
-        if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($before + 1), $after) !== false) {
-            $phpcsFile->addError($error, $after, $code);
-            return;
-        }
-
-        if ($phpcsFile->addFixableError($error, $after, $code)) {
+        $isFixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($before + 1), $after) === false;
+        if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $after, $code)) {
             FixerHelper::replaceBetween($phpcsFile, $before, $after, '');
         }
     }
@@ -422,12 +413,9 @@ class PropertyHookLayoutSniff implements Sniff
     private function reportTooManyBlankLines(File $phpcsFile, int $previousEnd, int $start): void
     {
         $error = 'There must be no more than one blank line between hooks';
-        if ($phpcsFile->findNext(T_WHITESPACE, ($previousEnd + 1), $start, true) !== false) {
-            $phpcsFile->addError($error, $start, self::CODE_TOO_MANY_BLANK_LINES_BETWEEN_HOOKS);
-            return;
-        }
-
-        if ($phpcsFile->addFixableError($error, $start, self::CODE_TOO_MANY_BLANK_LINES_BETWEEN_HOOKS)) {
+        $isFixable = $phpcsFile->findNext(T_WHITESPACE, ($previousEnd + 1), $start, true) === false;
+        $code = self::CODE_TOO_MANY_BLANK_LINES_BETWEEN_HOOKS;
+        if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $start, $code)) {
             $indent = str_repeat(' ', ($phpcsFile->getTokens()[$start]['column'] - 1));
             $eol = $phpcsFile->eolChar;
             FixerHelper::replaceBetween($phpcsFile, $previousEnd, $start, $eol . $eol . $indent);
@@ -495,12 +483,8 @@ class PropertyHookLayoutSniff implements Sniff
 
         $error = 'A property hook list with no bodies must be written on one line, with single spaces, e.g. '
             . '"{ get; set; }"';
-        if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($opener + 1), $closer) !== false) {
-            $phpcsFile->addError($error, $opener, self::CODE_BODILESS_LAYOUT);
-            return;
-        }
-
-        if ($phpcsFile->addFixableError($error, $opener, self::CODE_BODILESS_LAYOUT)) {
+        $isFixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($opener + 1), $closer) === false;
+        if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $opener, self::CODE_BODILESS_LAYOUT)) {
             FixerHelper::replaceBetween($phpcsFile, $opener, $closer, $expected);
         }
     }
@@ -615,9 +599,8 @@ class PropertyHookLayoutSniff implements Sniff
         }
 
         $error = 'A property hook must start on its own line, unless the list is a single short hook on one line';
-        if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($boundary + 1), $next) !== false) {
-            $phpcsFile->addError($error, $next, self::CODE_HOOK_NOT_ON_OWN_LINE);
-        } elseif ($phpcsFile->addFixableError($error, $next, self::CODE_HOOK_NOT_ON_OWN_LINE)) {
+        $isFixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($boundary + 1), $next) === false;
+        if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $next, self::CODE_HOOK_NOT_ON_OWN_LINE)) {
             FixerHelper::replaceBetween(
                 $phpcsFile,
                 $boundary,
@@ -647,9 +630,9 @@ class PropertyHookLayoutSniff implements Sniff
         }
 
         $error = "A property hook's opening brace must be one space after its name or parameters";
-        if (isset(Tokens::COMMENT_TOKENS[$tokens[$previous]['code']])) {
-            $phpcsFile->addError($error, $bodyOpener, self::CODE_SPACE_BEFORE_HOOK_BRACE);
-        } elseif ($phpcsFile->addFixableError($error, $bodyOpener, self::CODE_SPACE_BEFORE_HOOK_BRACE)) {
+        $isFixable = !isset(Tokens::COMMENT_TOKENS[$tokens[$previous]['code']]);
+        $code = self::CODE_SPACE_BEFORE_HOOK_BRACE;
+        if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $bodyOpener, $code)) {
             FixerHelper::replaceBetween($phpcsFile, $previous, $bodyOpener, ' ');
         }
     }
@@ -678,9 +661,9 @@ class PropertyHookLayoutSniff implements Sniff
         $first = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($bodyOpener + 1), $bodyCloser, true);
         if ($first !== false && $tokens[$first]['line'] === $tokens[$bodyOpener]['line']) {
             $error = 'The body of a property hook must start on the line after its opening brace';
-            if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($bodyOpener + 1), $first) !== false) {
-                $phpcsFile->addError($error, $first, self::CODE_HOOK_BODY_NOT_ON_NEW_LINE);
-            } elseif ($phpcsFile->addFixableError($error, $first, self::CODE_HOOK_BODY_NOT_ON_NEW_LINE)) {
+            $isFixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($bodyOpener + 1), $first) === false;
+            $code = self::CODE_HOOK_BODY_NOT_ON_NEW_LINE;
+            if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $first, $code)) {
                 $indent = str_repeat(' ', ($hookIndent + LayoutHelper::INDENT));
                 FixerHelper::replaceBetween($phpcsFile, $bodyOpener, $first, $phpcsFile->eolChar . $indent);
             }

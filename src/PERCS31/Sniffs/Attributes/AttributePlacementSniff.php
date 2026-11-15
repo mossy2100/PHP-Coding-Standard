@@ -255,12 +255,8 @@ class AttributePlacementSniff implements Sniff
     private function reportTargetOnSameLine(File $phpcsFile, int $stackPtr, int $closerPtr, int $targetPtr): void
     {
         $error = 'With two or more attribute blocks, the target must be on the line after them.';
-        if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($closerPtr + 1), $targetPtr) !== false) {
-            $phpcsFile->addError($error, $stackPtr, self::CODE_SAME_LINE);
-            return;
-        }
-
-        if ($phpcsFile->addFixableError($error, $stackPtr, self::CODE_SAME_LINE)) {
+        $isFixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($closerPtr + 1), $targetPtr) === false;
+        if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $stackPtr, self::CODE_SAME_LINE)) {
             $tokens = $phpcsFile->getTokens();
             $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $stackPtr, true);
             assert(is_int($firstOnLine));
@@ -566,12 +562,8 @@ class AttributePlacementSniff implements Sniff
 
         if ($tokens[$targetPtr]['line'] === $tokens[$closerPtr]['line']) {
             $error = 'In a multi-line argument list, a closure\'s attribute must be on the line before it.';
-            if (!$startsLine || $hasComment) {
-                $phpcsFile->addError($error, $stackPtr, self::CODE_SAME_LINE);
-                return;
-            }
-
-            if ($phpcsFile->addFixableError($error, $stackPtr, self::CODE_SAME_LINE)) {
+            $isFixable = $startsLine && !$hasComment;
+            if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $stackPtr, self::CODE_SAME_LINE)) {
                 FixerHelper::replaceBetween(
                     $phpcsFile,
                     $closerPtr,

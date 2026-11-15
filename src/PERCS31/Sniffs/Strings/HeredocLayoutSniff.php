@@ -153,12 +153,9 @@ class HeredocLayoutSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
         $kind = $tokens[$stackPtr]['code'] === T_START_NOWDOC ? 'nowdoc' : 'heredoc';
         $error = 'A %s must begin on the same line as the context it\'s used in';
-        if ($phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($from + 1), $to) !== false) {
-            $phpcsFile->addError($error, $stackPtr, self::CODE_NOT_ON_CONTEXT_LINE, [$kind]);
-            return;
-        }
-
-        if (!$phpcsFile->addFixableError($error, $stackPtr, self::CODE_NOT_ON_CONTEXT_LINE, [$kind])) {
+        $isFixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($from + 1), $to) === false;
+        $code = self::CODE_NOT_ON_CONTEXT_LINE;
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $stackPtr, $code, [$kind])) {
             return;
         }
 

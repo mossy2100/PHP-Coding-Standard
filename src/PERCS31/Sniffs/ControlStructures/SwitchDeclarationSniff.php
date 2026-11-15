@@ -285,13 +285,8 @@ class SwitchDeclarationSniff extends Psr2Sniff
             && ($tokens[$first]['parenthesis_closer'] ?? null) === $last;
         if (!$isWrapped) {
             $error = 'A multi-line case condition must be wrapped in parentheses';
-            if ($hasTrailingComment) {
-                $phpcsFile->addError($error, $case, self::CODE_MULTI_LINE_CONDITION_PARENTHESES);
-                return;
-            }
-
-            $fix = $phpcsFile->addFixableError($error, $case, self::CODE_MULTI_LINE_CONDITION_PARENTHESES);
-            if (!$fix) {
+            $code = self::CODE_MULTI_LINE_CONDITION_PARENTHESES;
+            if (!FixerHelper::addFixableErrorIf($phpcsFile, !$hasTrailingComment, $error, $case, $code)) {
                 return;
             }
 
@@ -311,13 +306,9 @@ class SwitchDeclarationSniff extends Psr2Sniff
         }
 
         $error = 'The closing parenthesis and colon of a multi-line case condition must be on a line of their own';
-        if ($tokens[$beforeCloser]['code'] === T_COMMENT || $hasTrailingComment) {
-            $phpcsFile->addError($error, $last, self::CODE_MULTI_LINE_CONDITION_CLOSER);
-            return;
-        }
-
-        $fix = $phpcsFile->addFixableError($error, $last, self::CODE_MULTI_LINE_CONDITION_CLOSER);
-        if (!$fix) {
+        $isFixable = $tokens[$beforeCloser]['code'] !== T_COMMENT && !$hasTrailingComment;
+        $code = self::CODE_MULTI_LINE_CONDITION_CLOSER;
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $last, $code)) {
             return;
         }
 
@@ -346,13 +337,9 @@ class SwitchDeclarationSniff extends Psr2Sniff
 
         $error = 'The first condition of a multi-line case condition must be on the line after the opening parenthesis';
         $next = $phpcsFile->findNext(T_WHITESPACE, ($opener + 1), $closer, true);
-        if ($next !== $condition) {
-            $phpcsFile->addError($error, $condition, self::CODE_MULTI_LINE_CONDITION_FIRST_LINE);
-            return;
-        }
-
-        $fix = $phpcsFile->addFixableError($error, $condition, self::CODE_MULTI_LINE_CONDITION_FIRST_LINE);
-        if (!$fix) {
+        $isFixable = $next === $condition;
+        $code = self::CODE_MULTI_LINE_CONDITION_FIRST_LINE;
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $condition, $code)) {
             return;
         }
 

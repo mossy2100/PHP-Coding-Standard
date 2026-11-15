@@ -102,13 +102,9 @@ class MultiLineTernaryOperatorSniff implements Sniff
 
         $error = 'A ternary split at "?" or ":" must take three lines, with each starting a line, indented once';
         $operators = [$inlineThenPointer, $inlineElsePointer];
-        if ($this->hasCommentAround($phpcsFile, $operators)) {
-            $phpcsFile->addError($error, $inlineThenPointer, self::CODE_INCORRECT_LAYOUT);
-            return;
-        }
-
-        $fix = $phpcsFile->addFixableError($error, $inlineThenPointer, self::CODE_INCORRECT_LAYOUT);
-        if (!$fix) {
+        $isFixable = !$this->hasCommentAround($phpcsFile, $operators);
+        $code = self::CODE_INCORRECT_LAYOUT;
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $inlineThenPointer, $code)) {
             return;
         }
 
