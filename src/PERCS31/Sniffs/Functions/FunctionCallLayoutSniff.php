@@ -19,8 +19,8 @@ use PHP_CodeSniffer\Util\Tokens;
  * when split, the first argument on the next line and one per line. This extends PSR2.Methods.FunctionCallSignature,
  * and changes four things:
  * - It checks `clone()`, which section 4.7 calls a function, but the parent doesn't register. Parentheses that may
- *   only group the object, as in `clone ($a)->b`, are skipped, and so are parentheses after a space, as in
- *   `clone ($a)`, where `clone` may be the operator. PERCS31.PHP.RequireCloneParentheses reports that space.
+ *   only group the object, as in `clone ($a)->b`, are skipped. A space before the parentheses, as in `clone ($a)`, is
+ *   reported as SpaceBeforeOpenBracket, as for any other call.
  * - It skips a `set` hook's parameter list, as in `set (string $value)`, which PHP_CodeSniffer reads as a call to
  *   `set()`. It's part of the hook's declaration, not a call, so PERCS31.Classes.PropertyHookLayout checks it.
  * - It reports a first-class callable split over lines, as in `foo(` then `...` then `)`. Section 4.8 says the `...`
@@ -64,7 +64,7 @@ class FunctionCallLayoutSniff extends Psr2Sniff
 
         if ($tokens[$stackPtr]['code'] === T_CLONE) {
             $parentheses = TokenHelper::findCloneArguments($phpcsFile, $stackPtr);
-            if ($parentheses === null || $parentheses[0] !== ($stackPtr + 1)) {
+            if ($parentheses === null) {
                 return;
             }
         } else {

@@ -261,7 +261,7 @@ section gives the reason.
 | `PERCS31.Operators.OperatorSpacing`                        | At least one space around binary operators, including `\|>`         | Yes     |
 | `PERCS31.PHP.LowerCaseKeyword`                             | Keywords in lower case, including a property hook's `get` or `set`  | Yes     |
 | `PERCS31.PHP.LowerCaseType`                                | Types in lower case, including a `set` hook's and an enum's type    | Yes     |
-| `PERCS31.PHP.RequireCloneParentheses`                      | A warning for `clone $a`, not `clone($a)`                           | Yes     |
+| `PERCS31.PHP.RequireCloneParentheses`                      | A warning for `clone $a`, or `clone($a)->b`, not `clone($a)`        | Yes     |
 | `PERCS31.PHP.TypeCast`                                     | `(bool)`, `(int)`, `(float)` and `(string)` in a cast               | Yes     |
 | `PERCS31.Strings.HeredocIndentation`                       | Where a heredoc or nowdoc begins, and its indentation               | Yes     |
 | `PERCS31.TypeHints.CompoundTypeLayout`                     | One type, or one DNF union segment, per line of a split type        | Yes     |
@@ -1881,8 +1881,8 @@ Checks the spacing and layout of a function call's argument list, including `clo
 and when split, the first argument on the next line and one per line. The parent checks those, with these gaps:
 
 - It doesn't check `clone()`, which section 4.7 calls a function. This sniff does. Parentheses that may only group the
-  object, as in `clone ($a)->b`, aren't an argument list. Nor are parentheses after a space, as in `clone ($a)`, which
-  [`PERCS31.PHP.RequireCloneParentheses`](#percs31phprequirecloneparentheses) reports.
+  object, as in `clone ($a)->b`, aren't an argument list. A space before the parentheses, as in `clone ($a)`, is
+  reported as `SpaceBeforeOpenBracket`, as for any other call.
 - It reads a `set` hook's parameter list, as in `set (string $value)`, as a call to `set()`. That list is part of the
   hook's declaration, so this sniff skips it, and [`PERCS31.Classes.PropertyHookLayout`](#percs31classespropertyhooklayout) checks it instead.
 - It reads the `...` of a first-class callable split over lines, as in `foo(` then `...` then `)`, as an argument on a
@@ -1914,6 +1914,7 @@ $length = strlen(...);
 
 ```php
 $copy = clone( $original );
+$copy = clone ($original);
 $copy = clone($original,
     ['name' => 'Copy'],
 );
@@ -2596,13 +2597,13 @@ class Counter
 ### PERCS31.PHP.RequireCloneParentheses
 
 Warns about `clone` without parentheses, such as `clone $a`, or with parentheses that hold only part of what is cloned,
-such as `clone($a)->b`. Reports a space before the parentheses, such as `clone ($a)`, as an error.
+such as `clone($a)->b`.
 
 **Why:** [PER Coding Style 3.1, Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) says `clone()` SHOULD always be called with parentheses, as it's a function
 as of PHP 8.5. As it's a SHOULD, that's a warning. No inherited sniff checks it.
 
-With the parentheses, `clone($a)` is a function call, and 4.7 says there MUST NOT be a space between a function's name
-and its opening parenthesis. So `clone ($a)` is an error, as `exit ($a)` is.
+With the parentheses, `clone($a)` is a function call, so a space before them, as in `clone ($a)`, is reported by
+[`PERCS31.Functions.FunctionCallLayout`](#percs31functionsfunctioncalllayout), as for any other call.
 
 PHP reads `clone($a)->b` as a clone of `$a->b`, so those parentheses only group `$a`, and `clone` has none of its own.
 That's reported as `PartOfOperand`. The fix makes the parentheses hold everything that is cloned: `clone($a->b)`. When
@@ -2622,7 +2623,6 @@ $copy = clone($original);
 
 ```php
 $copy = clone $original;
-$copy = clone ($original);
 ```
 
 ---

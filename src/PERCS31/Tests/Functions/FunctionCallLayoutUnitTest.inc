@@ -14,9 +14,11 @@ $a = clone($b, [
 ]);
 $a = clone $b;
 
-// Grouping parentheses, or a space after clone, aren't an argument list.
+// Grouping parentheses aren't an argument list.
 $a = clone ($b)->c;
 $a = clone( $b )->c;
+
+// A space before the parentheses, and just inside them.
 $a = clone ( $b );
 
 // Spaces just inside the parentheses.

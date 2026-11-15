@@ -7,6 +7,9 @@ $a = clone($b, ['x' => 1]);
 $a = $b->clone();
 $a = clone(...);
 
+// A space before the parentheses is left to PERCS31.Functions.FunctionCallLayout.
+$a = clone ($b);
+
 // === INVALID ===
 
 $a = clone $b;
@@ -15,7 +18,6 @@ $a = clone $b?->c()['d'] ?? $e;
 $a = clone self::$b;
 $a = clone \Vendor\Foo::instance();
 $a = clone new Foo();
-$a = clone ($b);
 $a = clone ($b)->c;
 $a = clone $$b;
 $a = clone /* the original */ $b;

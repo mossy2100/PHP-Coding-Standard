@@ -119,7 +119,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`PERCS31.Functions.FunctionCallLayout` replaces `PSR2.Methods.FunctionCallSignature` (breaking).** Its codes are now
   `PERCS31.Functions.FunctionCallLayout.*`, so a `phpcs:ignore` for the old ones needs updating. It also checks
   `clone()`'s argument list, as PER Coding Style 3.1 calls it a function, skipping parentheses that only group the
-  object, as in `clone ($a)->b`. And it no longer reads a `set` hook's parameter list as a call. Auto-fixable.
+  object, as in `clone ($a)->b`. A space before `clone`'s parentheses, as in `clone ($a)`, is an error, as
+  `SpaceBeforeOpenBracket`, as for any other call. And it no longer reads a `set` hook's parameter list as a call.
+  Auto-fixable.
 - **A `set` hook's parameter list spaced like a method's (breaking).** `PERCS31.Classes.PropertyHookLayout` reports
   `set (string $value)` and `set( string $value )`, as `SpaceBeforeHookParameters` and `SpaceInsideHookParameters`, as
   PER Coding Style 3.1's examples show `set(string $value)`. Auto-fixable.
@@ -361,8 +363,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   multi-line case condition must be wrapped in parentheses, with `):` on a line of their own. Auto-fixable. A non-empty
   `default` that falls through into another case now needs a comment, as a `case` does. That part isn't auto-fixable.
 - **`PERCS31.PHP.RequireCloneParentheses`.** A warning for `clone $a`, which should be `clone($a)`, as PER Coding Style
-  3.1 says `clone()` SHOULD be called with parentheses. A space before the parentheses, as in `clone ($a)`, is an error,
-  as for any function call. Auto-fixable.
+  3.1 says `clone()` SHOULD be called with parentheses. Auto-fixable.
 - **`Generic.Strings.UnnecessaryHeredoc`.** A warning for a heredoc with no interpolation or escape sequences, which
   could be a nowdoc, as PER Coding Style 3.1 says a nowdoc SHOULD be used wherever possible. Auto-fixable.
 - **`PERCS31.Attributes.DisallowMultiLineAttributesJoining` (breaking).** An attribute block split over several lines

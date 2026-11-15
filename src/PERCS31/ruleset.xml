@@ -353,7 +353,8 @@
         <type>warning</type>
     </rule>
 
-    <!-- A warning for clone without parentheses, e.g. clone $a (4.7) -->
+    <!-- A warning for clone without parentheses, e.g. clone $a, or with parentheses that hold only part of what is
+         cloned, e.g. clone($a)->b (4.7) -->
     <rule ref="PERCS31.PHP.RequireCloneParentheses"/>
 
     <!-- A call's argument list, including clone()'s, but not a set hook's parameter list (4.7). No blank line between

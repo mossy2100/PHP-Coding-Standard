@@ -19,21 +19,23 @@ class FunctionCallLayoutUnitTest extends AbstractSniffTestCase
     protected function getErrorList(): array
     {
         return [
+            // A space before the parentheses of clone(), and just inside them.
+            22 => 3,
             // Spaces just inside the parentheses.
-            23 => 2,
-            24 => 2,
+            25 => 2,
+            26 => 2,
             // The first argument on the opening line.
-            27 => 1,
+            29 => 1,
             // Two arguments on one line.
-            31 => 1,
+            33 => 1,
             // Indented twice.
-            34 => 1,
+            36 => 1,
             // A first-class callable split over lines.
-            55 => 1,
-            58 => 1,
-            61 => 1,
+            57 => 1,
+            60 => 1,
+            63 => 1,
             // One with a comment, reported but not fixed.
-            66 => 1,
+            68 => 1,
         ];
     }
 

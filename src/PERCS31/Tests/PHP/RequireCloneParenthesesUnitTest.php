@@ -18,10 +18,7 @@ class RequireCloneParenthesesUnitTest extends AbstractSniffTestCase
      */
     protected function getErrorList(): array
     {
-        return [
-            // A space before the parentheses.
-            18 => 1,
-        ];
+        return [];
     }
 
     /**
@@ -33,41 +30,41 @@ class RequireCloneParenthesesUnitTest extends AbstractSniffTestCase
     {
         return [
             // A variable.
-            12 => 1,
-            // A property.
-            13 => 1,
-            // A nullsafe call and an array access, before ??.
-            14 => 1,
-            // A static property.
             15 => 1,
-            // A static call on a fully qualified name.
+            // A property.
             16 => 1,
-            // A new expression.
+            // A nullsafe call and an array access, before ??.
             17 => 1,
-            // A space before the parentheses, then a dereference.
+            // A static property.
+            18 => 1,
+            // A static call on a fully qualified name.
             19 => 1,
-            // A variable variable.
+            // A new expression.
             20 => 1,
-            // A comment: not fixable.
+            // A space before the parentheses, then a dereference.
             21 => 1,
+            // A variable variable.
+            22 => 1,
+            // A comment: not fixable.
+            23 => 1,
             // Parentheses that hold part of what is cloned: a simple expression, three times, then an array access.
-            24 => 1,
-            25 => 1,
             26 => 1,
             27 => 1,
-            // An expression that keeps its own parentheses, twice.
             28 => 1,
             29 => 1,
-            // A member named in braces, with and without parentheses, and by a variable variable.
+            // An expression that keeps its own parentheses, twice.
             30 => 1,
             31 => 1,
+            // A member named in braces, with and without parentheses, and by a variable variable.
             32 => 1,
-            // A comment: not fixable.
             33 => 1,
+            34 => 1,
+            // A comment: not fixable.
+            35 => 1,
             // A variable variable with a member, in braces, and in parentheses that hold part of what is cloned.
-            36 => 1,
-            37 => 1,
             38 => 1,
+            39 => 1,
+            40 => 1,
         ];
     }
 }

@@ -11,11 +11,11 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Warns about `clone` without parentheses, e.g. `clone $a`, and reports a space before them, e.g. `clone ($a)`.
+ * Warns about `clone` without parentheses, e.g. `clone $a`, or with parentheses that hold only part of what is cloned.
  *
  * PER Coding Style 3.1, section 4.7, says `clone()` SHOULD always be called with parentheses, as it's a function as of
- * PHP 8.5. It's a SHOULD, so that's a warning. With the parentheses, it's a function call, and 4.7 says there MUST NOT
- * be a space between a function's name and its opening parenthesis, so `clone ($a)` is an error, as `exit ($a)` is.
+ * PHP 8.5. It's a SHOULD, so that's a warning. A space before the parentheses, as in `clone ($a)`, is reported by
+ * PERCS31.Functions.FunctionCallLayout, as for any other call.
  *
  * The fix wraps the operand in parentheses, as `clone` binds more tightly than any operator. It's only applied when the
  * operand is a simple expression: a variable, variable variable, name or `new` expression, followed by any `->`,
@@ -28,8 +28,6 @@ use PHP_CodeSniffer\Util\Tokens;
 class RequireCloneParenthesesSniff implements Sniff
 {
     public const string CODE_MISSING = 'Missing';
-
-    public const string CODE_SPACE_BEFORE = 'SpaceBefore';
 
     public const string CODE_PART_OF_OPERAND = 'PartOfOperand';
 
@@ -68,12 +66,6 @@ class RequireCloneParenthesesSniff implements Sniff
             $closer = $tokens[$next]['parenthesis_closer'] ?? null;
             if (is_int($closer) && TokenHelper::findCloneArguments($phpcsFile, $stackPtr) === null) {
                 $this->processGrouping($phpcsFile, $stackPtr, $next, $closer);
-
-                return;
-            }
-
-            if ($next !== ($stackPtr + 1)) {
-                $this->processSpaceBefore($phpcsFile, $stackPtr, $next);
             }
 
             return;
@@ -143,24 +135,6 @@ class RequireCloneParenthesesSniff implements Sniff
 
         $phpcsFile->fixer->addContent($end, ')');
         $phpcsFile->fixer->endChangeset();
-    }
-
-    /**
-     * Report the whitespace between `clone` and its parentheses, as an error.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $stackPtr The position of `clone`.
-     * @param int $opener The position of the `(`.
-     */
-    private function processSpaceBefore(File $phpcsFile, int $stackPtr, int $opener): void
-    {
-        $error = 'Expected no space between clone and "("';
-        $hasComment = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($stackPtr + 1), $opener) !== false;
-        if (!FixerHelper::addFixableErrorIf($phpcsFile, !$hasComment, $error, $stackPtr, self::CODE_SPACE_BEFORE)) {
-            return;
-        }
-
-        FixerHelper::replaceBetween($phpcsFile, $stackPtr, $opener, '');
     }
 
     /**
