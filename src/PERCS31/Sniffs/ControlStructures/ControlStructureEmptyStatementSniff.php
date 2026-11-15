@@ -19,9 +19,10 @@ use PhpCollective\Sniffs\ControlStructures\ControlStructureEmptyStatementSniff a
  * It finds the `;` after a structure's closing parenthesis, so it can't see `else;`, which has no parentheses, and no
  * property changes that. This subclass adds `else`, and leaves everything else to the parent. The fix writes `else {}`.
  *
- * The parent only knows the `while` that ends a `do` loop by the closing brace before it. A `do` loop with no braces,
- * as in `do $i++; while ($i < 10);`, has none, so this subclass skips that `while` too. Its `;` ends the loop, and
- * replacing it with `{}` is a parse error.
+ * It also works around a bug in the parent (php-collective/code-sniffer 0.6.10). The parent only knows the `while` that
+ * ends a `do` loop by the closing brace before it. A `do` loop with no braces, as in `do $i++; while ($i < 10);`, has
+ * none, so the parent reports that `while`, and its fix replaces the `;` with `{}`, a parse error. This subclass skips
+ * that `while`.
  */
 class ControlStructureEmptyStatementSniff extends PhpCollectiveSniff
 {

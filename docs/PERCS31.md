@@ -1094,9 +1094,13 @@ Requires braces on a control structure with no body, so `while (next($items));` 
 exception for a structure with no body. `Generic.ControlStructures.InlineControlStructure`, which reports a body without
 braces, skips a structure with no body at all.
 
-The parent checks `if`, `elseif`, `for`, `foreach` and `while`, and leaves the `while` that ends a `do` loop alone. It
-looks for the `;` after a structure's closing parenthesis, so it can't see `else;`, which has none, and no property
-changes that. This subclass adds `else`.
+The parent checks `if`, `elseif`, `for`, `foreach` and `while`. It looks for the `;` after a structure's closing
+parenthesis, so it can't see `else;`, which has none, and no property changes that. This subclass adds `else`.
+
+It also works around a bug in the parent (php-collective/code-sniffer 0.6.10). The parent only knows the `while` that
+ends a `do` loop by the closing brace before it. A `do` loop with no braces, as in `do $i++; while ($i < 10);`, has
+none, so the parent reports that `while`, and its fix replaces the `;` with `{}`, which PHP rejects. This subclass skips
+it.
 
 **Auto-fixable:** yes. A structure with parentheses gets its braces on two lines, and `else;` becomes `else {}`.
 [`PERCS31.Formatting.EmptyBody`](#percs31formattingemptybody) then asks for `{}` on one line. An `else` with a comment before its `;` is left to a
