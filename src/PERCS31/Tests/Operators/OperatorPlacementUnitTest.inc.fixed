@@ -32,9 +32,6 @@ if (
 ) {
 }
 
-$full = $a ? $b :
-    $c;
-
 // === INVALID ===
 
 $arithmetic = $a * $b

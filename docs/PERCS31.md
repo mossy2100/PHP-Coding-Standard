@@ -237,7 +237,6 @@ section gives the reason.
 | `PERCS31.ControlStructures.ControlStructureSpacing`        | The parentheses, with no split rule for `foreach` or `match`        | Yes     |
 | `PERCS31.ControlStructures.ForEachSpacing`                 | A space or line break each side of a `foreach`'s `as` and `=>`      | Yes     |
 | `PERCS31.ControlStructures.MatchArmPlacement`              | Each `match` arm starts on a new line                               | Yes     |
-| `PERCS31.ControlStructures.MultiLineTernaryOperator`       | A multi-line ternary takes three lines, `?` and `:` leading         | Yes     |
 | `PERCS31.ControlStructures.SwitchDeclaration`              | `switch` rules, with a `break` in the last case                     | Yes     |
 | `PERCS31.Files.DeclareStatement`                           | No spaces in `declare(...)`, with one directive or several          | Yes     |
 | `PERCS31.Files.Encoding`                                   | A file is encoded in UTF-8                                          | No      |
@@ -259,7 +258,7 @@ section gives the reason.
 | `PERCS31.NamingConventions.ValidClassName`                 | Classes, interfaces, traits and enums in PascalCase                 | No      |
 | `PERCS31.NamingConventions.ValidConstantName`              | No leading underscore on a constant                                 | No      |
 | `PERCS31.NamingConventions.ValidEnumCaseName`              | Enum cases in PascalCase                                            | No      |
-| `PERCS31.Operators.OperatorPlacement`                      | A wrapped binary operator starts the next line, indented once       | Yes     |
+| `PERCS31.Operators.OperatorPlacement`                      | A wrapped operator starts its line, and a split ternary takes three | Yes     |
 | `PERCS31.Operators.OperatorSpacing`                        | At least one space around binary operators, including `\|>`         | Yes     |
 | `PERCS31.PHP.LowerCaseKeyword`                             | Keywords in lower case, including a property hook's `get` or `set`  | Yes     |
 | `PERCS31.PHP.LowerCaseType`                                | Types in lower case, including a `set` hook's and an enum's type    | Yes     |
@@ -1275,65 +1274,6 @@ $label = match ($code) {
 
 ---
 
-### PERCS31.ControlStructures.MultiLineTernaryOperator
-
-Requires a ternary split at `?` or `:` to take three lines, with `?` and `:` each starting a line, indented once. This
-replaces `SlevomatCodingStandard.ControlStructures.DisallowTrailingMultiLineTernaryOperator`.
-
-**Why:** [PER Coding Style 3.1, Section 6.4](https://www.php-fig.org/per/coding-style/#64-operators-placement) says a multi-line ternary MUST occupy three lines, never two, with each
-operator at the start of its line. The Slevomat sniff only reports a `?` at the end of a line. No inherited sniff
-reports a ternary on two lines, a trailing `:`, or the wrong indentation. A short ternary (`?:`) is a binary operator in
-PER, so it isn't checked here. Nor is the `?` of a nullable type in a `set` hook's parameter, which PHP_CodeSniffer
-reads as a ternary's.
-
-A ternary is split if there's a line break right before or after its `?` or `:`. A value or condition split over lines
-doesn't split it, so it's left alone, as other binary operators are.
-
-A ternary nested in another's middle operand is checked as a ternary of its own, so it's indented once past the line it
-starts on:
-
-```php
-$label = $isActive
-    ? $isAdmin
-        ? 'Admin'
-        : 'User'
-    : 'Inactive';
-```
-
-The indentation is always 4 spaces, as [PER Coding Style 3.1, Section 2.4](https://www.php-fig.org/per/coding-style/#24-indenting) requires. This sniff doesn't use the `indent`
-property of `PERCS31.WhiteSpace.ScopeIndent`.
-
-**Auto-fixable:** yes, unless a comment is next to `?` or `:`.
-
-**Good:**
-
-```php
-$label = $isActive
-    ? 'Active'
-    : 'Inactive';
-
-$options = $isActive ? [
-    'active' => true,
-] : [];
-```
-
-**Bad:**
-
-```php
-$label = $isActive
-    ? 'Active' : 'Inactive';
-
-$label = $isActive ? 'Active' :
-    'Inactive';
-
-$options = $isActive ? [
-    'active' => true,
-]
-    : [];
-```
-
----
-
 ### PERCS31.ControlStructures.SwitchDeclaration
 
 Checks `switch` statements. This replaces `PSR2.ControlStructures.SwitchDeclaration`, and adds these rules:
@@ -1945,7 +1885,7 @@ value wrapped at an operator, as in `string $name = 'a'` then `. 'b',`. That lin
 [section 6.4](https://www.php-fig.org/per/coding-style/#64-operators-placement) indents it once more. The parent's check can't skip one kind of line, so the ruleset excludes its `Indent`
 code, and this sniff checks the indent itself, as `ParameterIndent`: only a line that starts a parameter, a `use`
 variable or their attributes, and each closing parenthesis. A continuation line is left to
-[`PERCS31.Operators.OperatorPlacement`](#percs31operatorsoperatorplacement) and [`PERCS31.ControlStructures.MultiLineTernaryOperator`](#percs31controlstructuresmultilineternaryoperator).
+[`PERCS31.Operators.OperatorPlacement`](#percs31operatorsoperatorplacement).
 
 The parent reads a parameter list split only by an attribute, as in `function a(#[Sensitive]` then `$password)`, as a
 single-line declaration, so the split wasn't reported. This sniff reads any list whose parentheses are on different
@@ -2384,21 +2324,51 @@ aren't used. `PhpCollective.Operators.OperatorPosition` misses `=`, the comparis
 arrow function's `=>` and `|>`, and doesn't check the indent. `PEAR.Formatting.MultiLineAssignment` only checks `=`, and
 can't fix it. This sniff covers every other binary operator: assignment, arithmetic, comparison, bitwise and logical
 operators, `??`, `instanceof`, the short ternary `?:`, the arrow function's `=>`, and the pipe operator `|>` (PHP 8.5).
-It checks the indent of all of them, including `.`. A full ternary is checked by
-`PERCS31.ControlStructures.MultiLineTernaryOperator`, and section 6.2 doesn't list `=>`, so one in an array or `match`
-arm isn't checked. An assignment operator before a multi-line array's `[` on the next line is left to
+It checks the indent of all of them, including `.`. Section 6.2 doesn't list `=>`, so one in an array or `match` arm
+isn't checked. An assignment operator before a multi-line array's `[` on the next line is left to
 [`PERCS31.Arrays.OpeningBracketPlacement`](#percs31arraysopeningbracketplacement), whose fix gives `$a = [`.
 
 A short ternary must be written `?:`, with nothing between the `?` and `:`, as [section 6.3](https://www.php-fig.org/per/coding-style/#63-ternary-operators) says it follows the rules for
 other binary operators, and its examples write it as one. Anything between them, such as `$a ? : $b`, is reported as
 `SplitShortTernary`, and the fix joins them where the `:` is.
 
-**Auto-fixable:** yes, unless a comment follows an operator at the end of a line, or is between a short ternary's `?`
-and `:`.
+**A full ternary.** Section 6.4 says a multi-line ternary MUST occupy three lines, never two. So a ternary split at its
+`?` or `:` takes three lines, with `?` and `:` each starting a line, indented once, reported as `TernaryLayout`.
+`SlevomatCodingStandard.ControlStructures.DisallowTrailingMultiLineTernaryOperator` only reports a `?` at the end of a
+line, so it isn't used. No inherited sniff reports a ternary on two lines, a trailing `:`, or the wrong indentation. The
+`?` of a nullable type in a `set` hook's parameter, which PHP_CodeSniffer reads as a ternary's, is skipped.
+
+A ternary is split if there's a line break right before or after its `?` or `:`. A value or condition split over lines
+doesn't split it, so it's left alone, as other binary operators are.
+
+A ternary nested in another's middle operand is checked as a ternary of its own, so it's indented once past the line it
+starts on:
+
+```php
+$label = $isActive
+    ? $isAdmin
+        ? 'Admin'
+        : 'User'
+    : 'Inactive';
+```
+
+The indentation is always 4 spaces, as [PER Coding Style 3.1, Section 2.4](https://www.php-fig.org/per/coding-style/#24-indenting) requires. This sniff doesn't use the `indent`
+property of `PERCS31.WhiteSpace.ScopeIndent`.
+
+**Auto-fixable:** yes, unless a comment follows an operator at the end of a line, is between a short ternary's `?` and
+`:`, or is next to a full ternary's `?` or `:`.
 
 **Good:**
 
 ```php
+$label = $isActive
+    ? 'Active'
+    : 'Inactive';
+
+$options = $isActive ? [
+    'active' => true,
+] : [];
+
 $total = $price * $quantity
     + $shipping
     - $discount;
@@ -2423,6 +2393,17 @@ if (
 **Bad:**
 
 ```php
+$label = $isActive
+    ? 'Active' : 'Inactive';
+
+$label = $isActive ? 'Active' :
+    'Inactive';
+
+$options = $isActive ? [
+    'active' => true,
+]
+    : [];
+
 $total = $price * $quantity +
     $shipping -
     $discount;

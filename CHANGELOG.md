@@ -192,8 +192,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace`, now in PERCS31. A space or line break inside an empty
   array, as in `[ ]`, is reported by `Squiz.Arrays.ArrayDeclaration.SpaceInEmptyArray`, which moves from Jumbo to
   PERCS31. Auto-fixable.
-- **A one-line ternary is no longer read as spanning lines.** `PERCS31.ControlStructures.MultiLineTernaryOperator`
-  reported and split one after `+=`, `.=`, `echo`, `print` or `yield`, as a statement, or in a `match` arm.
+- **A one-line ternary is no longer read as spanning lines.** `PERCS31.Operators.OperatorPlacement` reported and split
+  one after `+=`, `.=`, `echo`, `print` or `yield`, as a statement, or in a `match` arm.
 - **A multi-line array can go in a `foreach` header.** `foreach ([` ... `] as $x) {` was reported, and `phpcbf` rewrote
   it into a form that breaks PER Coding Style 3.1, section 11. `PERCS31.ControlStructures.ControlStructureSpacing`
   replaces `PSR12.ControlStructures.ControlStructureSpacing`, so update any `phpcs:ignore` comments or `<exclude>` rules
@@ -402,8 +402,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`Jumbo.ControlStructures.LanguageConstructWithParentheses`.** Replaces
   `SlevomatCodingStandard.ControlStructures.LanguageConstructWithParentheses`, which removed the parentheses from
   `die()`, against PER Coding Style 3.1. It still reports `echo('x')` and the like.
-- **`PERCS31.ControlStructures.MultiLineTernaryOperator` (breaking).** Requires a ternary that spans lines to take
-  three, with `?` and `:` each starting a line, indented once, as PER Coding Style 3.1 requires. Replaces
+- **A ternary split at `?` or `:` takes three lines (breaking).** `PERCS31.Operators.OperatorPlacement` requires a
+  ternary that spans lines to take three, with `?` and `:` each starting a line, indented once, as `TernaryLayout`, as
+  PER Coding Style 3.1 requires. Replaces
   `SlevomatCodingStandard.ControlStructures.DisallowTrailingMultiLineTernaryOperator`, which only reported a trailing
   `?`. Auto-fixable.
 - **`PERCS31.NamingConventions.ValidConstantName` (breaking).** Disallows a constant name that starts with an
@@ -726,9 +727,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   line, `BodyOnNextLineCASE` or `BodyOnNextLineDEFAULT`. A comment on the label's line is still allowed. Auto-fixable.
 - **`PERCS31.WhiteSpace.ConsistentIndent` checks closures, anonymous classes and `switch` bodies.** A later line
   indented too far in one wasn't reported, in either standard. Auto-fixable.
-- **A ternary with a multi-line value.** `PERCS31.ControlStructures.MultiLineTernaryOperator` no longer reports a
-  ternary whose value or condition is split over lines, with no line break next to `?` or `:`, such as `$a = $b ? [`
-  over several lines to `] : [];`. A ternary split at `?` or `:` must still take the three-line form.
+- **A ternary with a multi-line value.** `PERCS31.Operators.OperatorPlacement` no longer reports a ternary whose value
+  or condition is split over lines, with no line break next to `?` or `:`, such as `$a = $b ? [` over several lines to
+  `] : [];`. A ternary split at `?` or `:` must still take the three-line form.
 - **PHP indented inside markup.** `PERCS31.WhiteSpace.ConsistentIndent` and `PERCS31.WhiteSpace.ScopeIndent` no longer
   report PHP indented to match the HTML around it, and a block's code may be level with its tags or one level past them.
   The indent of `?>` isn't checked, as PER has no rule on it. A body on the line after `<?php if ($a) {` is now measured

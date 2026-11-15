@@ -419,13 +419,11 @@
          example writes them (4.2, 4.7, 9) -->
     <rule ref="PERCS31.WhiteSpace.ObjectOperatorSpacing"/>
 
-    <!-- A ternary split at ? or : takes three lines, with ? and : leading, indented once (6.4) -->
-    <rule ref="PERCS31.ControlStructures.MultiLineTernaryOperator"/>
-
     <!-- A wrapped . at the start of the line, not the end (6.4) -->
     <rule ref="Universal.Operators.ConcatPosition"/>
 
-    <!-- Any other wrapped binary operator, and an arrow function's =>, at the start of the line (6.4, 7.1) -->
+    <!-- Any other wrapped binary operator, and an arrow function's =>, at the start of the line (6.4, 7.1). A ternary
+         split at ? or : takes three lines, with ? and : leading, indented once (6.4). -->
     <rule ref="PERCS31.Operators.OperatorPlacement"/>
 
     <!-- ====== CLOSURES AND ANONYMOUS CLASSES (7, 8) ====== -->

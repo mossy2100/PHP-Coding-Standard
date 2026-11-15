@@ -13,8 +13,10 @@ use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Tokens\Collections;
 use PHPCSUtils\Utils\Operators;
 use PHPCSUtils\Utils\Parentheses;
+use SlevomatCodingStandard\Helpers\TernaryOperatorHelper;
 
 /**
  * Disallows a binary operator at the end of a line, when a statement wraps at it, and requires one at the start of a
@@ -47,7 +49,7 @@ use PHPCSUtils\Utils\Parentheses;
  * `?:`, the arrow function's `=>`, the pipe operator `|>` (PHP 8.5, PER Coding Style 3.1), and `.` for the indent only.
  * Two cases are left to inherited sniffs: the placement of `.`, checked by Universal.Operators.ConcatPosition, and of
  * `&&` or `||` in a control structure's condition, checked by PSR12.ControlStructures.BooleanOperatorPlacement. The
- * full ternary is checked by PERCS31.ControlStructures.MultiLineTernaryOperator, and section 6.2 doesn't list `=>`, so
+ * full ternary has its own check, described below, and section 6.2 doesn't list `=>`, so
  * one in an array or `match` arm isn't checked. An assignment operator or arrow function's `=>` before a heredoc or
  * nowdoc is left to PERCS31.Strings.HeredocLayout, as section 10 says it must begin on the same line as the
  * variable it's set against. An assignment operator before a multi-line array's `[` on the next line is left to
@@ -60,6 +62,23 @@ use PHPCSUtils\Utils\Parentheses;
  *
  * A short ternary must be written `?:`, with nothing between the `?` and `:`, as SplitShortTernary. Section 6.3 says it
  * follows the rules for other binary operators, and its examples write it as one, `?:`.
+ *
+ * A full ternary: section 6.4 says a multi-line ternary MUST occupy 3 lines, never 2. So one split at its `?` or `:`
+ * takes three lines, with `?` and `:` each starting a line, indented once, reported as TernaryLayout.
+ * SlevomatCodingStandard.ControlStructures.DisallowTrailingMultiLineTernaryOperator only reports a `?` at the end of a
+ * line, so it isn't used. This also reports a ternary on two lines, a trailing `:`, and `?` or `:` indented wrongly,
+ * and fixes each to the three-line layout.
+ * - A ternary is split if there's a line break right before or after its `?` or `:`. A value or condition split over
+ *   lines doesn't split it, as in `$a = $b ? [` over several lines to `] : [];`, so it's left alone.
+ * - A ternary nested in another's middle operand is checked as its own ternary, indented once past the line it starts
+ *   on, as in `? $b` then `? 1` and `: 2` indented once more.
+ * - Finding where a ternary starts uses Slevomat's TernaryOperatorHelper, which is marked internal, so check this
+ *   sniff after a Slevomat upgrade. It only stops at some tokens, such as `=` and `return`, so it can walk back past
+ *   the start of the ternary's statement or `match` arm to an earlier line, which would give the wrong indent. This
+ *   sniff also stops at anything else that comes before a ternary's expression, including an enclosing ternary's `?`
+ *   or `:`. It finds the `:` itself, as the helper takes the first one, which is a nested ternary's.
+ * - PHP_CodeSniffer reads the `?` of a nullable type in a `set` hook's parameter, as in `set(?int $value)`, as a
+ *   ternary's. The helper would crash on it, as it has no `:`, so it's skipped.
  */
 class OperatorPlacementSniff implements Sniff
 {
@@ -68,6 +87,8 @@ class OperatorPlacementSniff implements Sniff
     public const string CODE_INDENT = 'Indent';
 
     public const string CODE_SPLIT_SHORT_TERNARY = 'SplitShortTernary';
+
+    public const string CODE_TERNARY_LAYOUT = 'TernaryLayout';
 
     /**
      * Whether a line in a control structure's condition must be indented exactly as described, rather than at least
@@ -136,6 +157,7 @@ class OperatorPlacementSniff implements Sniff
         $lastPtr = $stackPtr;
         if ($code === T_INLINE_THEN) {
             if (!Operators::isShortTernary($phpcsFile, $stackPtr)) {
+                $this->processTernary($phpcsFile, $stackPtr);
                 return;
             }
 
@@ -526,5 +548,224 @@ class OperatorPlacementSniff implements Sniff
 
         return ($code === T_PLUS || $code === T_MINUS || $code === T_BITWISE_AND)
             && OperatorHelper::isUnary($phpcsFile, $stackPtr);
+    }
+
+    /**
+     * Check a full ternary split at its `?` or `:`: it takes three lines, with `?` and `:` each starting a line,
+     * indented once past the line the ternary starts on.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $inlineThenPointer The position of the `?`.
+     */
+    private function processTernary(File $phpcsFile, int $inlineThenPointer): void
+    {
+        if (PropertyHookHelper::isHookParameterType($phpcsFile, $inlineThenPointer)) {
+            return;
+        }
+
+        // A short ternary, which PER treats as a binary operator.
+        if (Operators::isShortTernary($phpcsFile, $inlineThenPointer)) {
+            return;
+        }
+
+        $inlineElsePointer = $this->findElse($phpcsFile, $inlineThenPointer);
+        if ($inlineElsePointer === null) {
+            return;
+        }
+
+        $startPointer = $this->findStart(
+            $phpcsFile,
+            $inlineThenPointer,
+            TernaryOperatorHelper::getStartPointer($phpcsFile, $inlineThenPointer),
+        );
+        if (
+            !$this->isSplitAtOperator($phpcsFile, $inlineThenPointer)
+            && !$this->isSplitAtOperator($phpcsFile, $inlineElsePointer)
+        ) {
+            return;
+        }
+
+        // One level past the indentation of the line the ternary starts on. A level is always 4 spaces, as PER Coding
+        // Style 3.1, section 2.4, requires, so ScopeIndent's indent property isn't used.
+        $indentation = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $startPointer) + LayoutHelper::INDENT);
+
+        if (
+            $this->startsLineWithIndentation($phpcsFile, $inlineThenPointer, $indentation)
+            && $this->startsLineWithIndentation($phpcsFile, $inlineElsePointer, $indentation)
+        ) {
+            return;
+        }
+
+        $error = 'A ternary split at "?" or ":" must take three lines, with each starting a line, indented once';
+        $operators = [$inlineThenPointer, $inlineElsePointer];
+        $isFixable = !$this->hasCommentAround($phpcsFile, $operators);
+        $code = self::CODE_TERNARY_LAYOUT;
+        if (!FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $inlineThenPointer, $code)) {
+            return;
+        }
+
+        $phpcsFile->fixer->beginChangeset();
+        foreach ($operators as $operator) {
+            // A new line and the indentation before the operator, and one space after it.
+            $before = $phpcsFile->findPrevious(T_WHITESPACE, ($operator - 1), null, true);
+            $after = $phpcsFile->findNext(T_WHITESPACE, ($operator + 1), null, true);
+            assert(is_int($before) && is_int($after));
+            FixerHelper::blankBetween($phpcsFile, $before, $operator);
+
+            FixerHelper::blankBetween($phpcsFile, $operator, $after);
+
+            $phpcsFile->fixer->addContentBefore($operator, $phpcsFile->eolChar . $indentation);
+            $phpcsFile->fixer->addContent($operator, ' ');
+        }
+
+        $phpcsFile->fixer->endChangeset();
+    }
+
+    /**
+     * Check whether there's a line break right before or after an operator, ignoring comments.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $operator The position of the `?` or `:`.
+     * @return bool True if the code before or after the operator is on another line.
+     */
+    private function isSplitAtOperator(File $phpcsFile, int $operator): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $before = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($operator - 1), null, true);
+        $after = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($operator + 1), null, true);
+
+        return ($before !== false && $tokens[$before]['line'] !== $tokens[$operator]['line'])
+            || ($after !== false && $tokens[$after]['line'] !== $tokens[$operator]['line']);
+    }
+
+    /**
+     * Find where a ternary starts: no earlier than the token that comes before its expression.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $inlineThenPointer The position of the `?`.
+     * @param int $startPointer The position Slevomat's helper found.
+     * @return int The position of the ternary's first token.
+     */
+    private function findStart(File $phpcsFile, int $inlineThenPointer, int $startPointer): int
+    {
+        $tokens = $phpcsFile->getTokens();
+        $boundaries = [
+            ...array_values(Tokens::ASSIGNMENT_TOKENS),
+            T_SEMICOLON,
+            T_OPEN_CURLY_BRACKET,
+            T_CLOSE_CURLY_BRACKET,
+            T_COMMA,
+            T_MATCH_ARROW,
+            T_ECHO,
+            T_PRINT,
+            T_YIELD,
+            T_YIELD_FROM,
+        ];
+
+        // A ternary nested in another's branch starts after the enclosing ternary's `?` or `:`.
+        $closers = [T_CLOSE_PARENTHESIS, T_CLOSE_SQUARE_BRACKET, T_CLOSE_SHORT_ARRAY];
+        for ($i = ($inlineThenPointer - 1); $i >= $startPointer; $i--) {
+            // Brackets before the `?` are part of the condition, whatever's inside them.
+            $code = $tokens[$i]['code'];
+            $isDynamicName = $code === T_CLOSE_CURLY_BRACKET && !isset($tokens[$i]['scope_condition']);
+            if ($isDynamicName || in_array($code, $closers, true)) {
+                $jumpTo = TokenHelper::findOpener($tokens[$i]);
+                if (is_int($jumpTo)) {
+                    $i = $jumpTo;
+                    continue;
+                }
+            }
+
+            $isTernary = isset(Collections::ternaryOperators()[$code]);
+            $isEnclosingTernary = $isTernary && !Operators::isShortTernary($phpcsFile, $i);
+            if ($isEnclosingTernary || in_array($code, $boundaries, true)) {
+                $first = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), $inlineThenPointer, true);
+
+                return $first === false ? $startPointer : $first;
+            }
+        }
+
+        return $startPointer;
+    }
+
+    /**
+     * Find a ternary's `:`, skipping any ternary nested in its middle operand, and anything in brackets or a body.
+     *
+     * Slevomat's TernaryOperatorHelper::getElsePointer() takes the first `:`, which is a nested ternary's.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $inlineThenPointer The position of the `?`.
+     * @return int|null The position of the `:`, or null if there isn't one.
+     */
+    private function findElse(File $phpcsFile, int $inlineThenPointer): ?int
+    {
+        $tokens = $phpcsFile->getTokens();
+        $depth = 0;
+        for ($i = ($inlineThenPointer + 1); $i < $phpcsFile->numTokens; $i++) {
+            $code = $tokens[$i]['code'];
+            if ($code === T_SEMICOLON || in_array($code, [T_CLOSE_PARENTHESIS, T_CLOSE_SQUARE_BRACKET], true)) {
+                return null;
+            }
+
+            $closer = TokenHelper::findCloser($tokens[$i]);
+            if (is_int($closer) && $closer > $i) {
+                $i = $closer;
+                continue;
+            }
+
+            if (($code !== T_INLINE_THEN && $code !== T_INLINE_ELSE) || Operators::isShortTernary($phpcsFile, $i)) {
+                continue;
+            }
+
+            if ($code === T_INLINE_THEN) {
+                $depth++;
+                continue;
+            }
+
+            if ($depth === 0) {
+                return $i;
+            }
+
+            $depth--;
+        }
+
+        return null;
+    }
+
+    /**
+     * Check whether an operator is the first token on its line, with the given indentation.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $operator The position of the `?` or `:`.
+     * @param string $indentation The expected indentation.
+     * @return bool True if the operator starts its line with that indentation.
+     */
+    private function startsLineWithIndentation(File $phpcsFile, int $operator, string $indentation): bool
+    {
+        return LayoutHelper::startsLine($phpcsFile, $operator)
+            && $phpcsFile->getTokens()[$operator]['column'] - 1 === strlen($indentation);
+    }
+
+    /**
+     * Check whether a comment is next to any of the operators, so moving them could move it to the wrong place.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param list<int> $operators The positions of the `?` and `:`.
+     * @return bool True if a comment comes right before or after an operator.
+     */
+    private function hasCommentAround(File $phpcsFile, array $operators): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        foreach ($operators as $operator) {
+            $before = $phpcsFile->findPrevious(T_WHITESPACE, ($operator - 1), null, true);
+            $after = $phpcsFile->findNext(T_WHITESPACE, ($operator + 1), null, true);
+            foreach ([$before, $after] as $pointer) {
+                if ($pointer !== false && isset(Tokens::COMMENT_TOKENS[$tokens[$pointer]['code']])) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

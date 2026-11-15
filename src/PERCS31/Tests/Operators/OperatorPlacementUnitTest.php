@@ -35,6 +35,39 @@ class OperatorPlacementUnitTest extends AbstractSniffTestCase
      */
     protected function getErrorList(string $testFile = ''): array
     {
+        // A full ternary split at its ? or :.
+        if ($testFile === 'OperatorPlacementUnitTest.4.inc') {
+            return [
+                // Two lines, with ? leading.
+                35 => 1,
+                // Two lines, with : leading.
+                37 => 1,
+                // Trailing ? and :.
+                40 => 1,
+                // Trailing :.
+                44 => 1,
+                // Not indented.
+                48 => 1,
+                // Indented twice.
+                52 => 1,
+                // A comment next to an operator (not fixable).
+                56 => 1,
+                // In a match arm: not indented past the arm, and on two lines.
+                74 => 1,
+                76 => 1,
+                // A compound assignment on two lines.
+                109 => 1,
+                // After a set hook's nullable type.
+                120 => 1,
+                // A line break next to one operator: with a value split over lines, and after a comment (not fixable).
+                168 => 1,
+                173 => 1,
+                176 => 1,
+                // A nested ternary not indented once past its own line.
+                195 => 1,
+            ];
+        }
+
         if ($testFile === 'OperatorPlacementUnitTest.2.inc') {
             // The pipe operator.
             return [13 => 1];
@@ -109,34 +142,34 @@ class OperatorPlacementUnitTest extends AbstractSniffTestCase
 
         return [
             // Arithmetic, after another operator on the same line.
-            40 => 1,
+            37 => 1,
             // Null coalescing.
-            42 => 1,
+            39 => 1,
             // Comparison.
-            44 => 1,
+            41 => 1,
             // Boolean, outside a control structure's condition.
-            46 => 1,
+            43 => 1,
             // instanceof.
-            48 => 1,
+            45 => 1,
             // Short ternary.
-            50 => 1,
+            47 => 1,
             // Assignment.
-            52 => 1,
+            49 => 1,
             // Compound assignment.
-            54 => 1,
+            51 => 1,
             // Arrow function.
-            56 => 1,
+            53 => 1,
             // A comment after the operator (not fixable).
-            58 => 1,
+            55 => 1,
             // A short ternary split between ? and :, by a space, a line break or a comment.
-            73 => 1,
+            70 => 1,
+            71 => 1,
             74 => 1,
+            75 => 1,
+            76 => 1,
             77 => 1,
-            78 => 1,
-            79 => 1,
-            80 => 1,
             // An assignment before a single-line array on the next line. Before a multi-line one, it's left alone.
-            91 => 1,
+            88 => 1,
         ];
     }
 
