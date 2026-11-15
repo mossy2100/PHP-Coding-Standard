@@ -159,16 +159,12 @@
          or (binary) (2.5) -->
     <rule ref="PERCS31.PHP.TypeCast"/>
 
-    <!-- No spaces inside the parentheses of a DNF type (2.5) -->
+    <!-- No spaces inside the parentheses of a DNF type (2.5). The sniff's other properties are left unset, which turns
+         their checks off. PERCS31.TypeHints.CompoundTypeOperatorSpacing checks the space around | and &, as it allows a
+         type split before one. PERCS31.TypeHints.NullType checks where null goes, and ?T, as it also covers a type
+         with an intersection, a typed constant and a set hook's parameter, and this sniff's ?T fix turns a static|null
+         return type into ?, a parse error. -->
     <rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat">
-        <!-- Replaced by PERCS31.TypeHints.CompoundTypeOperatorSpacing, which allows a compound type split before | or &
-             (2.5) -->
-        <exclude name="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.DisallowedWhitespaceAroundOperator"/>
-        <!-- Replaced by PERCS31.TypeHints.NullType, which also checks a type with an intersection, a typed constant and
-             a set hook's parameter (2.5) -->
-        <exclude name="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.NullTypeHintNotOnLastPosition"/>
-        <!-- ?T is checked by PERCS31.TypeHints.NullType too, as this sniff's fix turns a static|null return type into
-             ?, a parse error. Its shortNullable property is left unset, which turns the check off. -->
         <properties>
             <property name="withSpacesInsideParentheses" value="no"/>
         </properties>
