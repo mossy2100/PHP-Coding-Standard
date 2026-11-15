@@ -204,8 +204,8 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
   comma in a multi-line list (2.6). For a call, [`PERCS31.Functions.RequireTrailingCommaInCall`](#percs31functionsrequiretrailingcommaincall) replaces
   `Functions.RequireTrailingCommaInCall`.
 - **TypeHints.DNFTypeHintFormat**: Requires no spaces inside the parentheses (2.5). Its check for spaces around `|` and
-  `&` is replaced by [`PERCS31.TypeHints.CompoundTypeOperatorSpacing`](#percs31typehintscompoundtypeoperatorspacing), which allows a split type. Its checks for `null`
-  last and for `?T` are replaced by [`PERCS31.TypeHints.NullType`](#percs31typehintsnulltype), which covers every type.
+  `&` is replaced by [`PERCS31.TypeHints.CompoundTypeLayout`](#percs31typehintscompoundtypelayout), which allows a split type. Its checks for `null` last and
+  for `?T` are replaced by [`PERCS31.TypeHints.NullType`](#percs31typehintsnulltype), which covers every type.
 
 ---
 
@@ -267,8 +267,7 @@ section gives the reason.
 | `PERCS31.PHP.RequireCloneParentheses`                      | A warning for `clone $a`, or `clone($a)->b`, not `clone($a)`        | Yes     |
 | `PERCS31.PHP.TypeCast`                                     | `(bool)`, `(int)`, `(float)` and `(string)` in a cast               | Yes     |
 | `PERCS31.Strings.HeredocLayout`                            | Where a heredoc or nowdoc begins, and its indentation               | Yes     |
-| `PERCS31.TypeHints.CompoundTypeLayout`                     | One type, or one DNF union segment, per line of a split type        | Yes     |
-| `PERCS31.TypeHints.CompoundTypeOperatorSpacing`            | No space around `\|` or `&` in a type, but a split before one       | Yes     |
+| `PERCS31.TypeHints.CompoundTypeLayout`                     | No space around a type's `\|` or `&`, and one type per split line   | Yes     |
 | `PERCS31.TypeHints.NullType`                               | `null` last in a union, and `?T` for one type with `null`           | Yes     |
 | `PERCS31.WhiteSpace.ArrowSpacing`                          | The space around `=>` in `match` arms and arrays                    | Yes     |
 | `PERCS31.WhiteSpace.ConsistentIndent`                      | No line indented further than its scope, after a statement          | Yes     |
@@ -2503,12 +2502,12 @@ The `=` of a parameter's default value is a binary operator too, so `int $a    =
 `false` to leave it to that sniff, as the Jumbo standard does.
 
 The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operator, so it's skipped. [Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the
-union symbol MUST NOT have a space either side, which `PERCS31.TypeHints.CompoundTypeOperatorSpacing` checks. The parent
+union symbol MUST NOT have a space either side, which `PERCS31.TypeHints.CompoundTypeLayout` checks. The parent
 would require one.
 
 The `&` of a by-reference hook, e.g. `&get => $this->items;`, isn't an operator either, so it's skipped, here and by
 `PERCS31.Operators.OperatorPlacement`. So are the `|`, `&` and `?` of a `set` hook's parameter type, e.g.
-`set(int|string $value)`, which `PERCS31.TypeHints.CompoundTypeOperatorSpacing` checks instead.
+`set(int|string $value)`, which `PERCS31.TypeHints.CompoundTypeLayout` checks instead.
 
 **Auto-fixable:** yes, as the parent.
 
@@ -2754,23 +2753,42 @@ $alsoNotAllowed
 
 ### PERCS31.TypeHints.CompoundTypeLayout
 
-Requires a compound type split across lines to have one type per line, or for a DNF type, one union segment per line. A
-type is split if any `|` or `&` outside parentheses starts a line. Then every one of them must, and a `&` inside a DNF
-type's parentheses never can.
+Checks the layout of a union, intersection or DNF type: no space around its `|` and `&`, and when it's split across
+lines, one type per line, or for a DNF type, one union segment per line.
+
+**The spacing.** A space before or after a symbol, on its line, is reported as `SpaceAroundOperator`. A type may be
+split before a symbol, so a line break there is allowed. A symbol at the end of a line is reported as
+`OperatorAtEndOfLine`.
+
+**The lines.** A type is split if any `|` or `&` outside parentheses starts a line. Then every one of them must, and a
+`&` inside a DNF type's parentheses never can.
 
 Each line that starts with a `|` or `&` must be indented as the type's first line requires:
 
 - Level with it, when the type starts that line, as in a parameter list or a multi-catch.
 - Once past it, when other code comes before the type, as in `public A`, `public const A` or `): A`.
 
-**Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says each line of a split union or intersection MUST have a single type, and
-each line of a split DNF type MUST have a single union segment, with all of its intersections on that line. No inherited
-sniff checks it. This includes a `set` hook's parameter type, e.g. `set(int|string $value)`, and a multi-catch's types,
-e.g. `catch (A|B $e)`.
+**Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the union and intersection symbols MUST NOT have a leading or trailing
+space, and that a compound type MAY be split across lines, with the symbol at the start of each line. Then each line of
+a split union or intersection MUST have a single type, and each line of a split DNF type MUST have a single union
+segment, with all of its intersections on that line. No inherited sniff checks the lines.
+
+For the spacing, this replaces the `DisallowedWhitespaceAroundOperator` check of
+`SlevomatCodingStandard.TypeHints.DNFTypeHintFormat`, which counts the line break as a space, so it rejects every split
+type, including PER's own examples.
+
+It also checks the `|` between a multi-catch's types, e.g. `catch (A|B $e)`, which is read as a union type's, so the
+types may be split before a `|` too. `PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing` reports that split, and can't
+fix a `|` at the end of a line, so the ruleset doesn't use it.
+
+It also checks a `set` hook's parameter type, e.g. `set(int|string $value)`, and the space inside a DNF type's
+parentheses there, as `SpaceInsideParentheses`. PHP_CodeSniffer reads that type as an expression, so the Slevomat sniff
+doesn't see it.
 
 Section 2.5 doesn't set the indent. See [The Indent of a Split Type](PER-CS_3.1_Judgement_Calls.md#the-indent-of-a-split-type).
 
-**Auto-fixable:** yes, unless a comment comes before a `&` that starts a line inside parentheses.
+**Auto-fixable:** yes, unless a comment comes before a `&` that starts a line inside parentheses. A symbol at the end of
+a line is moved to the start of the next.
 
 **Good:**
 
@@ -2818,51 +2836,10 @@ class Reflector
     public \ReflectionObject
     |\ReflectionClass $reflect;
 }
-```
-
----
-
-### PERCS31.TypeHints.CompoundTypeOperatorSpacing
-
-Disallows spaces around the `|` and `&` of a union, intersection or DNF type, but allows a type split across lines
-before one. This replaces the `DisallowedWhitespaceAroundOperator` check of
-`SlevomatCodingStandard.TypeHints.DNFTypeHintFormat`.
-
-**Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the union and intersection symbols MUST NOT have a leading or trailing
-space, and that a compound type MAY be split across lines, with the symbol at the start of each line. The Slevomat check
-counts the line break as a space, so it rejects every split type, including PER's own examples. Which types go on which
-line is checked by `PERCS31.TypeHints.CompoundTypeLayout`.
-
-It also checks the `|` between a multi-catch's types, e.g. `catch (A|B $e)`, which is read as a union type's, so the
-types may be split before a `|` too. `PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing` reports that split, and can't
-fix a `|` at the end of a line, so the ruleset doesn't use it.
-
-It also checks a `set` hook's parameter type, e.g. `set(int|string $value)`, and the parentheses of a DNF type there, as
-PHP_CodeSniffer reads that type as an expression, and the Slevomat sniff doesn't see it.
-
-**Auto-fixable:** yes. A symbol at the end of a line is moved to the start of the next.
-
-**Good:**
-
-```php
-function reflect(
-    \ReflectionObject
-    |\ReflectionClass
-    |\ReflectionProperty $reflect,
-): int|string {
-    // ...
-}
-```
-
-**Bad:**
-
-```php
-function reflect(
+function spaced(
     \ReflectionObject |
     \ReflectionClass $reflect,
-): int | string {
-    // ...
-}
+): int | string {}
 ```
 
 ---

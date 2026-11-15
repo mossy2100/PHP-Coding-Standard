@@ -316,8 +316,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   comments or `<exclude>` rules that name the old codes. In a file with markup, a `strict_types` declaration anywhere
   else is now an error, as PER requires, and Jumbo's fix for a missing one adds the first-line form. Auto-fixable. A
   file with markup before its first `<?php`, such as a template, isn't checked for a file header, as it has none.
-- **`PERCS31.TypeHints.CompoundTypeOperatorSpacing`.** A union, intersection or DNF type can now be split across lines,
-  with the `|` or `&` starting each line, as PER Coding Style 3.1 allows. It replaces
+- **`PERCS31.TypeHints.CompoundTypeLayout`.** A union, intersection or DNF type can now be split across lines, with the
+  `|` or `&` starting each line, as PER Coding Style 3.1 allows. It replaces
   `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.DisallowedWhitespaceAroundOperator`, which counted the line break
   as a space. Spaces around the symbol on one line, or the symbol at the end of a line, are still errors. Auto-fixable.
 - **One blank line before a parameter's attributes is allowed.** As PER Coding Style 3.1 allows, a multi-line parameter
@@ -457,9 +457,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   condition or any other expression. Auto-fixable, in PERCS31 and Jumbo.
 - **A multi-catch's types may be split across lines (breaking).** `catch (` then `A` then `|B $e` then `) {` now passes
   in PERCS31, as PER Coding Style 3.1 lets a union type be split before `|`. It was reported twice, with no fix.
-  `PERCS31.TypeHints.CompoundTypeOperatorSpacing` now checks the `|`, and
-  `PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing` is no longer used, so `catch (A | B $e)` is reported as
-  `PERCS31.TypeHints.CompoundTypeOperatorSpacing.SpaceAroundOperator`. A `|` at the end of a line is now fixed.
+  `PERCS31.TypeHints.CompoundTypeLayout` now checks the `|`, and `PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing` is
+  no longer used, so `catch (A | B $e)` is reported as `PERCS31.TypeHints.CompoundTypeLayout.SpaceAroundOperator`. A `|`
+  at the end of a line is now fixed.
 - **A leading underscore on a global constant is only reported in Jumbo.** PERCS31 no longer reports `const _FOO = 1;`
   outside a class, as PER Coding Style 3.1's rule is about showing visibility, which a global constant doesn't have.
   `PERCS31.NamingConventions.ValidConstantName` has a new `checkGlobalConstants` property, which Jumbo turns on.
@@ -735,7 +735,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   from the tag, so one indented too little is reported too.
 - **A `set` hook's parameter type.** `set(int|string $value)` and `set(A&B $value)` were reported as missing the spaces
   that PER Coding Style 3.1 forbids, and `phpcbf` added them. They now pass, and `set(int | string $value)` is reported
-  and fixed by `PERCS31.TypeHints.CompoundTypeOperatorSpacing`. A split type there is checked as it is elsewhere.
+  and fixed by `PERCS31.TypeHints.CompoundTypeLayout`. A split type there is checked as it is elsewhere.
   `set(?int $value)` no longer stops the file being checked, in either standard, and `set(? int $value)` is reported and
   fixed. This adds `PERCS31.Functions.NullableTypeDeclaration`, in place of PSR-12's sniff, and in Jumbo,
   `Jumbo.ControlStructures.RequireShortTernaryOperator`, in place of Slevomat's, so update any `phpcs:ignore` comments
