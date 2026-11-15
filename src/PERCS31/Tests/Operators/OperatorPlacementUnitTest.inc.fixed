@@ -77,7 +77,7 @@ $g = $a ? $b ?: $c : $d;
 $g = $h ? // Why.
     : $i;
 
-// An assignment before a multi-line array's [ on the next line is left to PERCS31.Arrays.OpeningBracketPlacement.
+// An assignment before a multi-line array's [ on the next line is left to PERCS31.Arrays.MultiLineArrayLayout.
 $leftToArraySniff =
     [
         1,

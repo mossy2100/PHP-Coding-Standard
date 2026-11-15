@@ -506,7 +506,7 @@
         <exclude name="Squiz.Arrays.ArrayDeclaration.NoCommaAfterLast"/>
         <!-- A closing bracket not on a new line is reported by Generic.Arrays.ArrayIndent -->
         <exclude name="Squiz.Arrays.ArrayDeclaration.CloseBraceNewLine"/>
-        <!-- Replaced by PERCS31.Arrays.ValuePerLine, as it reads an attribute on a value as an earlier value -->
+        <!-- Replaced by PERCS31.Arrays.MultiLineArrayLayout, as it reads an attribute on a value as an earlier value -->
         <exclude name="Squiz.Arrays.ArrayDeclaration.ValueNoNewline"/>
     </rule>
 
@@ -519,14 +519,11 @@
         <exclude name="SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace.SpaceAfterComma"/>
     </rule>
 
-    <!-- One value per line, the first on the next line, in a multi-line array whose values don't all have keys (11).
-         One whose values all have keys is checked by Squiz.Arrays.ArrayDeclaration, above. -->
-    <rule ref="PERCS31.Arrays.ValuePerLine"/>
-
     <!-- A multi-line array's [ not on a line of its own, except as an element of a multi-line array, an argument, a
          match arm's condition, the first condition of a split if, elseif, while, switch or for, or a destructuring
-         assignment (11) -->
-    <rule ref="PERCS31.Arrays.OpeningBracketPlacement"/>
+         assignment. One value per line, the first on the next line, in a multi-line array whose values don't all have
+         keys. One whose values all have keys is checked by Squiz.Arrays.ArrayDeclaration, above (11). -->
+    <rule ref="PERCS31.Arrays.MultiLineArrayLayout"/>
 
     <!-- No blank line after a multi-line array's opening bracket, or before its closing bracket (11) -->
     <rule ref="PERCS31.Arrays.ArrayBracketSpacing"/>

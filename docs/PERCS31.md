@@ -129,7 +129,7 @@ Three custom sniffs extend php-collective sniffs.
   on a single-line array, so `Universal.WhiteSpace.CommaSpacing` checks that instead. Its check for a multi-line array's
   trailing comma is replaced by Slevomat's `Arrays.TrailingArrayComma`, as it missed a keyed last element, and wanted
   the comma after a heredoc on the next line, as before PHP 7.3. Its `ValueNoNewline` check is replaced by
-  [`PERCS31.Arrays.ValuePerLine`](#percs31arraysvalueperline), as it read an attribute on a value as an earlier value.
+  [`PERCS31.Arrays.MultiLineArrayLayout`](#percs31arraysmultilinearraylayout), as it read an attribute on a value as an earlier value.
 
 ### PHPCSExtra
 
@@ -217,8 +217,7 @@ section gives the reason.
 | Sniff                                                      | Checks                                                              | Fixable |
 | ---------------------------------------------------------- | ------------------------------------------------------------------- | ------- |
 | `PERCS31.Arrays.ArrayBracketSpacing`                       | No blank line after a multi-line array's `[`, or before its `]`     | Yes     |
-| `PERCS31.Arrays.OpeningBracketPlacement`                   | A multi-line array's `[` isn't on a line of its own, outside a list | Yes     |
-| `PERCS31.Arrays.ValuePerLine`                              | One value per line in a multi-line array, the first on the next     | Yes     |
+| `PERCS31.Arrays.MultiLineArrayLayout`                      | A multi-line array's `[` not on its own line, and a value per line  | Yes     |
 | `PERCS31.Attributes.AttributePlacement`                    | An attribute is on its own line, except on a parameter              | Yes     |
 | `PERCS31.Attributes.DisallowMultiLineAttributesJoining`    | One attribute per block when a block spans lines                    | Yes     |
 | `PERCS31.Attributes.DisallowMultipleAttributesPerLine`     | Separate attribute blocks on separate lines                         | Yes     |
@@ -310,10 +309,12 @@ $values = [
 
 ---
 
-### PERCS31.Arrays.OpeningBracketPlacement
+### PERCS31.Arrays.MultiLineArrayLayout
 
-Disallows the opening bracket of a multi-line array on a line of its own, e.g. after `=` or `return`. These are allowed,
-as each has to start a line:
+Checks the layout of a multi-line array: its opening bracket isn't on a line of its own, and each value starts a line.
+
+**The opening bracket.** It can't be on a line of its own, e.g. after `=` or `return`, reported as `OwnLine`. These are
+allowed, as each has to start a line:
 
 - An element of a multi-line array.
 - An argument in an argument list, including an attribute's.
@@ -327,8 +328,22 @@ of a split argument list on its own line, hence the second, and a `match` arm st
 the first condition of a split control structure on the line after the `(`, hence the fourth. A `foreach` and a `match`
 have no such rule, so `foreach ([` and `match ([` are required. No inherited sniff checks it.
 
-**Auto-fixable:** yes. The fix moves the `[` to the end of the previous line, and `Generic.Arrays.ArrayIndent` then
-re-indents the elements. After a comment, it's left to a person.
+**The values.** Each value starts on a new line, including the first, reported as `ValueNoNewline`. Section 11 says that
+when an array is split across lines, the first value MUST be on the next line, and there MUST be only one value per
+line.
+
+This replaces `Squiz.Arrays.ArrayDeclaration`'s `ValueNoNewline` check, which only looks at an array with two or more
+values and no keys. This sniff also checks an array with one value, and one that mixes keyed and unkeyed values, as in
+`'a' => 1, 2,`, which no Squiz check covers. An array whose values all have keys is left to the Squiz sniff's
+`IndexNoNewline` check.
+
+The Squiz check also reads an attribute on a value as an earlier value on the line, so it reports
+`#[Pure] static fn() => 1,` though it's on a line of its own. PER doesn't say where a closure's attribute goes, and the
+attribute is part of the value. A subclass can't fix this, as the check is in the middle of the Squiz sniff's
+`processMultiLineArray()`.
+
+**Auto-fixable:** yes. The fix moves the `[` to the end of the previous line, or starts the value on a new line, and
+`Generic.Arrays.ArrayIndent` then indents the elements. A `[` after a comment is left to a person.
 
 **Good:**
 
@@ -357,6 +372,11 @@ $rows = [
         'role' => 'Administrator',
     ],
 ];
+
+$handlers = [
+    #[Pure] static fn(int $x): int => $x,
+    #[Pure] static fn(int $x): int => $x * 2,
+];
 ```
 
 **Bad:**
@@ -368,37 +388,7 @@ $payload =
         'email' => $customer->primaryEmailAddress(),
         'message' => 'Thanks for signing up. Your account is now active.',
     ];
-```
 
----
-
-### PERCS31.Arrays.ValuePerLine
-
-Requires each value of a multi-line array to start on a new line, including the first. This replaces
-`Squiz.Arrays.ArrayDeclaration`'s `ValueNoNewline` check, which only looks at an array with two or more values and no
-keys. This sniff also checks an array with one value, and one that mixes keyed and unkeyed values, as in `'a' => 1, 2,`,
-which no Squiz check covers. An array whose values all have keys is left to the Squiz sniff's `IndexNoNewline` check.
-
-**Why:** [PER Coding Style 3.1, Section 11](https://www.php-fig.org/per/coding-style/#11-arrays) says that when an array is split across lines, the first value MUST be on the
-next line, and there MUST be only one value per line. The Squiz check reads an attribute on a value as an earlier value
-on the line, so it reports `#[Pure] static fn() => 1,` though it's on a line of its own. PER doesn't say where a
-closure's attribute goes, and the attribute is part of the value. A subclass can't fix this, as the check is in the
-middle of the Squiz sniff's `processMultiLineArray()`.
-
-**Auto-fixable:** yes. The fix starts the value on a new line, and `Generic.Arrays.ArrayIndent` indents it.
-
-**Good:**
-
-```php
-$handlers = [
-    #[Pure] static fn(int $x): int => $x,
-    #[Pure] static fn(int $x): int => $x * 2,
-];
-```
-
-**Bad:**
-
-```php
 $values = [1,
     2, 3,
 ];
@@ -2326,7 +2316,7 @@ can't fix it. This sniff covers every other binary operator: assignment, arithme
 operators, `??`, `instanceof`, the short ternary `?:`, the arrow function's `=>`, and the pipe operator `|>` (PHP 8.5).
 It checks the indent of all of them, including `.`. Section 6.2 doesn't list `=>`, so one in an array or `match` arm
 isn't checked. An assignment operator before a multi-line array's `[` on the next line is left to
-[`PERCS31.Arrays.OpeningBracketPlacement`](#percs31arraysopeningbracketplacement), whose fix gives `$a = [`.
+[`PERCS31.Arrays.MultiLineArrayLayout`](#percs31arraysmultilinearraylayout), whose fix gives `$a = [`.
 
 A short ternary must be written `?:`, with nothing between the `?` and `:`, as [section 6.3](https://www.php-fig.org/per/coding-style/#63-ternary-operators) says it follows the rules for
 other binary operators, and its examples write it as one. Anything between them, such as `$a ? : $b`, is reported as

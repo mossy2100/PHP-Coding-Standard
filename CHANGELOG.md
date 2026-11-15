@@ -205,7 +205,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   rule, instead of being reported.
 - **An attribute on a value in a multi-line array is allowed.** `#[Pure] static fn() => 1,` on a line of its own was
   reported as two values on one line, as `Squiz.Arrays.ArrayDeclaration`'s `ValueNoNewline` check read the attribute as
-  an earlier value. The new `PERCS31.Arrays.ValuePerLine` replaces that check.
+  an earlier value. The new `PERCS31.Arrays.MultiLineArrayLayout` replaces that check.
 - **Two or more attribute blocks put their target on the next line (breaking).** As each block must be on its own line,
   `#[A] #[B] case X;` is now an error in both standards, as is `#[A] #[B]` on a property hook, which was missed. In a
   single-line parameter or argument list, blocks stay inline, each followed by a single space. One block holding several
@@ -351,10 +351,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   reported a call with a multi-line anonymous class argument, e.g. `consume(new class {` ... `});`, and fixed it by
   putting the class body on one line. Such a call is now skipped, as one with a closure argument already was. So is a
   call with a `match` argument, where the same fix stopped `phpcbf` finishing.
-- **`PERCS31.Arrays.OpeningBracketPlacement` (breaking).** The opening bracket of a multi-line array must not be on a
-  line of its own, as PER Coding Style 3.1 requires, e.g. `return [`, not `return` then `[` on the next line. An array
-  that's an element of a multi-line array is allowed, and so is one that's an argument in an argument list, or a
-  condition of a `match` arm. Auto-fixable.
+- **A multi-line array's opening bracket (breaking).** It must not be on a line of its own, as PER Coding Style 3.1
+  requires, e.g. `return [`, not `return` then `[` on the next line. An array that's an element of a multi-line array is
+  allowed, and so is one that's an argument in an argument list, or a condition of a `match` arm.
+  `PERCS31.Arrays.MultiLineArrayLayout` reports it, as `OwnLine`. Auto-fixable.
 - **The pipe operator `|>` (PHP 8.5) (breaking).** As PER Coding Style 3.1 requires, `|>` needs a space either side, and
   starts the line when a statement wraps at it. `PERCS31.Operators.OperatorSpacing` checks the spacing, and
   `PERCS31.Operators.OperatorPlacement` now covers `|>`. Only checked when PHPCS runs on PHP 8.5. Auto-fixable.
@@ -543,10 +543,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
-- **`SlevomatCodingStandard.Variables.UselessVariable` from Jumbo.** A variable that's assigned and then returned on
-  the next line is no longer reported.
+- **`SlevomatCodingStandard.Variables.UselessVariable` from Jumbo.** A variable that's assigned and then returned on the
+  next line is no longer reported.
 - **`SlevomatCodingStandard.Arrays.MultiLineArrayEndBracketPlacement` from PERCS31.** It only looks at a nested array
-  that starts on its parent's first line, and `PERCS31.Arrays.ValuePerLine` and
+  that starts on its parent's first line, and `PERCS31.Arrays.MultiLineArrayLayout` and
   `Squiz.Arrays.ArrayDeclaration.IndexNoNewline` now put every multi-line array's first value on a new line, so it had
   nothing left to report.
 - **Four duplicate messages.** Each of these was reported twice. The second report is gone, so a `phpcs:ignore` for it
@@ -590,7 +590,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **A function body after a split return type.** After a split parameter list, a return type split over lines is
   reported, and can't be fixed. `PERCS31.WhiteSpace.ScopeIndent` also reported the body's first line, though it was
   indented correctly, and its fix indented the body further.
-- **A destructuring assignment after a comment.** `PERCS31.Arrays.OpeningBracketPlacement` reported a multi-line
+- **A destructuring assignment after a comment.** `PERCS31.Arrays.MultiLineArrayLayout` reported a multi-line
   `[$a, $b] = $c;` that started a statement, when a comment or a docblock was on the line before it.
 - **A `case` that falls through to one with a braced body.** `PERCS31.WhiteSpace.ScopeIndent` reported the braced
   `case`, its body and its closing brace as indented too little, when they were right, and `phpcbf` then failed on the
@@ -669,13 +669,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **A line wrapped before `::`, or before a `match` arm's `=>`.** After a line ending in `)`,
   `PERCS31.WhiteSpace.ConsistentIndent` reported the wrapped line, and its fix removed the indent. Both now pass.
 - **`phpcbf` no longer fails on a split condition that starts with a multi-line array.** In `if (` then `[` on the next
-  line, `PERCS31.Arrays.OpeningBracketPlacement` moved the `[` up, and
-  `PERCS31.ControlStructures.ControlStructureSpacing` moved it back down. The array may now start the line there, in an
-  `if`, `elseif`, `while`, `switch` or `for`, as PER Coding Style 3.1 puts the first condition on the line after the
-  opening parenthesis.
+  line, `PERCS31.Arrays.MultiLineArrayLayout` moved the `[` up, and `PERCS31.ControlStructures.ControlStructureSpacing`
+  moved it back down. The array may now start the line there, in an `if`, `elseif`, `while`, `switch` or `for`, as PER
+  Coding Style 3.1 puts the first condition on the line after the opening parenthesis.
 - **`$a =` followed by a multi-line array is fixed to `$a = [`.** `phpcbf` gave `$a` then `= [` on the next line, as
-  `PERCS31.Operators.OperatorPlacement` moved the `=` down while `PERCS31.Arrays.OpeningBracketPlacement` moved the `[`
-  up. The operator sniff now leaves this case to the array sniff.
+  `PERCS31.Operators.OperatorPlacement` moved the `=` down while `PERCS31.Arrays.MultiLineArrayLayout` moved the `[` up.
+  The operator sniff now leaves this case to the array sniff.
 - **A half-split type is fixed to one indent.** `PERCS31.TypeHints.CompoundTypeLayout`'s fix for `int|string` then
   `|float` on the next line now lines the new break up with the `|` that already starts a line.
 - **`null` and `?T` on a static property.** `PERCS31.TypeHints.NullType` now reports `public static null|int $a` and
@@ -694,13 +693,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **An import in a file that starts with markup (breaking).** `PERCS31.Files.FileHeader` now reports a `use` import in a
   file with markup before its first `<?php`, as `ImportAfterCode`, as PER Coding Style 3.1 says the header's blocks MUST
   be at the top of the file. Such a file was skipped. Not auto-fixable.
-- **One value per line in more arrays (breaking).** `PERCS31.Arrays.ValuePerLine` now checks a multi-line array that
-  mixes keyed and unkeyed values, as in `'a' => 1, 2,`, and one with a single value on the opening bracket's line, as in
-  `[1,` then `];`. Neither was reported, though PER Coding Style 3.1 requires the first value on the next line, and one
-  value per line. Auto-fixable.
-- **A value after an arrow function in a multi-line array.** `PERCS31.Arrays.ValuePerLine` missed a value on the same
-  line as an arrow function before it, as in `fn($x) => $x, 2,`, and an arrow function on the opening bracket's line.
-  Both are now reported. Auto-fixable.
+- **One value per line in more arrays (breaking).** `PERCS31.Arrays.MultiLineArrayLayout` now checks a multi-line array
+  that mixes keyed and unkeyed values, as in `'a' => 1, 2,`, and one with a single value on the opening bracket's line,
+  as in `[1,` then `];`. Neither was reported, though PER Coding Style 3.1 requires the first value on the next line,
+  and one value per line. Auto-fixable.
+- **A value after an arrow function in a multi-line array.** `PERCS31.Arrays.MultiLineArrayLayout` missed a value on the
+  same line as an arrow function before it, as in `fn($x) => $x, 2,`, and an arrow function on the opening bracket's
+  line. Both are now reported. Auto-fixable.
 - **A closure in a constant's value.** With PHP 8.5's closure in a constant expression, as in
   `const Handler = static function () { $total = 1; ... };`, a variable assigned in the closure was reported as a badly
   named constant, by `PERCS31.NamingConventions.UpperCaseConstantName` and `ValidConstantName`. A constant's name is now
@@ -761,8 +760,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **An upper-case `CASE` or `DEFAULT` was reported twice.** `PERCS31.ControlStructures.SwitchDeclaration`'s
   `caseNotLower` and `defaultNotLower` codes are no longer used, as `PERCS31.PHP.LowerCaseKeyword` reports the same.
 - **An array argument in a call through an array or a string.** In `$handlers['x'](` or `[$object, 'method'](`, a
-  multi-line array argument on a line of its own was reported by `PERCS31.Arrays.OpeningBracketPlacement`, though it's
-  an argument in an argument list. One helper now decides whether parentheses hold arguments, for every sniff that asks.
+  multi-line array argument on a line of its own was reported by `PERCS31.Arrays.MultiLineArrayLayout`, though it's an
+  argument in an argument list. One helper now decides whether parentheses hold arguments, for every sniff that asks.
   `PERCS31.Classes.ClassInstantiationNoBrackets` also reports `(new Foo())->bar()` straight after a block's closing
   brace, which it took for a call.
 - A `throw` or `exit` expression in a `case`. `$b = foo() ?? throw new Exception();` in a `case` was reported twice, by
