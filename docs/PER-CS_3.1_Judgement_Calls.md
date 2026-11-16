@@ -647,7 +647,9 @@ after a comma between directives.
 **Decision:** It does, so `declare(ticks=1,strict_types=1);` is the correct form. Several directives and string values
 are allowed. There are no blank lines between `declare` statements.
 
-**Why:** A space after the comma is still inside the parentheses.
+**Why:** A space after the comma is still inside the parentheses. A `declare` statement is a special case: its `=` has
+no space either side, where 6.2 requires one around every other `=`. So its comma has none after it either, where every
+other comma has one.
 
 ---
 
