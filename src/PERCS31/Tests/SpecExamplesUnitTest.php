@@ -61,6 +61,8 @@ class SpecExamplesUnitTest extends TestCase
         ],
         // abstract class Example { has its brace on the class's line (4.1).
         '43-4.10.inc' => ['3 PERCS31.Classes.ClassDeclaration.OpenBraceNewLine'],
+        // An empty closure, which SHOULD be an arrow function (7), as the spec's next example shows.
+        '66-7.inc' => ['3 PERCS31.Formatting.EmptyBody.ClosureNotArrowFunction'],
         // An empty constructor body not written as {} (4.4).
         '72-8.inc' => ['17 PERCS31.Formatting.EmptyBody.NotAbbreviated'],
         // Not allowed: a nowdoc on the line after its context.

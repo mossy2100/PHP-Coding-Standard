@@ -504,3 +504,46 @@ $blankAfterComment = new
 
     #[A]
     class {};
+
+// === A COMMENT BETWEEN ATTRIBUTE BLOCKS ===
+
+#[A]
+// Between blocks.
+#[B]
+class CommentBetweenBlocks
+{
+    #[A]
+    /* Between blocks. */
+    #[B]
+    public int $a = 1;
+
+    #[A] // At the end of the line.
+    #[B] // At the end of the last line.
+    public int $b = 1;
+
+    public function multiLine(
+        // Before the blocks.
+        #[A]
+        #[B]
+        int $a = 1,
+        #[A]
+        // Between blocks.
+        #[B]
+        int $b = 1,
+        #[A]
+        #[B]
+        // Before the parameter.
+        int $c = 1,
+        #[A] // At the end of the line.
+        #[B] // At the end of the last line.
+        int $d = 1,
+    ): void {}
+
+    public function inlineBlocks(#[A] #[B] int $a = 1): void {}
+
+    public function commentBeforeBlocks(/* Before the blocks. */ #[A] #[B] int $a = 1): void {}
+
+    public function commentBetweenBlocks(#[A] /* Between blocks. */ #[B] int $a = 1): void {}
+
+    public function commentBeforeParameter(#[A] #[B] /* Before the parameter. */ int $a = 1): void {}
+}

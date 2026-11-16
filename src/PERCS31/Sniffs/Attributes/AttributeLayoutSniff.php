@@ -47,8 +47,10 @@ use PHPCSUtils\Utils\PassedParameters;
  * Where an attribute may be on its target's line, on such a hook or a closure outside a call, it's followed by a single
  * space, as section 12.2 requires for a parameter in a single-line list.
  *
- * It also reports a blank line or a comment between the last attribute and its target. That includes a comment before
- * a parameter, though section 12.2 says "immediately prior" only for the other targets. That replaces
+ * It also reports a blank line between the last attribute and its target, and a comment between an attribute and its
+ * target. A comment between two attribute blocks is between the first one and its target, so it's reported too. One at
+ * the end of an attribute's line is allowed. That includes a comment before a parameter, though section 12.2 says
+ * "immediately prior" only for the other targets. That replaces
  * SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing, whose fix deletes a comment there, and whose only option
  * for an attribute on its target's line, allowOnSameLine, is all or nothing.
  *
@@ -312,8 +314,12 @@ class AttributeLayoutSniff implements Sniff
     }
 
     /**
-     * Check that nothing comes between the last attribute block and its target on a later line: no blank line, as
-     * section 12.2 says, and no comment, as the attributes go immediately prior to the structure.
+     * Check that nothing comes between an attribute block and its target: no comment, as the attributes go immediately
+     * prior to the structure, and no blank line before a target on a later line, as section 12.2 says.
+     *
+     * Another attribute block may come between them, but a comment between two blocks is between the first one and
+     * its target, so it's reported too. A comment at the end of an attribute's line is allowed, as the next block or
+     * the target still follows on the next line.
      *
      * A docblock there is reported by SlevomatCodingStandard.Attributes.RequireAttributeAfterDocComment, and a blank
      * line before a parameter by PERCS31.Functions.MultiLineFunctionDeclaration, so both are left alone. A comment
@@ -328,18 +334,16 @@ class AttributeLayoutSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
         $isParameter = AttributeHelper::findParameterListOpener($phpcsFile, $stackPtr) !== null;
-        if (
-            $tokens[$targetPtr]['code'] === T_ATTRIBUTE
-            || $tokens[$targetPtr]['line'] === $tokens[$closerPtr]['line']
-            || $phpcsFile->findNext(T_DOC_COMMENT_OPEN_TAG, ($closerPtr + 1), $targetPtr) !== false
-        ) {
+        if ($phpcsFile->findNext(T_DOC_COMMENT_OPEN_TAG, ($closerPtr + 1), $targetPtr) !== false) {
             return;
         }
 
-        // A comment at the end of the attribute's line, e.g. `#[Override] // Stringable`, is fine.
+        // A comment at the end of the attribute's line, e.g. `#[Override] // Stringable`, is fine. One before
+        // something on the same line isn't, as in `#[A] /* Why. */ #[B]`.
+        $isSameLine = $tokens[$targetPtr]['line'] === $tokens[$closerPtr]['line'];
         for ($i = ($closerPtr + 1); $i < $targetPtr; $i++) {
             $isComment = isset(Tokens::COMMENT_TOKENS[$tokens[$i]['code']]);
-            if ($isComment && $tokens[$i]['line'] > $tokens[$closerPtr]['line']) {
+            if ($isComment && ($isSameLine || $tokens[$i]['line'] > $tokens[$closerPtr]['line'])) {
                 $phpcsFile->addError(
                     'There must be no comment between an attribute and its target',
                     $closerPtr,
@@ -349,7 +353,12 @@ class AttributeLayoutSniff implements Sniff
             }
         }
 
-        if ($isParameter || LayoutHelper::countBlankLinesBetween($phpcsFile, $closerPtr, $targetPtr) === 0) {
+        if (
+            $isSameLine
+            || $isParameter
+            || $tokens[$targetPtr]['code'] === T_ATTRIBUTE
+            || LayoutHelper::countBlankLinesBetween($phpcsFile, $closerPtr, $targetPtr) === 0
+        ) {
             return;
         }
 

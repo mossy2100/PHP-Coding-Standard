@@ -8,6 +8,7 @@ use PERCS31\Helpers\EmptyBodyHelper;
 use PERCS31\Helpers\FixerHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
 use PHPCSUtils\Utils\MessageHelper;
 
 /**
@@ -27,10 +28,18 @@ use PHPCSUtils\Utils\MessageHelper;
  * SHOULD be `{}` too, as in `catch (Exception $e) {}`, and this sniff gives a warning.
  *
  * With strict on, as in the Jumbo standard, every empty body must be `{}`, so each of these is an error.
+ *
+ * Section 7 also says an empty closure SHOULD be replaced with an arrow function, "if possible", as in `fn() => null`.
+ * This sniff gives a warning for one, as ClosureNotArrowFunction, and the fix replaces it, dropping any `use` list. It
+ * isn't possible for a closure with a `void` or `never` return type, as an arrow function always returns a value, so
+ * that one is left alone. So is a closure that returns by reference. A closure with a comment anywhere in it is
+ * reported but not fixed, as the fix could lose or misplace the comment.
  */
 class EmptyBodySniff implements Sniff
 {
     public const string CODE_NOT_ABBREVIATED = 'NotAbbreviated';
+
+    public const string CODE_CLOSURE_NOT_ARROW_FUNCTION = 'ClosureNotArrowFunction';
 
     /**
      * Whether every empty body must be `{}`, so one that isn't is an error. PER Coding Style 3.1 only says SHOULD for
@@ -66,6 +75,11 @@ class EmptyBodySniff implements Sniff
         $previous = $phpcsFile->findPrevious(T_WHITESPACE, ($opener - 1), null, true);
         assert(is_int($previous));
 
+        // Once a closure is replaced with an arrow function, it has no body left to check.
+        if ($tokens[$stackPtr]['code'] === T_CLOSURE && $this->checkArrowFunction($phpcsFile, $stackPtr, $previous)) {
+            return;
+        }
+
         // Already ' {}', which may follow a block comment, as in `function () /* Why. */ {}`.
         if ($closer === ($opener + 1) && $previous === ($opener - 2) && $tokens[($opener - 1)]['content'] === ' ') {
             return;
@@ -94,6 +108,76 @@ class EmptyBodySniff implements Sniff
         }
 
         FixerHelper::replaceBetween($phpcsFile, $previous, ($closer + 1), ' {}');
+    }
+
+    /**
+     * Report an empty closure that could be an arrow function, as section 7 says it SHOULD be, and fix it.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the closure's `function` keyword.
+     * @param int $previous The position of the last token before the body's opening brace, other than whitespace.
+     * @return bool True if it was fixed.
+     */
+    private function checkArrowFunction(File $phpcsFile, int $stackPtr, int $previous): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
+        $parenthesisCloser = $tokens[$stackPtr]['parenthesis_closer'] ?? null;
+        $returnType = strtolower($phpcsFile->getMethodProperties($stackPtr)['return_type']);
+
+        // An arrow function always returns a value, so it can't be void or never. One that returns by reference is
+        // left alone.
+        if (
+            !is_int($parenthesisCloser)
+            || $next === false
+            || $tokens[$next]['code'] === T_BITWISE_AND
+            || in_array($returnType, ['void', 'never'], true)
+        ) {
+            return false;
+        }
+
+        // A comment anywhere in the closure is left to a person, so the fix can't lose or misplace it.
+        $opener = $tokens[$stackPtr]['scope_opener'];
+        $fixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($stackPtr + 1), $opener) === false;
+
+        $message = 'An empty closure should be replaced with an arrow function, as in fn() => null';
+        $code = self::CODE_CLOSURE_NOT_ARROW_FUNCTION;
+        if (!$fixable) {
+            $phpcsFile->addWarning($message, $stackPtr, $code);
+
+            return false;
+        }
+
+        if (!$phpcsFile->addFixableWarning($message, $stackPtr, $code)) {
+            return false;
+        }
+
+        // The fix removes the use list, and puts `=> null` after the last token before the body.
+        $use = $phpcsFile->findNext(T_USE, ($parenthesisCloser + 1), $opener);
+        $useCloser = $use === false ? null : ($tokens[$use]['parenthesis_closer'] ?? null);
+
+        $phpcsFile->fixer->beginChangeset();
+        $phpcsFile->fixer->replaceToken($stackPtr, 'fn');
+        if ($next === ($stackPtr + 2)) {
+            // `fn` has no space before its parenthesis.
+            $phpcsFile->fixer->replaceToken(($stackPtr + 1), '');
+        }
+
+        if (is_int($useCloser)) {
+            for ($i = ($parenthesisCloser + 1); $i <= $useCloser; $i++) {
+                $phpcsFile->fixer->replaceToken($i, '');
+            }
+        }
+
+        $last = $previous === $useCloser ? $parenthesisCloser : $previous;
+        for ($i = ($last + 1); $i <= $tokens[$stackPtr]['scope_closer']; $i++) {
+            $phpcsFile->fixer->replaceToken($i, '');
+        }
+
+        $phpcsFile->fixer->addContent($last, ' => null');
+        $phpcsFile->fixer->endChangeset();
+
+        return true;
     }
 
     /**

@@ -41,6 +41,12 @@ class DeclareStrictTypesUnitTest extends AbstractSniffTestCase
             return [1 => 1];
         }
 
+        if ($testFile === 'DeclareStrictTypesUnitTest.15.inc' || $testFile === 'DeclareStrictTypesUnitTest.16.inc') {
+            // A shebang line, with markup before or after the PHP: the fix adds the declare on the second line. File
+            // 17 has it there already, so nothing is reported.
+            return $testFile === 'DeclareStrictTypesUnitTest.15.inc' ? [3 => 1] : [2 => 1];
+        }
+
         if ($testFile === 'DeclareStrictTypesUnitTest.13.inc') {
             // A blank line between two declare statements.
             return [3 => 1];

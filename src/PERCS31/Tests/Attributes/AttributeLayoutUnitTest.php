@@ -44,8 +44,8 @@ class AttributeLayoutUnitTest extends AbstractSniffTestCase
             48 => 1,
             // Parameter in a multi-line parameter list.
             53 => 1,
-            // A comment between the attribute and its target (not fixable).
-            58 => 1,
+            // A comment between the attribute and its target (not fixable), which is reported too.
+            58 => 2,
             // Function.
             63 => 1,
             // Anonymous class: an attribute on the line with new.
@@ -78,7 +78,7 @@ class AttributeLayoutUnitTest extends AbstractSniffTestCase
             223 => 1,
             228 => 1,
             230 => 1,
-            235 => 1,
+            235 => 2,
             // A constant in an enum.
             237 => 1,
             // A comment on its own line before a parameter.
@@ -98,6 +98,8 @@ class AttributeLayoutUnitTest extends AbstractSniffTestCase
             322 => 1,
             327 => 1,
             331 => 1,
+            // A comment between an attribute and a short hook on its line.
+            344 => 1,
             // An enum case on its attribute's line, after two spaces, and after one.
             350 => 1,
             352 => 1,
@@ -111,7 +113,7 @@ class AttributeLayoutUnitTest extends AbstractSniffTestCase
             378 => 1,
             381 => 1,
             383 => 1,
-            385 => 1,
+            385 => 2,
             // Two attribute blocks on a short hook.
             391 => 1,
             // Two spaces between inline blocks in a single-line parameter list, and three in an argument list.
@@ -136,6 +138,16 @@ class AttributeLayoutUnitTest extends AbstractSniffTestCase
             // An anonymous class's first attribute after a blank line, without and with a comment (not fixable).
             491 => 1,
             502 => 1,
+            // A comment on its own line between two attribute blocks: on a class, a property and a parameter. Then
+            // one before a parameter, which was already reported. A comment at the end of a block's line passes.
+            510 => 1,
+            515 => 1,
+            529 => 1,
+            534 => 1,
+            // In a single-line parameter list, a comment between two blocks, and one before the parameter. A comment
+            // before the blocks passes.
+            546 => 1,
+            548 => 1,
         ];
     }
 

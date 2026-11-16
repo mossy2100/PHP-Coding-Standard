@@ -565,15 +565,44 @@ doesn't have it either.
 **Issue:** Section 3 shows a group `use` on one line, and one split over lines with a name on each line. Its text
 doesn't say how a split one is laid out.
 
-**Decision:** A group `use` is all on one line, or has one name per line, indented once, with the first name on the line
-after the `{`, and the `}` on a line of its own. A blank line after the `{` or before the `}` is reported, as for an
-array. So is this, as the first name is on the `{` line:
+**Decision:** A group `use` is written in one of two ways. All on one line:
 
 ```php
-use A\{B,
+use A\{B, C};
+```
+
+Or split, with the first name on the line after the `{`, one name per line, indented once, and the `}` on a line of its
+own:
+
+```php
+use A\{
+    B,
     C,
 };
 ```
+
+The comma after the last name is 2.6's rule for a list split over lines. See [Which Lists](#which-lists).
+
+Anything in between is reported. Each of these is wrong:
+
+```php
+// The first name is on the `{` line.
+use A\{B,
+    C,
+};
+
+// Two names are on one line.
+use A\{
+    B, C,
+};
+
+// The `}` isn't on a line of its own.
+use A\{
+    B,
+    C};
+```
+
+A blank line after the `{` or before the `}` is also reported, as for an array.
 
 **Why:** The two examples are the only forms the spec shows, and they match its rules for a single-line and a multi-line
 array (11).
@@ -615,22 +644,45 @@ namespace has its own imports.
 **Issue:** "Declare statements MUST NOT contain any spaces inside the parentheses" doesn't say whether that includes
 after a comma between directives.
 
-**Decision:** It does, so `declare(ticks=1,strict_types=1);`. Several directives and string values are allowed. There
-are no blank lines between `declare` statements.
+**Decision:** It does, so `declare(ticks=1,strict_types=1);` is the correct form. Several directives and string values
+are allowed. There are no blank lines between `declare` statements.
 
 **Why:** A space after the comma is still inside the parentheses.
 
 ---
 
-### `strict_types` in a File With Markup
+### `strict_types` After a Shebang Line
 
 **Issue:** In a file with markup outside PHP tags, the strict types declaration "MUST be on the first line of the file".
-The spec doesn't say how a shebang line fits in.
+A shebang line must be on the first line too, so a script with both can't follow the rule.
 
-**Decision:** It must be `<?php declare(strict_types=1) ?>` on the first line. A file with a shebang can't have that, so
-it isn't checked. `strict_types` isn't required.
+**Decision:** In a file that starts with a shebang line, the declaration goes on the second line:
 
-**Why:** The rule can't be met in a file with a shebang. PER doesn't require strict types, so neither does PERCS31.
+```php
+#!/usr/bin/env php
+<?php declare(strict_types=1) ?>
+<html>
+```
+
+**Why:** PHP skips a shebang line, so the second line is the first one it reads.
+
+---
+
+### `strict_types=0`
+
+**Issue:** The first-line rule applies "when wishing to declare strict types" in a file with markup. The spec doesn't
+say whether `declare(strict_types=0)`, which turns strict types off, counts.
+
+**Decision:** It does. In a file with markup, the declaration goes on the first line whatever its value:
+
+```php
+<?php declare(strict_types=0) ?>
+<html>
+```
+
+`strict_types=0` is otherwise allowed, as PER doesn't require strict types.
+
+**Why:** The rule is about where the statement goes, and it's the same statement with either value.
 
 ---
 
@@ -638,24 +690,38 @@ it isn't checked. `strict_types` isn't required.
 
 ### "Any Closing Brace"
 
-**Issue:** "Any closing brace MUST NOT be followed by any comment or statement on the same line" doesn't say which
-braces.
+**Issue:** "Any closing brace MUST NOT be followed by any comment or statement on the same line" says "any", but it sits
+in section 4, which is about classes, properties and methods. Read literally, it would also forbid `} else {`, `});` and
+a comment after an `if`.
 
-**Decision:** Any closing brace MUST NOT be followed by any statement on the same line. Whether a comment may follow
-depends on the brace:
+**Decision:** The rule covers the braces section 4 is about: those of a class, interface, trait, enum, method, function,
+property hook list and hook body. Nothing follows one of those on the same line.
 
-- The closing brace of a class, interface, trait, enum, method, function, property hook list or hook body can't be
-  followed by a comment or a statement on the same line.
-- Any other closing brace, such as that of an anonymous class, a closure, a `match` or a control structure, can be
-  followed by a comment, but not by a statement. So `} run();` and `} break;` are reported.
+```php
+class Foo
+{
+    public function bar(): void
+    {
+    } // Reported.
+} // Reported.
+```
 
-The rest of the brace's own statement isn't a new statement, so `} else {`, `} catch (Exception $e) {`, `} while ($a);`
-and `});` are allowed.
+Other closing braces follow 2.3 instead, "There MUST NOT be more than one statement per line":
 
-**Why:** The sentence sits in the section on classes, so its ban on comments is read as covering the braces that section
-is about. An anonymous class, a closure or a control structure is part of a larger expression or statement, which often
-continues after the brace. A statement after any brace also breaks 2.3: "There MUST NOT be more than one statement per
-line."
+| Closing brace of                      | A comment after it | A new statement after it |
+| ------------------------------------- | ------------------ | ------------------------ |
+| A closure, anonymous class or `match` | Allowed            | Reported                 |
+| A control structure                   | Allowed            | Reported                 |
+
+- A closure, an anonymous class and a `match` are values, so one can be an argument, a list item or an operand. The rest
+  of the statement carries on after the brace, as in `});`, `}, $b);` and `} + 1;`.
+- `else`, `elseif`, `catch`, `finally` and a `do` loop's `while` belong to the same statement as the brace before them,
+  so `} else {` is allowed.
+- A comment isn't a statement, so 2.3 doesn't forbid one.
+- A new statement, as in `} run();` or `} break;`, breaks 2.3.
+
+**Why:** The section, and how PHP is written, both point to the narrower reading. The spec's own examples have
+`} elseif ($expr2) {` (5.1) and `});` (4.7), which the literal reading would forbid.
 
 ---
 
@@ -745,15 +811,23 @@ makes a property.
 
 ## 4.4 Methods and Functions
 
-### Empty Bodies
+### A Body With Only a Comment
 
-**Issue:** An empty method or function body SHOULD be `{}` (4.4), and an empty closure or anonymous class body MUST be
-(7 and 8). It's unclear whether a body with only a comment is empty.
+**Issue:** An empty body is abbreviated as `{}`. 4.4 defines empty for a function or method as "no statements or
+comments". The class rule (4) says "no additional declarations", and the closure rule (7) says "no statements", so
+neither says whether a comment counts.
 
-**Decision:** A class or function body is a warning, and a closure or anonymous class body an error. A body with only a
-comment isn't empty. An empty closure that SHOULD be an arrow function isn't checked.
+**Decision:** A body with only a comment isn't empty, for a class, a function, a closure and an anonymous class. So this
+passes:
 
-**Why:** A comment is content. Changing a closure to `fn() => null` changes its return value, so it isn't a style fix.
+```php
+$noOp = function (): void {
+    // Nothing to do.
+};
+```
+
+**Why:** 4.4's definition is the only one that mentions comments, so it's used for all four. Abbreviating the body would
+also delete the comment.
 
 ---
 
@@ -1275,9 +1349,10 @@ silent, and its examples show too little to infer a rule from.
 ### `=>` in an Array or `yield`
 
 **Issue:** `=>` isn't one of 6.2's operators. Section 11's array example, which "shows correct array usage", has one
-space each side, but there are too few examples to rule out lining arrows up.
+space each side, but there are too few examples to rule out additional spaces being used to align arrows, which is not
+uncommon.
 
-**Decision:** An array's `=>` needs at least one space each side. More is allowed. The same goes for a `yield`'s `=>`.
+**Decision:** An array's `=>` needs at least one space each side. More are allowed. The same goes for a `yield`'s `=>`.
 
 **Why:** The spec always shows a space each side, and never none. It gives too little to forbid alignment. It says
 nothing about a `yield`, so that follows the array rule, for consistency.
@@ -1397,6 +1472,20 @@ $x
 
 ---
 
+## 7. Closures
+
+### Empty Closures and Arrow Functions
+
+**Issue:** "If possible, empty-body closures SHOULD be replaced with arrow functions", as in `fn() => null`.
+
+**Decision:** It's possible unless the closure has a `void` or `never` return type, or returns by reference. So
+`function () {}` gets a warning, and `function (): void {}` passes.
+
+**Why:** An arrow function always returns a value, so `fn(): void => null` is a fatal error. `function () {}` and
+`fn() => null` both return `null`, so replacing one with the other changes nothing.
+
+---
+
 ## 7.1 Short Closures
 
 ### Arrow Functions
@@ -1416,11 +1505,33 @@ semicolon. A wrapped `=>` is indented once past the line its own `fn` starts on,
 ### The Opening Brace
 
 **Issue:** "The opening brace MAY be on the same line as the `class` keyword so long as the list of `implements`
-interfaces does not wrap." The spec doesn't say whether the next line is allowed then.
+interfaces does not wrap." The spec doesn't say whether the brace may also go on the next line in that case.
 
-**Decision:** Both are allowed.
+**Decision:** It may. When the list doesn't wrap, the brace can go on either line:
 
-**Why:** "MAY" doesn't forbid the other placement.
+```php
+$a = new class implements Countable {
+    // ...
+};
+
+$b = new class implements Countable
+{
+    // ...
+};
+```
+
+When the list wraps, the spec leaves no choice: the brace MUST be on the line after the last interface.
+
+```php
+$c = new class implements
+    ArrayAccess,
+    Countable
+{
+    // ...
+};
+```
+
+**Why:** "MAY" allows the same line, and doesn't forbid the next one.
 
 ---
 
@@ -1430,7 +1541,7 @@ interfaces does not wrap." The spec doesn't say whether the next line is allowed
 its line.
 
 **Decision:** One space before a brace on the declaration's line, and nothing after the brace on its line, not even a
-comment. An empty body, `{}`, is unaffected.
+comment. An empty body, `{}`, is OK.
 
 **Why:** Section 8 says anonymous classes follow the same guidelines as closures, where both are required, and its
 examples show both.
@@ -1623,13 +1734,57 @@ single space follows 12.2's rule for an attribute and its parameter.
 
 ### Comments Between an Attribute and Its Target
 
-**Issue:** 12.2 says attributes go "immediately prior to" most structures, but only "prior to" a parameter.
+**Issue:** 12.2 puts an attribute "immediately prior to" its target, or in a single-line parameter list, "inline with
+the parameter it describes, separated by a single space". Both rules are written for one attribute. The spec doesn't say
+how they apply to two or more blocks, or whether a comment may come between them.
 
-**Decision:** A comment on its own line between an attribute and its target is reported, including before a parameter. A
-comment at the end of the attribute's line, or between blocks, passes.
+**Decision:** The rules apply to every block, not only the last. So nothing but another attribute block comes between an
+attribute and its target, on separate lines or inline. A comment there is reported.
 
-**Why:** The missing "immediately" is taken as incidental. Nothing suggests a parameter's attributes should be treated
-differently.
+On separate lines, these are right. A comment may come before the first block, or at the end of a block's line:
+
+```php
+#[Foo]
+#[Bar]
+public int $a = 1;
+
+// Before the blocks.
+#[Foo] // At the end of a line.
+#[Bar] // At the end of the last line.
+public int $b = 1;
+```
+
+Each of these comments is reported:
+
+```php
+#[Foo]
+// Between blocks.
+#[Bar]
+// Before the target.
+public int $a = 1;
+```
+
+Inline, these are right. A comment may come before the first block:
+
+```php
+function a(#[Foo] #[Bar] int $a): void {}
+
+function b(/* Before the blocks. */ #[Foo] #[Bar] int $a): void {}
+```
+
+Both of these are reported:
+
+```php
+function a(#[Foo] /* Between blocks. */ #[Bar] int $a): void {}
+
+function b(#[Foo] #[Bar] /* Before the parameter. */ int $a): void {}
+```
+
+This applies to every target, including a parameter, where 12.2 only says "prior to".
+
+**Why:** It's the same reading in both layouts. A block that describes a target is as close to it as the other blocks
+allow, as in [Two Blocks in a Single-line List](#two-blocks-in-a-single-line-list), where each block is followed by a single space. A comment at the end of a
+line doesn't move an attribute any further from its target.
 
 ---
 

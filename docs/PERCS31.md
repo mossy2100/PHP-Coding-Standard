@@ -466,10 +466,14 @@ first attribute, but a blank line may not.
 
 It also reports a blank line between a docblock and the attributes after it, between two attribute blocks, or between
 the last attribute and its target, and anything but a single space between an attribute and its parameter on the same
-line, as section 12.2 requires. A comment on a line of its own between an attribute and its target is reported too, as
-the attributes go immediately prior to the structure. A comment at the end of the attribute's line, as in
-`#[Override] // Stringable`, is fine. Section 12.2 only says "prior to the parameter", but a comment before a parameter
-is reported too. A blank line between a parameter and the next parameter's attributes is allowed, as 12.2 also says.
+line, as section 12.2 requires. A blank line between a parameter and the next parameter's attributes is allowed, as
+12.2 also says.
+
+A comment between an attribute and its target is reported too, as `CommentBeforeTarget`, as the attributes go
+immediately prior to the structure. That includes a comment between two attribute blocks, which is between the first
+one and its target, and a comment on the same line, as in `#[A] /* Why. */ #[B] int $a`. A comment at the end of an
+attribute's line, as in `#[Override] // Stringable`, is fine. Section 12.2 only says "prior to the parameter", but a
+comment before a parameter is reported too.
 
 **A block split over lines.** Several attributes in one block that spans more than one line are reported as `Joined`. A
 block on one line, such as `#[Attribute, AllowDynamicProperties]`, is allowed. [PER Coding Style 3.1, Section 12.3](https://www.php-fig.org/per/coding-style/#123-compound-attributes) allows
@@ -1365,10 +1369,10 @@ header, and requires a blank line after the tag and after the declaration, so it
 skips such a file, as the parent skips other files that mix PHP and markup. The `;` before the `?>` may be included or
 left out.
 
-In a file with markup, a `strict_types` declaration anywhere else is reported, as `StrictTypesNotOnFirstLine`. If it's
-all that's in its PHP block, the fix collapses the block onto the first line. Otherwise, it adds
-`<?php declare(strict_types=1) ?>` as the first line, and removes the declaration and the blank line after it. A file
-starting with a shebang line can't have the first-line form, so it isn't checked.
+In a file with markup, a `strict_types` declaration anywhere else is reported, as `StrictTypesNotOnFirstLine`, whether
+it sets `strict_types` to 1 or 0. If it's all that's in its PHP block, the fix collapses the block onto the first line.
+Otherwise, it adds the declaration between its own PHP tags as the first line, and removes the statement and the blank
+line after it. PHP skips a shebang line, so in a file starting with one, the second line counts as the first.
 
 Section 3 also lists "One or more declare statements" as one block, with no blank line in it. The parent ends the header
 at a block declare, and wants a blank line before one. This sniff counts one as a declare statement, so there's no blank
@@ -1523,8 +1527,17 @@ Section 5 has no rule for a control structure's empty body. It's read as a class
 
 Set `strict` to make every empty body that isn't `{}` an error, as the [Jumbo standard](Jumbo.md) does.
 
+Section 7 also says an empty closure SHOULD be replaced with an arrow function, "if possible", as in `fn() => null`. An
+empty closure that could be one gets a warning, as `ClosureNotArrowFunction`, whatever `strict` is. It isn't possible
+for a closure with a `void` or `never` return type, as an arrow function always returns a value, so that one is left
+alone. So is a closure that returns by reference.
+
 **Auto-fixable:** yes. After a block comment, the fix puts `{}` after it, as in `function a() /* Why. */ {}`. A body
 after a `//` or `#` comment is reported but not fixed, as `{}` can't go on the comment's line.
+
+The fix for `ClosureNotArrowFunction` replaces the closure, so `function (int $a) use ($b) {}` becomes
+`fn(int $a) => null`. The `use` list is dropped, as an empty body doesn't use it. A closure with a comment anywhere in
+it is reported but not fixed.
 
 **Configuration:**
 

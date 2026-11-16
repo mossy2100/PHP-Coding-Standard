@@ -10,6 +10,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`strict_types` after a shebang line (breaking).** In a file with markup that starts with a shebang line,
+  `PERCS31.Files.FileHeader` now reports a `declare(strict_types=1);` that isn't on the second line as
+  `<?php declare(strict_types=1) ?>`, as `StrictTypesNotOnFirstLine`. Such a file wasn't checked before. PHP skips a
+  shebang line, so the second line is the first one it reads. Auto-fixable. `Jumbo.TypeHints.DeclareStrictTypes` now
+  adds a missing declaration there too, where a shebang file with markup before its first `<?php` had no fix.
+- **`strict_types=0` in a file with markup (breaking).** `PERCS31.Files.FileHeader` now reports a
+  `declare(strict_types=0);` that isn't on the first line of a file with markup, as `StrictTypesNotOnFirstLine`. Only
+  `strict_types=1` was reported before. Auto-fixable.
+- **An empty closure that could be an arrow function (breaking).** `PERCS31.Formatting.EmptyBody` now gives a warning
+  for an empty closure, as `ClosureNotArrowFunction`, as PER Coding Style 3.1 says one SHOULD be replaced with an arrow
+  function. `function () {}` becomes `fn() => null`. A closure with a `void` or `never` return type, or one that returns
+  by reference, can't be replaced, so it's left alone. Auto-fixable.
+- **A comment between attribute blocks (breaking).** `PERCS31.Attributes.AttributeLayout` now reports a comment between
+  two attribute blocks, as `CommentBeforeTarget`, as it's between the first attribute and its target. It also reports a
+  comment between an attribute and a target on the same line, as in `#[A] /* Why. */ int $a`. Only a comment on its own
+  line before the target was reported. A comment at the end of an attribute's line still passes. Not auto-fixable.
 - **`PERCS31.WhiteSpace.ObjectOperatorSpacing` (breaking).** Disallows white space around `->`, `?->` and `::`, as
   every example in PER Coding Style 3.1 writes them, so `$foo -> bar()`, `Foo :: bar()` and `self :: Spades` are
   reported, as `Before` or `After`. A line break is allowed before `->` or `?->` in a split chain, but never around

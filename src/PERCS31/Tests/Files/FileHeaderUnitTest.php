@@ -24,9 +24,17 @@ class FileHeaderUnitTest extends AbstractSniffTestCase
             return [6 => 1];
         }
 
-        if ($testFile === 'FileHeaderUnitTest.8.inc' || $testFile === 'FileHeaderUnitTest.9.inc') {
-            // A file with markup, declaring strict types below the first line.
+        $belowFirstLine = ['FileHeaderUnitTest.8.inc', 'FileHeaderUnitTest.9.inc', 'FileHeaderUnitTest.23.inc'];
+        if (in_array($testFile, $belowFirstLine, true)) {
+            // A file with markup, declaring strict types below the first line. File 23 sets strict_types to 0, and
+            // file 24 has that on the first line, so nothing is reported.
             return [3 => 1];
+        }
+
+        if ($testFile === 'FileHeaderUnitTest.19.inc' || $testFile === 'FileHeaderUnitTest.20.inc') {
+            // The same, after a shebang line. File 21 has the declaration on the second line, and file 22 has a
+            // shebang line and no markup, so nothing is reported.
+            return [4 => 1];
         }
 
         if ($testFile === 'FileHeaderUnitTest.7.inc') {

@@ -22,8 +22,8 @@ use SlevomatCodingStandard\Sniffs\TypeHints\DeclareStrictTypesSniff as SlevomatS
  *
  * The parent's fix adds `strict_types` to an existing declare statement, but in a block `declare`, that's a fatal
  * error, so this sniff adds a separate statement on the line above. In a file with markup, the fix adds the first-line
- * form at the top instead, as PER requires. A file that starts with a shebang line can't have that form, so if there's
- * markup before its first opening tag, it's reported with no fix, as adding the declare after markup is a fatal error.
+ * form at the top instead, as PER requires. PHP skips a shebang line, so in a file that starts with one, the form goes
+ * on the second line.
  *
  * Section 3 lists "One or more declare statements" as one block, with no blank line in it. The parent always wants a
  * blank line after `strict_types`, so this sniff wants none if another declare statement follows. It leaves everything
@@ -45,7 +45,7 @@ class DeclareStrictTypesSniff extends SlevomatSniff
     public function process(File $phpcsFile, int $openTagPointer): void
     {
         if (
-            $openTagPointer === 0
+            $openTagPointer === FileHeaderHelper::findFirstLineTag($phpcsFile)
             && FileHeaderHelper::hasInlineDeclare($phpcsFile)
             && $this->declaresStrictTypes($phpcsFile)
         ) {
@@ -58,15 +58,22 @@ class DeclareStrictTypesSniff extends SlevomatSniff
             // A declare with strict_types set to another value is left to the parent, which fixes the value.
             $hasShebang = str_starts_with($phpcsFile->getTokens()[0]['content'], '#!');
             $isAbsent = !$this->hasStrictTypesDirective($phpcsFile);
-            if (!$hasShebang && $isAbsent && FileHeaderHelper::hasMarkup($phpcsFile)) {
+            if ($isAbsent && FileHeaderHelper::hasMarkup($phpcsFile)) {
                 $fix = $phpcsFile->addFixableError(
-                    'Missing declare(strict_types=1), which in a file with markup goes on the first line, as in '
+                    'Missing declare(strict_types=1), which in a file with markup goes on the first line%s, as in '
                         . '<?php declare(strict_types=1) ?>',
                     $openTagPointer,
                     self::CODE_DECLARE_STRICT_TYPES_MISSING,
+                    [$hasShebang ? ' after the shebang line' : ''],
                 );
                 if ($fix) {
-                    $phpcsFile->fixer->addContentBefore(0, '<?php declare(strict_types=1) ?>' . $phpcsFile->eolChar);
+                    // PHP skips a shebang line, so the line after one is the first line it reads.
+                    $line = '<?php declare(strict_types=1) ?>' . $phpcsFile->eolChar;
+                    if ($hasShebang) {
+                        $phpcsFile->fixer->addContent(0, $line);
+                    } else {
+                        $phpcsFile->fixer->addContentBefore(0, $line);
+                    }
                 }
 
                 return;
@@ -173,7 +180,7 @@ class DeclareStrictTypesSniff extends SlevomatSniff
      */
     private function declaresStrictTypes(File $phpcsFile): bool
     {
-        return FileHeaderHelper::findStrictTypesDeclare($phpcsFile) !== null;
+        return FileHeaderHelper::findStrictTypesDeclare($phpcsFile, true) !== null;
     }
 
     /**

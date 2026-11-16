@@ -34,10 +34,10 @@ use PHPCSUtils\Utils\UseStatements;
  * that one tag, the parent reads the line as a header, and wants a blank line after the tag, which splits it. This
  * sniff skips the header's spacing checks in a file with markup whose first tag shares its line.
  *
- * In a file with markup, a strict_types declare anywhere else is reported, as StrictTypesNotOnFirstLine. If the declare
- * is all that's in its PHP block, the fix collapses the block onto the first line. Otherwise, it adds the first-line
- * form at the top, and removes the declare statement and the blank line after it. A file starting with a shebang line
- * can't have the first-line form, so it isn't checked.
+ * In a file with markup, a strict_types declare anywhere else is reported, as StrictTypesNotOnFirstLine, whether it
+ * sets strict_types to 1 or 0. If the declare is all that's in its PHP block, the fix collapses the block onto the
+ * first line. Otherwise, it adds the first-line form at the top, and removes the declare statement and the blank line
+ * after it. PHP skips a shebang line, so in a file starting with one, the second line counts as the first.
  *
  * The parent ends a `use` statement at its first comma, so it reads `use A, B;` as the end of the header, and reports
  * the missing blank line before `B`. Section 3 doesn't forbid several imports in one statement, so this sniff extends
@@ -75,7 +75,7 @@ class FileHeaderSniff extends Psr12Sniff
         }
 
         // Once the declare is reported, the rest of the header is left until it's moved, so the fixes don't clash.
-        if ($stackPtr === 0 && $this->checkStrictTypesOnFirstLine($phpcsFile)) {
+        if ($this->checkStrictTypesOnFirstLine($phpcsFile, $stackPtr)) {
             return $phpcsFile->numTokens;
         }
 
@@ -212,21 +212,26 @@ class FileHeaderSniff extends Psr12Sniff
 
     /**
      * Report a strict_types declare that isn't on the first line of a file with markup, as section 3 requires, and fix
-     * it.
+     * it. After a shebang line, the first line is the one after it.
      *
      * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the opening tag.
      * @return bool True if it was reported.
      */
-    private function checkStrictTypesOnFirstLine(File $phpcsFile): bool
+    private function checkStrictTypesOnFirstLine(File $phpcsFile, int $stackPtr): bool
     {
         $tokens = $phpcsFile->getTokens();
         $declare = FileHeaderHelper::findStrictTypesDeclare($phpcsFile);
-        if ($declare === null || !FileHeaderHelper::hasMarkup($phpcsFile)) {
+        if (
+            $declare === null
+            || $stackPtr !== FileHeaderHelper::findFirstLineTag($phpcsFile)
+            || !FileHeaderHelper::hasMarkup($phpcsFile)
+        ) {
             return false;
         }
 
         // PHP requires strict_types in the first statement, so anything else isn't valid code.
-        $first = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, 1, null, true);
+        $first = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
         $closer = $tokens[$declare]['parenthesis_closer'] ?? null;
         if ($first !== $declare || !is_int($closer)) {
             return false;
@@ -242,10 +247,11 @@ class FileHeaderSniff extends Psr12Sniff
         }
 
         $fix = $phpcsFile->addFixableError(
-            'In a file with markup, declare(strict_types=1) must be on the first line, between its own PHP tags, as in '
-                . '<?php declare(strict_types=1) ?>',
+            'In a file with markup, the strict_types declaration must be on the first line%s, between its own PHP '
+                . 'tags, as in <?php declare(strict_types=1) ?>',
             $declare,
             self::CODE_STRICT_TYPES_NOT_ON_FIRST_LINE,
+            [$stackPtr === 0 ? '' : ' after the shebang line'],
         );
         if (!$fix) {
             return true;
@@ -254,17 +260,17 @@ class FileHeaderSniff extends Psr12Sniff
         $statement = $phpcsFile->getTokensAsString($declare, ($closer - $declare + 1));
         $next = $phpcsFile->findNext(T_WHITESPACE, ($end + 1), null, true);
         $isOnlyStatement = $next !== false && $tokens[$next]['code'] === T_CLOSE_TAG
-            && $phpcsFile->findNext(T_WHITESPACE, 1, $declare, true) === false;
+            && $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), $declare, true) === false;
 
         $phpcsFile->fixer->beginChangeset();
         if ($isOnlyStatement) {
             // The declare is all that's in the block, so the block becomes the first-line form.
-            $phpcsFile->fixer->replaceToken(0, '<?php ' . $statement . ' ');
-            for ($i = 1; $i < $next; $i++) {
+            $phpcsFile->fixer->replaceToken($stackPtr, '<?php ' . $statement . ' ');
+            for ($i = ($stackPtr + 1); $i < $next; $i++) {
                 $phpcsFile->fixer->replaceToken($i, '');
             }
         } else {
-            $phpcsFile->fixer->addContentBefore(0, '<?php ' . $statement . ' ?>' . $phpcsFile->eolChar);
+            $phpcsFile->fixer->addContentBefore($stackPtr, '<?php ' . $statement . ' ?>' . $phpcsFile->eolChar);
             $last = $next === false ? $phpcsFile->numTokens : $next;
             for ($i = $declare; $i < $last; $i++) {
                 $phpcsFile->fixer->replaceToken($i, '');

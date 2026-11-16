@@ -92,10 +92,10 @@ function closures(): array
 function commentedClosures(): array
 {
     return [
-        static function () /* Why. */ {},
-        static function () /* Why. */ {
+        static function (): void /* Why. */ {},
+        static function (): void /* Why. */ {
         },
-        static function () // Why.
+        static function (): void // Why.
         {
         },
     ];
@@ -136,3 +136,37 @@ function strictFunction(): void
 {
 }
 // phpcs:set PERCS31.Formatting.EmptyBody strict false
+
+// An empty closure should be an arrow function, where that's possible.
+function arrowFunctions(): array
+{
+    return [
+        function () {},
+        function (int $a, ...$b) {},
+        function () use ($a) {},
+        static function () {},
+        function (): ?int {},
+        #[Foo] function () {},
+        function () {
+        },
+        function (
+            int $a,
+        ) use ($b): ?int {
+        },
+        function () /* Why. */ {},
+        function () use ($a, /* Why. */ $b) {},
+        function (/* Why. */ $a) {},
+        function /* Why. */ () {},
+        function () // Why.
+        {
+        },
+        // Not possible, or not empty.
+        function (): void {},
+        function (): never {},
+        function &() {},
+        function () {
+            // Why.
+        },
+        fn() => null,
+    ];
+}

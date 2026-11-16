@@ -837,8 +837,8 @@ a blank line after `strict_types`, so this sniff wants none if another declare s
 
 **Auto-fixable:** yes, as the parent. PHP doesn't allow `strict_types` in a block `declare`, so for a file starting with
 one, the fix adds `declare(strict_types=1);` on the line above. In a file with markup, the fix adds
-`<?php declare(strict_types=1) ?>` as the first line, as PER requires. A file starting with a shebang line can't have
-that form, so with markup before its first `<?php`, it's not fixable.
+`<?php declare(strict_types=1) ?>` as the first line, as PER requires. PHP skips a shebang line, so in a file starting
+with one, the fix adds it as the second line.
 
 ---
 

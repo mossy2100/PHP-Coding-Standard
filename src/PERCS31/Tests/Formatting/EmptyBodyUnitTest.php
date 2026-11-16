@@ -48,6 +48,11 @@ class EmptyBodyUnitTest extends AbstractSniffTestCase
             // A class and a function.
             132 => 1,
             136 => 1,
+            // Closures that should be arrow functions, with the braces on separate lines. The fix replaces the first
+            // two, and the third has a comment, so it's reported but not fixed.
+            150 => 1,
+            154 => 1,
+            161 => 1,
         ];
     }
 
@@ -77,6 +82,25 @@ class EmptyBodyUnitTest extends AbstractSniffTestCase
             56 => 1,
             // A catch with the braces on separate lines.
             107 => 1,
+            // Empty closures that should be arrow functions: plain, with parameters, with a use list, static, with
+            // a return type, with an attribute, and with the braces on separate lines.
+            144 => 1,
+            145 => 1,
+            146 => 1,
+            147 => 1,
+            148 => 1,
+            149 => 1,
+            150 => 1,
+            // With a multi-line signature.
+            152 => 1,
+            // With a comment before the body, in the use list, in the parameters, after `function`, and a line
+            // comment before the body: reported but not fixed. The closures after these are void, never, return by
+            // reference or have a comment in the body, so nothing is reported.
+            156 => 1,
+            157 => 1,
+            158 => 1,
+            159 => 1,
+            160 => 1,
         ];
     }
 }
