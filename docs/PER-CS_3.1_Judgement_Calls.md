@@ -1315,7 +1315,7 @@ switch (true) {
 
 **Why:** 4.7's exemption is only for a call's argument list, as "A Split Array Default Value" (4.5) and "One Value Split
 Over Lines" (11) read it too. Each control structure's rule is about its expression spanning lines, not about where the
-breaks fall.
+breaks fall. PHP_CodeSniffer reads the same PSR-12 wording this way.
 
 ---
 
