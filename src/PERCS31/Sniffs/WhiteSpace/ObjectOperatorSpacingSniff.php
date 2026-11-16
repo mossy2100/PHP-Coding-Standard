@@ -10,9 +10,15 @@ use PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\ObjectOperatorSpacingSniff
 /**
  * Disallows white space around `->`, `?->` and `::`, except a line break before `->` or `?->` in a split chain.
  *
- * PER Coding Style 3.1 has no rule text for these, but every example writes them with no space around them, as in
- * `$foo->bar($arg1);` and `Foo::bar($arg2, $arg3);` (4.7), `A::smallTalk insteadof B;` (4.2) and
- * `public const Wild = self::Spades;` (9). Section 4.7 lets a method chain be split, with each `->` starting a line.
+ * PER Coding Style 3.1, section 6, doesn't list these, and says "All operators not described here are left undefined".
+ * That means section 6 has no rule for them, not that no other section may. Two sections present examples as
+ * templates, which makes each one a rule:
+ * - Section 4.7's "lines [that] show correct calls" have `$foo->bar($arg1);` and `Foo::bar($arg2, $arg3);`.
+ * - Section 4.2 says `insteadof` and `as` "MUST be used as follows taking note of indentation, spacing, and new lines",
+ *   with `A::smallTalk insteadof B;`.
+ *
+ * Every other example agrees, such as `public const Wild = self::Spades;` (9). Section 4.7 lets a method chain be
+ * split, with each `->` starting a line.
  *
  * Squiz.WhiteSpace.ObjectOperatorSpacing checks all three. Its ignoreNewlines property allows a line break on either
  * side of any of them, and PERCS31 needs one before `->` and `?->`, but never around `::`. No property sets that per

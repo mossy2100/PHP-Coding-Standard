@@ -1423,30 +1423,34 @@ place of the space before or after `as` or `=>`. Otherwise it only gets section 
 
 ### Operators Not Listed
 
-**Issue:** Section 6 lists operators by kind, but leaves out unary `-`, `!`, `@`, `~`, a reference `&`, spread, `->`,
-`?->` and `::`.
+**Issue:** Section 6 lists operators by kind, and says "All operators not described here are left undefined". It leaves
+out unary `+`, `-`, `!`, `~` and `@`, a reference `&` and a spread `...`. It also leaves out `->`, `?->` and `::`,
+though it's debatable whether those are operators at all: PHP's operator precedence table doesn't list them.
 
-**Decision:**
+**Decision:** Section 6 sets no rule for any of these. One is only checked where another section gives it a rule:
 
-- `::` has no white space on either side, not even a line break, as in `Foo::bar()` and `self::Spades`.
-- `->` and `?->` have no white space after them. They have none before them either, unless one starts a line in a split
-  chain, where only the line break and the indent come before it.
-- Each of these is an error.
+- `->`, `?->` and `::` have no white space around them, as an error, by 4.7's and 4.2's examples.
+  - `::` has none on either side, not even a line break, as in `Foo::bar()` and `self::Spades`.
+  - `->` and `?->` have none after them. They have none before them either, unless one starts a line in a split chain,
+    where only the line break and the indent come before it.
 - A reference `&` and a spread `...` have no white space after them, by 4.5's rules. See
   [A Reference `&` Outside a Parameter List](#a-reference--outside-a-parameter-list) and
   [The Spread Operator Outside a Parameter List](#the-spread-operator-outside-a-parameter-list).
-- The others, so unary `+`, `-`, `!`, `~` and `@`, aren't checked. Jumbo checks them.
+- Unary `+`, `-`, `!`, `~` and `@` aren't checked, as no section has a rule for them. Jumbo checks them.
 
-**Why:** No rule text covers `::`, `->` or `?->`, but every example writes them with no space around them, as in:
+**Why:** "Left undefined" means section 6 has no rule for an operator, not that no other section may have one. The spec
+presents these examples as templates, which makes each one a rule (see
+[Rule Text and Examples](#rule-text-and-examples)):
 
-- `BazClass::bar($arg2, $arg3);`, in the overview's example, which "encompasses some rules below".
+- `$foo->bar($arg1);` and `Foo::bar($arg2, $arg3);`, in 4.7's "lines [that] show correct calls".
 - `A::smallTalk insteadof B;` and `C::mediumTalk as FooBar;`, in 4.2, which says `insteadof` and `as` "MUST be used as
   follows taking note of indentation, spacing, and new lines".
-- `$foo->bar($arg1);` and `Foo::bar($arg2, $arg3);`, in 4.7's "lines [that] show correct calls".
-- `public const Wild = self::Spades;`, in 9's "typical valid Enum".
 
-4.7's chain example starts each line with `->`. 4.2's MUST sets the severity. For the other operators, the spec is
-silent, and its examples show too little to infer a rule from.
+Every other example agrees, such as `BazClass::bar($arg2, $arg3);` in the overview and
+`public const Wild = self::Spades;` in section 9. 4.7's chain example starts each line with `->`. 4.2's MUST sets the
+severity.
+
+It's the same reading as for `=>`, which section 6 doesn't list either: see [`=>` in a `match` Arm, an Array or `yield`](#-in-a-match-arm-an-array-or-yield).
 
 ---
 

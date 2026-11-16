@@ -3054,9 +3054,16 @@ Disallows white space around `->`, `?->` and `::`, except a line break before `-
 split chain. A line break around `::` is reported. This replaces `Squiz.WhiteSpace.ObjectOperatorSpacing`, which it
 extends.
 
-**Why:** PER Coding Style 3.1 has no rule text for these, but every example writes them with no space around them, as in
-`Foo::bar($arg2, $arg3);` and `$foo->bar($arg1);` ([Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls)), `A::smallTalk insteadof B;` ([Section 4.2](https://www.php-fig.org/per/coding-style/#42-using-traits)), and
-`self::Spades` ([Section 9](https://www.php-fig.org/per/coding-style/#9-enumerations)). See "Operators Not Listed" in [PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md#operators-not-listed).
+**Why:** [Section 6](https://www.php-fig.org/per/coding-style/#6-operators) doesn't list these, and says "All operators not described here are left undefined". That
+means section 6 has no rule for them, not that no other section may. Two sections present examples as templates, which
+makes each one a rule:
+
+- [Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls)'s "lines [that] show correct calls" have `$foo->bar($arg1);` and `Foo::bar($arg2, $arg3);`.
+- [Section 4.2](https://www.php-fig.org/per/coding-style/#42-using-traits) says `insteadof` and `as` "MUST be used as follows taking note of indentation, spacing, and new
+  lines", with `A::smallTalk insteadof B;`.
+
+Every other example agrees, such as `self::Spades` in [Section 9](https://www.php-fig.org/per/coding-style/#9-enumerations). See "Operators Not Listed" in
+[PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md#operators-not-listed).
 
 The Squiz sniff's `ignoreNewlines` property allows a line break around all three, or none. A split chain needs one
 before `->` and `?->`, but `::` takes none, so this sniff turns the property on by default, and off for `::`. A `->` at
