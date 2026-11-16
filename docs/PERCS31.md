@@ -2933,23 +2933,22 @@ class Limits
 
 ### PERCS31.WhiteSpace.ArrowSpacing
 
-Requires exactly one space before and after the `=>` in a `match` arm, and at least one in an array element, so arrows
-can be lined up.
+Requires at least one space before and after the `=>` in a `match` arm, an array element and a `yield`, so arrows can be
+lined up.
 
 **Why:** [PER Coding Style 3.1, Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) shows a `match` expression with one space each side of `=>`, and says to
-"note the placement of parentheses, spaces, and braces". Although the specification doesn't say so explicitly, it
-appears to imply the same rule as for the `=>` of a property hook (4.9) and an arrow function (7.1). No inherited sniff
-checks a `match` arm, which has its own token, so aligned arms aren't caught.
+"note the placement of parentheses, spaces, and braces". [Section 11](https://www.php-fig.org/per/coding-style/#11-arrays)'s example, which "shows correct array usage",
+has one space each side of an array's `=>` too. So a space each side is required.
 
-[Section 11](https://www.php-fig.org/per/coding-style/#11-arrays)'s example, which "shows correct array usage", has one space each side of an array's `=>`, but too few
-examples to rule out lining arrows up. So at least one space is required. The [Jumbo standard](Jumbo.md) turns `allowSeveralSpaces`
-off, to require exactly one.
+Neither example lines its arrows up, but each has too few arrows to rule that out, and [Section 6](https://www.php-fig.org/per/coding-style/#6-operators) says "multiple
+spaces MAY be used for readability purposes" wherever space is permitted around an operator. So more than one space is
+allowed. The [Jumbo standard](Jumbo.md) turns `allowSeveralSpaces` off, to require exactly one.
 
-PER says nothing about a `yield`'s `=>`, so it's treated as an array's is, for consistency: at least one space each
-side, and exactly one with `allowSeveralSpaces` off. A `foreach`'s, an arrow function's and a property hook's `=>` have
-their own sniffs.
+PER says nothing about a `yield`'s `=>`, so it's treated as an array's is, for consistency. A `foreach`'s, an arrow
+function's and a property hook's `=>` have their own sniffs.
 
-A line break before or after the arrow is allowed, for wrapping a long arm, element or value.
+No inherited sniff checks a `match` arm, which has its own token. A line break before or after the arrow is allowed, for
+wrapping a long arm, element or value.
 
 **Auto-fixable:** yes.
 
@@ -2960,22 +2959,27 @@ $label = match ($size) {
     1 => 'one',
     default => 'many',
 };
-```
 
-**Bad:**
-
-```php
 $label = match ($size) {
     1       => 'one',
     default => 'many',
 };
 ```
 
+**Bad:**
+
+```php
+$label = match ($size) {
+    1=>'one',
+    default =>'many',
+};
+```
+
 **Configuration:**
 
-| Property             | Type | Default | Description                                                          |
-| -------------------- | ---- | ------- | -------------------------------------------------------------------- |
-| `allowSeveralSpaces` | bool | true    | Allow more than one space each side of an array's or `yield`'s `=>`. |
+| Property             | Type | Default | Description                                                           |
+| -------------------- | ---- | ------- | --------------------------------------------------------------------- |
+| `allowSeveralSpaces` | bool | true    | Allow more than one space each side of a `=>`, so arrows can line up. |
 
 ---
 

@@ -1,6 +1,6 @@
 <?php
 
-// The default: at least one space each side of an array's =>, as PER Coding Style 3.1 requires no more.
+// The default: at least one space each side of a =>, as PER Coding Style 3.1 requires no more.
 // The property isn't set here.
 
 // At least one space each side of an array's =>, so arrows may be lined up.
@@ -13,9 +13,12 @@ $alsoValid = ['a'  =>  1, 'b' => 2];
 // No space on one side, or either.
 $invalid = ['a' => 1, 'b' => 2, 'c' => 3];
 
-// A match arm still needs exactly one.
+// A match arm's => needs at least one space each side too, so arms may be lined up.
 $value = match ($x) {
-    1 => 'one',
+    1       => 'one',
+    2       =>  'two',
+    default => 'many',
+    3 => 'three',
 };
 
 // End of the arrays.

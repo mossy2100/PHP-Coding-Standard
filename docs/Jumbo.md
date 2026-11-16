@@ -42,8 +42,9 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
 
 - `Generic.Files.LineLength` has `absoluteLineLimit`, which holds the soft limit, set from the ruleset's `lineLength`
   entity. See [Line Length](LineLength.md).
-- `PERCS31.WhiteSpace.ArrowSpacing` requires exactly one space around an array's or a `yield`'s `=>`, where PERCS31
-  allows more (`allowSeveralSpaces` set to `false`). It replaces Squiz `ArrayDeclaration`'s arrow spacing checks.
+- `PERCS31.WhiteSpace.ArrowSpacing` requires exactly one space around a `match` arm's, an array's or a `yield`'s `=>`,
+  where PERCS31 allows more (`allowSeveralSpaces` set to `false`). A `=>` that starts a wrapped line is still allowed.
+  It replaces Squiz `ArrayDeclaration`'s arrow spacing checks.
 - `PERCS31.WhiteSpace.ScopeIndent` checks the indent of a comment on its own line, as it does a statement's
   (`ignoreIndentationTokens` set to docblocks only). PERCS31 doesn't check a comment's indent, as PER has no rule for
   it. A docblock's indent isn't checked.

@@ -397,9 +397,9 @@
     <!-- Each match arm on a new line, as in the example in 5.2 -->
     <rule ref="PERCS31.ControlStructures.MatchArmPlacement"/>
 
-    <!-- One space around => in match arms, as in the example in 5.2. At least one around an array's =>, as in the
-         example in 11, which is too little to rule out lining arrows up. The same for a yield's =>, which PER leaves
-         undefined, for consistency. -->
+    <!-- At least one space around => in a match arm and an array, as in the examples in 5.2 and 11, which are too
+         little to rule out lining arrows up. The same for a yield's =>, which PER leaves undefined, for
+         consistency. -->
     <rule ref="PERCS31.WhiteSpace.ArrowSpacing"/>
 
     <!-- ====== OPERATORS (6) ====== -->

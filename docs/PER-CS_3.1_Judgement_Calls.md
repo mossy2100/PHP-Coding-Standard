@@ -1309,9 +1309,11 @@ more specific about how a `match` is written, and its example has each arm on it
 
 **Issue:** 5.2's `match` example shows spacing and layout its text doesn't state.
 
-**Decision:** One space around `=>` and after each comma, no alignment, one arm per line, a trailing comma after each
-arm, and `}` on its own line. The comma spacing is also applied to lists with no example, such as `echo`, `global` and a
-group `use`.
+**Decision:** At least one space each side of `=>`, one space after each comma, one arm per line, a trailing comma after
+each arm, and `}` on its own line. The comma spacing is also applied to lists with no example, such as `echo`, `global`
+and a group `use`.
+
+The arrows may be lined up, as an array's may. See [`=>` in a `match` Arm, an Array or `yield`](#-in-a-match-arm-an-array-or-yield).
 
 **Why:** The example is the template for a `match`. One space after a comma is the spec's pattern everywhere it shows
 one.
@@ -1421,16 +1423,32 @@ silent, and its examples show too little to infer a rule from.
 
 ## 6.2 Binary Operators
 
-### `=>` in an Array or `yield`
+### `=>` in a `match` Arm, an Array or `yield`
 
-**Issue:** `=>` isn't one of 6.2's operators. Section 11's array example, which "shows correct array usage", has one
-space each side, but there are too few examples to rule out additional spaces being used to align arrows, which is not
+**Issue:** `=>` isn't one of 6.2's operators. 5.2's `match` example and section 11's array example each have one space
+each side, but there are too few arrows in them to rule out additional spaces being used to align arrows, which is not
 uncommon.
 
-**Decision:** An array's `=>` needs at least one space each side. More are allowed. The same goes for a `yield`'s `=>`.
+**Decision:** A `match` arm's `=>` and an array's each need at least one space each side. More are allowed, so both of
+these pass:
 
-**Why:** The spec always shows a space each side, and never none. It gives too little to forbid alignment. It says
-nothing about a `yield`, so that follows the array rule, for consistency.
+```php
+$label = match ($size) {
+    1 => 'one',
+    default => 'many',
+};
+
+$label = match ($size) {
+    1       => 'one',
+    default => 'many',
+};
+```
+
+The same goes for a `yield`'s `=>`.
+
+**Why:** The spec always shows a space each side, and never none. It gives too little to forbid alignment, and section 6
+says "multiple spaces MAY be used for readability purposes" where space is permitted around an operator. One rule for
+both keeps a `match` and an array consistent. The spec says nothing about a `yield`, so that follows the same rule.
 
 ---
 

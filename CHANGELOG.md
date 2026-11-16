@@ -486,6 +486,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- **Aligned `match` arms.** `PERCS31.WhiteSpace.ArrowSpacing` now requires at least one space each side of a `match`
+  arm's `=>`, not exactly one, so arms can be lined up, as an array's and a `yield`'s already could. PER Coding Style
+  3.1 shows too few arrows to rule that out, and allows several spaces around an operator for readability. Jumbo still
+  requires exactly one.
 - **A nested arrow function's `=>` (breaking).** `PERCS31.Operators.OperatorPlacement` now wants a wrapped `=>` indented
   once past the line with its own `fn`, so a nested arrow function's `=>` goes one level deeper than the outer one's. It
   had to be level with the outer `=>`. Auto-fixable.

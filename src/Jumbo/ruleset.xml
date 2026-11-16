@@ -351,7 +351,8 @@
         <severity>5</severity>
     </rule>
 
-    <!-- Exactly one space around => in every array and yield, where PERCS31 allows more so arrows can be lined up.
+    <!-- Exactly one space around => in every match arm, array and yield, where PERCS31 allows more so arrows can be
+         lined up.
          This replaces Squiz.Arrays.ArrayDeclaration's arrow spacing checks, which cover only a single-line array. -->
     <rule ref="PERCS31.WhiteSpace.ArrowSpacing">
         <properties>
