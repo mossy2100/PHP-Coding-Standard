@@ -307,3 +307,16 @@ trait LOGS
 {
     const LOG_URL = 'x';
 }
+
+// A run of digits is a word of its own. An acronym before or after one is still reported.
+function supportsHTTP2(): void {}
+function getHTTP2Client(): void {}
+function toBase64URL(): void {}
+function playMP3(): void {}
+
+// Capitals that only a digit separates are each an initial, so these pass.
+function isB2B(): void {}
+function getVector3D(): void {}
+function readX509Certificate(): void {}
+function useHttp2Client(): void {}
+function hashSha256(): void {}

@@ -18,8 +18,7 @@ use PHP_CodeSniffer\Util\Tokens;
  * enums. PascalCase mixes upper and lower case, so a name must have a lower-case letter.
  *
  * It extends Squiz.Classes.ValidClassName, which allows a name with no lower-case letter, and also reports one, such
- * as `FOO`, `A` or `B2B`. An acronym in capitals in a PascalCase name, as in `HTTPClient`, isn't reported here.
- * AcronymCasing warns about it.
+ * as `FOO`, `HTTP`, `A` or `B2B`. A name with one passes, such as `HttpClient`, `HTTPClient` or `ClassA`.
  */
 class ValidClassNameSniff extends SquizSniff
 {

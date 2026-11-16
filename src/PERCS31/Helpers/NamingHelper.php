@@ -19,8 +19,8 @@ class NamingHelper
      * Check whether a name is in PascalCase.
      *
      * Section 2.1 of PER Coding Style 3.1 says the first letter of every word is capitalized. PascalCase mixes upper
-     * and lower case, so a name with no lower-case letter, such as `FOO`, `A` or `B2B`, isn't in it. An acronym in
-     * capitals in a PascalCase name, as in `HTTPClient`, is a separate matter, which hasAcronym() checks.
+     * and lower case, so a name with no lower-case letter, such as `FOO`, `HTTP`, `A` or `B2B`, isn't in it. That's
+     * UPPER_CASE.
      *
      * @param string $name The name.
      * @return bool True if it starts with a capital, has only letters and digits, and has a lower-case letter.
@@ -43,8 +43,7 @@ class NamingHelper
     {
         foreach (explode('_', ltrim($name, '$')) as $part) {
             foreach (self::splitWords($part) as $word) {
-                $letters = rtrim($word, '0123456789');
-                if (strlen($letters) >= 2 && ctype_upper($letters)) {
+                if (strlen($word) >= 2 && ctype_upper($word)) {
                     return true;
                 }
             }
@@ -56,10 +55,14 @@ class NamingHelper
     /**
      * Split a name with no underscores into words, working back from its last character.
      *
-     * If the last letter is lower-case, the word goes back to the first capital, which is included. If it's upper-case,
-     * the word goes back to the first character that isn't a capital, which isn't included. A digit stays with the word
-     * on its left, and separates capitals. So `HTTPClient` is `HTTP` and `Client`, `getIDs` is `get`, `I` and `Ds`, and
-     * `B2B` is `B2` and `B`.
+     * The last character decides what the word is:
+     * - A digit: the word is the run of digits it ends.
+     * - An upper-case letter: the word is the run of capitals it ends.
+     * - A lower-case letter: the word goes back to the capital that starts it, which is included, or to a digit, which
+     *   isn't.
+     *
+     * So `HTTPClient` is `HTTP` and `Client`, `HTTP2Supported` is `HTTP`, `2` and `Supported`, `getIDs` is `get`, `I`
+     * and `Ds`, and `B2B` is `B`, `2` and `B`.
      *
      * @param string $name The name.
      * @return list<string> The words, in order.
@@ -69,21 +72,24 @@ class NamingHelper
         $words = [];
         $end = strlen($name);
         while ($end > 0) {
-            $start = $end;
-            while ($start > 0 && ctype_digit($name[($start - 1)])) {
-                $start--;
-            }
-
-            if ($start > 0 && ctype_upper($name[($start - 1)])) {
+            $start = ($end - 1);
+            if (ctype_digit($name[$start])) {
+                while ($start > 0 && ctype_digit($name[($start - 1)])) {
+                    $start--;
+                }
+            } elseif (ctype_upper($name[$start])) {
                 while ($start > 0 && ctype_upper($name[($start - 1)])) {
                     $start--;
                 }
             } else {
-                while ($start > 0 && !ctype_upper($name[($start - 1)])) {
+                while ($start > 0 && !ctype_upper($name[($start - 1)]) && !ctype_digit($name[($start - 1)])) {
                     $start--;
                 }
 
-                $start = max(0, ($start - 1));
+                // The capital that starts the word belongs to it.
+                if ($start > 0 && ctype_upper($name[($start - 1)])) {
+                    $start--;
+                }
             }
 
             array_unshift($words, substr($name, $start, ($end - $start)));

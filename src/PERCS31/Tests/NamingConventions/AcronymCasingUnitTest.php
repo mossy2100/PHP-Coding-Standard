@@ -97,6 +97,11 @@ class AcronymCasingUnitTest extends AbstractSniffTestCase
             // A trait alias in an anonymous class in a call, and a foreach's variable, not its `as`.
             293 => 1,
             297 => 1,
+            // An acronym before or after a run of digits.
+            312 => 1,
+            313 => 1,
+            314 => 1,
+            315 => 1,
         ];
     }
 }

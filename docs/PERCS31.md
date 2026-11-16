@@ -2016,10 +2016,11 @@ The sniff splits a name into words, working back from its last character:
 - Underscores separate parts, and each part is split on its own.
 - If the last letter is lower-case, the word goes back to the first capital, which is included.
 - If it's upper-case, the word goes back to the first character that isn't a capital, which isn't included.
-- A digit stays with the word on its left, and separates capitals, so `B2B` is `B2` and `B`.
+- A run of digits is a word of its own. So `HTTP2Supported` is `HTTP`, `2` and `Supported`, and `B2B` is `B`, `2` and
+  `B`.
 
-An acronym is a word of two or more capitals. So `HTTPClient`, `parseURL`, `getID`, `getURLs` and `IHeartAI` are all
-reported.
+An acronym is a word of two or more capitals. So `HTTPClient`, `HTTP2Client`, `parseURL`, `getID`, `getURLs` and
+`IHeartAI` are all reported.
 
 It doesn't report:
 
@@ -2090,8 +2091,6 @@ UPPER_CASE, and PascalCase is RECOMMENDED. So for an enum constant:
   UPPER_CASE.
 - Anything else, such as camelCase or `Default_Colour`, gets an `EnumConstantInvalidCase` error.
 
-An acronym in capitals in a PascalCase name, as in `HTTPStatus`, passes here. [`AcronymCasing`](#percs31namingconventionsacronymcasing) warns about it.
-
 A global constant, from `const` or `define()`, isn't checked by default, as neither PSR-1 nor PER has a rule for it. Set
 `checkGlobalConstants` to require UPPER_CASE of these, and of an alias of a constant, as in `use const Foo\BAR as BAZ;`.
 It reports them with the `ConstantNotUpperCase` code:
@@ -2161,11 +2160,8 @@ with the first letter of every word capitalized. [Section 4](https://www.php-fig
 PascalCase mixes upper and lower case, so a name with no lower-case letter isn't in it. The Squiz sniff allows one, and
 this sniff extends it to report one.
 
-- **Passes:** `Client`, `HttpClient`, `Http2`, `ClassA`, `Vector3D`, `X509Certificate` and `IAnimal`.
-- **Fails:** `FOO`, `A`, `C2`, `B2B`, `HTTP2`, `client` and `Foo_Bar`.
-
-An acronym in capitals, as in `HTTPClient` or `XMLParser`, is still PascalCase, so it passes here. [`AcronymCasing`](#percs31namingconventionsacronymcasing)
-reports it as a warning, as section 2.7 only RECOMMENDS writing an acronym like a word.
+- **Passes:** `Client`, `HttpClient`, `HTTPClient`, `Http2`, `ClassA`, `Vector3D`, `X509Certificate` and `IAnimal`.
+- **Fails:** `FOO`, `HTTP`, `A`, `C2`, `B2B`, `HTTP2`, `client` and `Foo_Bar`.
 
 **Auto-fixable:** no. Renaming a class would break references to it in other files.
 
@@ -2238,8 +2234,7 @@ lower-case letter.
 
 PascalCase is as [`ValidClassName`](#percs31namingconventionsvalidclassname) describes:
 
-- **Passes:** `Hearts`, `BigJoker`, `Http2`, `ClassA`, `Vector3D` and `HTTPStatus`. [`AcronymCasing`](#percs31namingconventionsacronymcasing) warns about the
-  acronym in the last one.
+- **Passes:** `Hearts`, `BigJoker`, `Http2`, `ClassA`, `Vector3D` and `HTTPStatus`.
 - **Fails:** `FOO`, `OK`, `A`, `C2`, `B2B`, `hearts`, `bigJoker` and `Foo_Bar`.
 
 **Auto-fixable:** no. Renaming a case would break references to it in other files.

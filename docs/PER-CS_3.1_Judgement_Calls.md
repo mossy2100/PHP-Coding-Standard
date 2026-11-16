@@ -95,6 +95,37 @@ The method has its `)` and `{` on different lines. This contradicts section 4.5,
 
 Its parameter list has no trailing comma either, which contradicts section 2.6, as in the first example.
 
+#### 4.2 Using Traits
+
+This example is shown:
+
+```php
+class Talker
+{
+    use A;
+    use B {
+        A::smallTalk insteadof B;
+    }
+    use C {
+        B::bigTalk insteadof C;
+        C::mediumTalk as FooBar;
+    }
+}
+```
+
+The traits are named `A`, `B` and `C`. This contradicts PSR-1, which says:
+
+> Class names MUST be declared in `StudlyCaps`.
+
+Section 2.1 reads StudlyCaps as PascalCase, and section 4 says "class" covers traits. A name with no lower-case letter
+is UPPER_CASE, not PascalCase. See [PascalCase (PSR-1)](#pascalcase-psr-1).
+
+The example only uses the traits, so PERCS31 reports nothing in it. A trait declared with one of these names is
+reported.
+
+The overview's example and section 3's also give classes single-letter aliases, as in `ClassA as A` and `ClassD as D`.
+An alias isn't a declared class name, so PSR-1's rule doesn't cover it, and it isn't checked.
+
 #### 4.9 Property Hooks
 
 This example is shown:
@@ -261,14 +292,12 @@ letter of each word is capitalized". That doesn't settle whether `FOO`, `A` or `
 - A PascalCase name starts with a capital, has only letters and digits, and has at least one lower-case letter.
 - This applies to classes, interfaces, traits, enums and enum cases, as an error. An enum constant may be in PascalCase
   or UPPER_CASE (9).
-- Any name with no lower-case letter fails: `FOO`, `OK`, `A`, `C2`, `B2B`.
+- Any name with no lower-case letter fails, as it's UPPER_CASE: `FOO`, `OK`, `HTTP`, `A`, `C2`, `B2B`.
 - Any name with an underscore fails: `next_node`, `REDUCED_PLANCK`, `Phone_Number`.
-- An acronym or an initial in capitals is still PascalCase: `HTTPStatus`, `XMLParser`, `ClassA`, `IAnimal`. The acronym
-  gets a warning instead (2.7).
+- Any other name passes: `Foo`, `HTTPStatus`, `XMLParser`, `ClassA`, `IAnimal`.
 
-**Why:** PascalCase mixes upper and lower case, so a name with no lower-case letter isn't in it. The MUST says nothing
-about acronyms, which 2.7 covers as a RECOMMENDS. Section 4 uses "class" to cover all four kinds of class-like
-structure.
+**Why:** PascalCase mixes upper and lower case. A name with no lower-case letter is UPPER_CASE instead. Section 4 uses
+"class" to cover all four kinds of class-like structure.
 
 ---
 
