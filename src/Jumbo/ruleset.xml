@@ -267,11 +267,8 @@
 
     <!-- ====== OPERATORS (6) ====== -->
 
-    <rule ref="SlevomatCodingStandard.PHP.ReferenceSpacing"/>
-    <rule ref="SlevomatCodingStandard.Operators.NegationOperatorSpacing"/>
     <rule ref="SlevomatCodingStandard.Operators.RequireCombinedAssignmentOperator"/>
     <rule ref="SlevomatCodingStandard.Operators.RequireOnlyStandaloneIncrementAndDecrementOperators"/>
-    <rule ref="SlevomatCodingStandard.Operators.SpreadOperatorSpacing"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceEqualOperator"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceOperator"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullSafeObjectOperator"/>
@@ -285,15 +282,17 @@
     <rule ref="Jumbo.ControlStructures.RequireShortTernaryOperator"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.RequireTernaryOperator"/>
 
-    <!-- No whitespace after ! -->
-    <rule ref="Generic.Formatting.SpaceAfterNot">
+    <!-- No whitespace after a prefix unary +, -, !, ~ or @, as well as the reference & and spread that PERCS31
+         checks -->
+    <rule ref="PERCS31.Operators.UnaryOperatorSpacing">
         <properties>
-            <property name="spacing" value="0"/>
+            <property name="checkPlusOperator" value="true"/>
+            <property name="checkNegationOperator" value="true"/>
+            <property name="checkNotOperator" value="true"/>
+            <property name="checkBitwiseNotOperator" value="true"/>
+            <property name="checkErrorControlOperator" value="true"/>
         </properties>
     </rule>
-
-    <!-- No whitespace after a prefix unary +, ~ or @ -->
-    <rule ref="Jumbo.Operators.UnaryOperatorSpacing"/>
 
     <!-- Exactly one space around operators, including before assignments (no alignment): the codes
          PERCS31.Operators.OperatorSpacing reports more than one space with, which PERCS31 excludes -->

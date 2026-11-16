@@ -213,7 +213,7 @@ says:
 **Issue:** PER Coding Style replaces PSR-12, but many PHP_CodeSniffer sniffs were written for PSR-12, and some reject
 code PER allows.
 
-**Decision:** A PSR-12 or PSR-1 sniff that rejects something PER allows is replaced, configured or excluded.
+**Decision:** A PSR-12 sniff that rejects something PER allows is replaced, configured or excluded.
 
 **Why:** PERCS31 implements PER 3.1. A PSR-12 report on code PER allows is a false positive.
 
@@ -933,6 +933,74 @@ function foo(
 
 ---
 
+### A Reference `&` Outside a Parameter List
+
+**Issue:** "When using the reference operator `&` before an argument, there MUST NOT be a space after it." The spec
+doesn't say whether that covers a reference `&` anywhere else, as in `$x = & $a`.
+
+**Decision:** It does. No white space follows a reference `&`, wherever it's used:
+
+```php
+$x = &$a;
+
+foreach ($items as &$item) {
+    // ...
+}
+
+$pair = [&$a, 'b' => &$b];
+
+$add = function () use (&$total): void {
+    // ...
+};
+
+function &find(array &$items): mixed
+{
+    // ...
+}
+
+class Basket
+{
+    public array $items = [] {
+        &get => $this->items;
+    }
+}
+```
+
+A space or a line break after the `&` in any of these is an error, so `& get` is reported as `$x = & $a` is.
+
+**Why:** It's the same operator in each place, so the same rule is used. 4.5 states it where the spec happens to show
+the operator, which is in a parameter list.
+
+---
+
+### The Spread Operator Outside a Parameter List
+
+**Issue:** "There MUST NOT be a space between the variadic three dot operator and the argument name." The spec doesn't
+say whether that covers a `...` anywhere else, as in `foo(... $args)`.
+
+**Decision:** It does. No white space follows a spread `...`, wherever it's used:
+
+```php
+function sum(int ...$numbers): int
+{
+    // ...
+}
+
+$total = sum(...$numbers);
+
+$all = [...$first, ...$second];
+```
+
+A space or a line break after the `...` in any of these is an error.
+
+The `...` of a first-class callable, as in `strlen(...)`, isn't a spread, as it has nothing after it to unpack. 4.8
+sets its spacing.
+
+**Why:** It's the same operator in each place, so the same rule is used, as for
+[A Reference `&` Outside a Parameter List](#a-reference--outside-a-parameter-list).
+
+---
+
 ## 4.6 Modifier Keywords
 
 ### Modifier Order on Constants
@@ -1065,15 +1133,18 @@ simpler than a rule that depends on how many a statement has.
 
 ### Hook Layout
 
-**Issue:** 4.9 doesn't set the spacing around a by-reference `&` or a hook's own `{`.
+**Issue:** 4.9's text doesn't set the spacing before a hook's own `{`, or say whether two hooks on one line are two
+statements.
 
 **Decision:**
 
 - One space before a hook's own `{`, as in `get {`.
-- No space after a by-reference hook's `&`, as in `&get`.
 - `{ get; set; }` on one line is one block, not two statements.
 
-**Why:** The first follows 4.9's examples. The second follows 4.5's rule for a by-reference parameter.
+A by-reference hook's `&` is covered by
+[A Reference `&` Outside a Parameter List](#a-reference--outside-a-parameter-list) (4.5).
+
+**Why:** The first follows 4.9's examples. The second follows 4.10's, which write `{ get; set; }` on one line.
 
 ---
 
@@ -1328,8 +1399,10 @@ place of the space before or after `as` or `=>`. Otherwise it only gets section 
 - `->` and `?->` have no white space after them. They have none before them either, unless one starts a line in a split
   chain, where only the line break and the indent come before it.
 - Each of these is an error.
-- The others, so unary operators other than `++` and `--`, a reference `&` and spread, aren't checked. Jumbo checks
-  them.
+- A reference `&` and a spread `...` have no white space after them, by 4.5's rules. See
+  [A Reference `&` Outside a Parameter List](#a-reference--outside-a-parameter-list) and
+  [The Spread Operator Outside a Parameter List](#the-spread-operator-outside-a-parameter-list).
+- The others, so unary `+`, `-`, `!`, `~` and `@`, aren't checked. Jumbo checks them.
 
 **Why:** No rule text covers `::`, `->` or `?->`, but every example writes them with no space around them, as in:
 
@@ -1361,23 +1434,24 @@ nothing about a `yield`, so that follows the array rule, for consistency.
 
 ### `=&`
 
-**Issue:** It's unclear whether `=&` is one operator or `=` followed by a reference `&`.
+**Issue:** It's unclear whether `=&` is one operator or `=` followed by a reference `&`. The spec (both PER-CS 3.1 and
+PSR-1) show no examples, and the PHP documentation shows both joined and separated forms.
 
-**Decision:** It's an `=` followed by a reference `&`, so the `=` needs at least one space each side, as any assignment
-does. The space between the `&` and what follows it isn't checked.
+**Decision:** It's an `=` followed by a reference `&`. The `=` is a binary operator, so it needs at least one space each
+side (6.2). The `&` is a unary operator, so it has no space after it (4.5). Only `$x = &$a` passes:
 
-| Code        | Result                         |
-| ----------- | ------------------------------ |
-| `$x = &$a`  | Passes                         |
-| `$x = & $a` | Passes                         |
-| `$x =& $a`  | Reported, fixed to `$x = & $a` |
-| `$x =&$a`   | Reported, fixed to `$x = &$a`  |
-| `$x=&$a`    | Reported, fixed to `$x = &$a`  |
-| `$x=& $a`   | Reported, fixed to `$x = & $a` |
+| Code        | Result                        |
+| ----------- | ----------------------------- |
+| `$x = &$a`  | Passes                        |
+| `$x = & $a` | Reported, fixed to `$x = &$a` |
+| `$x =& $a`  | Reported, fixed to `$x = &$a` |
+| `$x =&$a`   | Reported, fixed to `$x = &$a` |
+| `$x=&$a`    | Reported, fixed to `$x = &$a` |
+| `$x=& $a`   | Reported, fixed to `$x = &$a` |
 
 **Why:** PHP has no `=&` operator. It reads the `=` and the `&` as separate tokens, even though the `&` changes what the
-assignment does. 6.2 requires a space each side of an assignment operator, and the `=` is one. The fix only adds the
-spaces the `=` needs, so a space after the `&` stays if it was there.
+assignment does. So each follows its own rule: 6.2's for an assignment operator, and 4.5's for a reference `&`, as
+[A Reference `&` Outside a Parameter List](#a-reference--outside-a-parameter-list) reads it.
 
 ---
 

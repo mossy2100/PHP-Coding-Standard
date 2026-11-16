@@ -86,14 +86,14 @@ abstract class MixedBodies
 
 class ReferenceHooks
 {
-    // A space after a by-reference hook's & is reported, as for a by-reference parameter.
+    // A by-reference hook's & isn't an operator, and its hook is laid out like any other. A space after the & is
+    // reported by PERCS31.Operators.UnaryOperatorSpacing.
     public array $allowed = [] {
         &get => $this->allowed;
     }
 
-    // Checked by default.
     public array $spaced = [] {
-        &get => $this->spaced;
+        & get => $this->spaced;
     }
 
     public array $inline = [] { &get => $this->inline; }

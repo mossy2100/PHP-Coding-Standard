@@ -109,6 +109,37 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that PERCS31 only reports whitespace after a reference `&` and a spread `...`, as PER leaves the other unary
+     * operators undefined, and Jumbo reports it after `+`, `-`, `!`, `~` and `@` too. A variadic parameter's `...` is
+     * reported once, and a first-class callable's isn't a spread.
+     */
+    public function testUnaryOperatorSpacingChecksOnlyReferenceAndSpreadInPercs31(): void
+    {
+        $source = "<?php\n\n\$a = & \$b;\n\$c = + \$b;\n\$d = - \$b;\n\$e = ! \$b;\n\$f = ~ \$b;\n\$g = @ foo();\n"
+            . "\$h = foo(... \$b);\n\$i = fn(int ... \$j): array => \$j;\n\$k = foo(...);\n";
+        $file = $this->copyToTempFile(null, $source);
+        $sniffs = 'PERCS31.Operators.UnaryOperatorSpacing,Squiz.Functions.FunctionDeclarationArgumentSpacing';
+        $args = ['-s', '--sniffs=' . $sniffs, '--report=emacs', $file];
+
+        try {
+            $percs31 = $this->runTool('phpcs', ['--standard=PERCS31', ...$args]);
+            $jumbo = $this->runTool('phpcs', ['--standard=Jumbo', ...$args]);
+        } finally {
+            unlink($file);
+        }
+
+        $code = 'PERCS31.Operators.UnaryOperatorSpacing.WhitespaceAfter';
+
+        $this->assertSame(3, substr_count($percs31['output'], $code), $percs31['output']);
+        $this->assertStringContainsString(':3:', $percs31['output']);
+        $this->assertStringContainsString(':9:', $percs31['output']);
+        $this->assertStringContainsString(':10:', $percs31['output']);
+        $this->assertStringNotContainsString('SpacingAfterVariadic', $percs31['output']);
+        $this->assertSame(8, substr_count($jumbo['output'], $code), $jumbo['output']);
+        $this->assertStringNotContainsString('SpacingAfterVariadic', $jumbo['output']);
+    }
+
+    /**
      * Test that a closing tag at the end of a file mixing PHP and HTML is an error in Jumbo only, as PER only requires
      * omitting it from a file containing only PHP.
      */

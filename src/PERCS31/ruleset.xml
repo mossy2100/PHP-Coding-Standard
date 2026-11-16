@@ -57,6 +57,10 @@
              PERCS31.Operators.OperatorSpacing -->
         <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpaceBeforeEquals"/>
         <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpaceAfterEquals"/>
+        <!-- Replaced by PERCS31.Operators.UnaryOperatorSpacing, which reports a space after every reference & and
+             every spread ..., not only a parameter's (4.5) -->
+        <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterReference"/>
+        <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterVariadic"/>
         <!-- Replaced by a PERCS31 version that also checks clone(), and skips a set hook's parameter list (4.7) -->
         <exclude name="PSR2.Methods.FunctionCallSignature"/>
         <!-- Replaced by PERCS31.PHP.TypeCast, which also reports (double) and (binary) (2.5) -->
@@ -325,9 +329,8 @@
     </rule>
 
     <!-- The layout of a property's hook list: its braces, a short hook's =>, and get before set (4.9, 4.10). One space
-         before a hook's own {, and a set hook's parameter list spaced like a method's, as the examples in 4.9 show. No
-         space after a by-reference hook's &, as for a by-reference parameter (4.5). A hook on a promoted constructor
-         parameter only as a single short hook on one line (4.9). -->
+         before a hook's own {, and a set hook's parameter list spaced like a method's, as the examples in 4.9 show. A
+         hook on a promoted constructor parameter only as a single short hook on one line (4.9). -->
     <rule ref="PERCS31.Classes.PropertyHooks"/>
 
     <!-- ====== FUNCTIONS AND CALLS (4.7) ====== -->
@@ -412,6 +415,13 @@
         <exclude name="PERCS31.Operators.OperatorSpacing.SpacingBeforeAmp"/>
         <exclude name="PERCS31.Operators.OperatorSpacing.SpacingAfterAmp"/>
     </rule>
+
+    <!-- No white space after a reference & or a spread ..., wherever it's used. A reference: a parameter, an
+         assignment, a foreach, an array, a closure's use list, a function that returns by reference and a by-reference
+         hook. A spread: a variadic parameter, a call's arguments and an array. 4.5 states each rule for a parameter,
+         and it's read as the rule for the operator. The sniff's checks for +, -, !, ~ and @ are off by default, as
+         section 6 leaves those undefined. -->
+    <rule ref="PERCS31.Operators.UnaryOperatorSpacing"/>
 
     <!-- No white space around ->, ?-> and ::, except a line break before -> or ?-> in a split chain, as every
          example writes them (4.2, 4.7, 9) -->

@@ -53,11 +53,6 @@ class PropertyHooksUnitTest extends AbstractSniffTestCase
             72 => 1,
             // A space before a bodiless hook's ; in a list with bodies.
             87 => 1,
-            // A space after a by-reference hook's &.
-            95 => 1,
-            // A space after a by-reference hook's &, long and inline.
-            100 => 1,
-            103 => 1,
             // A hook body on one line.
             115 => 2,
             // The whole list on one line: the hook, its body, and both closing braces.

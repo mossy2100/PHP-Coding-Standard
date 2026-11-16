@@ -97,6 +97,10 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 default value's `=` is a binary operator, which section 6.2 allows more than one space around.
 [`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing) checks it instead.
 
+Its `SpacingAfterReference` and `SpacingAfterVariadic` are excluded too, as
+[`PERCS31.Operators.UnaryOperatorSpacing`](#percs31operatorsunaryoperatorspacing) reports a space after every reference `&` and every spread `...`, a
+parameter's included.
+
 ---
 
 ## Inherited Sniffs
@@ -257,6 +261,7 @@ section gives the reason.
 | `PERCS31.NamingConventions.ValidEnumCaseName`              | Enum cases in PascalCase                                            | No      |
 | `PERCS31.Operators.OperatorPlacement`                      | A wrapped operator starts its line, and a split ternary takes three | Yes     |
 | `PERCS31.Operators.OperatorSpacing`                        | At least one space around binary operators, including `\|>`         | Yes     |
+| `PERCS31.Operators.UnaryOperatorSpacing`                   | No whitespace after a reference `&` or a spread `...`               | Yes     |
 | `PERCS31.PHP.LowerCaseKeyword`                             | Keywords in lower case, including a property hook's `get` or `set`  | Yes     |
 | `PERCS31.PHP.LowerCaseType`                                | Types in lower case, including a `set` hook's and an enum's type    | Yes     |
 | `PERCS31.PHP.RequireCloneParentheses`                      | A warning for `clone $a`, or `clone($a)->b`, not `clone($a)`        | Yes     |
@@ -871,13 +876,13 @@ should risk.
 Indentation is checked by `PERCS31.WhiteSpace.ScopeIndent`, and several statements on a line by
 `PERCS31.Formatting.DisallowMultipleStatements`.
 
-Section 4.9's text doesn't say where a hook's own `{` goes, how a `set` hook's parameter list is spaced, or whether a
-by-reference hook's `&` is followed by a space. Its examples show `get {` and `set(string $value)`, and section 4.5 puts
-no space after a by-reference parameter's `&`. So this sniff also requires:
+Section 4.9's text doesn't say where a hook's own `{` goes, or how a `set` hook's parameter list is spaced. Its examples
+show `get {` and `set(string $value)`. So this sniff also requires:
 
 - Exactly one space before a hook's own `{`, as in `get {`.
 - A `set` hook's parameter list spaced like a method's: no space after `set`, and none just inside the parentheses.
-- No space after a by-reference hook's `&`, as in `&get`.
+
+A space after a by-reference hook's `&`, as in `& get`, is reported by [`PERCS31.Operators.UnaryOperatorSpacing`](#percs31operatorsunaryoperatorspacing).
 
 **Auto-fixable:** yes, except `TooComplex`, or with a comment in the way.
 
@@ -2417,8 +2422,8 @@ missing space before it. A unary operator is left undefined by section 6, so thi
 
 The parent skips an `=` directly followed by `&`, so this sniff checks it. PHP has no `=&` operator: it reads an `=` and
 a reference `&`, so the `=` needs a space each side like any other. `$x=&$a` and `$x =&$a` are reported, and fixed to
-`$x = &$a`. `$x =& $a` is reported too, and fixed to `$x = & $a`. The space after the `&` isn't checked, as PER has no
-rule for it.
+`$x = &$a`. This sniff adds the space after the `=`, and [`PERCS31.Operators.UnaryOperatorSpacing`](#percs31operatorsunaryoperatorspacing) removes any after the
+`&`, so `$x =& $a` is fixed to `$x = &$a` too.
 
 Unlike the PSR-12 sniff, it doesn't check `=>`, which section 6.2 doesn't list. Each use of `=>` has its own sniff, such
 as [`PERCS31.WhiteSpace.ArrowSpacing`](#percs31whitespacearrowspacing) for a `match` arm's and an array's.
@@ -2465,6 +2470,102 @@ $name = $given ? : $default;
 | Property             | Type | Default | Description                                   |
 | -------------------- | ---- | ------- | --------------------------------------------- |
 | `checkDefaultValues` | bool | true    | Check the `=` of a parameter's default value. |
+
+---
+
+### PERCS31.Operators.UnaryOperatorSpacing
+
+Disallows whitespace, including a line break, after a reference `&` and the spread operator `...`. It can also check a
+prefix unary `+`, `-`, `!`, `~` and `@`, which are off by default.
+
+**Why:** [Section 4.5](https://www.php-fig.org/per/coding-style/#45-method-and-function-parameters) has a rule for each:
+
+- "When using the reference operator `&` before an argument, there MUST NOT be a space after it."
+- "There MUST NOT be a space between the variadic three dot operator and the argument name."
+
+PERCS31 reads each as the rule for the operator, wherever it's used. A reference `&`:
+
+- A parameter, and a closure's `use` list.
+- A reference assignment, as in `$x = &$a`.
+- A `foreach` value.
+- An array's values, and a destructuring list's.
+- A function, closure or arrow function that returns by reference, as in `function &find()`.
+- A by-reference hook, as in `&get`.
+
+A spread `...`:
+
+- A variadic parameter, as in `int ...$rest`.
+- A call's arguments, as in `foo(...$args)`.
+- An array, as in `[...$a]`.
+
+Each is told from its other use:
+
+- A bitwise `&` isn't a reference, so it's skipped, including in a parameter's default value.
+- A first-class callable's `...`, as in `foo(...)`, has no operand, so it's skipped. Section 4.8 sets its spacing, which
+  `Universal.WhiteSpace.FirstClassCallableSpacing` checks.
+
+[Section 6](https://www.php-fig.org/per/coding-style/#6-operators) leaves the other five operators undefined, so their checks are off. A standard that wants them, as
+[Jumbo](Jumbo.md) does, turns each on with its property. A binary `+` or `-` is skipped, as
+[`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing) checks it. The space in `- -$a` and `+ +$a` is left alone, as without it PHP reads
+`--` or `++`.
+
+`Generic.WhiteSpace.IncrementDecrementSpacing` checks `++` and `--`. A cast keeps the single space after it that
+section 6.1 requires.
+
+It replaces `Squiz.Functions.FunctionDeclarationArgumentSpacing`'s `SpacingAfterReference` and `SpacingAfterVariadic`,
+which only check a parameter. `SlevomatCodingStandard.PHP.ReferenceSpacing` isn't used, as it reads a bitwise `&` in a
+parameter's default value as a reference, and its fix then fights the one that puts the space back.
+
+**Auto-fixable:** yes, unless a comment is between the operator and its operand.
+
+**Good:**
+
+```php
+$total = &$totals[$key];
+
+foreach ($items as &$item) {
+    $item = trim($item);
+}
+
+function &find(array &$items, string $key): mixed
+{
+    return $items[$key];
+}
+
+$merged = merge(...$lists);
+$all = [...$first, ...$second];
+```
+
+**Bad:**
+
+```php
+$total = & $totals[$key];
+$total =& $totals[$key];
+
+foreach ($items as & $item) {
+    $item = trim($item);
+}
+
+function & find(array & $items, string $key): mixed
+{
+    return $items[$key];
+}
+
+$merged = merge(... $lists);
+$all = [... $first, ... $second];
+```
+
+**Configuration:**
+
+| Property                    | Type | Default | Description                                  |
+| --------------------------- | ---- | ------- | -------------------------------------------- |
+| `checkReferenceOperator`    | bool | true    | Check the reference operator, as in `&$a`.   |
+| `checkSpreadOperator`       | bool | true    | Check the spread operator, as in `...$a`.    |
+| `checkPlusOperator`         | bool | false   | Check the unary plus operator, as in `+$a`.  |
+| `checkNegationOperator`     | bool | false   | Check the negation operator, as in `-$a`.    |
+| `checkNotOperator`          | bool | false   | Check the logical not operator, as in `!$a`. |
+| `checkBitwiseNotOperator`   | bool | false   | Check the bitwise not operator, as in `~$a`. |
+| `checkErrorControlOperator` | bool | false   | Check the error control operator, `@`.       |
 
 ---
 
@@ -3097,8 +3198,8 @@ which PER Coding Style 3.1 needs.
 
 ## Not Checked
 
-- **An empty closure SHOULD be an arrow function (7).** Rewriting `function () {}` as `fn() => null` changes the return
-  value, and `function (): void {}` has no arrow function equivalent.
+- **Whitespace after a unary `+`, `-`, `!`, `~` or `@` (6).** Section 6 leaves these operators undefined. Each has a
+  property on [`PERCS31.Operators.UnaryOperatorSpacing`](#percs31operatorsunaryoperatorspacing) to check it, as the [Jumbo standard](Jumbo.md) does.
 - **A trailing comma in a split list of `match` conditions (2.6).** A comma before `=>` isn't required when an arm's
   conditions are on several lines. Set `disallowInSplitMatchConditions` on `PERCS31.Formatting.TrailingComma` to
   disallow one, as the [Jumbo standard](Jumbo.md) does.

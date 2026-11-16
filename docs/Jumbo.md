@@ -64,6 +64,9 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
   the `SpaceBeforeEquals` and `SpaceAfterEquals` codes PERCS31 excludes (`PERCS31.Operators.OperatorSpacing` has
   `checkDefaultValues` set to `false`).
 - `PSR2.Files.ClosingTag` is excluded, as `Zend.Files.ClosingTag` reports the same closing tags, and more. See [Zend](#zend).
+- `PERCS31.Operators.UnaryOperatorSpacing` also disallows whitespace after a prefix unary `+`, `-`, `!`, `~` and `@`,
+  as in `- $a` and `! $a`. PERCS31 only checks the reference `&` and the spread `...`, as PER leaves the others
+  undefined. Each has its own property, such as `checkNotOperator`, and Jumbo sets them all to `true`.
 - `PERCS31.NamingConventions.UpperCaseConstantName` has `checkGlobalConstants` set to `true`, so a global constant, from
   `const` or `define()`, and an alias of a constant, must be in UPPER_CASE. PERCS31 doesn't check this, as PER doesn't
   require it.
@@ -74,7 +77,7 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
 - `PERCS31.NamingConventions.ValidConstantName` has `checkGlobalConstants` set to `true`, so a global constant from a
   `const` statement can't start with a single underscore either. PERCS31 only checks a class constant.
 - `PERCS31.NamingConventions.UpperCaseConstantName`'s `EnumConstantNotPascalCase` warning has a severity of 4, not 5, so
-  it's hidden by default, as UPPER_CASE is the house style for every constant. Run `phpcs --warning-severity=4` to see
+  it's hidden by default, as Jumbo uses UPPER_CASE for every constant. Run `phpcs --warning-severity=4` to see
   it.
 
 ---
@@ -87,7 +90,6 @@ rules.
 ### Generic
 
 - **Generic.CodeAnalysis.AssignmentInCondition**: Warns about assignments in conditions. See [Yoda-style Comparisons](../README.md#yoda-style-comparisons).
-- **Generic.Formatting.SpaceAfterNot**: Disallows whitespace after `!`, including a line break (`spacing` set to 0).
 
 ### Squiz
 
@@ -180,13 +182,9 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
   file with an upper-case `function` or `const` keyword in a use statement.
 - **Namespaces.UseFromSameNamespace**: Disallows use statements from the same namespace.
 - **Namespaces.UselessAlias**: Disallows useless use statement aliases.
-- **Operators.NegationOperatorSpacing**: Enforces the spacing after a unary `-`, including a line break. Its
-  `spacesCount` defaults to 0, so no whitespace is allowed.
 - **Operators.RequireCombinedAssignmentOperator**: Requires combined assignment operators (`+=`, `-=`, etc.).
 - **Operators.RequireOnlyStandaloneIncrementAndDecrementOperators**: Requires `++` and `--` to be used standalone.
-- **Operators.SpreadOperatorSpacing**: Enforces spacing around spread operator.
 - **PHP.DisallowDirectMagicInvokeCall**: Disallows direct `__invoke()` calls.
-- **PHP.ReferenceSpacing**: Enforces spacing around reference operator.
 - **PHP.ShortList**: Requires short list syntax `[]`.
 - **PHP.UselessSemicolon**: Disallows useless semicolons.
 - **Strings.DisallowVariableParsing**: Disallows variable parsing in strings.
@@ -240,7 +238,6 @@ gives the reason. The custom sniffs for PER Coding Style itself are in [PERCS31]
 | `Jumbo.Functions.RequireSingleLineSignature`               | A split function or closure signature fits on a line            | Yes     |
 | `Jumbo.Namespaces.UnusedUses`                              | No unused `use` statements, safe with a miscased `use Function` | Yes     |
 | `Jumbo.NamingConventions.ValidVariableName`                | No leading underscore on a variable or parameter in a class     | No      |
-| `Jumbo.Operators.UnaryOperatorSpacing`                     | No whitespace after a prefix `+`, `~` or `@`                    | Yes     |
 | `Jumbo.PHP.EmbeddedPhp`                                    | A block's tags on their own lines, level with its code          | Mostly  |
 | `Jumbo.TypeHints.DeclareStrictTypes`                       | `strict_types=1` required, allowing `<?php declare(...) ?>`     | Yes     |
 | `Jumbo.TypeHints.ParameterTypeHint`                        | Parameter type hints, skipping a promoted hook                  | Yes     |
@@ -735,34 +732,6 @@ class Order
         return $_sum;
     }
 }
-```
-
----
-
-### Jumbo.Operators.UnaryOperatorSpacing
-
-Disallows whitespace, including a line break, between a prefix unary `+`, `~` or `@` and its operand.
-
-**Why:** there should be no whitespace between a prefix unary operator and its operand. Inherited sniffs check the
-others: `SlevomatCodingStandard.Operators.NegationOperatorSpacing` for `-`, `Generic.Formatting.SpaceAfterNot` for `!`,
-`Generic.WhiteSpace.IncrementDecrementSpacing` for `++` and `--`, and Slevomat's `ReferenceSpacing` and
-`SpreadOperatorSpacing` for `&` and `...`. Nothing checks `+`, `~` or `@`. A cast keeps the single space after it that
-[PER Coding Style 3.1, Section 6.1](https://www.php-fig.org/per/coding-style/#61-unary-operators) requires.
-
-**Auto-fixable:** yes, unless a comment is between the operator and its operand.
-
-**Good:**
-
-```php
-$flags = ~$mask;
-$contents = @file_get_contents($path);
-```
-
-**Bad:**
-
-```php
-$flags = ~ $mask;
-$contents = @ file_get_contents($path);
 ```
 
 ---

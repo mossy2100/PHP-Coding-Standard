@@ -495,17 +495,14 @@ class OperatorPlacementSniff implements Sniff
     private function isUnaryOrReference(File $phpcsFile, int $stackPtr): bool
     {
         if (
-            PropertyHookHelper::isHookReference($phpcsFile, $stackPtr)
-            || PropertyHookHelper::isHookParameterType($phpcsFile, $stackPtr)
+            PropertyHookHelper::isHookParameterType($phpcsFile, $stackPtr)
             || CompoundTypeHelper::isCatchSeparator($phpcsFile, $stackPtr)
         ) {
             return true;
         }
 
+        // OperatorHelper::isUnary() finds a reference `&`, including a by-reference hook's.
         $code = $phpcsFile->getTokens()[$stackPtr]['code'];
-        if ($code === T_BITWISE_AND && Operators::isReference($phpcsFile, $stackPtr)) {
-            return true;
-        }
 
         return ($code === T_PLUS || $code === T_MINUS || $code === T_BITWISE_AND)
             && OperatorHelper::isUnary($phpcsFile, $stackPtr);

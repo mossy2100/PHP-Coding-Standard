@@ -9,7 +9,8 @@ use PHP_CodeSniffer\Util\Tokens;
 use PHPCSUtils\Utils\Operators;
 
 /**
- * Helper class for telling a unary `+`, `-` or `&` from a binary one.
+ * Helper class for telling a unary operator from a binary one: a `+`, `-` or `&`, and a spread `...` from a first-class
+ * callable's.
  */
 class OperatorHelper
 {
@@ -72,8 +73,40 @@ class OperatorHelper
     }
 
     /**
-     * Check whether a `+`, `-` or `&` is a prefix unary operator, judged by the token before it, such as an operator, a
-     * `(` or `,`, or the end of a statement or block.
+     * Check whether a `&` is a reference, rather than a bitwise operator. PHP_CodeSniffer doesn't know a by-reference
+     * hook's `&`, as in `&get`, so that's checked separately.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the `&`.
+     * @return bool True if the `&` is a reference.
+     */
+    public static function isReference(File $phpcsFile, int $stackPtr): bool
+    {
+        return Operators::isReference($phpcsFile, $stackPtr)
+            || PropertyHookHelper::isHookReference($phpcsFile, $stackPtr);
+    }
+
+    /**
+     * Check whether a `...` is the spread operator, as in `foo(...$args)`, `[...$a]` or `int ...$rest`, rather than a
+     * first-class callable's, as in `foo(...)`. A callable's `...` has no operand: the next thing after it is the
+     * closing parenthesis.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the `...`.
+     * @return bool True if the `...` has an operand.
+     */
+    public static function isSpread(File $phpcsFile, int $stackPtr): bool
+    {
+        $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
+
+        return $next !== false && $phpcsFile->getTokens()[$next]['code'] !== T_CLOSE_PARENTHESIS;
+    }
+
+    /**
+     * Check whether a `+`, `-`, `&` or `...` is a prefix unary operator.
+     *
+     * A `...` is one unless it's a first-class callable's, and a `&` is one if it's a reference. Otherwise a `+`, `-`
+     * or `&` is judged by the token before it, such as an operator, a `(` or `,`, or the end of a statement or block.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the operator.
@@ -82,6 +115,14 @@ class OperatorHelper
     public static function isUnary(File $phpcsFile, int $stackPtr): bool
     {
         $tokens = $phpcsFile->getTokens();
+        if ($tokens[$stackPtr]['code'] === T_ELLIPSIS) {
+            return self::isSpread($phpcsFile, $stackPtr);
+        }
+
+        if ($tokens[$stackPtr]['code'] === T_BITWISE_AND && self::isReference($phpcsFile, $stackPtr)) {
+            return true;
+        }
+
         $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
         if ($previous === false) {
             return true;

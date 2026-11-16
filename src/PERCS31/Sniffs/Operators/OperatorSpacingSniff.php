@@ -37,7 +37,8 @@ use PHPCSUtils\Utils\Parentheses;
  *
  * The parent skips any `=` directly followed by `&`, so `$x=&$a` passes. PHP has no `=&` operator: it reads an `=`
  * and a reference `&`. So this sniff checks that `=` like any other, and it needs a space each side. `$x=&$a` is fixed
- * to `$x = &$a`, and `$x =& $a` to `$x = & $a`. The space after the `&` isn't checked, as PER has no rule for it.
+ * to `$x = &$a`. A space after the `&` is reported by PERCS31.Operators.UnaryOperatorSpacing, so with both,
+ * `$x =& $a` is fixed to `$x = &$a` too.
  *
  * The parent reads a `+` or `-` that starts a statement, as in `foo();` then `-$a->b();`, as binary, and reports the
  * missing space before it. This sniff skips one that OperatorHelper::isUnary() finds is unary.

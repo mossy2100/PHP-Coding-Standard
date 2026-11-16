@@ -10,6 +10,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **`PERCS31.Operators.UnaryOperatorSpacing` (breaking).** Disallows whitespace after a reference `&` and a spread
+  `...`, wherever each is used. PER Coding Style 3.1 states both rules for a parameter, and each is read as the rule for
+  the operator. Auto-fixable, unless a comment is in the way.
+  - A reference `&`: a parameter, a closure's `use` list, an assignment, a `foreach`, an array, a function that returns
+    by reference and a by-reference hook. So `$x = & $a` and `$x =& $a` are both fixed to `$x = &$a`, where the second
+    was fixed to `$x = & $a`.
+  - A spread `...`: a variadic parameter, a call's arguments, as in `foo(... $args)`, and an array, as in `[... $a]`.
+    PERCS31 only checked a parameter's before. A first-class callable's `...`, as in `foo(...)`, isn't a spread, and is
+    never checked.
+
+  It's `Jumbo.Operators.UnaryOperatorSpacing`, moved and extended, with a property for each operator:
+  `checkReferenceOperator` and `checkSpreadOperator`, on by default, and `checkPlusOperator`, `checkNegationOperator`,
+  `checkNotOperator`, `checkBitwiseNotOperator` and `checkErrorControlOperator`, which Jumbo turns on. It replaces
+  these, so a `phpcs:ignore` or an `<exclude>` that names one needs the new code,
+  `PERCS31.Operators.UnaryOperatorSpacing.WhitespaceAfter`:
+  - `Jumbo.Operators.UnaryOperatorSpacing`, for `+`, `~` and `@`.
+  - `Generic.Formatting.SpaceAfterNot`, for `!`, in Jumbo.
+  - `SlevomatCodingStandard.Operators.NegationOperatorSpacing`, for `-`, in Jumbo.
+  - `SlevomatCodingStandard.PHP.ReferenceSpacing`, for `&`, in Jumbo.
+  - `SlevomatCodingStandard.Operators.SpreadOperatorSpacing`, for `...`, in Jumbo.
+  - `Squiz.Functions.FunctionDeclarationArgumentSpacing`'s `SpacingAfterReference` and `SpacingAfterVariadic`, for a
+    parameter's `&` and `...`.
+  - `PERCS31.Classes.PropertyHooks.SpaceAfterReference`, for a by-reference hook's `&`.
 - **`strict_types` after a shebang line (breaking).** In a file with markup that starts with a shebang line,
   `PERCS31.Files.FileHeader` now reports a `declare(strict_types=1);` that isn't on the second line as
   `<?php declare(strict_types=1) ?>`, as `StrictTypesNotOnFirstLine`. Such a file wasn't checked before. PHP skips a
@@ -599,6 +622,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- A bitwise `&` in a parameter's default value, as in `function a(int $flags = A & B)`. In Jumbo,
+  `SlevomatCodingStandard.PHP.ReferenceSpacing` read it as a reference and reported the space after it, and `phpcbf`
+  then failed to fix the file. `PERCS31.Operators.UnaryOperatorSpacing` replaces that sniff, and skips it.
+- A binary `-` after a `--`, as in `$a-- - 1`. In Jumbo, `SlevomatCodingStandard.Operators.NegationOperatorSpacing`
+  read it as a negation, and reported the space after it. It's no longer reported.
 - **A `do` loop with no braces.** `PERCS31.ControlStructures.ControlStructureEmptyStatement` took the `while` that ends
   `do $i++; while ($i < 10);` for a loop with no body, and its fix replaced the `;` with `{}`, which is a parse error.
   That `while` is now left alone, and `phpcbf` gives `do {`, `$i++;`, `} while ($i < 10);`.

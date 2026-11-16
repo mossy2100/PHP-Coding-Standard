@@ -150,6 +150,38 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a reference `&` has no space after it, wherever it's used, and that every spacing of a reference
+     * assignment is fixed to `$x = &$a`. PERCS31.Operators.OperatorSpacing adds the spaces the `=` needs, and
+     * PERCS31.Operators.UnaryOperatorSpacing removes the space after the `&`. A parameter's `&` is reported once, and
+     * one with a comment after it isn't fixed. The other unary operators aren't checked.
+     */
+    public function testReferenceOperatorHasNoSpaceAfterIt(): void
+    {
+        $source = "<?php\n\n\$b = & \$a;\n\$c =& \$a;\n\$d =&\$a;\n\$e=&\$a;\n\$f=& \$a;\n\$g = & /* Why. */ \$a;\n"
+            . "foreach (\$a as & \$item) {\n    \$item++;\n}\n\$h = [& \$b, 'c' => & \$c];\n"
+            . "\$i = function & (int & \$j) use (& \$b): int {\n    return \$b;\n};\n\$k = \$b & \$c;\n\$l = ! \$b;\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        $expected = "<?php\n\n\$b = &\$a;\n\$c = &\$a;\n\$d = &\$a;\n\$e = &\$a;\n\$f = &\$a;\n"
+            . "\$g = & /* Why. */ \$a;\nforeach (\$a as &\$item) {\n    \$item++;\n}\n\$h = [&\$b, 'c' => &\$c];\n"
+            . "\$i = function &(int &\$j) use (&\$b): int {\n    return \$b;\n};\n\$k = \$b & \$c;\n\$l = ! \$b;\n";
+
+        $reported = substr_count($result['output'], 'UnaryOperatorSpacing.WhitespaceAfter');
+
+        $this->assertSame(10, $reported, $result['output']);
+        $this->assertStringNotContainsString('SpacingAfterReference', $result['output']);
+        $this->assertSame($expected, $fixed);
+    }
+
+    /**
      * Test that an object operator at the end of a line is moved to the start of the next, with no blank line left
      * behind. PEAR.WhiteSpace.ObjectOperatorIndent's fix, which PERCS31 once used, left one after this sniff's.
      */

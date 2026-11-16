@@ -35,10 +35,10 @@ use PHP_CodeSniffer\Util\Tokens;
  * `{ get; set; }`: a single space inside each brace, no space before each `;`, and a single space between operations.
  * A bodiless hook in a list with bodies also has no space before its `;`.
  *
- * Section 4.9's text doesn't say where a hook's own `{` goes, how a `set` hook's parameter list is spaced, or whether a
- * by-reference hook's `&` is followed by a space. Its examples show `get {` and `set(string $value)`, and section 4.5
- * puts no space after a by-reference parameter's `&`, so all three are checked: one space before a hook's `{`, a `set`
- * hook's parameter list spaced like a method's, and no space after `&`.
+ * Section 4.9's text doesn't say where a hook's own `{` goes, or how a `set` hook's parameter list is spaced. Its
+ * examples show `get {` and `set(string $value)`, so both are checked: one space before a hook's `{`, and a `set`
+ * hook's parameter list spaced like a method's. A space after a by-reference hook's `&`, as in `& get`, is reported by
+ * PERCS31.Operators.UnaryOperatorSpacing.
  *
  * Section 4.9 also says hooks on a constructor-promoted property MUST be only a single hook, with a short-syntax body,
  * defined on a single line, e.g. `public string $name { set => ucfirst($value); }`. Anything else is reported as
@@ -67,7 +67,6 @@ class PropertyHooksSniff implements Sniff
 
     public const string CODE_SPACE_BEFORE_SEMICOLON = 'SpaceBeforeSemicolon';
 
-    public const string CODE_SPACE_AFTER_REFERENCE = 'SpaceAfterReference';
 
     public const string CODE_HOOK_NOT_ON_OWN_LINE = 'HookNotOnOwnLine';
 
@@ -118,7 +117,6 @@ class PropertyHooksSniff implements Sniff
 
         $this->checkPromoted($phpcsFile, $stackPtr, $opener, $closer);
         $this->checkOpener($phpcsFile, $opener);
-        $this->checkReferences($phpcsFile, $opener, $closer);
         $this->checkHookOrder($phpcsFile, $opener, $closer);
 
         $this->checkHookParameters($phpcsFile, $opener, $closer);
@@ -190,38 +188,6 @@ class PropertyHooksSniff implements Sniff
             self::CODE_TOO_COMPLEX,
             [$tokens[$stackPtr]['content']],
         );
-    }
-
-    /**
-     * Report whitespace between a by-reference hook's `&` and its name, e.g. `& get`.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $opener The position of the hook list's opening brace.
-     * @param int $closer The position of the hook list's closing brace.
-     */
-    private function checkReferences(File $phpcsFile, int $opener, int $closer): void
-    {
-        $tokens = $phpcsFile->getTokens();
-        for ($i = ($opener + 1); $i < $closer; $i++) {
-            if ($tokens[($i + 1)]['code'] !== T_WHITESPACE || !PropertyHookHelper::isHookReference($phpcsFile, $i)) {
-                continue;
-            }
-
-            // A comment between them would have to move, so leave that alone.
-            $name = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), null, true);
-            if ($name === false || $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($i + 1), $name) !== false) {
-                continue;
-            }
-
-            $fix = $phpcsFile->addFixableError(
-                'There must be no space between a by-reference hook\'s "&" and its name',
-                $i,
-                self::CODE_SPACE_AFTER_REFERENCE,
-            );
-            if ($fix) {
-                FixerHelper::replaceBetween($phpcsFile, $i, $name, '');
-            }
-        }
     }
 
     /**
