@@ -774,6 +774,32 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a file's first statement indented too far is reported and fixed, split over lines or not. Nothing
+     * reported it, so ScopeIndent wanted the next statement indented to match, ConsistentIndent undid that, and phpcbf
+     * failed.
+     */
+    public function testOverIndentedFirstStatementIsFixed(): void
+    {
+        $file = $this->copyToTempFile(null, "<?php\n\n \$a = [\n     1,\n ];\n\n\$b = 2;\n");
+        $single = $this->copyToTempFile(null, "<?php\n\n    \$a = 1;\n");
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            $fixer = $this->runTool('phpcbf', ['--standard=PERCS31', $file, $single]);
+            $fixed = (string) file_get_contents($file);
+            $fixedSingle = (string) file_get_contents($single);
+        } finally {
+            unlink($file);
+            unlink($single);
+        }
+
+        $this->assertMatchesRegularExpression('/:3:\\d+: error - .*ConsistentIndent\\.Incorrect/', $result['output']);
+        $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
+        $this->assertSame("<?php\n\n\$a = [\n    1,\n];\n\n\$b = 2;\n", $fixed);
+        $this->assertSame("<?php\n\n\$a = 1;\n", $fixedSingle);
+    }
+
+    /**
      * Test that a heredoc argument indented too little is fixed with its body and closing marker moved together, and
      * the result passes. The inherited fix for the argument's indent moved the marker but not the body, which is a
      * parse error.

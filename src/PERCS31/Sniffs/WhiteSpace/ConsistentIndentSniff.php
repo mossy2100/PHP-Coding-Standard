@@ -30,6 +30,11 @@ use PHPCSUtils\Utils\Conditions;
  * The parent skips the body of a closure, anonymous class or switch, as it counts levels from column 0, which is wrong
  * for one inside a split call. This sniff checks them, measuring from the line each one opens on.
  *
+ * The parent never checks the first statement after an opening tag, as the tag's line doesn't end a statement. This
+ * sniff does. Otherwise a first statement indented too far, and split over lines, passes, and
+ * PERCS31.WhiteSpace.ScopeIndent then wants the next statement indented to match it, which this sniff undoes, so phpcbf
+ * never finishes.
+ *
  * It also skips the lines under a PHP opening tag that isn't at the start of its line, as in a template. The parent
  * measures from column 1, so it would report PHP indented to match the markup around it.
  *
@@ -165,11 +170,12 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
             return;
         }
 
-        // The line before must end a statement, and not continue onto this one.
+        // The line before must end a statement, and not continue onto this one. An opening tag counts, so the first
+        // statement in a file is checked too.
         $previous = $this->findPreviousContentLine($phpcsFile, $stackPtr, $tokens);
         if (
             $previous === null
-            || !$this->isPreviousLineComplete($previous, $tokens)
+            || ($tokens[$previous]['code'] !== T_OPEN_TAG && !$this->isPreviousLineComplete($previous, $tokens))
             || $this->isValidContinuation($previous, $tokens)
             || $this->isInMultiLineConstruct($phpcsFile, $next, $tokens)
             || $this->couldBeInCaseBlock($phpcsFile, $stackPtr, $tokens)

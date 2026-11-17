@@ -73,6 +73,11 @@ class ConsistentIndentUnitTest extends AbstractSniffTestCase
             return [];
         }
 
+        if ($testFile === 'ConsistentIndentUnitTest.7.inc') {
+            // The first statement in the file, indented by one space.
+            return [5 => 1];
+        }
+
         if ($testFile === 'ConsistentIndentUnitTest.2.inc') {
             return [
                 // After a PHP opening tag at the start of its line, in a file with markup.

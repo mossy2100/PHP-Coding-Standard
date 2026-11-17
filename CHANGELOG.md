@@ -662,6 +662,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A file's first statement indented too far.** `PERCS31.WhiteSpace.ConsistentIndent` never checked the first
+  statement after the opening tag, so ` $a = 1;` passed with any indent. When that statement was split over lines, the
+  correctly indented statement after it was reported instead, and `phpcbf` failed to fix the file. The first statement
+  is now reported, as `Incorrect`, and fixed.
 - **A heredoc or nowdoc argument indented too little.** In a call split over lines, the fix for an argument's indent
   moved a heredoc's closing marker with its `<<<` line, but not its body, which is a parse error.
   `PERCS31.Functions.FunctionCallLayout` now moves only the `<<<` line, and `PERCS31.Strings.HeredocLayout` moves the
