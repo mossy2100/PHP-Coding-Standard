@@ -3300,3 +3300,6 @@ which PER Coding Style 3.1 needs.
 - **An arrow function with a `throw` or `exit` in a `case` body.** PHP_CodeSniffer 4.0.4 never finishes on
   `$b = fn() => throw new Exception();` directly inside a `case` or `default`, under any standard, as it hangs before
   any sniff runs. Wrap the body in a closure, or move the arrow function out of the `switch`.
+- **A CRLF line in a file that starts with LF line endings.** `Generic.Files.LineEndings` only looks at the file's
+  first line ending, so the line is reported as trailing whitespace, by `Squiz.WhiteSpace.SuperfluousWhitespace`, with
+  a warning that the file has mixed line endings. `phpcbf` still fixes it to LF.
