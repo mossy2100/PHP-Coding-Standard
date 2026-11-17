@@ -47,7 +47,7 @@ use const Vendor\Spaced\{  CONSTANT_A};
 // No space there is valid.
 use Vendor\Tight\{ClassA as A, ClassB, ClassC as C};
 
-// A blank line after the opening brace, and before the closing one, after a name and after a comment.
+// A blank line after the opening brace, and before the closing one, is allowed, as nothing forbids one.
 use Vendor\Blank\{
 
     ClassA,

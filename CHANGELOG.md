@@ -513,6 +513,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- **PERCS31 allows a blank line wherever PER Coding Style 3.1 doesn't forbid one.** Section 2.3 allows blank lines
+  "except where explicitly forbidden", so PERCS31 no longer reports these. Jumbo still reports each one, apart from a
+  group `use`, which it bans.
+  - A blank line before the closing parenthesis of a parameter list, a closure's `use` list or an argument list. It has
+    a new code, `BlankLineBeforeCloseBracket`, in `PERCS31.Functions.MultiLineFunctionDeclaration` and
+    `PERCS31.Functions.FunctionCallLayout`, which PERCS31 excludes and Jumbo turns on. One after the opening
+    parenthesis is still `BlankLine`, in both.
+  - A blank line after a `case` or `default` label. Code on a label's line is now reported as
+    `PERCS31.ControlStructures.SwitchDeclaration.StatementOnLabelLine` in PERCS31. Jumbo keeps `BodyOnNextLineCASE` and
+    `BodyOnNextLineDEFAULT`, which report both.
+  - A blank line between two trait `use` statements, and more than one after the last.
+    `SlevomatCodingStandard.Classes.TraitUseSpacing` moves from PERCS31 to Jumbo, and PERCS31 uses
+    `PSR12.Traits.UseDeclaration.NoBlankLineAfterUse` for a last `use` statement with no blank line after it.
+  - A blank line after a group `use`'s `{`, or before its `}`. `PERCS31.Namespaces.GroupUseLayout`'s
+    `BlankLineAfterOpenBrace` and `BlankLineBeforeCloseBrace` codes are removed.
 - **A blank line between two items of a list (breaking).** PER Coding Style 3.1 allows blank lines "except where
   explicitly forbidden", so one between two items is now allowed in every list. These passed already in parameters,
   arrays, `match` arms and a group `use`. They now pass in a call's or an attribute's arguments, a closure's `use`

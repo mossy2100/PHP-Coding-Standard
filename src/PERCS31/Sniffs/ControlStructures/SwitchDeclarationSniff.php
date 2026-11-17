@@ -59,6 +59,8 @@ class SwitchDeclarationSniff extends Psr2Sniff
      */
     public const string CODE_WRONG_OPENER = 'WrongOpener';
 
+    public const string CODE_STATEMENT_ON_LABEL_LINE = 'StatementOnLabelLine';
+
     /**
      * Tokens that end a case, as the tokenizer and the parent define them.
      *
@@ -89,6 +91,7 @@ class SwitchDeclarationSniff extends Psr2Sniff
 
         parent::process($phpcsFile, $stackPtr);
         foreach ($cases as $index => $case) {
+            $this->checkStatementOnLabelLine($phpcsFile, $case);
             if ($tokens[$case]['code'] === T_CASE) {
                 $this->checkMultiLineCondition($phpcsFile, $case);
             } elseif (isset($cases[($index + 1)])) {
@@ -98,6 +101,36 @@ class SwitchDeclarationSniff extends Psr2Sniff
 
         if ($cases !== []) {
             $this->checkLastCase($phpcsFile, end($cases), $closer);
+        }
+    }
+
+    /**
+     * Report code on the line of a `case` or `default` label, after its colon. A comment there is allowed.
+     *
+     * The parent's BodyOnNextLine codes report this, and a blank line after the label too, which section 5.2 doesn't
+     * forbid. So the PERCS31 ruleset excludes them, and this check has its own code.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $case The position of the `case` or `default` keyword.
+     */
+    private function checkStatementOnLabelLine(File $phpcsFile, int $case): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $opener = $tokens[$case]['scope_opener'] ?? null;
+        if (!is_int($opener) || $tokens[$opener]['code'] !== T_COLON) {
+            return;
+        }
+
+        $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($opener + 1), null, true);
+        if ($next === false || $tokens[$next]['line'] !== $tokens[$opener]['line']) {
+            return;
+        }
+
+        $error = 'The %s body must start on the line following the statement';
+        $data = [strtoupper($tokens[$case]['content'])];
+        if ($phpcsFile->addFixableError($error, $case, self::CODE_STATEMENT_ON_LABEL_LINE, $data)) {
+            $padding = str_repeat(' ', ($tokens[$case]['column'] - 1 + LayoutHelper::INDENT));
+            $phpcsFile->fixer->addContentBefore($next, $phpcsFile->eolChar . $padding);
         }
     }
 

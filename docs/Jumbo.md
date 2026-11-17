@@ -50,6 +50,14 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
   it. A docblock's indent isn't checked.
 - `PERCS31.WhiteSpace.ConsistentIndent` also reports a comment indented further than its scope, when the line before it
   ends a statement (`checkComments` set to `true`). A comment at the top level isn't checked.
+- No multi-line list starts or ends with a blank line. PERCS31 only reports one at the start, and at the end of an
+  array, as PER forbids no other. Jumbo turns on the codes it excludes:
+  `PERCS31.Functions.MultiLineFunctionDeclaration.BlankLineBeforeCloseBracket`, for a parameter list and a closure's
+  `use` list, and `PERCS31.Functions.FunctionCallLayout.BlankLineBeforeCloseBracket`, for an argument list. See
+  [Blank Lines in a List](PER-CS_3.1_Judgement_Calls.md#blank-lines-in-a-list).
+- No blank line after a `case` or `default` label, which PERCS31 allows. Jumbo turns on
+  `PERCS31.ControlStructures.SwitchDeclaration`'s `BodyOnNextLineCASE` and `BodyOnNextLineDEFAULT` codes, which report
+  that and code on the label's line, and turns off `StatementOnLabelLine`, which reports the second alone.
 - `PERCS31.Formatting.EmptyBody` requires every empty body as `{}`, as an error (`strict` set to `true`). PERCS31 only
   warns for a class, a function or a control structure, where PER says SHOULD, or nothing.
 - `PERCS31.ControlStructures.ControlStructureSpacing` gives a `foreach` or `match` header that's split over lines the
@@ -159,6 +167,10 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Classes.RequireSelfReference**: Requires `self::` instead of `ClassName::` for self-references.
 - **Classes.RequireSingleLineMethodSignature**: Requires single-line format for short method signatures. Used through
   [`Jumbo.Classes.RequireSingleLineMethodSignature`](#jumboclassesrequiresinglelinemethodsignature), which skips a method with a hook on a promoted parameter.
+- **Classes.TraitUseSpacing**: Requires no blank line between trait `use` statements, and exactly one after the last.
+  PERCS31 allows one between, and any number after the last, as section 4.2 only says there MUST be a blank line
+  there. `PSR12.Traits.UseDeclaration.NoBlankLineAfterUse` is turned off, as this sniff reports the same. See
+  [Blank Lines Around `use`](PER-CS_3.1_Judgement_Calls.md#blank-lines-around-use).
 - **Commenting.AnnotationName**: Enforces correct annotation names.
 - **Commenting.DeprecatedAnnotationDeclaration**: Enforces the `@deprecated` annotation format.
 - **Commenting.EmptyComment**: Disallows empty comments.

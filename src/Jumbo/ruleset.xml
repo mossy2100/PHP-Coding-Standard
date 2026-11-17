@@ -35,6 +35,43 @@
          the closing brace (4.4, 7), which PSR2.Methods.FunctionClosingBrace reports. -->
     <rule ref="Squiz.WhiteSpace.FunctionOpeningBraceSpace.SpacingAfter"/>
 
+    <!-- No blank line straight before the closing parenthesis of a parameter list, a closure's use list or an argument
+         list, so no multi-line list starts or ends with one. PERCS31 excludes these codes, as PER has no rule for
+         either. -->
+    <rule ref="PERCS31.Functions.MultiLineFunctionDeclaration.BlankLineBeforeCloseBracket">
+        <severity>5</severity>
+    </rule>
+    <rule ref="PERCS31.Functions.FunctionCallLayout.BlankLineBeforeCloseBracket">
+        <severity>5</severity>
+    </rule>
+
+    <!-- No blank line after a case or default label. The parent's codes report that, and a statement on the label's
+         line, so the code PERCS31 uses for the statement alone is turned off. -->
+    <rule ref="PERCS31.ControlStructures.SwitchDeclaration.BodyOnNextLineCASE">
+        <severity>5</severity>
+    </rule>
+    <rule ref="PERCS31.ControlStructures.SwitchDeclaration.BodyOnNextLineDEFAULT">
+        <severity>5</severity>
+    </rule>
+    <rule ref="PERCS31.ControlStructures.SwitchDeclaration.StatementOnLabelLine">
+        <severity>0</severity>
+    </rule>
+
+    <!-- No blank line between trait use statements, and exactly one after the last. PERCS31 allows one between, and
+         any number after the last, as PER only says there MUST be a blank line there (4.2). PSR-12's code for a last
+         use statement with no blank line after it is turned off, as this sniff reports the same. -->
+    <rule ref="SlevomatCodingStandard.Classes.TraitUseSpacing">
+        <exclude name="SlevomatCodingStandard.Classes.TraitUseSpacing.IncorrectLinesCountBeforeFirstUse"/>
+        <properties>
+            <property name="linesCountBetweenUses" value="0"/>
+            <property name="linesCountAfterLastUse" value="1"/>
+            <property name="linesCountAfterLastUseWhenLastInClass" value="0"/>
+        </properties>
+    </rule>
+    <rule ref="PSR12.Traits.UseDeclaration.NoBlankLineAfterUse">
+        <severity>0</severity>
+    </rule>
+
     <!-- No blank line straight after the opening brace, or straight before the closing brace, of a block declare, a
          property's hook list or a hook's body. PER has no rule for either, so PERCS31 allows them. -->
     <rule ref="Jumbo.WhiteSpace.BlockBlankLines"/>

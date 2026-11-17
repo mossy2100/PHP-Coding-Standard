@@ -438,8 +438,9 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test the blank lines around trait use statements: none between two, exactly one after the last, and none before
-     * the class's closing brace, each reported once, and fixed.
+     * Test the blank lines around trait use statements. Section 4.2 only requires a blank line after the last one when
+     * more follows, so one between two use statements, and several after the last, pass. None after the last is
+     * reported, and fixed.
      */
     public function testBlankLinesAroundTraitUse(): void
     {
@@ -452,18 +453,17 @@ class RulesetUnitTest extends TestCase
         try {
             $result = $this->runTool('phpcs', [...$args, $file]);
             $lastResult = $this->runTool('phpcs', [...$args, $last]);
-            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
-            $fixed = (string) file_get_contents($file);
+            $this->runTool('phpcbf', ['--standard=PERCS31', $last]);
+            $fixed = (string) file_get_contents($last);
         } finally {
             unlink($file);
             unlink($last);
         }
 
-        $this->assertSame(1, substr_count($result['output'], 'TraitUseSpacing.IncorrectLinesCountBetweenUses'));
-        $this->assertSame(1, substr_count($result['output'], 'TraitUseSpacing.IncorrectLinesCountAfterLastUse'));
+        $this->assertSame(0, $result['exitCode'], $result['output']);
         $this->assertSame(1, substr_count($lastResult['output'], 'error - '), $lastResult['output']);
-        $expected = $header . "class Between\n{\n    use First;\n    use Second;\n\n    public int \$a = 1;\n}\n";
-        $this->assertSame($expected, $fixed);
+        $this->assertStringContainsString('PSR12.Traits.UseDeclaration.NoBlankLineAfterUse', $lastResult['output']);
+        $this->assertSame($header . "class Last\n{\n    use First;\n\n    public int \$a = 1;\n}\n", $fixed);
     }
 
     /**
@@ -801,7 +801,7 @@ class RulesetUnitTest extends TestCase
 
         $this->assertSame(
             [
-                '7 PERCS31.ControlStructures.SwitchDeclaration.BodyOnNextLineCASE',
+                '7 PERCS31.ControlStructures.SwitchDeclaration.StatementOnLabelLine',
                 '9 PERCS31.Formatting.DisallowMultipleStatements.SameLine',
                 '13 PERCS31.Formatting.AfterClosingBrace.StatementAfter',
             ],

@@ -29,9 +29,9 @@ class SwitchDeclarationUnitTest extends AbstractSniffTestCase
                 36 => 1,
                 39 => 1,
                 // Code on the label's line.
-                47 => 1,
+                47 => 2,
                 // Code after a comment on the label's line.
-                58 => 1,
+                58 => 2,
                 // A blank line after a comment on the label's line.
                 60 => 1,
             ];

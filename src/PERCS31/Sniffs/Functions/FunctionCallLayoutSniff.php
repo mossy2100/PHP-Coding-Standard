@@ -39,14 +39,17 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * The parent also reports any blank line in a multi-line argument list (EmptyLine). Section 2.3 allows blank lines
  * "except where explicitly forbidden", and nothing forbids one between two arguments. So the PERCS31 ruleset excludes
- * EmptyLine, and this sniff reports only a blank line straight after the opening parenthesis, or straight before the
- * closing one (BlankLine), as the first argument goes on the next line.
+ * EmptyLine, and this sniff reports only a blank line straight after the opening parenthesis (BlankLine), as the first
+ * argument goes on the next line. One straight before the closing parenthesis has its own code,
+ * BlankLineBeforeCloseBracket, which the PERCS31 ruleset excludes, as section 4.7 has no rule for it.
  *
  * It's named Layout, not Signature like its parent, as a function's signature is its declaration, not a call.
  */
 class FunctionCallLayoutSniff extends Psr2Sniff
 {
     public const string CODE_BLANK_LINE = 'BlankLine';
+
+    public const string CODE_BLANK_LINE_BEFORE_CLOSE_BRACKET = 'BlankLineBeforeCloseBracket';
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -130,8 +133,9 @@ class FunctionCallLayoutSniff extends Psr2Sniff
     }
 
     /**
-     * Report each blank line straight after an argument list's opening parenthesis, or straight before its closing
-     * one. A blank line between two arguments is allowed.
+     * Report each blank line straight after an argument list's opening parenthesis, as BlankLine, and each one
+     * straight before its closing parenthesis, as BlankLineBeforeCloseBracket. A blank line between two arguments is
+     * allowed.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the function's name.
@@ -151,10 +155,16 @@ class FunctionCallLayoutSniff extends Psr2Sniff
             return;
         }
 
+        // Section 4.7 only puts the first argument on the line after the opening parenthesis, so a blank line before
+        // the closing one has its own code, which the PERCS31 ruleset excludes.
+        $last = $phpcsFile->findPrevious(T_WHITESPACE, ($closer - 1), $opener, true);
         foreach (LayoutHelper::findBlankLinesAtStartAndEnd($phpcsFile, $opener, $closer) as $blankLine) {
-            $error = 'Blank line not allowed straight after the opening parenthesis of a function call, or before the'
-                . ' closing one';
-            if ($phpcsFile->addFixableError($error, $blankLine, self::CODE_BLANK_LINE)) {
+            $isAtEnd = $last !== false && $last !== $opener && $blankLine > $last;
+            $error = $isAtEnd
+                ? 'Blank line not allowed straight before the closing parenthesis of a function call'
+                : 'Blank line not allowed straight after the opening parenthesis of a function call';
+            $code = $isAtEnd ? self::CODE_BLANK_LINE_BEFORE_CLOSE_BRACKET : self::CODE_BLANK_LINE;
+            if ($phpcsFile->addFixableError($error, $blankLine, $code)) {
                 $phpcsFile->fixer->replaceToken($blankLine, '');
             }
         }

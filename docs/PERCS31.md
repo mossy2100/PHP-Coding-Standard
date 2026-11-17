@@ -65,10 +65,12 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 - **PSR12.Functions.NullableTypeDeclaration**, by [`PERCS31.Functions.NullableTypeDeclaration`](#percs31functionsnullabletypedeclaration), which also checks a `set`
   hook's parameter.
 - **PSR12.Operators.OperatorSpacing**, by [`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing), which also covers the pipe operator `|>`.
-- **PSR12.Traits.UseDeclaration** is kept, but its `NoBlankLineAfterUse` and `BlankLineAfterLastUse` codes are replaced
-  by `SlevomatCodingStandard.Classes.TraitUseSpacing`, which also reports more than one blank line after the last trait
-  `use` statement. Its `MultipleImport` code is replaced by `SlevomatCodingStandard.Classes.TraitUseDeclaration`, which
-  also reports several traits in a `use` statement with a `{ }` block.
+- **PSR12.Traits.UseDeclaration** is kept. Its `NoBlankLineAfterUse` code reports a last trait `use` statement with no
+  blank line after it, when more follows in the class. A blank line between two `use` statements, and more than one
+  after the last, are allowed, as section 4.2 forbids neither. Its `BlankLineAfterLastUse` code is excluded, as
+  [`PERCS31.Classes.ClassDeclaration`](#percs31classesclassdeclaration) reports the same blank line before the class's closing brace. Its
+  `MultipleImport` code is replaced by `SlevomatCodingStandard.Classes.TraitUseDeclaration`, which also reports several
+  traits in a `use` statement with a `{ }` block.
 - **PSR12.Classes.AnonClassDeclaration** is kept, but its three comma spacing codes are replaced by
   `Universal.WhiteSpace.CommaSpacing`, which reports the same. Its six codes for the layout of the argument list are
   excluded, as [`PERCS31.Functions.FunctionCallLayout`](#percs31functionsfunctioncalllayout) reports the same problems.
@@ -199,9 +201,6 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Classes.TraitUseDeclaration**: Disallows several traits in one `use` statement, as in `use A, B;` (4.2). It replaces
   `PSR12.Traits.UseDeclaration.MultipleImport`, which misses a statement with a `{ }` block, as in `use A, B {`. That
   form is reported but not fixed.
-- **Classes.TraitUseSpacing**: Requires no blank line between trait `use` statements, exactly one after the last, and
-  none before the class's closing brace, as section 4.2's examples show (4.2). Its check before the first `use` is
-  excluded, as `PSR12.Traits.UseDeclaration` reports the same.
 - **Functions.ArrowFunctionDeclaration**: Requires no space after `fn`, e.g. `fn($x) => $x`. The expression may be on
   the next line (7.1).
 - **Functions.DisallowTrailingCommaInClosureUse** and **Functions.DisallowTrailingCommaInDeclaration**: Disallow a
@@ -1311,9 +1310,10 @@ Checks `switch` statements. This replaces `PSR2.ControlStructures.SwitchDeclarat
 **Why:** [PER Coding Style 3.1, Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) sets these rules. The parent only checks a case that's followed by another,
 and doesn't check multi-line conditions.
 
-The parent's own `BodyOnNextLineCASE` and `BodyOnNextLineDEFAULT` codes report code on a label's line, and a blank line
-straight after a label, which section 5.2's example, the template for its rules, doesn't have. A comment on a label's
-line is allowed, as in `case 1: // The first.`
+Code on a label's line, after the colon, is reported as `StatementOnLabelLine`. A comment there is allowed, as in
+`case 1: // The first.` The parent's `BodyOnNextLineCASE` and `BodyOnNextLineDEFAULT` codes report the same, and a
+blank line straight after a label too, which section 5.2 doesn't forbid. So the ruleset excludes them. See
+[Blank Line After a `case` Label](PER-CS_3.1_Judgement_Calls.md#blank-line-after-a-case-label).
 
 The parent's `caseNotLower` and `defaultNotLower` codes are excluded, as [`PERCS31.PHP.LowerCaseKeyword`](#percs31phplowercasekeyword) reports an
 upper-case `CASE` or `DEFAULT` already.
@@ -1321,7 +1321,7 @@ upper-case `CASE` or `DEFAULT` already.
 The parent's `BreakNotNewLine` code is excluded too. PHP_CodeSniffer 4.0.4 takes a `throw` or `exit` inside an
 expression, as in `$b = foo() ?? throw new Exception();`, for the statement that ends the `case`, so the code was
 reported on compliant code, and its fix never finished. A terminating statement that shares a line is still reported:
-after the label by `BodyOnNextLineCASE`, after another statement by [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements), and
+after the label by `StatementOnLabelLine`, after another statement by [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements), and
 after a closing brace by [`PERCS31.Formatting.AfterClosingBrace`](#percs31formattingafterclosingbrace).
 
 A multi-line `case` condition must also follow the rule for any expression split inside parentheses. The first condition
@@ -1886,7 +1886,9 @@ parent's `SpaceAfterCloseBracket` and `OpeningIndent` codes, so they're off here
 
 The parent also reports every blank line in a multi-line argument list, as `EmptyLine`. [Section 2.3](https://www.php-fig.org/per/coding-style/#23-lines) allows blank lines
 "except where explicitly forbidden", and nothing forbids one between two arguments. So the ruleset excludes that code,
-and this sniff reports only a blank line straight after the `(` or straight before the `)`, as `BlankLine`.
+and this sniff reports only a blank line straight after the `(`, as `BlankLine`, as the first argument goes on the next
+line. One straight before the `)` has its own code, `BlankLineBeforeCloseBracket`, which the ruleset excludes, as
+section 4.7 has no rule for it.
 
 **Auto-fixable:** yes, as the parent.
 
@@ -1926,8 +1928,9 @@ case, and leaves everything else to the parent. For an empty body after a single
 The parent also reports every blank line in a multi-line parameter or `use` list. [Section 2.3](https://www.php-fig.org/per/coding-style/#23-lines) allows blank lines
 "except where explicitly forbidden", and [section 12.4](https://www.php-fig.org/per/coding-style/#124-example)'s example has one between two parameters. So the ruleset
 excludes the parent's `EmptyLine` code, and this sniff reports blank lines itself, as `BlankLine`. One between two
-parameters, or two of a closure's `use` variables, is allowed. One straight after `(` or before `)` is reported, and so
-is one after a parameter's attributes, which section 12.2 forbids.
+parameters, or two of a closure's `use` variables, is allowed. One straight after `(` is reported, and so is one after
+a parameter's attributes, which section 12.2 forbids. One straight before `)` has its own code,
+`BlankLineBeforeCloseBracket`, which the ruleset excludes, as sections 4.5 and 7 don't forbid it.
 
 The parent also wants every line of a multi-line parameter or `use` list at the same indent, so it reports a default
 value wrapped at an operator, as in `string $name = 'a'` then `. 'b',`. That line continues its parameter, so
@@ -2037,8 +2040,8 @@ $largest = max(
 ### PERCS31.Namespaces.GroupUseLayout
 
 Requires a group `use` split across lines to have one name per line, indented once past the `use` line, with the first
-on the line after the `{`, and the `}` on a line of its own, and no blank line after the `{` or before the `}`. In a
-group `use` on one line, it disallows a space after the `{` or before the `}`.
+on the line after the `{`, and the `}` on a line of its own. A blank line after the `{`, between two names or before the
+`}` is allowed. In a group `use` on one line, it disallows a space after the `{` or before the `}`.
 
 **Why:** [PER Coding Style 3.1, Section 3](https://www.php-fig.org/per/coding-style/#3-declare-statements-namespace-and-import-statements) shows a group `use` on one line, and one split with a name on each line. Its
 text sets no layout, so the two examples are read as the two allowed forms, as for a single-line and a multi-line array.

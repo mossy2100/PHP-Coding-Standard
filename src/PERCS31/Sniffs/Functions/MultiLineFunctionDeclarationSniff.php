@@ -59,6 +59,8 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
 {
     public const string CODE_BLANK_LINE = 'BlankLine';
 
+    public const string CODE_BLANK_LINE_BEFORE_CLOSE_BRACKET = 'BlankLineBeforeCloseBracket';
+
     public const string CODE_PARAMETER_INDENT = 'ParameterIndent';
 
     /**
@@ -319,8 +321,9 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
     }
 
     /**
-     * Report each blank line straight after the opening parenthesis of the parameter list or the `use` list, straight
-     * before its closing one, or after an attribute. A blank line between two items is allowed.
+     * Report each blank line straight after the opening parenthesis of the parameter list or the `use` list, or after
+     * an attribute, as BlankLine, and each one straight before its closing parenthesis, as BlankLineBeforeCloseBracket.
+     * A blank line between two items is allowed.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the function keyword.
@@ -345,9 +348,17 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
                 ...LayoutHelper::findBlankLinesAtStartAndEnd($phpcsFile, $opener, $closer),
                 ...$this->findBlankLinesAfterAttributes($phpcsFile, $opener, $closer),
             ];
+
+            // The text only puts the first item on the line after the opening parenthesis, so a blank line before
+            // the closing one has its own code, which the PERCS31 ruleset excludes.
+            $last = $phpcsFile->findPrevious(T_WHITESPACE, ($closer - 1), $opener, true);
             foreach (array_unique($blankLines) as $blankLine) {
-                $error = 'Blank line not allowed here in a multi-line function declaration';
-                if ($phpcsFile->addFixableError($error, $blankLine, self::CODE_BLANK_LINE)) {
+                $isAtEnd = $last !== false && $last !== $opener && $blankLine > $last;
+                $error = $isAtEnd
+                    ? 'Blank line not allowed before the closing parenthesis of a multi-line function declaration'
+                    : 'Blank line not allowed here in a multi-line function declaration';
+                $code = $isAtEnd ? self::CODE_BLANK_LINE_BEFORE_CLOSE_BRACKET : self::CODE_BLANK_LINE;
+                if ($phpcsFile->addFixableError($error, $blankLine, $code)) {
                     $phpcsFile->fixer->replaceToken($blankLine, '');
                 }
             }

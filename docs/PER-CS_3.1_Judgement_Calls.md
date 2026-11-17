@@ -669,7 +669,7 @@ use A\{
     C};
 ```
 
-A blank line after the `{` or before the `}` is also reported, as for an array.
+A blank line after the `{`, between two names or before the `}` is allowed, as nothing in section 3 forbids one.
 
 **Why:** The two examples are the only forms the spec shows, and they match its rules for a single-line and a multi-line
 array (11).
@@ -863,10 +863,18 @@ too. 4.7 says `clone` SHOULD always have parentheses, so they move to hold what 
 **Issue:** 4.2 says a class with more in it "MUST have a blank line after the `use` import statement". It doesn't say
 exactly one, or whether a blank line may come between two `use` statements.
 
-**Decision:** No blank line between trait `use` statements, and exactly one after the last, so two or more are reported.
+**Decision:**
 
-**Why:** "A blank line" is read as one, as "a space" is in 4.3. 4.2's examples show no blank line between `use`
-statements, and one after the last.
+- A blank line before the first trait `use` is reported, as it "MUST be declared on the next line after the opening
+  brace".
+- Blank lines between two trait `use` statements are allowed.
+- After the last one, at least one blank line is required when more follows in the class. More than one is allowed.
+- When nothing follows, the class's closing brace goes on the next line.
+
+[Jumbo](Jumbo.md) allows none between two `use` statements, and exactly one after the last, as extra rules.
+
+**Why:** "MUST have a blank line" sets a minimum, not a count. Nothing forbids a blank line between two `use`
+statements, and 2.3 allows blank lines "except where explicitly forbidden".
 
 ---
 
@@ -943,8 +951,8 @@ also delete the comment.
 **Issue:** 4.4 says a function's or method's "closing brace MUST go on the next line following the body", and section
 7 says the same of a closure. Neither says anything about the line after the opening brace.
 
-**Decision:** A blank line straight before the closing brace is reported. One straight after the opening brace is
-allowed. [Jumbo](Jumbo.md) reports that too, as an extra rule.
+**Decision:** A blank line straight before the closing brace is reported. Blank lines straight after the opening brace
+are allowed. [Jumbo](Jumbo.md) reports those too, as an extra rule.
 
 **Why:** The first is the rule as written. Nothing forbids the second, and 2.3 allows blank lines "except where
 explicitly forbidden". A class (4.1) and a control structure (5) each have a rule for both ends, so the difference is
@@ -957,12 +965,11 @@ the spec's own.
 ### Blank Lines in a List
 
 **Issue:** 2.3 says "Blank lines MAY be added to improve readability and to indicate related blocks of code except where
-explicitly forbidden". The spec's examples rarely show a blank line between two items of a list, so it's unclear whether
-one is allowed there.
+explicitly forbidden". The spec's examples rarely show a blank line in a list, so it's unclear where one is allowed.
 
-**Decision:** It is, in every list: parameters, a closure's `use` variables, a call's or an attribute's arguments, an
-array's values, a `match`'s arms, a group `use`'s names and interfaces after `implements`. A comment between two items
-is allowed too. So this passes:
+**Decision:** Blank lines are allowed between two items of every list: parameters, a closure's `use` variables, a call's
+or an attribute's arguments, an array's values, a `match`'s arms, a group `use`'s names and interfaces after
+`implements`. A comment between two items is allowed too. So this passes:
 
 ```php
 $mailer->send(
@@ -977,11 +984,16 @@ $mailer->send(
 
 A blank line is only reported where the text rules it out:
 
-- Straight after a list's opening bracket, as the first item goes "on the next line" (4.5, 4.7, 11).
-- Straight before its closing bracket, as that goes on the line after the last item. 11 says so for an array, and 4.5
-  puts a parameter list's `)` and `{` "together on their own line". 4.7 doesn't say it for a call, which follows the
-  same pattern.
+- Straight after the opening parenthesis of a parameter list, a closure's `use` list or an argument list, and after an
+  array's opening bracket, as the first item goes "on the next line" (4.5, 4.7, 7, 11).
+- Straight before an array's closing bracket, which "MUST be placed on the next line after the last value" (11).
 - After an attribute, as "There MUST NOT be any blank lines between... the attributes and the structure" (12.2).
+
+So a blank line straight before the closing parenthesis of a parameter list, a `use` list or an argument list is
+allowed. 4.5 and 7 only put the `)` and the `{` "together on their own line", and 4.7 says nothing about a call's `)`.
+
+[Jumbo](Jumbo.md) is stricter, as extra rules: no multi-line list starts or ends with a blank line, and no more than
+one comes between two items.
 
 **Why:** 2.3 only excludes a blank line that's explicitly forbidden, and an example that doesn't happen to have one
 isn't a ban. 12.4's example has a blank line between two parameters, which shows the spec's authors use them this way.
@@ -1205,11 +1217,12 @@ allowed form, and no rule covers them.
 
 **Issue:** 4.7 doesn't forbid a blank line between a call's arguments, and none of its examples has one.
 
-**Decision:** One is allowed, as in any list. See [Blank Lines in a List](#blank-lines-in-a-list) (4.5). A blank line
-straight after the call's `(`, or straight before its `)`, is reported.
+**Decision:** Blank lines are allowed between two arguments, and straight before the call's `)`. One straight after the
+call's `(` is reported. See [Blank Lines in a List](#blank-lines-in-a-list) (4.5).
 
-**Why:** 2.3 allows blank lines "except where explicitly forbidden". PHP_CodeSniffer's PSR-12 standard reports one here,
-but nothing in the text does.
+**Why:** 2.3 allows blank lines "except where explicitly forbidden". 4.7 puts the first argument "on the next line"
+after the `(`, and says nothing more. PHP_CodeSniffer's PSR-12 standard reports every blank line in a call, but nothing
+in the text does.
 
 ---
 
@@ -1338,8 +1351,8 @@ public string $department {
 }
 ```
 
-**Why:** The MAY names the one thing allowed, "an additional blank line", and "a blank line" is read as one, as in
-"Blank Lines Around `use`" (4.2). Unlike a list, where 2.3 is all there is to go on, the spec says here how many.
+**Why:** The MAY names the one thing allowed, "an additional blank line", so one is the most. Unlike a list, where 2.3
+is all there is to go on, the spec says here how many.
 
 ---
 
@@ -1540,10 +1553,10 @@ brace (4). PHP_CodeSniffer reads the same PSR-12 rule this way.
 
 **Issue:** 5.2 doesn't forbid a blank line straight after a `case` or `default` label.
 
-**Decision:** It's reported.
+**Decision:** It's allowed. [Jumbo](Jumbo.md) reports it, as an extra rule.
 
-**Why:** 5.2's example, introduced as a template for its rules, has none. It follows the pattern of section 5, where a
-structure's body "MUST be on the next line after the opening brace". A `case` has a colon in place of a brace.
+**Why:** 5.2 only sets what's on the label's own line, and 2.3 allows blank lines "except where explicitly forbidden".
+Section 5 puts a structure's body "on the next line after the opening brace", but a label has no brace.
 
 ---
 
@@ -1975,7 +1988,7 @@ after the `[`, and the `]` "on the next line after the last value", without sayi
 between.
 
 **Decision:** One space after a comma, no space inside the brackets, and no blank line after a multi-line array's `[` or
-before its `]`. A blank line between two values is allowed. An empty array has no space or line break inside either, so
+before its `]`. Blank lines between two values are allowed. An empty array has no space or line break inside either, so
 `[]`, not `[ ]`.
 
 **Why:** Section 11 introduces its example as showing "correct array usage". A value two lines after the `[` isn't on

@@ -138,9 +138,9 @@ class InheritedRulesUnitTest extends TestCase
             'error',
         ],
         'an opening tag in upper case' => ["<?PHP\n\n\$a = 1;\n", 'Universal.PHP.LowercasePHPTag.Uppercase', 'error'],
-        'a blank line between trait use statements' => [
-            "<?php\n\nclass A\n{\n    use B;\n\n    use C;\n}\n",
-            'SlevomatCodingStandard.Classes.TraitUseSpacing.IncorrectLinesCountBetweenUses',
+        'no blank line after the last trait use statement' => [
+            "<?php\n\nclass A\n{\n    use B;\n    public int \$c = 1;\n}\n",
+            'PSR12.Traits.UseDeclaration.NoBlankLineAfterUse',
             'error',
         ],
         'two traits in a use statement' => [

@@ -328,12 +328,45 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that a blank line after a case label is reported in both standards, and a comment on its line isn't.
+     * Test the blank lines around trait use statements in Jumbo: none between two, exactly one after the last, and
+     * none before the class's closing brace, each reported once, and fixed. PERCS31 allows one between two, and
+     * several after the last.
      */
-    public function testLabelLineInBothStandards(): void
+    public function testBlankLinesAroundTraitUseAreExactInJumbo(): void
+    {
+        $header = "<?php\n\ndeclare(strict_types=1);\n\nnamespace Vendor\\Package;\n\n";
+        $source = $header . "class Between\n{\n    use First;\n\n    use Second;\n\n\n    public int \$a = 1;\n}\n";
+        $file = $this->copyToTempFile(null, $source);
+        $last = $this->copyToTempFile(null, $header . "class Last\n{\n    use First;\n    public int \$a = 1;\n}\n");
+        $args = ['-s', '--standard=Jumbo', '--report=emacs'];
+
+        try {
+            $result = $this->runTool('phpcs', [...$args, $file]);
+            $lastResult = $this->runTool('phpcs', [...$args, $last]);
+            $this->runTool('phpcbf', ['--standard=Jumbo', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+            unlink($last);
+        }
+
+        $this->assertSame(1, substr_count($result['output'], 'TraitUseSpacing.IncorrectLinesCountBetweenUses'));
+        $this->assertSame(1, substr_count($result['output'], 'TraitUseSpacing.IncorrectLinesCountAfterLastUse'));
+        $this->assertSame(1, substr_count($lastResult['output'], 'TraitUseSpacing.'), $lastResult['output']);
+        $this->assertStringNotContainsString('PSR12.Traits.UseDeclaration', $lastResult['output']);
+        $expected = $header . "class Between\n{\n    use First;\n    use Second;\n\n    public int \$a = 1;\n}\n";
+        $this->assertSame($expected, $fixed);
+    }
+
+    /**
+     * Test that a blank line after a case label is reported in Jumbo only, as PER doesn't forbid one, that a statement
+     * on the label's line is reported once in both standards, and that a comment there isn't reported in either.
+     */
+    public function testBlankLineAfterLabelIsReportedInJumboOnly(): void
     {
         $blank = $this->copyToTempFile(null, "<?php\n\nswitch (\$a) {\n    case 1:\n\n        break;\n}\n");
         $comment = $this->copyToTempFile(null, "<?php\n\nswitch (\$a) {\n    case 1: // Why.\n        break;\n}\n");
+        $statement = $this->copyToTempFile(null, "<?php\n\nswitch (\$a) {\n    case 1: break;\n}\n");
         $sniff = '--sniffs=PERCS31.ControlStructures.SwitchDeclaration';
 
         try {
@@ -341,15 +374,22 @@ class RulesetUnitTest extends TestCase
             $jumboBlank = $this->runTool('phpcs', ['--standard=Jumbo', $sniff, '-s', $blank])['output'];
             $perComment = $this->runTool('phpcs', ['--standard=PERCS31', $sniff, '-s', $comment])['output'];
             $jumboComment = $this->runTool('phpcs', ['--standard=Jumbo', $sniff, '-s', $comment])['output'];
+            $perStatement = $this->runTool('phpcs', ['--standard=PERCS31', $sniff, '-s', $statement])['output'];
+            $jumboStatement = $this->runTool('phpcs', ['--standard=Jumbo', $sniff, '-s', $statement])['output'];
         } finally {
             unlink($blank);
             unlink($comment);
+            unlink($statement);
         }
 
-        $this->assertStringContainsString('SwitchDeclaration.BodyOnNextLineCASE', $perBlank);
+        $this->assertStringNotContainsString('SwitchDeclaration', $perBlank);
         $this->assertStringContainsString('SwitchDeclaration.BodyOnNextLineCASE', $jumboBlank);
         $this->assertStringNotContainsString('SwitchDeclaration', $perComment);
         $this->assertStringNotContainsString('SwitchDeclaration', $jumboComment);
+        $this->assertSame(1, substr_count($perStatement, 'SwitchDeclaration.'), $perStatement);
+        $this->assertStringContainsString('SwitchDeclaration.StatementOnLabelLine', $perStatement);
+        $this->assertSame(1, substr_count($jumboStatement, 'SwitchDeclaration.'), $jumboStatement);
+        $this->assertStringContainsString('SwitchDeclaration.BodyOnNextLineCASE', $jumboStatement);
     }
 
     /**
@@ -559,8 +599,9 @@ class RulesetUnitTest extends TestCase
 
     /**
      * Test that both standards allow a blank line between two parameters or two `use` variables, as section 2.3 does,
-     * and report one after an attribute, after an opening parenthesis or before a closing one. The parent's EmptyLine,
-     * which reports them all, is excluded in the ruleset.
+     * and report one after an attribute or after an opening parenthesis. One before a closing parenthesis is reported
+     * in Jumbo only, as PER doesn't forbid it. The parent's EmptyLine, which reports them all, is excluded in the
+     * ruleset.
      */
     public function testBlankLinesInDeclaration(): void
     {
@@ -570,15 +611,17 @@ class RulesetUnitTest extends TestCase
             $result = $this->runTool('phpcs', ['-s', "--standard=$standard", $sniff, '--report=emacs', $fixture]);
 
             preg_match_all('/:(\\d+):\\d+: error - .*\\.BlankLine\\)/', $result['output'], $matches);
-            $this->assertSame(['20', '41', '47'], $matches[1], $result['output']);
+            preg_match_all('/:(\\d+):\\d+: error - .*\\.BlankLineBeforeCloseBracket\\)/', $result['output'], $atEnd);
+            $this->assertSame(['20', '47'], $matches[1], $result['output']);
+            $this->assertSame($standard === 'Jumbo' ? ['41'] : [], $atEnd[1], $result['output']);
             $this->assertStringNotContainsString('EmptyLine', $result['output']);
         }
     }
 
     /**
      * Test that both standards allow a blank line between two of a call's arguments, as section 2.3 does, and report
-     * one after its opening parenthesis or before its closing one, as BlankLine. The parent's EmptyLine, which reports
-     * them all, is excluded in the ruleset.
+     * one after its opening parenthesis, as BlankLine. One before its closing parenthesis is reported in Jumbo only, as
+     * PER doesn't forbid it. The parent's EmptyLine, which reports them all, is excluded in the ruleset.
      */
     public function testBlankLinesInCall(): void
     {
@@ -588,7 +631,9 @@ class RulesetUnitTest extends TestCase
             $result = $this->runTool('phpcs', ['-s', "--standard=$standard", $sniff, '--report=emacs', $fixture]);
 
             preg_match_all('/:(\\d+):\\d+: error - .*\\.BlankLine\\)/', $result['output'], $matches);
-            $this->assertSame(['15', '25'], $matches[1], $result['output']);
+            preg_match_all('/:(\\d+):\\d+: error - .*\\.BlankLineBeforeCloseBracket\\)/', $result['output'], $atEnd);
+            $this->assertSame(['25'], $matches[1], $result['output']);
+            $this->assertSame($standard === 'Jumbo' ? ['15'] : [], $atEnd[1], $result['output']);
             $this->assertStringNotContainsString('EmptyLine', $result['output']);
         }
     }
