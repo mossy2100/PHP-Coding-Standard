@@ -335,11 +335,6 @@
         </properties>
     </rule>
 
-    <!-- A warning for code that can never run, such as code after a return or break -->
-    <!-- NOTE, this is faulty, as it doesn't support property hooks. Any code after a return statement in a get{} hook
-    will be reported as unreachable. This sniff may need to be subclassed or forked. -->
-    <rule ref="Squiz.PHP.NonExecutableCode"/>
-
     <!-- ====== CLOSURES (7) ====== -->
 
     <rule ref="SlevomatCodingStandard.Functions.StaticClosure"/>

@@ -617,6 +617,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+- **`Squiz.PHP.NonExecutableCode`, from Jumbo.** It doesn't understand property hooks: a `return` in a long-form `get`
+  hook made it warn that everything after it in the class "cannot be executed", including later properties and
+  methods. Jumbo no longer warns about unreachable code.
 - **`disallowInSplitMatchConditions` (breaking).** The property is gone from `PERCS31.Formatting.TrailingComma`, and
   Jumbo no longer sets it. It disallowed the comma before `=>` after split conditions, which is now required. Remove it
   from any ruleset that sets it.

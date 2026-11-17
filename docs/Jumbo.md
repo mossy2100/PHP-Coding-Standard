@@ -110,7 +110,6 @@ rules.
 - **Squiz.NamingConventions.ValidVariableName**: Enforces `$camelCase` for variables, parameters, and properties. Its
   checks for an underscore on properties are excluded, as one requires it on private properties. See [Variable and
   Property Names](VariableAndPropertyNames.md).
-- **Squiz.PHP.NonExecutableCode**: A warning for code that can never run, such as code after a `return` or `break`.
 - **Squiz.Strings.DoubleQuoteUsage.NotRequired**: Ensures strings use single quotes unless double quotes are necessary.
 - **Squiz.WhiteSpace.OperatorSpacing**: Requires exactly one space around operators, including before `=`, so
   assignments are not aligned. Used through [`PERCS31.Operators.OperatorSpacing`](PERCS31.md#percs31operatorsoperatorspacing), which extends it to `&&`, `||`, `and`,
