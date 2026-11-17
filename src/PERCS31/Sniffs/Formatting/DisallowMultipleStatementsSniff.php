@@ -74,6 +74,11 @@ class DisallowMultipleStatementsSniff extends GenericSniff
             return;
         }
 
+        // What follows `__halt_compiler();` is data, not code.
+        if ($phpcsFile->findPrevious(T_HALT_COMPILER, ($semicolonPtr - 1)) !== false) {
+            return;
+        }
+
         // The semicolons in a for loop's parentheses separate expressions, not statements.
         foreach (($tokens[$semicolonPtr]['nested_parenthesis'] ?? []) as $opener => $closer) {
             $owner = $tokens[$opener]['parenthesis_owner'] ?? null;

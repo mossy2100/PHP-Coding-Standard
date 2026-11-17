@@ -89,3 +89,7 @@ $j = fn() => 1; /* Why. */
 if ($h) { echo 1; }
 ?>
 <p><?php echo 1; ?></p>
+<?php
+
+// Data after __halt_compiler(); on its line is not a statement.
+__halt_compiler(); raw data { ( [ here
