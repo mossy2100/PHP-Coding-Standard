@@ -748,15 +748,13 @@ other comma has one.
 ### Blank Lines in a Block `declare`
 
 **Issue:** "Block declare statements are allowed and MUST be formatted as below. Note position of braces and spacing".
-The example has no blank line after its `{` or before its `}`, but the text doesn't forbid one, and 2.3 allows blank
-lines "except where explicitly forbidden".
+The example has no blank line after its `{` or before its `}`, but the text doesn't forbid one.
 
-**Decision:** A blank line straight after a block `declare`'s opening brace, or straight before its closing one, is
-reported. One between two statements in the block is allowed.
+**Decision:** Both are allowed. [Jumbo](Jumbo.md) reports them, as an extra rule.
 
-**Why:** A block `declare` is a control structure, as PHP's manual lists it, so section 5 applies: "The body MUST be on
-the next line after the opening brace", and "The closing brace MUST be on the next line after the body". The example is
-also a template for the format, and has neither blank line.
+**Why:** 2.3 allows blank lines "except where explicitly forbidden". Section 5 forbids them at the start and end of a
+control structure's body, but it names its control structures, and `declare` isn't one of them. Section 3 only asks for
+the position of the braces and the spacing.
 
 ---
 
@@ -937,6 +935,20 @@ $noOp = function (): void {
 
 **Why:** 4.4's definition is the only one that mentions comments, so it's used for all four. Abbreviating the body would
 also delete the comment.
+
+---
+
+### A Blank Line at the Start of a Body
+
+**Issue:** 4.4 says a function's or method's "closing brace MUST go on the next line following the body", and section
+7 says the same of a closure. Neither says anything about the line after the opening brace.
+
+**Decision:** A blank line straight before the closing brace is reported. One straight after the opening brace is
+allowed. [Jumbo](Jumbo.md) reports that too, as an extra rule.
+
+**Why:** The first is the rule as written. Nothing forbids the second, and 2.3 allows blank lines "except where
+explicitly forbidden". A class (4.1) and a control structure (5) each have a rule for both ends, so the difference is
+the spec's own.
 
 ---
 
@@ -1328,6 +1340,17 @@ public string $department {
 
 **Why:** The MAY names the one thing allowed, "an additional blank line", and "a blank line" is read as one, as in
 "Blank Lines Around `use`" (4.2). Unlike a list, where 2.3 is all there is to go on, the spec says here how many.
+
+---
+
+### Blank Lines Inside a Hook's Braces
+
+**Issue:** 4.9 says a hook list's closing brace "MUST be on its own line". It doesn't say whether a blank line may
+follow the opening brace or come before the closing one, of the hook list or of a hook's body.
+
+**Decision:** All four are allowed. [Jumbo](Jumbo.md) reports them, as an extra rule.
+
+**Why:** A brace after a blank line is still on its own line, and nothing else in 4.9 rules one out, so 2.3 allows it.
 
 ---
 

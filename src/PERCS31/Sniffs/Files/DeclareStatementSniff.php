@@ -17,11 +17,8 @@
  *   and with both fixes, the result had a blank line before the brace.
  * - The closing brace's alignment is only checked when the brace is first on its line. The original's fix replaces the
  *   token before the brace, which is only the line's indent after the removed check's fix has run.
- * - A blank line straight after a block declare's opening brace, or straight before its closing one, is reported as
- *   BlankLine. Section 5 puts a control structure's body on the line after its opening brace, and its closing brace on
- *   the line after the body, and a block declare is read as one.
  *
- * Apart from the namespace and the import of LayoutHelper, every change from upstream is marked with a "PERCS31:" comment, so a diff against the
+ * Apart from the namespace, every change from upstream is marked with a "PERCS31:" comment, so a diff against the
  * upstream file shows only these. To update the fork to a new PHP_CodeSniffer release, copy the new upstream file,
  * re-apply the marked changes, and run the tests. Remove the fork once upstream handles several directives.
  *
@@ -33,7 +30,6 @@
 
 namespace PERCS31\Sniffs\Files;
 
-use PERCS31\Helpers\LayoutHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -211,20 +207,6 @@ class DeclareStatementSniff implements Sniff
                     $phpcsFile->fixer->endChangeset();
                 }
             }
-
-            // PERCS31: no blank line straight after the opening brace, or straight before the closing one, as for any
-            // control structure (section 5).
-            $blankLines = LayoutHelper::findBlankLinesAtStartAndEnd($phpcsFile, $curlyBracket, $closeCurlyBracket);
-            foreach ($blankLines as $blankLine) {
-                $error = 'Blank line not allowed straight after the opening curly bracket of a declare statement, or'
-                    . ' before the closing one';
-                $fix   = $phpcsFile->addFixableError($error, $blankLine, 'BlankLine');
-                if ($fix === true) {
-                    $phpcsFile->fixer->replaceToken($blankLine, '');
-                }
-            }
-
-            // PERCS31: end of change.
         }
     }
 

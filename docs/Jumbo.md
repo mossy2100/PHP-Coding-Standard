@@ -110,6 +110,9 @@ rules.
 - **Squiz.NamingConventions.ValidVariableName**: Enforces `$camelCase` for variables, parameters, and properties. Its
   checks for an underscore on properties are excluded, as one requires it on private properties. See [Variable and
   Property Names](VariableAndPropertyNames.md).
+- **Squiz.WhiteSpace.FunctionOpeningBraceSpace.SpacingAfter**: No blank line straight after the opening brace of a
+  function, method or closure. PER only rules one out before the closing brace, so PERCS31 allows it. See
+  [A Blank Line at the Start of a Body](PER-CS_3.1_Judgement_Calls.md#a-blank-line-at-the-start-of-a-body).
 - **Squiz.Strings.DoubleQuoteUsage.NotRequired**: Ensures strings use single quotes unless double quotes are necessary.
 - **Squiz.WhiteSpace.OperatorSpacing**: Requires exactly one space around operators, including before `=`, so
   assignments are not aligned. Used through [`PERCS31.Operators.OperatorSpacing`](PERCS31.md#percs31operatorsoperatorspacing), which extends it to `&&`, `||`, `and`,
@@ -256,6 +259,7 @@ gives the reason. The custom sniffs for PER Coding Style itself are in [PERCS31]
 | `Jumbo.TypeHints.DeclareStrictTypes`                       | `strict_types=1` required, allowing `<?php declare(...) ?>`     | Yes     |
 | `Jumbo.TypeHints.ParameterTypeHint`                        | Parameter type hints, skipping a promoted hook                  | Yes     |
 | `Jumbo.TypeHints.ParameterTypeHintSpacing`                 | Parameter type hint spacing, skipping a promoted hook           | Yes     |
+| `Jumbo.WhiteSpace.BlockBlankLines`                         | No blank line at either end of a block `declare` or a hook      | Yes     |
 | `Jumbo.WhiteSpace.LanguageConstructSpacing`                | One space after `return`, `echo` and others, with no line break | Yes     |
 
 ### Jumbo.Arrays.ArrayDeclaration
@@ -864,6 +868,53 @@ function aren't checked either. [PER Coding Style 3.1, Section 4.9](https://www.
 a function with one, and leaves everything else to the parent. See [`PERCS31.Classes.PropertyHooks`](PERCS31.md#percs31classespropertyhooks).
 
 **Auto-fixable:** yes, as the parent.
+
+---
+
+### Jumbo.WhiteSpace.BlockBlankLines
+
+Disallows a blank line straight after the opening brace, or straight before the closing brace, of a block `declare`, a
+property's hook list and a hook's body. A blank line between two statements, or between two hooks, isn't reported.
+
+**Why:** PER only rules these blank lines out for a class and a control structure, and at the end of a function's body.
+It has no rule for a block `declare` or a property hook, so the [PERCS31](PERCS31.md) standard allows them. This is an extra
+rule, so that every block in braces starts and ends the same way. See
+[Blank Lines in a Block `declare`](PER-CS_3.1_Judgement_Calls.md#blank-lines-in-a-block-declare) and
+[Blank Lines Inside a Hook's Braces](PER-CS_3.1_Judgement_Calls.md#blank-lines-inside-a-hooks-braces).
+
+No inherited sniff covers these blocks. `Squiz.WhiteSpace.ControlStructureSpacing` has a fixed list of control
+structures, without `declare`, and PHP_CodeSniffer doesn't read a hook's braces as a scope. The start of a function's
+body is checked by `Squiz.WhiteSpace.FunctionOpeningBraceSpace`.
+
+**Auto-fixable:** yes.
+
+**Good:**
+
+```php
+public string $name {
+    get {
+        return $this->name;
+    }
+
+    set {
+        $this->name = trim($value);
+    }
+}
+```
+
+**Bad:**
+
+```php
+public string $name {
+
+    get {
+
+        return $this->name;
+
+    }
+
+}
+```
 
 ---
 

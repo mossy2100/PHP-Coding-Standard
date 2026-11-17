@@ -171,6 +171,46 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that Jumbo allows no blank line at the start of a function's, method's or closure's body, or at either end
+     * of a block declare, a property's hook list or a hook's body, and that PERCS31 allows them all, as PER has no rule
+     * for any of them.
+     */
+    public function testBlankLinesAtTheEndsOfABlockAreReportedInJumboOnly(): void
+    {
+        $header = "<?php\n\ndeclare(strict_types=1);\n\nnamespace Vendor\\Package;\n\n";
+        $source = $header . "class Example\n{\n    public string \$name {\n\n        get {\n\n"
+            . "            return \$this->name;\n\n        }\n\n    }\n\n    public function run(): int\n    {\n\n"
+            . "        \$double = static function (int \$x): int {\n\n            return \$x * 2;\n        };\n\n"
+            . "        return \$double(1);\n    }\n}\n";
+        $expected = $header . "class Example\n{\n    public string \$name {\n        get {\n"
+            . "            return \$this->name;\n        }\n    }\n\n    public function run(): int\n    {\n"
+            . "        \$double = static function (int \$x): int {\n            return \$x * 2;\n        };\n\n"
+            . "        return \$double(1);\n    }\n}\n";
+        $declare = "<?php\n\ndeclare(strict_types=1);\ndeclare(ticks=1) {\n\n    run();\n\n}\n";
+        $file = $this->copyToTempFile(null, $source);
+        $declareFile = $this->copyToTempFile(null, $declare);
+        $ignored = '--exclude=PSR1.Files.SideEffects';
+
+        try {
+            $percs31 = $this->runTool('phpcs', ['--standard=PERCS31', $ignored, '--report=emacs', $file, $declareFile]);
+            $jumbo = $this->runTool('phpcs', ['-s', '--standard=Jumbo', $ignored, '--report=emacs', $file]);
+            $this->runTool('phpcbf', ['--standard=Jumbo', $ignored, $file, $declareFile]);
+            $fixed = (string) file_get_contents($file);
+            $fixedDeclare = (string) file_get_contents($declareFile);
+        } finally {
+            unlink($file);
+            unlink($declareFile);
+        }
+
+        $this->assertSame(0, $percs31['exitCode'], $percs31['output']);
+        $this->assertSame(2, substr_count($jumbo['output'], 'FunctionOpeningBraceSpace.SpacingAfter'));
+        $this->assertSame(2, substr_count($jumbo['output'], 'BlockBlankLines.AfterOpeningBrace'), $jumbo['output']);
+        $this->assertSame(2, substr_count($jumbo['output'], 'BlockBlankLines.BeforeClosingBrace'), $jumbo['output']);
+        $this->assertSame($expected, $fixed);
+        $this->assertSame(str_replace(["{\n\n", "\n\n}"], ["{\n", "\n}"], $declare), $fixedDeclare);
+    }
+
+    /**
      * Test that Jumbo allows no more than one blank line in a row, between statements and between a list's items, and
      * PERCS31 any number. A blank line in a nowdoc or a block comment is part of it, so it's left alone.
      */

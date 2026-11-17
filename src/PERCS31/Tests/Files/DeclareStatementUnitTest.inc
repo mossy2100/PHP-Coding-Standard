@@ -38,7 +38,7 @@ declare(ticks=1)
 // A block declare on one line. The fix for the brace keeps the `;` before it.
 declare(ticks=1) {$a = 1;}
 
-// A blank line after a block declare's opening brace, and before its closing one. One between statements is fine.
+// Blank lines inside a block declare's braces are allowed, as section 2.3 allows them where nothing forbids one.
 declare(ticks=1) {
 
     $a = 1;

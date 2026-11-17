@@ -10,6 +10,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **No blank line at the start or end of a block, in Jumbo (breaking).** Jumbo now reports a blank line straight after
+  the opening brace of a function, method or closure, with `Squiz.WhiteSpace.FunctionOpeningBraceSpace`. The new
+  `Jumbo.WhiteSpace.BlockBlankLines` reports one straight after the opening brace, or straight before the closing
+  brace, of a block `declare`, a property's hook list and a hook's body, as `AfterOpeningBrace` and
+  `BeforeClosingBrace`. All are auto-fixable. PERCS31 is unchanged, as PER Coding Style 3.1 has no rule for any of
+  them.
 - **No more than one blank line in a row, in Jumbo (breaking).** Jumbo now includes
   `PhpCollective.WhiteSpace.EmptyLines`, which reports a second blank line in a row anywhere in PHP code, as
   `EmptyLines`. A blank line inside a heredoc, a nowdoc or a block comment is left alone, as is HTML outside the PHP
@@ -507,9 +513,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- **A blank line inside a block `declare`'s braces (breaking).** One straight after the opening brace, or straight
-  before the closing one, is now reported by `PERCS31.Files.DeclareStatement`, as `BlankLine`, as it is for any control
-  structure. Auto-fixable.
 - **A blank line between two items of a list (breaking).** PER Coding Style 3.1 allows blank lines "except where
   explicitly forbidden", so one between two items is now allowed in every list. These passed already in parameters,
   arrays, `match` arms and a group `use`. They now pass in a call's or an attribute's arguments, a closure's `use`

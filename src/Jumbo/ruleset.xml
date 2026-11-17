@@ -31,6 +31,14 @@
     <!-- No more than one blank line in a row, anywhere in PHP code. PERCS31 allows any number, as PER 2.3 does. -->
     <rule ref="PhpCollective.WhiteSpace.EmptyLines"/>
 
+    <!-- No blank line straight after the opening brace of a function, method or closure. PER only rules one out before
+         the closing brace (4.4, 7), which PSR2.Methods.FunctionClosingBrace reports. -->
+    <rule ref="Squiz.WhiteSpace.FunctionOpeningBraceSpace.SpacingAfter"/>
+
+    <!-- No blank line straight after the opening brace, or straight before the closing brace, of a block declare, a
+         property's hook list or a hook's body. PER has no rule for either, so PERCS31 allows them. -->
+    <rule ref="Jumbo.WhiteSpace.BlockBlankLines"/>
+
     <!-- A comment on its own line is indented as a statement would be. PERCS31 doesn't check a comment's indent, as PER
          has no rule for it. A docblock's isn't checked here either. -->
     <rule ref="PERCS31.WhiteSpace.ScopeIndent">

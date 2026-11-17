@@ -1390,11 +1390,6 @@ The original's check that a block declare's closing brace is on a new line is re
 With that check gone, the original's fix for the closing brace's alignment could delete the `;` before it, as in
 `declare(ticks=1) {echo 1;}`. So the fork only checks the alignment of a brace that's first on its line.
 
-A blank line straight after a block declare's opening brace, or straight before its closing one, is reported as
-`BlankLine`. A block declare is read as a control structure, whose body starts on the line after its opening brace, and
-whose closing brace follows the body (section 5). See
-[Blank Lines in a Block `declare`](PER-CS_3.1_Judgement_Calls.md#blank-lines-in-a-block-declare).
-
 **Auto-fixable:** yes.
 
 **Good:**
