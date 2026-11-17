@@ -33,6 +33,9 @@ class FunctionCallLayoutUnitTest extends AbstractSniffTestCase
             // A comment before the parentheses, reported with no fix.
             77 => 1,
             78 => 1,
+            // A heredoc and a nowdoc argument, indented wrongly.
+            83 => 1,
+            88 => 1,
         ];
     }
 

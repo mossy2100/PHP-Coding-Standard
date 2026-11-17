@@ -774,6 +774,32 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a heredoc argument indented too little is fixed with its body and closing marker moved together, and
+     * the result passes. The inherited fix for the argument's indent moved the marker but not the body, which is a
+     * parse error.
+     */
+    public function testUnderIndentedHeredocArgumentIsFixedToValidCode(): void
+    {
+        $source = "<?php\n\nfunction a(string \$name): void\n{\n  foo(\n    \$name,\n    <<<EOT\n        Hello \$name\n"
+            . "        EOT,\n  );\n}\n";
+        $expected = "<?php\n\nfunction a(string \$name): void\n{\n    foo(\n        \$name,\n        <<<EOT\n"
+            . "            Hello \$name\n            EOT,\n    );\n}\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $fixer = $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
+        $this->assertSame($expected, $fixed);
+        $this->assertSame(0, $result['exitCode'], $result['output']);
+    }
+
+    /**
      * Test that a comma starting a line in a call's arguments is reported once, including after a heredoc's closing
      * marker, as is the spacing around a comma in an array inside the call, and that the fix corrects each one.
      */

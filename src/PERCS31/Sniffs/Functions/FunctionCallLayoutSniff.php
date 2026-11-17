@@ -17,7 +17,7 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * PER Coding Style 3.1, section 4.7, sets the rules for a call: no space before or just inside the parentheses, and
  * when split, the first argument on the next line and one per line. This extends PSR2.Methods.FunctionCallSignature,
- * and changes four things:
+ * and changes six things:
  * - It checks `clone()`, which section 4.7 calls a function, but the parent doesn't register. Parentheses that may
  *   only group the object, as in `clone ($a)->b`, are skipped. A space before the parentheses, as in `clone ($a)`, is
  *   reported as SpaceBeforeOpenBracket, as for any other call.
@@ -33,6 +33,9 @@ use PHP_CodeSniffer\Util\Tokens;
  * - It skips `require`, `include` and their `_once` forms, which the parent registers as function names. They're
  *   language constructs, and parentheses after one only group its expression, as in
  *   `include ($a ? 'x' : 'y') . '.php';`. PER has no rule for them.
+ * - Its fix for an argument's indent leaves a heredoc's or nowdoc's closing marker alone. The parent's fix moves the
+ *   marker with the `<<<` line, but not the body, and a body indented less than its marker is a parse error.
+ *   PERCS31.Strings.HeredocLayout moves the body and the marker together.
  *
  * The parent also reports any blank line in a multi-line argument list (EmptyLine). Section 2.3 allows blank lines
  * "except where explicitly forbidden", and nothing forbids one between two arguments. So the PERCS31 ruleset excludes
@@ -97,6 +100,33 @@ class FunctionCallLayoutSniff extends Psr2Sniff
         if ($opener !== false) {
             $this->checkBlankLines($phpcsFile, $stackPtr, $opener);
         }
+    }
+
+    /**
+     * Processes a function call whose argument list is split over lines.
+     *
+     * The parent's fix for a line's indent treats the token after it as the start of a code block, if it opens a
+     * scope, and moves the block's lines too. A heredoc's or nowdoc's `<<<` opens a scope, but only its closing marker
+     * is moved, as each body line is a single token. So the parent is given a copy of the tokens in which a `<<<`
+     * opens no scope.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the function's name.
+     * @param int $openBracket The position of the opening parenthesis.
+     * @param array<int, array<string, mixed>> $tokens The file's tokens.
+     */
+    public function processMultiLineCall(File $phpcsFile, int $stackPtr, int $openBracket, array $tokens): void
+    {
+        $closer = $tokens[$openBracket]['parenthesis_closer'] ?? null;
+        if (is_int($closer)) {
+            for ($i = ($openBracket + 1); $i < $closer; $i++) {
+                if ($tokens[$i]['code'] === T_START_HEREDOC || $tokens[$i]['code'] === T_START_NOWDOC) {
+                    unset($tokens[$i]['scope_opener']);
+                }
+            }
+        }
+
+        parent::processMultiLineCall($phpcsFile, $stackPtr, $openBracket, $tokens);
     }
 
     /**

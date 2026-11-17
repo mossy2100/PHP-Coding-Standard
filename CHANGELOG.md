@@ -662,6 +662,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A heredoc or nowdoc argument indented too little.** In a call split over lines, the fix for an argument's indent
+  moved a heredoc's closing marker with its `<<<` line, but not its body, which is a parse error.
+  `PERCS31.Functions.FunctionCallLayout` now moves only the `<<<` line, and `PERCS31.Strings.HeredocLayout` moves the
+  body and the marker together.
 - A bitwise `&` in a parameter's default value, as in `function a(int $flags = A & B)`. In Jumbo,
   `SlevomatCodingStandard.PHP.ReferenceSpacing` read it as a reference and reported the space after it, and `phpcbf`
   then failed to fix the file. `PERCS31.Operators.UnaryOperatorSpacing` replaces that sniff, and skips it.

@@ -78,3 +78,16 @@ $c = require ($base . '/file.php');
 // A comment before the parentheses is reported, but left to a person.
 $a = clone /* Why. */ ($b);
 $a = foo /* Why. */ ($b);
+
+// A heredoc or nowdoc argument indented too little, or too far. Only the `<<<` line moves, as moving the closing marker
+// without the body is a parse error. PERCS31.Strings.HeredocLayout moves the body and the marker together.
+foo(
+    <<<'EOT'
+      This
+      EOT,
+);
+foo(
+    <<<EOT
+            Hello $name
+            EOT,
+);
