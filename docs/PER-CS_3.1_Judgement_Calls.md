@@ -1534,6 +1534,26 @@ place of the space before or after `as` or `=>`. Otherwise it only gets section 
 
 ---
 
+### An Empty Expression in a `for`
+
+**Issue:** 5.4's example has three expressions, so it doesn't show how an empty one is spaced.
+
+**Decision:** No space comes before a semicolon, whether or not an expression does. So an empty middle expression
+leaves the two semicolons together:
+
+| Code                    | Result                                   |
+| ----------------------- | ---------------------------------------- |
+| `for (;;)`              | Passes                                   |
+| `for ($i = 0;; $i++)`   | Passes                                   |
+| `for (; $i < 10; $i++)` | Passes                                   |
+| `for ($i = 0; ; $i++)`  | Reported, fixed to `for ($i = 0;; $i++)` |
+| `for ( ; ; )`           | Reported, fixed to `for (;;)`            |
+
+**Why:** The example has no space before a semicolon and one after. Keeping that as one rule, with no special case for
+an empty expression, matches `for (;;)`, which is always written without spaces.
+
+---
+
 ## 6. Operators
 
 ### Operators Not Listed
