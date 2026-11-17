@@ -10,15 +10,16 @@ $a = match ($x) {
     4,
     5,
         => 6,
-    // One condition that spans lines doesn't split the list.
+    // A condition that spans lines splits the list.
     [
         7,
         8,
-    ] => 9,
-    10, [
+    ], => 9,
+    10,
+    [
         11,
-    ] => 12,
-    // A break before the => doesn't either.
+    ], => 12,
+    // A break before the => doesn't.
     13, 14
         => 15,
     default => 16,
@@ -35,9 +36,13 @@ $b = match ($x) {
     7,
     8 // Why.
         => 9,
-    10, foo(
-        11,
-    ), => 12,
+    foo(
+        10,
+    ) => 11,
+    [
+        12,
+    ]
+        => 13,
     13, 14,
         => 15,
     default => 16,

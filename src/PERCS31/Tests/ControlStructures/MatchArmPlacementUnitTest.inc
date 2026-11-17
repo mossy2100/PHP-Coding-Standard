@@ -67,10 +67,11 @@ $splitValid = match ($x) {
     1,
     2,
     3, => 'a',
-    // One condition that spans lines doesn't split the list.
-    4, [
-        5,
-    ] => 'b',
+    // A condition that spans lines splits the list too.
+    [
+        4,
+    ],
+    5, => 'b',
     default => 'c',
 };
 
@@ -79,5 +80,10 @@ $splitInvalid = match ($x) {
     3, => 'a',
     4,
     5, 6, /* Why. */ 7, => 'b',
-    default => 'c',
+    [
+        8,
+    ], 9, [
+        10,
+    ], => 'c',
+    default => 'd',
 };

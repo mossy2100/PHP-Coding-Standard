@@ -1255,8 +1255,8 @@ If an arm's conditions are split over lines, each condition starts a line.
 No inherited sniff checks it.
 
 An arm's conditions are a list, and every list the spec splits over lines has one item per line: arguments (4.7),
-parameters (4.5), an array's values (11) and interfaces (4.1). So if two conditions start on different lines, each one
-starts a line. One condition that spans lines, such as an array, doesn't split the list.
+parameters (4.5), an array's values (11) and interfaces (4.1). So if the list doesn't start and end on the same line,
+each condition starts a line. That includes a list with a condition that spans lines, such as an array.
 [`PERCS31.Formatting.TrailingComma`](#percs31formattingtrailingcomma) requires the comma after the last condition.
 
 **Auto-fixable:** yes, except an arm with a comment in the way. The arm or condition moves to the next line, and
@@ -1697,7 +1697,8 @@ Requires a trailing comma after the last arm of a multi-line `match`, the last n
 last item in a multi-line `list()`, or the last argument in multi-line arguments to an anonymous class, `clone()`,
 `exit()`, `die()` or a call through an expression, such as `$handlers[$name](`, and disallows one when the list is on a
 single line. A `match` arm's conditions are a list too: no comma before the `=>` when they're on one line, so
-`1, 2, => 'a'` is reported, and one when they're split over lines, as in `1,` then `2, => 'a'`.
+`1, 2, => 'a'` is reported, and one when they're split over lines, as in `1,` then `2, => 'a'`. The list is split when
+it doesn't start and end on the same line, which includes one with a condition that spans lines, such as an array.
 
 **Why:** [PER Coding Style 3.1, Section 2.6](https://www.php-fig.org/per/coding-style/#26-trailing-commas) says the last item of a list split across lines MUST have a trailing comma,
 and the last item of a list on one line MUST NOT. Slevomat's trailing comma sniffs cover calls, declarations and closure

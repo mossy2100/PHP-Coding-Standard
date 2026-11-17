@@ -87,8 +87,9 @@ class MatchHelper
     }
 
     /**
-     * Check whether a `match` arm's list of conditions is split over lines: two of its conditions start on different
-     * lines. One condition that spans lines, such as an array, doesn't split the list.
+     * Check whether a `match` arm's list of conditions is split over lines: it doesn't start and end on the same line.
+     * That includes a list with a condition that spans lines, such as an array. A line break before the `=>` isn't in
+     * the list, so it doesn't count.
      *
      * @param File $phpcsFile The file being scanned.
      * @param array{start: int, arrow: int, end: int|null} $arm The arm, as findArms() returns it.
@@ -97,11 +98,8 @@ class MatchHelper
     public static function hasSplitConditions(File $phpcsFile, array $arm): bool
     {
         $tokens = $phpcsFile->getTokens();
-        $lines = [];
-        foreach (self::findConditions($phpcsFile, $arm) as $condition) {
-            $lines[$tokens[$condition]['line']] = true;
-        }
+        $last = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($arm['arrow'] - 1), $arm['start'], true);
 
-        return count($lines) > 1;
+        return $last !== false && $tokens[$last]['line'] !== $tokens[$arm['start']]['line'];
     }
 }

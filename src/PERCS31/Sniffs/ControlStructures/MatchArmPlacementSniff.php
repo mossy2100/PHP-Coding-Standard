@@ -20,8 +20,9 @@ use PHP_CodeSniffer\Util\Tokens;
  * conditions in one arm, as in `1, 2, 3 => 'a',`, are one arm, so they're fine.
  *
  * An arm's conditions are a list, and every list the spec splits over lines has one item per line: arguments (4.7),
- * parameters (4.5), an array's values (11) and interfaces (4.1). So if two conditions start on different lines, each
- * one starts a line. PERCS31.Formatting.TrailingComma requires the comma after the last. The indent is left to
+ * parameters (4.5), an array's values (11) and interfaces (4.1). So if the list doesn't start and end on the same line,
+ * each condition starts a line. That includes a list with a condition that spans lines, such as an array.
+ * PERCS31.Formatting.TrailingComma requires the comma after the last. The indent is left to
  * PERCS31.WhiteSpace.ScopeIndent.
  */
 class MatchArmPlacementSniff implements Sniff

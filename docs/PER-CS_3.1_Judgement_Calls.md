@@ -488,8 +488,12 @@ instead.
 **Issue:** 2.6 lists the kinds of list it covers, but PHP has others the list doesn't name.
 
 **Decision:** A multi-line list needs a trailing comma, and a single-line list mustn't have one, for arguments,
-parameters, closure `use` lists, arrays, `match` arms, group `use`, `list()`, an anonymous class's arguments, `clone()`,
-`exit()`, `die()` and attribute blocks. `clone ($a)->c` is skipped, as its parentheses may only group the object.
+parameters, closure `use` lists, arrays, `match` arms, a `match` arm's conditions, group `use`, `list()`, an anonymous
+class's arguments, `clone()`, `exit()`, `die()` and attribute blocks. `clone ($a)->c` is skipped, as its parentheses may
+only group the object.
+
+A `match` has two lists: its arms, and the conditions at the start of each arm. See
+[`match` Conditions](#match-conditions).
 
 **Why:** The rule's purpose, cleaner diffs, applies equally to every comma-separated list split over lines.
 
@@ -545,9 +549,25 @@ $label = match ($code) {
 };
 ```
 
-The list is split when two conditions start on different lines. One condition that spans lines, such as an array,
-doesn't split it, and neither does a line break before the `=>`. The `=>` may follow the last comma, as above, or start
-the next line.
+The list is split when it doesn't start and end on the same line. That includes a list with a condition that spans
+lines, such as an array:
+
+```php
+$label = match ($code) {
+    [
+        301,
+        302,
+    ],
+    $other,
+    [
+        307,
+    ], => 'Redirect',
+    default => 'Other',
+};
+```
+
+A line break before the `=>` isn't in the list, so it doesn't split it. The `=>` may follow the last comma, as above, or
+start the next line.
 
 **Why:** 2.6 says "If the list is split across multiple lines, then the last item MUST have a trailing comma", and makes
 no exception for this list. One condition per line follows every other list the spec splits: arguments (4.7),

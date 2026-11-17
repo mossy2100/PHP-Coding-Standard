@@ -14,8 +14,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   to an arm's conditions as written. When they're split over lines, `PERCS31.Formatting.TrailingComma` requires a comma
   after the last, before the `=>`, as `Missing`, and `PERCS31.ControlStructures.MatchArmPlacement` requires each
   condition to start a line, as `ConditionNotOnOwnLine`. So `1,` then `2 => 'a',` is fixed to `1,` then `2, => 'a',`. A
-  split list passed before, with or without the comma. Both are auto-fixable. One condition that spans lines, such as
-  an array, doesn't split the list.
+  split list passed before, with or without the comma. Both are auto-fixable. The list is split when it doesn't start
+  and end on the same line, which includes one with a condition that spans lines, such as an array.
 - **A wrapped `match` arm in Jumbo (breaking).** When an arm's conditions are split over lines,
   `Jumbo.ControlStructures.MatchArmWrapIndent` now requires each condition level with the first, as `ConditionIndent`,
   and the `=>` on the next line, indented once, as `ArrowNotOnOwnLine`. Later conditions had to be indented once, and

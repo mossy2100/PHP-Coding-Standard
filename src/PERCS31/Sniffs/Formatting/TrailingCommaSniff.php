@@ -35,7 +35,8 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * A `match` arm's conditions are a list too, so the same rule applies: no comma before the `=>` when they're on one
  * line, as in `1, 2 => 'a',`, and one when they're split over lines, as in `1,` then `2, => 'a',`. The list is split
- * when two of its conditions start on different lines.
+ * when it doesn't start and end on the same line, which includes one with a condition that spans lines, such as an
+ * array.
  */
 class TrailingCommaSniff implements Sniff
 {

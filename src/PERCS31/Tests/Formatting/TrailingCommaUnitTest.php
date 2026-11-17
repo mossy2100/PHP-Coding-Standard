@@ -21,9 +21,9 @@ class TrailingCommaUnitTest extends AbstractSniffTestCase
     {
         if ($testFile === 'TrailingCommaUnitTest.2.inc') {
             // A match arm's conditions. Split over lines with no comma after the last: before =>, before a wrapped
-            // =>, and before a comment. Then on one line with one: after a call split over lines, and before a wrapped
-            // =>.
-            return [31 => 1, 33 => 1, 36 => 1, 40 => 1, 41 => 1];
+            // =>, before a comment, and after a single condition that spans lines, a call then an array. Then on one
+            // line with a comma, before a wrapped =>.
+            return [32 => 1, 34 => 1, 37 => 1, 41 => 1, 44 => 1, 46 => 1];
         }
 
         return [
