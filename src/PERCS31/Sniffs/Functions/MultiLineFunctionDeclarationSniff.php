@@ -25,10 +25,12 @@ use PHP_CodeSniffer\Util\Tokens;
  * `) {}`.
  *
  * The parent also reports any blank line in a multi-line parameter or `use` list (EmptyLine). PER Coding Style 3.1,
- * section 12.4's example has one between two parameters, both before an attribute and before a parameter with none.
- * The parent's check can't be run on its own, so the PERCS31 ruleset excludes EmptyLine, and this sniff reports blank
- * lines itself (BlankLine). A single blank line between parameters is allowed, as the example shows. Any other, such
- * as more than one in a row, one before the closing parenthesis, or one between `use` items, is reported.
+ * section 2.3, allows blank lines "except where explicitly forbidden", and section 12.4's example has one between two
+ * parameters. The parent's check can't be run on its own, so the PERCS31 ruleset excludes EmptyLine, and this sniff
+ * reports blank lines itself (BlankLine). One between two parameters, or two `use` variables, is allowed. One straight
+ * after a list's opening parenthesis, or straight before its closing one, is reported, as the first item goes on the
+ * next line, and the closing parenthesis on the line after the last. So is one after an attribute, as section 12.2
+ * says there MUST NOT be any blank lines between the attributes and the structure.
  *
  * The parent also wants every line of a multi-line parameter or `use` list at the same indent (Indent), so it reports a
  * default value wrapped at an operator, as in `string $e = 'a'` then `. 'b',`, which section 6.4 indents once more.
@@ -317,7 +319,8 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
     }
 
     /**
-     * Report each blank line in the parameter and `use` lists, except those PER allows.
+     * Report each blank line straight after the opening parenthesis of the parameter list or the `use` list, straight
+     * before its closing one, or after an attribute. A blank line between two items is allowed.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the function keyword.
@@ -325,62 +328,57 @@ class MultiLineFunctionDeclarationSniff extends SquizSniff
     private function checkBlankLines(File $phpcsFile, int $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
-        $opener = $tokens[$stackPtr]['parenthesis_opener'] ?? null;
-        $closer = $tokens[$stackPtr]['parenthesis_closer'] ?? null;
-        if (!is_int($opener) || !is_int($closer)) {
-            return;
-        }
+        $lists = [[$tokens[$stackPtr]['parenthesis_opener'] ?? null, $tokens[$stackPtr]['parenthesis_closer'] ?? null]];
 
         // A closure's use list is checked too, as the parent does.
         $use = $this->findUse($phpcsFile, $stackPtr);
-        $useCloser = $use === null ? null : ($tokens[$use]['parenthesis_closer'] ?? null);
-        $closer = is_int($useCloser) ? $useCloser : $closer;
+        if ($use !== null) {
+            $lists[] = [$tokens[$use]['parenthesis_opener'] ?? null, $tokens[$use]['parenthesis_closer'] ?? null];
+        }
 
-        $parameterCloser = $tokens[$opener]['parenthesis_closer'];
-        for ($i = ($opener + 1); $i < $closer; $i++) {
-            $isBlankLine = $tokens[$i]['code'] === T_WHITESPACE
-                && $tokens[$i]['column'] === 1
-                && $tokens[$i]['line'] !== $tokens[($i + 1)]['line'];
-            if (!$isBlankLine || $this->isAllowedBetweenParameters($phpcsFile, $i, $parameterCloser)) {
+        foreach ($lists as [$opener, $closer]) {
+            if (!is_int($opener) || !is_int($closer)) {
                 continue;
             }
 
-            $fix = $phpcsFile->addFixableError(
-                'Blank line not allowed here in a multi-line function declaration',
-                $i,
-                self::CODE_BLANK_LINE,
-            );
-            if ($fix) {
-                $phpcsFile->fixer->replaceToken($i, '');
+            $blankLines = [
+                ...LayoutHelper::findBlankLinesAtStartAndEnd($phpcsFile, $opener, $closer),
+                ...$this->findBlankLinesAfterAttributes($phpcsFile, $opener, $closer),
+            ];
+            foreach (array_unique($blankLines) as $blankLine) {
+                $error = 'Blank line not allowed here in a multi-line function declaration';
+                if ($phpcsFile->addFixableError($error, $blankLine, self::CODE_BLANK_LINE)) {
+                    $phpcsFile->fixer->replaceToken($blankLine, '');
+                }
             }
         }
     }
 
     /**
-     * Check whether a blank line is always allowed: a single one after a parameter's comma, before the next parameter
-     * or its attributes.
+     * Find the blank lines straight after an attribute block in a parameter list. Section 12.2 says there MUST NOT be
+     * any blank lines between the attributes and the structure, so one between an attribute and its parameter, or
+     * between two attribute blocks, is reported.
      *
      * @param File $phpcsFile The file being scanned.
-     * @param int $blankPtr The blank line's whitespace token.
-     * @param int $parameterCloser The position of the parameter list's closing parenthesis.
-     * @return bool True if it's a single blank line between two parameters.
+     * @param int $opener The position of the list's opening parenthesis.
+     * @param int $closer The position of the list's closing parenthesis.
+     * @return list<int> The position of each blank line's whitespace token.
      */
-    private function isAllowedBetweenParameters(File $phpcsFile, int $blankPtr, int $parameterCloser): bool
+    private function findBlankLinesAfterAttributes(File $phpcsFile, int $opener, int $closer): array
     {
         $tokens = $phpcsFile->getTokens();
-        $next = $phpcsFile->findNext(T_WHITESPACE, ($blankPtr + 1), null, true);
-        $previous = $phpcsFile->findPrevious(T_WHITESPACE, ($blankPtr - 1), null, true);
-        if ($next === false || $previous === false) {
-            return false;
+        $blankLines = [];
+        for ($i = ($opener + 1); $i < $closer; $i++) {
+            if (!LayoutHelper::isBlankLine($phpcsFile, $i)) {
+                continue;
+            }
+
+            $previous = $phpcsFile->findPrevious(T_WHITESPACE, ($i - 1), $opener, true);
+            if ($previous !== false && $tokens[$previous]['code'] === T_ATTRIBUTE_END) {
+                $blankLines[] = $i;
+            }
         }
 
-        // Inside the parameter list, not before its closing parenthesis, and only one blank line: the comma, or a
-        // comment after it, is on the line just above.
-        $comma = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($blankPtr - 1), null, true);
-
-        return $next < $parameterCloser
-            && $comma !== false
-            && $tokens[$comma]['code'] === T_COMMA
-            && $tokens[$previous]['line'] === ($tokens[$blankPtr]['line'] - 1);
+        return $blankLines;
     }
 }

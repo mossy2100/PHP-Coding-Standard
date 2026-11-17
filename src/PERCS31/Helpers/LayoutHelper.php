@@ -96,4 +96,55 @@ class LayoutHelper
         return $tokens[$first]['line'] !== $tokens[$opener]['line']
             || $tokens[$last]['line'] !== $tokens[$closer]['line'];
     }
+
+    /**
+     * Check whether a token is a blank line: whitespace that starts a line and ends it.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $ptr The position of the token.
+     * @return bool True if the token is a line with nothing on it.
+     */
+    public static function isBlankLine(File $phpcsFile, int $ptr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+
+        return $tokens[$ptr]['code'] === T_WHITESPACE
+            && $tokens[$ptr]['column'] === 1
+            && isset($tokens[($ptr + 1)])
+            && $tokens[$ptr]['line'] !== $tokens[($ptr + 1)]['line'];
+    }
+
+    /**
+     * Find the blank lines at the start and the end of a list: straight after its opening bracket, and straight before
+     * its closing one.
+     *
+     * PER Coding Style 3.1, section 2.3, allows blank lines "except where explicitly forbidden", so one between two
+     * items of a list is fine, and isn't looked for. But the first item goes on the line after the opening bracket,
+     * and the closing bracket on the line after the last, so a blank line at either end is reported.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the opening bracket.
+     * @param int $closer The position of the closing bracket.
+     * @return list<int> The position of each blank line's whitespace token, in order.
+     */
+    public static function findBlankLinesAtStartAndEnd(File $phpcsFile, int $opener, int $closer): array
+    {
+        $tokens = $phpcsFile->getTokens();
+        $blankLines = [];
+        for ($i = ($opener + 1); $i < $closer && $tokens[$i]['code'] === T_WHITESPACE; $i++) {
+            if (self::isBlankLine($phpcsFile, $i)) {
+                $blankLines[$i] = $i;
+            }
+        }
+
+        for ($i = ($closer - 1); $i > $opener && $tokens[$i]['code'] === T_WHITESPACE; $i--) {
+            if (self::isBlankLine($phpcsFile, $i)) {
+                $blankLines[$i] = $i;
+            }
+        }
+
+        sort($blankLines);
+
+        return $blankLines;
+    }
 }

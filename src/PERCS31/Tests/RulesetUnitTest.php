@@ -182,6 +182,31 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a blank line between two interfaces is allowed, as section 2.3 doesn't forbid one, and that two
+     * interfaces on a line are still reported and split. The parent's InterfaceSameLine, which reports both, is
+     * excluded in the ruleset.
+     */
+    public function testBlankLineBetweenInterfacesIsAllowed(): void
+    {
+        $header = "<?php\n\nnamespace Vendor\\Package;\n\nclass Foo implements\n    Countable,\n\n";
+        $file = $this->copyToTempFile(null, $header . "    Stringable, Traversable\n{\n    // ...\n}\n");
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        $reported = substr_count($result['output'], 'ClassDeclaration.InterfaceNotOnOwnLine');
+
+        $this->assertSame(1, $reported, $result['output']);
+        $this->assertStringNotContainsString('InterfaceSameLine', $result['output']);
+        $this->assertSame($header . "    Stringable,\n    Traversable\n{\n    // ...\n}\n", $fixed);
+    }
+
+    /**
      * Test that an object operator at the end of a line is moved to the start of the next, with no blank line left
      * behind. PEAR.WhiteSpace.ObjectOperatorIndent's fix, which PERCS31 once used, left one after this sniff's.
      */

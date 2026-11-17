@@ -902,16 +902,37 @@ also delete the comment.
 
 ## 4.5 Method and Function Parameters
 
-### Blank Lines in Parameter Lists
+### Blank Lines in a List
 
-**Issue:** 2.3 allows blank lines "to indicate related blocks of code", without saying where. 12.2 allows a blank line
-between one parameter and the attributes of the next. Nothing covers other blank lines in a parameter list.
+**Issue:** 2.3 says "Blank lines MAY be added to improve readability and to indicate related blocks of code except where
+explicitly forbidden". The spec's examples rarely show a blank line between two items of a list, so it's unclear whether
+one is allowed there.
 
-**Decision:** A single blank line between parameters is allowed. Any other blank line in a parameter or closure `use`
-list is reported: two or more in a row, one before `)`, and one between `use` items.
+**Decision:** It is, in every list: parameters, a closure's `use` variables, a call's or an attribute's arguments, an
+array's values, a `match`'s arms, a group `use`'s names and interfaces after `implements`. A comment between two items
+is allowed too. So this passes:
 
-**Why:** 12.4's example shows one blank line between parameters. Nothing in the spec shows blank lines anywhere else in
-these lists.
+```php
+$mailer->send(
+    $recipient,
+    $subject,
+
+    // The body, in both formats.
+    $html,
+    $text,
+);
+```
+
+A blank line is only reported where the text rules it out:
+
+- Straight after a list's opening bracket, as the first item goes "on the next line" (4.5, 4.7, 11).
+- Straight before its closing bracket, as that goes on the line after the last item. 11 says so for an array, and 4.5
+  puts a parameter list's `)` and `{` "together on their own line". 4.7 doesn't say it for a call, which follows the
+  same pattern.
+- After an attribute, as "There MUST NOT be any blank lines between... the attributes and the structure" (12.2).
+
+**Why:** 2.3 only excludes a blank line that's explicitly forbidden, and an example that doesn't happen to have one
+isn't a ban. 12.4's example has a blank line between two parameters, which shows the spec's authors use them this way.
 
 ---
 
@@ -1130,11 +1151,13 @@ allowed form, and no rule covers them.
 
 ### Blank Lines Between Arguments
 
-**Issue:** 4.7 doesn't forbid a blank line between a call's arguments.
+**Issue:** 4.7 doesn't forbid a blank line between a call's arguments, and none of its examples has one.
 
-**Decision:** A blank line between arguments, or before the call's `)`, is reported.
+**Decision:** One is allowed, as in any list. See [Blank Lines in a List](#blank-lines-in-a-list) (4.5). A blank line
+straight after the call's `(`, or straight before its `)`, is reported.
 
-**Why:** 4.7 introduces its examples as "The following examples show correct argument usage", and none has a blank line.
+**Why:** 2.3 allows blank lines "except where explicitly forbidden". PHP_CodeSniffer's PSR-12 standard reports one here,
+but nothing in the text does.
 
 ---
 
@@ -1428,7 +1451,8 @@ brace (4). PHP_CodeSniffer reads the same PSR-12 rule this way.
 
 **Decision:** It's reported.
 
-**Why:** 5.2's example, introduced as a template for its rules, has none.
+**Why:** 5.2's example, introduced as a template for its rules, has none. It follows the pattern of section 5, where a
+structure's body "MUST be on the next line after the opening brace". A `case` has a colon in place of a brace.
 
 ---
 

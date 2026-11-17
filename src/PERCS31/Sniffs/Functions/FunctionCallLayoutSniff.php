@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PERCS31\Sniffs\Functions;
 
+use PERCS31\Helpers\LayoutHelper;
 use PERCS31\Helpers\PropertyHookHelper;
 use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
@@ -33,10 +34,17 @@ use PHP_CodeSniffer\Util\Tokens;
  *   language constructs, and parentheses after one only group its expression, as in
  *   `include ($a ? 'x' : 'y') . '.php';`. PER has no rule for them.
  *
+ * The parent also reports any blank line in a multi-line argument list (EmptyLine). Section 2.3 allows blank lines
+ * "except where explicitly forbidden", and nothing forbids one between two arguments. So the PERCS31 ruleset excludes
+ * EmptyLine, and this sniff reports only a blank line straight after the opening parenthesis, or straight before the
+ * closing one (BlankLine), as the first argument goes on the next line.
+ *
  * It's named Layout, not Signature like its parent, as a function's signature is its declaration, not a call.
  */
 class FunctionCallLayoutSniff extends Psr2Sniff
 {
+    public const string CODE_BLANK_LINE = 'BlankLine';
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -85,6 +93,41 @@ class FunctionCallLayoutSniff extends Psr2Sniff
         }
 
         parent::process($phpcsFile, $stackPtr);
+
+        if ($opener !== false) {
+            $this->checkBlankLines($phpcsFile, $stackPtr, $opener);
+        }
+    }
+
+    /**
+     * Report each blank line straight after an argument list's opening parenthesis, or straight before its closing
+     * one. A blank line between two arguments is allowed.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the function's name.
+     * @param int $opener The position of the token after the function's name, which may be the opening parenthesis.
+     */
+    private function checkBlankLines(File $phpcsFile, int $stackPtr, int $opener): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $closer = $tokens[$opener]['parenthesis_closer'] ?? null;
+        if ($tokens[$opener]['code'] !== T_OPEN_PARENTHESIS || !is_int($closer)) {
+            return;
+        }
+
+        // A function's name in its declaration isn't a call, as the parent has it.
+        $previous = $phpcsFile->findPrevious([...Tokens::EMPTY_TOKENS, T_BITWISE_AND], ($stackPtr - 1), null, true);
+        if ($previous !== false && $tokens[$previous]['code'] === T_FUNCTION) {
+            return;
+        }
+
+        foreach (LayoutHelper::findBlankLinesAtStartAndEnd($phpcsFile, $opener, $closer) as $blankLine) {
+            $error = 'Blank line not allowed straight after the opening parenthesis of a function call, or before the'
+                . ' closing one';
+            if ($phpcsFile->addFixableError($error, $blankLine, self::CODE_BLANK_LINE)) {
+                $phpcsFile->fixer->replaceToken($blankLine, '');
+            }
+        }
     }
 
     /**

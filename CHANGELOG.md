@@ -503,6 +503,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- **A blank line between two items of a list (breaking).** PER Coding Style 3.1 allows blank lines "except where
+  explicitly forbidden", so one between two items is now allowed in every list. These passed already in parameters,
+  arrays, `match` arms and a group `use`. They now pass in a call's or an attribute's arguments, a closure's `use`
+  list and a list of interfaces, and more than one in a row passes between parameters. A blank line straight after a
+  list's opening bracket, straight before its closing one, or after a parameter's attributes is still an error. Three
+  codes changed, so a `phpcs:ignore` or an `<exclude>` that names one needs the new code:
+  - `PERCS31.Functions.FunctionCallLayout.EmptyLine` is now `BlankLine`.
+  - `PERCS31.Classes.ClassDeclaration.InterfaceSameLine` and `ExtendsInterfaceSameLine` are now
+    `InterfaceNotOnOwnLine`, which no longer reports an interface after a blank line.
 - **Aligned `match` arms.** `PERCS31.WhiteSpace.ArrowSpacing` now requires at least one space each side of a `match`
   arm's `=>`, not exactly one, so arms can be lined up, as an array's and a `yield`'s already could. PER Coding Style
   3.1 shows too few arrows to rule that out, and allows several spaces around an operator for readability. Jumbo still

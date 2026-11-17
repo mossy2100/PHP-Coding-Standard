@@ -489,9 +489,9 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that both standards allow one blank line between parameters, as section 12.4's example has, and report
-     * more than one, or one before a closing parenthesis or between `use` items. The parent's EmptyLine, which reports
-     * them all, is excluded in the ruleset.
+     * Test that both standards allow a blank line between two parameters or two `use` variables, as section 2.3 does,
+     * and report one after an attribute, after an opening parenthesis or before a closing one. The parent's EmptyLine,
+     * which reports them all, is excluded in the ruleset.
      */
     public function testBlankLinesInDeclaration(): void
     {
@@ -501,14 +501,15 @@ class RulesetUnitTest extends TestCase
             $result = $this->runTool('phpcs', ['-s', "--standard=$standard", $sniff, '--report=emacs', $fixture]);
 
             preg_match_all('/:(\\d+):\\d+: error - .*\\.BlankLine\\)/', $result['output'], $matches);
-            $this->assertSame(['16', '20', '32', '41'], $matches[1], $result['output']);
+            $this->assertSame(['20', '41', '47'], $matches[1], $result['output']);
             $this->assertStringNotContainsString('EmptyLine', $result['output']);
         }
     }
 
     /**
-     * Test that both standards report a blank line between a call's arguments or before its closing parenthesis, as
-     * EmptyLine, and one before the first argument, as FirstArgumentPosition.
+     * Test that both standards allow a blank line between two of a call's arguments, as section 2.3 does, and report
+     * one after its opening parenthesis or before its closing one, as BlankLine. The parent's EmptyLine, which reports
+     * them all, is excluded in the ruleset.
      */
     public function testBlankLinesInCall(): void
     {
@@ -517,9 +518,9 @@ class RulesetUnitTest extends TestCase
         foreach (['PERCS31', 'Jumbo'] as $standard) {
             $result = $this->runTool('phpcs', ['-s', "--standard=$standard", $sniff, '--report=emacs', $fixture]);
 
-            preg_match_all('/:(\\d+):\\d+: error - .*\\.EmptyLine\\)/', $result['output'], $matches);
-            $this->assertSame(['9', '15', '20'], $matches[1], $result['output']);
-            $this->assertStringContainsString('FirstArgumentPosition', $result['output']);
+            preg_match_all('/:(\\d+):\\d+: error - .*\\.BlankLine\\)/', $result['output'], $matches);
+            $this->assertSame(['15', '25'], $matches[1], $result['output']);
+            $this->assertStringNotContainsString('EmptyLine', $result['output']);
         }
     }
 

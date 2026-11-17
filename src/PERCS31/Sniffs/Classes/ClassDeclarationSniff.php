@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\Classes;
 
 use PERCS31\Helpers\EmptyBodyHelper;
+use PERCS31\Helpers\FixerHelper;
+use PERCS31\Helpers\LayoutHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\PSR2\Sniffs\Classes\ClassDeclarationSniff as Psr2Sniff;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Checks the declaration of a class, interface, trait or enum, allowing an empty body as `{}`.
@@ -15,9 +18,17 @@ use PHP_CodeSniffer\Standards\PSR2\Sniffs\Classes\ClassDeclarationSniff as Psr2S
  * `class Foo {}`. PER Coding Style 3.1, section 4, says an empty body should be written that way. For an empty body on
  * one line, this sniff runs only the parent's checks on the declaration itself (`extends`, `implements` and their
  * spacing), and skips its brace checks. Everything else is left to the parent.
+ *
+ * Section 4.1 says a split list of interfaces has "only one interface per line". The parent's check for that
+ * (InterfaceSameLine, and ExtendsInterfaceSameLine for an interface's `extends`) also reports an interface after a
+ * blank line, with the same message. Section 2.3 allows blank lines "except where explicitly forbidden", and nothing
+ * forbids one between two interfaces. The parent's check can't be run without that, so the PERCS31 ruleset excludes
+ * both codes, and this sniff reports an interface that shares a line with the one before it (InterfaceNotOnOwnLine).
  */
 class ClassDeclarationSniff extends Psr2Sniff
 {
+    public const string CODE_INTERFACE_NOT_ON_OWN_LINE = 'InterfaceNotOnOwnLine';
+
     /**
      * Processes this test, when one of its tokens is encountered.
      *
@@ -27,11 +38,52 @@ class ClassDeclarationSniff extends Psr2Sniff
      */
     public function process(File $phpcsFile, int $stackPtr): void
     {
+        $this->checkOneInterfacePerLine($phpcsFile, $stackPtr);
+
         if (EmptyBodyHelper::isOnOneLine($phpcsFile, $stackPtr)) {
             $this->processOpen($phpcsFile, $stackPtr);
             return;
         }
 
         parent::process($phpcsFile, $stackPtr);
+    }
+
+    /**
+     * Report an interface that shares a line with the one before it, in a list of interfaces split over lines: a
+     * class's or enum's `implements`, or an interface's `extends`. The first interface is left to the parent.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the class, interface or enum keyword.
+     */
+    private function checkOneInterfacePerLine(File $phpcsFile, int $stackPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $opener = $tokens[$stackPtr]['scope_opener'] ?? null;
+        $keywordCode = $tokens[$stackPtr]['code'] === T_INTERFACE ? T_EXTENDS : T_IMPLEMENTS;
+        $keyword = is_int($opener) ? $phpcsFile->findNext($keywordCode, ($stackPtr + 1), $opener) : false;
+        if (!is_int($opener) || $keyword === false) {
+            return;
+        }
+
+        $last = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($opener - 1), $keyword, true);
+        if ($last === false || $tokens[$last]['line'] === $tokens[$keyword]['line']) {
+            return;
+        }
+
+        $indent = str_repeat(' ', (LayoutHelper::lineIndent($phpcsFile, $stackPtr) + LayoutHelper::INDENT));
+        for ($comma = $keyword; ($comma = $phpcsFile->findNext(T_COMMA, ($comma + 1), $opener)) !== false;) {
+            $name = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($comma + 1), $opener, true);
+            if ($name === false || $phpcsFile->findFirstOnLine(T_WHITESPACE, $name, true) === $name) {
+                continue;
+            }
+
+            $error = 'Only one interface may be specified per line in a multi-line %s declaration';
+            $data = [strtolower($tokens[$keyword]['content'])];
+            $before = $phpcsFile->findPrevious(T_WHITESPACE, ($name - 1), $keyword, true);
+            $code = self::CODE_INTERFACE_NOT_ON_OWN_LINE;
+            if ($before !== false && $phpcsFile->addFixableError($error, $name, $code, $data)) {
+                FixerHelper::replaceBetween($phpcsFile, $before, $name, $phpcsFile->eolChar . $indent);
+            }
+        }
     }
 }

@@ -653,6 +653,12 @@ written as `{}` on one line, e.g. `class Foo {}`. This replaces `PSR2.Classes.Cl
 [PER Coding Style 3.1, Section 4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) recommends. This sniff skips that case, and leaves everything else to the parent. For an
 empty body, the checks on `extends` and `implements` still run. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
 
+[Section 4.1](https://www.php-fig.org/per/coding-style/#41-extends-and-implements) says a split list of interfaces has "only one interface per line". The parent's check for that,
+`InterfaceSameLine`, also reports an interface that follows a blank line, with the same message. [Section 2.3](https://www.php-fig.org/per/coding-style/#23-lines) allows
+blank lines "except where explicitly forbidden", and nothing forbids one between two interfaces. So the ruleset excludes
+that code and `ExtendsInterfaceSameLine`, and this sniff reports an interface that shares a line with the one before it,
+as `InterfaceNotOnOwnLine`.
+
 **Auto-fixable:** yes.
 
 ---
@@ -1856,9 +1862,11 @@ and when split, the first argument on the next line and one per line. The parent
   has no rule for them, so this sniff skips them.
 
 It's named Layout, not Signature like its parent, as a function's signature is its declaration. PSR-12 turns off the
-parent's `SpaceAfterCloseBracket` and `OpeningIndent` codes, so they're off here too. A blank line between arguments, or
-before the closing parenthesis, is reported as `EmptyLine`, as 4.7's examples, which "show correct argument usage", have
-none.
+parent's `SpaceAfterCloseBracket` and `OpeningIndent` codes, so they're off here too.
+
+The parent also reports every blank line in a multi-line argument list, as `EmptyLine`. [Section 2.3](https://www.php-fig.org/per/coding-style/#23-lines) allows blank lines
+"except where explicitly forbidden", and nothing forbids one between two arguments. So the ruleset excludes that code,
+and this sniff reports only a blank line straight after the `(` or straight before the `)`, as `BlankLine`.
 
 **Auto-fixable:** yes, as the parent.
 
@@ -1895,11 +1903,11 @@ except in an empty body written as `{}` on one line, e.g. `function reset(): voi
 case, and leaves everything else to the parent. For an empty body after a single-line signature, the parent's
 `CloseBracketNewLine` check is skipped too, as it can't be run on its own. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
 
-The parent also reports every blank line in a multi-line parameter or `use` list, but [section 12.4](https://www.php-fig.org/per/coding-style/#124-example)'s example has one
-between two parameters, both before an attribute and before a parameter with none. So the ruleset excludes the parent's
-`EmptyLine` code, and this sniff reports blank lines itself, as `BlankLine`. A single blank line between parameters is
-allowed, as the example shows. Any other is reported, such as two in a row, one straight after `(` or before `)`, one
-after a parameter's attributes, or one between a closure's `use` items.
+The parent also reports every blank line in a multi-line parameter or `use` list. [Section 2.3](https://www.php-fig.org/per/coding-style/#23-lines) allows blank lines
+"except where explicitly forbidden", and [section 12.4](https://www.php-fig.org/per/coding-style/#124-example)'s example has one between two parameters. So the ruleset
+excludes the parent's `EmptyLine` code, and this sniff reports blank lines itself, as `BlankLine`. One between two
+parameters, or two of a closure's `use` variables, is allowed. One straight after `(` or before `)` is reported, and so
+is one after a parameter's attributes, which section 12.2 forbids.
 
 The parent also wants every line of a multi-line parameter or `use` list at the same indent, so it reports a default
 value wrapped at an operator, as in `string $name = 'a'` then `. 'b',`. That line continues its parameter, so

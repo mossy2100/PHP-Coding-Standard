@@ -6,8 +6,8 @@ namespace Vendor;
 
 final class Example
 {
-    // PER Coding Style 3.1, sections 2.3 and 12.4: one blank line is allowed between parameters, with or without
-    // attributes, and no other.
+    // PER Coding Style 3.1, section 2.3: a blank line is allowed between two parameters, or two use variables, and
+    // not after an attribute (12.2), after the opening parenthesis or before the closing one.
     public function blanks(
         string $a,
 
@@ -39,6 +39,13 @@ final class Example
     public function trailing(
         string $a,
 
+    ): string {
+        return $a;
+    }
+
+    public function leading(
+
+        string $a,
     ): string {
         return $a;
     }

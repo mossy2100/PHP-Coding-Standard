@@ -124,9 +124,14 @@
     <rule ref="PERCS31.WhiteSpace.ConsistentIndent"/>
 
     <!-- Brace sniffs, extended to allow an empty body as {} (4, 4.4, 7, 8) -->
-    <rule ref="PERCS31.Classes.ClassDeclaration"/>
+    <rule ref="PERCS31.Classes.ClassDeclaration">
+        <!-- Replaced by the sniff's own InterfaceNotOnOwnLine check, which doesn't report an interface after a blank
+             line (2.3, 4.1) -->
+        <exclude name="PERCS31.Classes.ClassDeclaration.InterfaceSameLine"/>
+        <exclude name="PERCS31.Classes.ClassDeclaration.ExtendsInterfaceSameLine"/>
+    </rule>
     <rule ref="PERCS31.Functions.MultiLineFunctionDeclaration">
-        <!-- Replaced by the sniff's own BlankLine check, which allows the blank lines PER does (2.3, 12.2, 12.4) -->
+        <!-- Replaced by the sniff's own BlankLine check, which allows a blank line between two items (2.3, 12.4) -->
         <exclude name="PERCS31.Functions.MultiLineFunctionDeclaration.EmptyLine"/>
         <!-- Replaced by the sniff's own ParameterIndent check, which leaves a default value wrapped at an operator to
              the sniffs for 6.4 -->
@@ -351,10 +356,11 @@
          cloned, e.g. clone($a)->b (4.7) -->
     <rule ref="PERCS31.PHP.RequireCloneParentheses"/>
 
-    <!-- A call's argument list, including clone()'s, but not a set hook's parameter list (4.7). No blank line between
-         arguments, as 4.7's examples show. PSR-12 turns off the parent's SpaceAfterCloseBracket and OpeningIndent
-         codes. -->
+    <!-- A call's argument list, including clone()'s, but not a set hook's parameter list (4.7). The parent's EmptyLine
+         is replaced by the sniff's own BlankLine check, which allows a blank line between two arguments (2.3). PSR-12
+         turns off the parent's SpaceAfterCloseBracket and OpeningIndent codes. -->
     <rule ref="PERCS31.Functions.FunctionCallLayout">
+        <exclude name="PERCS31.Functions.FunctionCallLayout.EmptyLine"/>
         <exclude name="PERCS31.Functions.FunctionCallLayout.SpaceAfterCloseBracket"/>
         <exclude name="PERCS31.Functions.FunctionCallLayout.OpeningIndent"/>
     </rule>
