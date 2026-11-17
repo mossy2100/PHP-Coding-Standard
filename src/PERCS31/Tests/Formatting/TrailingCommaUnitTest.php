@@ -71,6 +71,13 @@ class TrailingCommaUnitTest extends AbstractSniffTestCase
             204 => 1,
             // A comma after a single argument split over lines, in a call through an expression.
             208 => 1,
+            // A comma with a comment after it, in a parameter list, a closure's use list, an array and a short list.
+            212 => 1,
+            214 => 2,
+            218 => 1,
+            220 => 1,
+            222 => 1,
+            224 => 1,
         ];
     }
 

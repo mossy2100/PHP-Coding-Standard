@@ -206,3 +206,28 @@ $a = 'strlen'(
 $a = $handlers[$name]([
     1,
 ],);
+
+// A comma with a comment after it, in a list on one line that another sniff checks. The comment hides the comma from
+// that sniff. The fix keeps the comment.
+function hiddenComma($a, /* keep */): void {}
+
+$hiddenClosure = function ($a, /* keep */) use ($c, /* keep */) {
+    return $c;
+};
+
+$hiddenArrow = fn($a, /* keep */) => 1;
+
+$hiddenArray = [1, 2, /* keep */];
+
+$hiddenLongArray = array(1, 2, /* keep */);
+
+[$e, $f, /* keep */] = $g;
+
+// Valid: a comment between two items, a split list, and a list with no trailing comma.
+$notHidden = [1, 2, /* keep */ 3];
+$notHiddenSplit = [
+    1, // One.
+];
+$notHiddenImport = function () use ($c) {
+    return $c;
+};

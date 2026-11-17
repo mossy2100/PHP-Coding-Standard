@@ -1726,7 +1726,12 @@ and `'strlen'(`. `PhpCollective.PHP.DisallowTrailingCommaInSingleLine` reports a
 requires in a split list. A single argument split over lines, as in `clone($a, [` ... `]);`, doesn't split the argument
 list, so a comma after it is reported, as [`PERCS31.Functions.DisallowTrailingCommaInCall`](#percs31functionsdisallowtrailingcommaincall) does for a call.
 
-**Auto-fixable:** yes. A missing comma goes after the last item, before any comment.
+It also reports a trailing comma with a comment after it, on one line, in a parameter list, a closure's `use` list, an
+array and a short list, as in `[1, 2, /* Why. */]`. The sniffs that check those lists look for the comma straight
+before the closing bracket, so the comment hides it from them.
+
+**Auto-fixable:** yes. A missing comma goes after the last item, before any comment. A comma that isn't allowed is removed, and a comment after it is
+kept.
 
 **Good:**
 

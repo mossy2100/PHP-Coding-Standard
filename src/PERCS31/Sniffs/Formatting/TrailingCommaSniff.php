@@ -10,6 +10,7 @@ use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\UseStatements;
 
 /**
  * Requires a trailing comma in a multi-line `match`, group `use`, `list()`, or the arguments of an anonymous class,
@@ -37,6 +38,10 @@ use PHP_CodeSniffer\Util\Tokens;
  * line, as in `1, 2 => 'a',`, and one when they're split over lines, as in `1,` then `2, => 'a',`. The list is split
  * when it doesn't start and end on the same line, which includes one with a condition that spans lines, such as an
  * array.
+ *
+ * It also reports a trailing comma with a comment after it, on one line, in a parameter list, a closure's `use` list
+ * and an array or short list, as in `[1, 2,` then a block comment then `]`. The sniffs that check those lists look for
+ * the comma straight before the closing bracket, so the comment hides it from them. Without a comment, they report it.
  */
 class TrailingCommaSniff implements Sniff
 {
@@ -45,13 +50,27 @@ class TrailingCommaSniff implements Sniff
     public const string CODE_DISALLOWED = 'Disallowed';
 
     /**
+     * The tokens that start a list another sniff checks, where this sniff only looks for a comma hidden by a comment.
+     */
+    private const array LISTS_OTHER_SNIFFS_CHECK = [T_FUNCTION, T_CLOSURE, T_FN, T_USE, T_OPEN_SHORT_ARRAY, T_ARRAY];
+
+    /**
      * Returns an array of tokens this test wants to listen for.
      *
      * @return array<int|string>
      */
     public function register(): array
     {
-        return [T_MATCH, T_OPEN_USE_GROUP, T_ANON_CLASS, T_LIST, T_CLONE, T_EXIT, T_OPEN_PARENTHESIS];
+        return [
+            T_MATCH,
+            T_OPEN_USE_GROUP,
+            T_ANON_CLASS,
+            T_LIST,
+            T_CLONE,
+            T_EXIT,
+            T_OPEN_PARENTHESIS,
+            ...self::LISTS_OTHER_SNIFFS_CHECK,
+        ];
     }
 
     /**
@@ -64,6 +83,11 @@ class TrailingCommaSniff implements Sniff
     {
         $tokens = $phpcsFile->getTokens();
         $code = $tokens[$stackPtr]['code'];
+        if (in_array($code, self::LISTS_OTHER_SNIFFS_CHECK, true)) {
+            $this->checkCommaBeforeComment($phpcsFile, $stackPtr);
+            return;
+        }
+
         if ($code === T_OPEN_PARENTHESIS) {
             $closer = $tokens[$stackPtr]['parenthesis_closer'] ?? null;
             if (is_int($closer) && $this->isExpressionCall($phpcsFile, $stackPtr)) {
@@ -103,6 +127,54 @@ class TrailingCommaSniff implements Sniff
         }
 
         $this->checkList($phpcsFile, $opener, $closer, $kind, $tokens[$opener]['line'] !== $tokens[$closer]['line']);
+    }
+
+    /**
+     * Report a trailing comma with a comment after it, in a list on one line that another sniff checks: a parameter
+     * list, a closure's `use` list, an array or a short list. The fix removes the comma, and keeps the comment.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the token that starts the list, or owns its brackets.
+     */
+    private function checkCommaBeforeComment(File $phpcsFile, int $stackPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $code = $tokens[$stackPtr]['code'];
+        if ($code === T_OPEN_SHORT_ARRAY) {
+            $opener = $stackPtr;
+            $closer = $tokens[$stackPtr]['bracket_closer'] ?? null;
+            $kind = 'array';
+        } elseif ($code === T_USE) {
+            if (!UseStatements::isClosureUse($phpcsFile, $stackPtr)) {
+                return;
+            }
+
+            $opener = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
+            $closer = $opener === false ? null : ($tokens[$opener]['parenthesis_closer'] ?? null);
+            $kind = 'closure use list';
+        } else {
+            $opener = $tokens[$stackPtr]['parenthesis_opener'] ?? null;
+            $closer = $tokens[$stackPtr]['parenthesis_closer'] ?? null;
+            $kind = $code === T_ARRAY ? 'array' : 'parameter list';
+        }
+
+        if (!is_int($opener) || !is_int($closer) || $tokens[$opener]['line'] !== $tokens[$closer]['line']) {
+            return;
+        }
+
+        $last = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($closer - 1), $opener, true);
+        if (
+            $last === false
+            || $tokens[$last]['code'] !== T_COMMA
+            || $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($last + 1), $closer) === false
+        ) {
+            return;
+        }
+
+        $error = 'The last item in a single-line %s must not have a trailing comma';
+        if ($phpcsFile->addFixableError($error, $last, self::CODE_DISALLOWED, [$kind])) {
+            $phpcsFile->fixer->replaceToken($last, '');
+        }
     }
 
     /**
