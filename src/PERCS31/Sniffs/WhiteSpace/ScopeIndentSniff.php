@@ -15,6 +15,8 @@
  *   on, as the type may be split over lines.
  * - A line inside a block comment, after its first, isn't checked. Only the comment's first line is placed like code,
  *   and the lines after it are placed against that one, which is left to a sniff for comments.
+ * - A comment's indent and a docblock's aren't checked by default, as PER has no rule for either. The original checks
+ *   both unless ignoreIndentationTokens is set.
  * - A `phpcs:set` for this sniff's own code sets its `exact` property, as one for the original's code does.
  * - The jump over a scope on one line never moves back. After a braced `case` body, the next label's closer is the
  *   `}` before it, so the original never finished, as in `} default:`.
@@ -92,9 +94,11 @@ class ScopeIndentSniff implements Sniff
      * or PHP open/close tags can escape from here and have their own
      * rules elsewhere.
      *
-     * @var int[]
+     * PERCS31: a comment and a docblock by default, as PER Coding Style 3.1 has no rule for a comment's indent.
+     *
+     * @var array<int|string>
      */
-    public $ignoreIndentationTokens = [];
+    public $ignoreIndentationTokens = ['T_COMMENT', 'T_DOC_COMMENT_OPEN_TAG'];
 
     /**
      * List of tokens not needing to be checked for indentation.

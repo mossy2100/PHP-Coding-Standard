@@ -121,15 +121,8 @@
     <rule ref="PERCS31.Formatting.DisallowMultipleStatements"/>
 
     <!-- Indentation, including property hooks (2.4, 4.9) and an anonymous class with attributes (8). A comment's indent
-         isn't checked, as in PSR-12, as PER has no rule for it. -->
-    <rule ref="PERCS31.WhiteSpace.ScopeIndent">
-        <properties>
-            <property name="ignoreIndentationTokens" type="array">
-                <element value="T_COMMENT"/>
-                <element value="T_DOC_COMMENT_OPEN_TAG"/>
-            </property>
-        </properties>
-    </rule>
+         isn't checked, by the sniff's default, as PER has no rule for it. -->
+    <rule ref="PERCS31.WhiteSpace.ScopeIndent"/>
 
     <!-- A line indented further than its scope, after a complete statement (2.4, 5) -->
     <rule ref="PERCS31.WhiteSpace.ConsistentIndent"/>

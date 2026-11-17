@@ -3215,8 +3215,8 @@ inside `process()`, which is one long method with no smaller one to override.
 - **A block comment's later lines:** a line inside a block comment, after its first, isn't checked. Only the comment's
   first line is placed like code.
 
-A comment's indent isn't checked in PERCS31, as PER has no rule for it. The ruleset sets `ignoreIndentationTokens` to
-`T_COMMENT` and `T_DOC_COMMENT_OPEN_TAG`, as PSR-12 does.
+A comment's indent isn't checked in PERCS31, as PER has no rule for it. The sniff's `ignoreIndentationTokens` property
+defaults to `T_COMMENT` and `T_DOC_COMMENT_OPEN_TAG`, which PSR-12 sets in its ruleset.
 
 Every change is marked with a `PERCS31:` comment in the source, so a diff against the original shows only these.
 
@@ -3253,15 +3253,15 @@ class User
 
 **Configuration:**
 
-These are the original's properties. The ruleset sets `ignoreIndentationTokens`, and leaves the rest at their defaults,
-which PER Coding Style 3.1 needs.
+These are the original's properties. The ruleset leaves them all at their defaults, which PER Coding Style 3.1 needs.
+Only the default of `ignoreIndentationTokens` differs from the original's, which is empty.
 
-| Property                  | Type  | Default | Description                                                             |
-| ------------------------- | ----- | ------- | ----------------------------------------------------------------------- |
-| `indent`                  | int   | 4       | Number of spaces per indentation level.                                 |
-| `exact`                   | bool  | false   | Require exactly the expected indent on every line, not at least it.     |
-| `tabIndent`               | bool  | false   | Fix with tabs, not spaces. PER requires spaces.                         |
-| `ignoreIndentationTokens` | array | `[]`    | Tokens whose indent isn't checked. PERCS31 sets two, for comments.      |
+| Property                  | Type  | Default | Description                                                              |
+| ------------------------- | ----- | ------- | ------------------------------------------------------------------------ |
+| `indent`                  | int   | 4       | Number of spaces per indentation level.                                  |
+| `exact`                   | bool  | false   | Require exactly the expected indent on every line, not at least it.      |
+| `tabIndent`               | bool  | false   | Fix with tabs, not spaces. PER requires spaces.                          |
+| `ignoreIndentationTokens` | array | Two     | Tokens whose indent isn't checked: by default, a comment and a docblock. |
 
 ```xml
 <rule ref="PERCS31.WhiteSpace.ScopeIndent">
