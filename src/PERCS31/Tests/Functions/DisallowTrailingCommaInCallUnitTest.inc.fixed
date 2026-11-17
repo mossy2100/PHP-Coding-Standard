@@ -43,3 +43,14 @@ $a = $c->d(fn($x) => [
 $a = max(
     $b,
     $c,);
+
+// A comment after the comma is kept, in a call's arguments and an attribute's.
+foo($a, /* keep */ $b /* this too */);
+$a = new Foo($b /* keep */);
+$a = isset($b /* keep */);
+
+#[Foo(1 /* keep */)]
+function attributed(): void {}
+
+// A parameter list's comma isn't a call's, so it's left to another sniff.
+function declared($a, /* keep */): void {}

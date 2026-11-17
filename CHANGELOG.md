@@ -662,6 +662,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A comment after a call's trailing comma.** The fix for `foo($a, /* Why. */);` deleted the comment with the comma.
+  `PERCS31.Functions.DisallowTrailingCommaInCall` now removes only the comma.
 - **An import after markup, in a file that starts with `<?php declare(strict_types=1) ?>` (breaking).**
   `PERCS31.Files.FileHeader` skipped the whole file, so the import passed. It's now reported, as `ImportAfterCode`. An
   import in the next PHP block, before any markup, still passes.

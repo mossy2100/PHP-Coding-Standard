@@ -26,6 +26,11 @@ class DisallowTrailingCommaInCallUnitTest extends AbstractSniffTestCase
             34 => 1,
             37 => 1,
             40 => 1,
+            // A comment after the comma, in a call's arguments and an attribute's.
+            48 => 1,
+            49 => 1,
+            50 => 1,
+            52 => 1,
         ];
     }
 
