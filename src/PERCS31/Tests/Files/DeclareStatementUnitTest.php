@@ -39,6 +39,9 @@ class DeclareStatementUnitTest extends AbstractSniffTestCase
             34 => 1,
             // A block declare on one line: code after the opening brace.
             39 => 1,
+            // A blank line after a block declare's opening brace, and before its closing one.
+            43 => 1,
+            47 => 1,
         ];
     }
 

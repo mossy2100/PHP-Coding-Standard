@@ -507,6 +507,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- **A blank line inside a block `declare`'s braces (breaking).** One straight after the opening brace, or straight
+  before the closing one, is now reported by `PERCS31.Files.DeclareStatement`, as `BlankLine`, as it is for any control
+  structure. Auto-fixable.
 - **A blank line between two items of a list (breaking).** PER Coding Style 3.1 allows blank lines "except where
   explicitly forbidden", so one between two items is now allowed in every list. These passed already in parameters,
   arrays, `match` arms and a group `use`. They now pass in a call's or an attribute's arguments, a closure's `use`

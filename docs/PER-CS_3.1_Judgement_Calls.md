@@ -745,6 +745,21 @@ other comma has one.
 
 ---
 
+### Blank Lines in a Block `declare`
+
+**Issue:** "Block declare statements are allowed and MUST be formatted as below. Note position of braces and spacing".
+The example has no blank line after its `{` or before its `}`, but the text doesn't forbid one, and 2.3 allows blank
+lines "except where explicitly forbidden".
+
+**Decision:** A blank line straight after a block `declare`'s opening brace, or straight before its closing one, is
+reported. One between two statements in the block is allowed.
+
+**Why:** A block `declare` is a control structure, as PHP's manual lists it, so section 5 applies: "The body MUST be on
+the next line after the opening brace", and "The closing brace MUST be on the next line after the body". The example is
+also a template for the format, and has neither blank line.
+
+---
+
 ### `strict_types` After a Shebang Line
 
 **Issue:** In a file with markup outside PHP tags, the strict types declaration "MUST be on the first line of the file".
