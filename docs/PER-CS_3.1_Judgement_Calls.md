@@ -1255,12 +1255,39 @@ declared like a method, so it isn't read as a call.
 ### Blank Lines Between Hooks
 
 **Issue:** 4.9 says hooks "MUST be separated by at least a single line break", and "MAY be separated by an additional
-blank line to aid readability". 2.3 allows blank lines "except where explicitly forbidden".
+blank line to aid readability". 2.3 allows blank lines "except where explicitly forbidden". A line break isn't a blank
+line, so it's easy to misread this as requiring one or two blank lines.
 
 **Decision:** No blank line or one between hooks. Two or more are reported.
 
+- A single line break puts the next hook on a new line, with no blank line between them. That's the minimum.
+- "An additional blank line" is one more line break, so one blank line. That's the maximum.
+
+4.9's example shows both:
+
+```php
+public string $department {
+    get {
+        return $this->values[__PROPERTY__];
+    }
+    set {
+        $this->values[__PROPERTY__] = $value;
+    }
+}
+// or
+public string $department {
+    get {
+        return $this->values[__PROPERTY__];
+    }
+
+    set {
+        $this->values[__PROPERTY__] = $value;
+    }
+}
+```
+
 **Why:** The MAY names the one thing allowed, "an additional blank line", and "a blank line" is read as one, as in
-"Blank Lines Around `use`" (4.2).
+"Blank Lines Around `use`" (4.2). Unlike a list, where 2.3 is all there is to go on, the spec says here how many.
 
 ---
 
@@ -1273,7 +1300,8 @@ nothing about other hook lists.
 
 **Decision:** `get` comes first in every hook list.
 
-**Why:** Every example in 4.9 has `get` first too, and one order everywhere is easier to read.
+**Why:** It makes no sense to require `get` before `set` when the hooks have no bodies, and not care about the order
+when they do. The order of two hooks doesn't depend on what's in them, and every example in 4.9 has `get` first too.
 
 ---
 
