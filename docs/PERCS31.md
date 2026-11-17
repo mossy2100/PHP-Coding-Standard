@@ -70,7 +70,11 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   `use` statement. Its `MultipleImport` code is replaced by `SlevomatCodingStandard.Classes.TraitUseDeclaration`, which
   also reports several traits in a `use` statement with a `{ }` block.
 - **PSR12.Classes.AnonClassDeclaration** is kept, but its three comma spacing codes are replaced by
-  `Universal.WhiteSpace.CommaSpacing`, which reports the same.
+  `Universal.WhiteSpace.CommaSpacing`, which reports the same. Its six codes for the layout of the argument list are
+  excluded, as [`PERCS31.Functions.FunctionCallLayout`](#percs31functionsfunctioncalllayout) reports the same problems.
+- **Squiz.Functions.FunctionDeclaration** is excluded, as
+  [`PERCS31.Functions.MultiLineFunctionDeclaration`](#percs31functionsmultilinefunctiondeclaration) reports the space after `function` and before the
+  opening parenthesis, with a fix.
 - **PSR12.Properties.ConstantVisibility** is kept, but a constant with no visibility is an error, not a warning, as
   [Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says MUST.
 - **PSR2.Classes.ClassDeclaration**, **Squiz.Functions.MultiLineFunctionDeclaration** and

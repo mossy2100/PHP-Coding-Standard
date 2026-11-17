@@ -625,6 +625,44 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that the spacing of a function's declaration, and of an anonymous class's argument list, is reported once.
+     * Squiz.Functions.FunctionDeclaration and PSR12.Classes.AnonClassDeclaration, which PSR-12 includes, reported each
+     * a second time.
+     */
+    public function testDeclarationAndAnonClassArgumentSpacingIsReportedOnce(): void
+    {
+        $source = "<?php\n\nfunction  a (): void\n{\n    run();\n}\n\n\$b = new class ( \$c ) {\n"
+            . "    public int \$d = 1;\n};\n\n\$e = new class (\$c,\n  \$f, \$g) {\n    public int \$d = 1;\n};\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $after = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+        } finally {
+            unlink($file);
+        }
+
+        preg_match_all('/:(\d+):\d+: error - .*\.(\w+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
+        $reports = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
+        $expected = [
+            '3 SpaceAfterFunction',
+            '3 SpaceBeforeOpenParen',
+            '8 SpaceAfterOpenBracket',
+            '8 SpaceBeforeCloseBracket',
+            '12 ContentAfterOpenBracket',
+            '13 Indent',
+            '13 MultipleArguments',
+            '13 CloseBracketLine',
+        ];
+
+        $this->assertSame($expected, $reports, $result['output']);
+        $this->assertStringNotContainsString('Squiz.Functions.FunctionDeclaration', $result['output']);
+        $this->assertStringNotContainsString('AnonClassDeclaration', $result['output']);
+        $this->assertStringNotContainsString(' error - ', $after['output']);
+    }
+
+    /**
      * Test that an upper-case `CASE` or `DEFAULT` in a switch is reported once, by LowerCaseKeyword, and not again by
      * SwitchDeclaration's own codes for the same keywords.
      */

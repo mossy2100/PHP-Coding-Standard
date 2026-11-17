@@ -71,6 +71,17 @@
         <exclude name="PSR12.Classes.AnonClassDeclaration.SpaceBeforeComma"/>
         <exclude name="PSR12.Classes.AnonClassDeclaration.NoSpaceAfterComma"/>
         <exclude name="PSR12.Classes.AnonClassDeclaration.TooMuchSpaceAfterComma"/>
+        <!-- Covered by PERCS31.Functions.FunctionCallLayout, which reports the same problems in an anonymous class's
+             argument list (4.7, 8) -->
+        <exclude name="PSR12.Classes.AnonClassDeclaration.SpaceAfterOpenBracket"/>
+        <exclude name="PSR12.Classes.AnonClassDeclaration.SpaceBeforeCloseBracket"/>
+        <exclude name="PSR12.Classes.AnonClassDeclaration.FirstParamSpacing"/>
+        <exclude name="PSR12.Classes.AnonClassDeclaration.Indent"/>
+        <exclude name="PSR12.Classes.AnonClassDeclaration.OneParamPerLine"/>
+        <exclude name="PSR12.Classes.AnonClassDeclaration.CloseBracketLine"/>
+        <!-- Covered by PERCS31.Functions.MultiLineFunctionDeclaration, which reports the space after function and
+             before the opening parenthesis, with a fix (4.4) -->
+        <exclude name="Squiz.Functions.FunctionDeclaration"/>
     </rule>
 
     <!-- Visibility on every constant is a MUST (4.3), but PSR12.Properties.ConstantVisibility only gives a warning -->

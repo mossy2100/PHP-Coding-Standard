@@ -662,6 +662,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **Problems reported twice in PERCS31.** The space after `function` and before a declaration's `(`, and the layout
+  of an anonymous class's argument list, each got a second message, from `Squiz.Functions.FunctionDeclaration` and
+  `PSR12.Classes.AnonClassDeclaration`. Those codes are now excluded, as PERCS31's own sniffs report the same problems.
 - **The `)` that ends a multi-line `case` condition (breaking).** On a line of its own, it passed with any indent.
   `PERCS31.ControlStructures.SwitchDeclaration` now requires it level with the `case`, as section 5.2's example shows,
   as `MultiLineConditionCloserIndent`. Auto-fixable.
