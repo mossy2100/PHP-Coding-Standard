@@ -47,6 +47,9 @@ use PHPCSUtils\Utils\UseStatements;
  * before "The remainder of the code in the file", and says that in a file with markup they "MUST be present at the top
  * of the file". This sniff reports one as ImportAfterCode, but not in a file with more than one namespace, where each
  * namespace has its own imports. It isn't fixed, as moving an import can change what a name resolves to.
+ *
+ * A file that starts with `<?php declare(strict_types=1) ?>` may carry its header on in the next PHP block, so there an
+ * import is only reported after the first markup.
  */
 class FileHeaderSniff extends Psr12Sniff
 {
@@ -63,7 +66,13 @@ class FileHeaderSniff extends Psr12Sniff
      */
     public function process(File $phpcsFile, int $stackPtr): ?int
     {
+        // The header may carry on in the next PHP block, so only an import after markup is past the top of the file.
         if (FileHeaderHelper::hasInlineDeclare($phpcsFile)) {
+            $markup = $this->findMarkup($phpcsFile, $stackPtr);
+            if ($markup !== null) {
+                $this->checkImportsAfterCode($phpcsFile, $stackPtr, false, $markup);
+            }
+
             return $phpcsFile->numTokens;
         }
 
@@ -173,9 +182,14 @@ class FileHeaderSniff extends Psr12Sniff
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the first opening tag.
      * @param bool $hasHeader Whether the opening tag starts a header. It doesn't in a file that starts with markup.
+     * @param int|null $after The position to look for imports after, or null for the end of the header.
      */
-    private function checkImportsAfterCode(File $phpcsFile, int $stackPtr, bool $hasHeader = true): void
-    {
+    private function checkImportsAfterCode(
+        File $phpcsFile,
+        int $stackPtr,
+        bool $hasHeader = true,
+        ?int $after = null,
+    ): void {
         $tokens = $phpcsFile->getTokens();
         $namespaces = 0;
         $namespace = $phpcsFile->findNext(T_NAMESPACE, 0);
@@ -193,7 +207,7 @@ class FileHeaderSniff extends Psr12Sniff
 
         $lines = $hasHeader ? $this->getHeaderLines($phpcsFile, $stackPtr) : [];
         $last = end($lines);
-        $headerEnd = $last === false ? $stackPtr : $last['end'];
+        $headerEnd = $after ?? ($last === false ? $stackPtr : $last['end']);
         assert(is_int($headerEnd));
 
         $use = $phpcsFile->findNext(T_USE, ($headerEnd + 1));
@@ -208,6 +222,28 @@ class FileHeaderSniff extends Psr12Sniff
 
             $use = $phpcsFile->findNext(T_USE, ($use + 1));
         }
+    }
+
+    /**
+     * Find the first markup after a position, ignoring white space between two PHP blocks.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position to search from.
+     * @return int|null The position of the first inline HTML token that isn't blank, or null if there's none.
+     */
+    private function findMarkup(File $phpcsFile, int $stackPtr): ?int
+    {
+        $tokens = $phpcsFile->getTokens();
+        $markup = $phpcsFile->findNext(T_INLINE_HTML, ($stackPtr + 1));
+        while ($markup !== false) {
+            if (trim($tokens[$markup]['content']) !== '') {
+                return $markup;
+            }
+
+            $markup = $phpcsFile->findNext(T_INLINE_HTML, ($markup + 1));
+        }
+
+        return null;
     }
 
     /**

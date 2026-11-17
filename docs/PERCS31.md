@@ -1450,7 +1450,9 @@ Section 3 doesn't forbid several imports in one statement, so this sniff reads t
 
 Section 3 puts the imports before the rest of the code, and says that in a file with markup they MUST be at the top. The
 parent only looks at the header, so this sniff reports an import after the rest of the code, as `ImportAfterCode`. A
-file with more than one namespace is skipped, as each namespace has its own imports.
+file with more than one namespace is skipped, as each namespace has its own imports. In a file that starts with `<?php
+declare(strict_types=1) ?>`, the header may carry on in the next PHP block, so an import is only reported after the
+first markup.
 
 **Auto-fixable:** yes, as the parent, except `ImportAfterCode`, as moving an import can change what a name resolves to.
 

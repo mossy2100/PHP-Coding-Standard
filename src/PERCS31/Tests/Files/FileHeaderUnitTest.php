@@ -54,6 +54,12 @@ class FileHeaderUnitTest extends AbstractSniffTestCase
             return [4 => 1];
         }
 
+        if ($testFile === 'FileHeaderUnitTest.25.inc') {
+            // An import after markup, in a file with a declare statement between PHP tags on the first line. File 26
+            // has its imports in the next PHP block, before any markup, so nothing is reported.
+            return [5 => 1];
+        }
+
         if ($testFile === 'FileHeaderUnitTest.2.inc') {
             // A blank line between a declare statement and a block declare.
             return [3 => 1];

@@ -662,6 +662,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **An import after markup, in a file that starts with `<?php declare(strict_types=1) ?>` (breaking).**
+  `PERCS31.Files.FileHeader` skipped the whole file, so the import passed. It's now reported, as `ImportAfterCode`. An
+  import in the next PHP block, before any markup, still passes.
 - **A split ternary with `?` or `:` alone on a line (breaking).** A ternary on four or five lines passed, though
   section 6.4 says it takes three. `PERCS31.Operators.OperatorPlacement` now reports it, as `TernaryLayout`, and its
   fix joins the value to its operator's line.
