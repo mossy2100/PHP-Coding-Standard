@@ -123,6 +123,15 @@ rules.
   `__dir__`. PHP ignores their case. Section 2.5's rule that keywords are in lower case isn't read as covering them, so
   PERCS31 doesn't check their case. Auto-fixable.
 
+### PhpCollective
+
+Reference: [php-collective/code-sniffer repository and documentation](https://github.com/php-collective/code-sniffer)
+
+- **PhpCollective.WhiteSpace.EmptyLines**: Disallows more than one blank line in a row, anywhere in PHP code. A blank
+  line inside a heredoc, a nowdoc or a block comment is part of that string or comment, so it's left alone, as is HTML
+  outside the PHP tags. PER Coding Style 3.1, section 2.3, allows blank lines wherever they aren't forbidden, so PERCS31
+  allows any number. Auto-fixable.
+
 ### Slevomat
 
 Reference: [Slevomat coding standard repository and documentation](https://github.com/slevomat/coding-standard)

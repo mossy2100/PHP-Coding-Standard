@@ -67,7 +67,6 @@ class PropertyHooksSniff implements Sniff
 
     public const string CODE_SPACE_BEFORE_SEMICOLON = 'SpaceBeforeSemicolon';
 
-
     public const string CODE_HOOK_NOT_ON_OWN_LINE = 'HookNotOnOwnLine';
 
     public const string CODE_HOOK_BODY_NOT_ON_NEW_LINE = 'HookBodyNotOnNewLine';

@@ -171,6 +171,35 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that Jumbo allows no more than one blank line in a row, between statements and between a list's items, and
+     * PERCS31 any number. A blank line in a nowdoc or a block comment is part of it, so it's left alone.
+     */
+    public function testConsecutiveBlankLinesAreReportedInJumboOnly(): void
+    {
+        $header = "<?php\n\ndeclare(strict_types=1);\n\nnamespace Vendor\\Package;\n\n";
+        $kept = "\$text = <<<'EOT'\n    one\n\n\n    two\n    EOT;\n\n/*\n * One.\n\n\n * Two.\n */\n";
+        $argument = "    'an argument long enough that the call cannot be joined onto a single line by Jumbo',\n";
+        $call = "send(\n    \$text,\n%s" . $argument . $argument . ");\n";
+        $file = $this->copyToTempFile(null, $header . $kept . "\n\n" . sprintf($call, "\n\n\n"));
+        $ignored = '--exclude=PSR1.Files.SideEffects';
+
+        try {
+            $percs31 = $this->runTool('phpcs', ['--standard=PERCS31', $ignored, '--report=emacs', $file]);
+            $jumbo = $this->runTool('phpcs', ['-s', '--standard=Jumbo', $ignored, '--report=emacs', $file]);
+            $this->runTool('phpcbf', ['--standard=Jumbo', $ignored, $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        $reported = substr_count($jumbo['output'], 'PhpCollective.WhiteSpace.EmptyLines');
+
+        $this->assertSame(0, $percs31['exitCode'], $percs31['output']);
+        $this->assertSame(3, $reported, $jumbo['output']);
+        $this->assertSame($header . $kept . "\n" . sprintf($call, "\n"), $fixed);
+    }
+
+    /**
      * Test that a closing tag at the end of a file mixing PHP and HTML is an error in Jumbo only, as PER only requires
      * omitting it from a file containing only PHP.
      */

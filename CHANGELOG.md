@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **No more than one blank line in a row, in Jumbo (breaking).** Jumbo now includes
+  `PhpCollective.WhiteSpace.EmptyLines`, which reports a second blank line in a row anywhere in PHP code, as
+  `EmptyLines`. A blank line inside a heredoc, a nowdoc or a block comment is left alone, as is HTML outside the PHP
+  tags. Auto-fixable. PERCS31 is unchanged, as PER Coding Style 3.1 allows any number.
 - **A `match` arm's conditions split over lines (breaking).** PER Coding Style 3.1's trailing comma rule is now applied
   to an arm's conditions as written. When they're split over lines, `PERCS31.Formatting.TrailingComma` requires a comma
   after the last, before the `=>`, as `Missing`, and `PERCS31.ControlStructures.MatchArmPlacement` requires each
