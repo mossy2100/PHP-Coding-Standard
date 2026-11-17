@@ -426,3 +426,14 @@ $splitReturnType = function () use (
     |B {
     return $x;
 };
+
+// A block in a case, with statements after it. PHP_CodeSniffer reads the block as the case's whole body, so the
+// original sniff wanted its closing brace level with the case, and the fix left the lines after it indented wrongly.
+switch ($a) {
+    case 7:
+        {
+            $b = 7;
+        }
+        $c = 7;
+        break;
+}

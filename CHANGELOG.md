@@ -662,6 +662,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A block in a `case`, with statements after it.** `PERCS31.WhiteSpace.ScopeIndent` reported the block's closing
+  brace, and `phpcbf` then left the brace and the statement after it indented wrongly. The brace is no longer checked.
+  `PERCS31.ControlStructures.SwitchDeclaration` still reports the braces, as `WrongOpener`.
 - **A trailing comma with a comment after it, on one line (breaking).** `function a($b, /* Why. */) {}` passed, as did
   the same in a closure's `use` list, an array and a short list, as the comment hid the comma from the sniffs that check
   those lists. `PERCS31.Formatting.TrailingComma` now reports it, as `Disallowed`, and its fix keeps the comment.

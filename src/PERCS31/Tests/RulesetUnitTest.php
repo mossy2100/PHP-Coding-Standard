@@ -800,6 +800,28 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that phpcbf leaves a block in a case alone when statements follow it. ScopeIndent moved its closing brace
+     * level with the case, and ConsistentIndent then moved the statement after it, leaving both indented wrongly.
+     */
+    public function testPhpcbfLeavesBlockInCaseAlone(): void
+    {
+        $source = "<?php\n\nswitch (\$a) {\n    case 1:\n        {\n            echo 'a';\n        }\n"
+            . "        echo 'b';\n        break;\n}\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertStringNotContainsString('ScopeIndent', $result['output']);
+        $this->assertSame($source, $fixed);
+    }
+
+    /**
      * Test that a heredoc argument indented too little is fixed with its body and closing marker moved together, and
      * the result passes. The inherited fix for the argument's indent moved the marker but not the body, which is a
      * parse error.

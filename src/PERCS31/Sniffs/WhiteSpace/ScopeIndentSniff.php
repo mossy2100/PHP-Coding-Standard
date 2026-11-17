@@ -22,6 +22,11 @@
  *   The braced case's closer is its `}`, not the shared `break`, so the original wanted its label, its body and its
  *   `}` indented once more, and its fix never finished.
  *
+ * - The closing brace of a block in a `case` or `default` isn't checked when statements follow it in the same case.
+ *   PHP_CodeSniffer reads the block as the case's whole body, so the original wanted the `}` level with `case`, and
+ *   its fix left the statements after it indented wrongly. PERCS31.ControlStructures.SwitchDeclaration reports the
+ *   braces.
+ *
  * Apart from the namespace and the import of PropertyHookHelper, every change from upstream is marked with a "PERCS31:"
  * comment, so a diff against the upstream file shows only these. To update the fork to a new PHP_CodeSniffer release,
  * copy the new upstream file, re-apply the marked changes, and run the tests.
@@ -1033,6 +1038,8 @@ class ScopeIndentSniff implements Sniff
                 && isset($this->ignoreIndentation[$tokens[$checkToken]['code']]) === false
                 // PERCS31: a line inside a block comment, after its first, isn't checked.
                 && $this->isInsideBlockComment($tokens, $checkToken) === false
+                // PERCS31: the closing brace of a block in a case, with statements after it, isn't checked.
+                && $this->closesBlockInCase($tokens, $checkToken) === false
                 && (($tokenIndent !== $checkIndent && $exact === true)
                 || ($tokenIndent < $checkIndent && $exact === false))
             ) {
@@ -1710,6 +1717,39 @@ class ScopeIndentSniff implements Sniff
         }
 
         return false;
+    }
+
+    /**
+     * PERCS31: check whether a token is the closing brace of a block in a `case` or `default` that has statements
+     * after it, before the next label or the end of the switch.
+     *
+     * @param array<int, array<string, mixed>> $tokens The file's tokens.
+     * @param int $ptr The position of the token.
+     * @return bool True if it is.
+     */
+    private function closesBlockInCase(array $tokens, int $ptr): bool
+    {
+        if ($tokens[$ptr]['code'] !== T_CLOSE_CURLY_BRACKET || isset($tokens[$ptr]['scope_condition']) === false) {
+            return false;
+        }
+
+        $owner = $tokens[$tokens[$ptr]['scope_condition']]['code'];
+        if ($owner !== T_CASE && $owner !== T_DEFAULT) {
+            return false;
+        }
+
+        $next = ($ptr + 1);
+        while (isset($tokens[$next]) === true && isset(Tokens::EMPTY_TOKENS[$tokens[$next]['code']]) === true) {
+            $next++;
+        }
+
+        if (isset($tokens[$next]) === false) {
+            return false;
+        }
+
+        $labelsAndEnd = [T_CASE, T_DEFAULT, T_CLOSE_CURLY_BRACKET, T_ENDSWITCH];
+
+        return in_array($tokens[$next]['code'], $labelsAndEnd, true) === false;
     }
 
     /**
