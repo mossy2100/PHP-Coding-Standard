@@ -662,6 +662,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A split ternary with `?` or `:` alone on a line (breaking).** A ternary on four or five lines passed, though
+  section 6.4 says it takes three. `PERCS31.Operators.OperatorPlacement` now reports it, as `TernaryLayout`, and its
+  fix joins the value to its operator's line.
 - **Two statements on a line, when the second ends on a later line (breaking).** `$a = 1; foo(` and
   `$a = 1; if ($b) {` passed, as the inherited check only compares the lines of two semicolons.
   `PERCS31.Formatting.DisallowMultipleStatements` now reports the second statement, as `SameLine`, and its fix puts it

@@ -65,6 +65,12 @@ class OperatorPlacementUnitTest extends AbstractSniffTestCase
                 176 => 1,
                 // A nested ternary not indented once past its own line.
                 195 => 1,
+                // A ? alone on its line, a : alone, and both.
+                201 => 1,
+                206 => 1,
+                211 => 1,
+                // The same after a comment (not fixable).
+                218 => 1,
             ];
         }
 

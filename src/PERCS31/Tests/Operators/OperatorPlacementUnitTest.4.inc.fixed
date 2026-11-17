@@ -203,3 +203,22 @@ $a = $b
         ? 1
         : 2
     : 3;
+
+// A ? or : alone on its line, which gives the ternary a fourth line.
+$aloneThen = $ternaryOperatorExpr
+    ? 'fizz'
+    : 'buzz';
+
+$aloneElse = $ternaryOperatorExpr
+    ? 'fizz'
+    : 'buzz';
+
+$aloneBoth = $ternaryOperatorExpr
+    ? 'fizz'
+    : 'buzz';
+
+// A comment after the ? (not fixable).
+$aloneWithComment = $ternaryOperatorExpr
+    ? // Why.
+    'fizz'
+    : 'buzz';

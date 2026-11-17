@@ -559,6 +559,8 @@ class OperatorPlacementSniff implements Sniff
         if (
             $this->startsLineWithIndentation($phpcsFile, $inlineThenPointer, $indentation)
             && $this->startsLineWithIndentation($phpcsFile, $inlineElsePointer, $indentation)
+            && $this->hasOperandOnLine($phpcsFile, $inlineThenPointer)
+            && $this->hasOperandOnLine($phpcsFile, $inlineElsePointer)
         ) {
             return;
         }
@@ -711,6 +713,22 @@ class OperatorPlacementSniff implements Sniff
     {
         return LayoutHelper::startsLine($phpcsFile, $operator)
             && $phpcsFile->getTokens()[$operator]['column'] - 1 === strlen($indentation);
+    }
+
+    /**
+     * Check whether the operand after an operator starts on the operator's line. A `?` or `:` alone on a line gives the
+     * ternary a fourth line.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $operator The position of the `?` or `:`.
+     * @return bool True if the next token that isn't white space or a comment is on the operator's line.
+     */
+    private function hasOperandOnLine(File $phpcsFile, int $operator): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $after = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($operator + 1), null, true);
+
+        return $after !== false && $tokens[$after]['line'] === $tokens[$operator]['line'];
     }
 
     /**
