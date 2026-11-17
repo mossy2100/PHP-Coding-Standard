@@ -1777,7 +1777,9 @@ if (
 **Why:** The example shows the elements exception. An argument list split one per line leaves an array argument nowhere
 else to start, short of assigning it to a variable first, which PER doesn't ask for. A `match` arm starts a line, so an
 array that starts its conditions does. The same goes for a split condition: section 5's rule and section 11's can't both
-be met, and section 5's is the one with no other layout. A destructuring assignment is a list, not an array value.
+be met. Section 11's own example breaks its rule, by starting a nested array on a line of its own, so that rule plainly
+has exceptions. Section 5's has none, so it's the stronger of the two. A destructuring assignment is a list, not an
+array value.
 
 ---
 
