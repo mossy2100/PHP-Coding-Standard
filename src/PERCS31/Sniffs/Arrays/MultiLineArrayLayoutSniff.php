@@ -28,6 +28,10 @@ use PHPCSUtils\Utils\PassedParameters;
  *
  * So is a destructuring assignment that starts a statement, which isn't an array declaration.
  *
+ * A `foreach` and a `match` have no split rule in PER, so `foreach ([` and `match ([` are required. A standard that
+ * gives them one, as Jumbo does with PERCS31.ControlStructures.ControlStructureSpacing's splitForeachAndMatch, turns
+ * the property of the same name on here, so an array that starts either header may start a line too.
+ *
  * The fix moves the `[` up to the end of the previous line, e.g. `return [`, and Generic.Arrays.ArrayIndent then
  * re-indents the elements. After a comment, it's left to a person.
  *
@@ -67,6 +71,12 @@ class MultiLineArrayLayoutSniff implements Sniff
      * @var list<int|string>
      */
     private const array SPLIT_CONDITION_OWNERS = [T_IF, T_ELSEIF, T_WHILE, T_SWITCH, T_FOR];
+
+    /**
+     * Whether a `foreach` and a `match` have the split rule too, so an array that starts either header may start a
+     * line. PER Coding Style 3.1 gives them none, so it's off by default.
+     */
+    public bool $splitForeachAndMatch = false;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -168,7 +178,7 @@ class MultiLineArrayLayoutSniff implements Sniff
         if (
             $previous === $container
             && is_int($owner)
-            && in_array($tokens[$owner]['code'], self::SPLIT_CONDITION_OWNERS, true)
+            && in_array($tokens[$owner]['code'], $this->getSplitConditionOwners(), true)
         ) {
             return true;
         }
@@ -176,6 +186,18 @@ class MultiLineArrayLayoutSniff implements Sniff
         // Parentheses hold an argument list when they follow something that takes arguments, such as a function's
         // name. The parentheses of a `foreach` or a `match` don't.
         return TokenHelper::isArgumentListOpener($phpcsFile, $container);
+    }
+
+    /**
+     * Get the control structures whose first condition goes on the line after the opening parenthesis.
+     *
+     * @return list<int|string> Their token codes, with `foreach` and `match` if splitForeachAndMatch is on.
+     */
+    private function getSplitConditionOwners(): array
+    {
+        return $this->splitForeachAndMatch
+            ? [...self::SPLIT_CONDITION_OWNERS, T_FOREACH, T_MATCH]
+            : self::SPLIT_CONDITION_OWNERS;
     }
 
     /**

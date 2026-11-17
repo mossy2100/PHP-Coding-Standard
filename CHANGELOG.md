@@ -10,6 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **A split `foreach` or `match` header in Jumbo (breaking).** A `foreach` or `match` header that spans lines now takes
+  the layout the other control structures have: the first expression on the line after `(`, and `) {` on a line of
+  their own. A `foreach`'s `as` starts a line too, level with the expression, with the loop's variables after it. So
+  `foreach (array_filter($items, function ($item) {` is reported, as are `match ($this->lookup([` and `foreach ([`.
+  Auto-fixable, unless a comment sits before a line break after `as`. It's `splitForeachAndMatch`, a new property on
+  `PERCS31.ControlStructures.ControlStructureSpacing` and `PERCS31.Arrays.MultiLineArrayLayout`, off by default, as PER
+  Coding Style 3.1 has no rule for either. PERCS31 is unchanged. A header that fits on one line is still joined.
 - **`PERCS31.Operators.UnaryOperatorSpacing` (breaking).** Disallows whitespace after a reference `&` and a spread
   `...`, wherever each is used. PER Coding Style 3.1 states both rules for a parameter, and each is read as the rule for
   the operator. Auto-fixable, unless a comment is in the way.

@@ -140,6 +140,37 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a foreach or match header split over lines takes the split layout in Jumbo, with a foreach's `as`
+     * starting a line, and that PERCS31 leaves both alone, as PER has no rule for either. An array that starts the
+     * header goes on a line of its own, and phpcbf gets there without the array sniff moving it back.
+     */
+    public function testSplitForeachAndMatchHeadersTakeTheSplitLayoutInJumboOnly(): void
+    {
+        $item = "'" . str_repeat('alpha ', 9) . "alpha'";
+        $source = "<?php\n\ndeclare(strict_types=1);\n\nforeach ([\n    $item,\n    $item,\n] as \$key => \$item) {\n"
+            . "    run();\n}\n\n\$result = match (\$this->lookup([\n    $item,\n    $item,\n])) {\n"
+            . "    1 => 'one',\n    default => 'other',\n};\n";
+        $expected = "<?php\n\ndeclare(strict_types=1);\n\nforeach (\n    [\n        $item,\n        $item,\n    ]\n"
+            . "    as \$key => \$item\n) {\n    run();\n}\n\n\$result = match (\n    \$this->lookup([\n        $item,\n"
+            . "        $item,\n    ])\n) {\n    1 => 'one',\n    default => 'other',\n};\n";
+        $file = $this->copyToTempFile(null, $source);
+        $ignored = '--exclude=PSR1.Files.SideEffects';
+
+        try {
+            $percs31 = $this->runTool('phpcs', ['--standard=PERCS31', $ignored, '--report=emacs', $file]);
+            $this->runTool('phpcbf', ['--standard=Jumbo', $ignored, $file]);
+            $fixed = (string) file_get_contents($file);
+            $jumbo = $this->runTool('phpcs', ['--standard=Jumbo', $ignored, '--report=emacs', $file]);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame(0, $percs31['exitCode'], $percs31['output']);
+        $this->assertSame($expected, $fixed);
+        $this->assertSame(0, $jumbo['exitCode'], $jumbo['output']);
+    }
+
+    /**
      * Test that a closing tag at the end of a file mixing PHP and HTML is an error in Jumbo only, as PER only requires
      * omitting it from a file containing only PHP.
      */

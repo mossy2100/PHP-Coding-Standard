@@ -329,7 +329,8 @@ allowed, as each has to start a line:
 PER's own example puts a nested array's `[` on its own line, hence the first exception. [Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) puts each argument
 of a split argument list on its own line, hence the second, and a `match` arm starts a line too. Sections 5.1 to 5.4 put
 the first condition of a split control structure on the line after the `(`, hence the fourth. A `foreach` and a `match`
-have no such rule, so `foreach ([` and `match ([` are required. No inherited sniff checks it.
+have no such rule, so `foreach ([` and `match ([` are required, unless `splitForeachAndMatch` is on, as it is in
+[Jumbo](Jumbo.md), which gives both the split rule. No inherited sniff checks it.
 
 **The values.** Each value starts on a new line, including the first, reported as `ValueNoNewline`. Section 11 says that
 when an array is split across lines, the first value MUST be on the next line, and there MUST be only one value per
@@ -396,6 +397,12 @@ $values = [1,
     2, 3,
 ];
 ```
+
+**Configuration:**
+
+| Property               | Type | Default | Description                                                                |
+| ---------------------- | ---- | ------- | -------------------------------------------------------------------------- |
+| `splitForeachAndMatch` | bool | false   | Let an array that starts a split `foreach` or `match` header start a line. |
 
 ---
 
@@ -1121,6 +1128,24 @@ applies one to both anyway, so it rejects an array in the header, and a call wit
 For a multi-line `foreach` or `match`, this sniff only checks what section 5 requires of every control structure: no
 space after the `(` or before the `)`.
 
+A standard that wants one layout for every split header, as [Jumbo](Jumbo.md) does, turns `splitForeachAndMatch` on. A
+multi-line `foreach` or `match` then gets the parent's rule too: the first expression on the line after `(`, and `)` on
+a line of its own. A `foreach`'s `as` also starts a line, level with the expression, with the loop's variables after it:
+
+```php
+foreach (
+    array_filter($items, function ($item) {
+        return $item->ok;
+    })
+    as $key => $item
+) {
+    // ...
+}
+```
+
+[`PERCS31.Arrays.MultiLineArrayLayout`](#percs31arraysmultilinearraylayout) has a property of the same name, which lets an array that starts such a header
+start a line.
+
 For every other control structure, a condition that spans lines is split, even when only a call or array in it does, as
 in `if (foo(`. So its first condition goes on the line after `(`, and `)` with `{` on a line of their own. Section 4.7's
 exemption for a single argument split over lines is only for a call's argument list. See "A Condition Split Only Inside
@@ -1172,6 +1197,12 @@ if (in_array($code, [
     $order->upgrade();
 }
 ```
+
+**Configuration:**
+
+| Property               | Type | Default | Description                                                              |
+| ---------------------- | ---- | ------- | ------------------------------------------------------------------------ |
+| `splitForeachAndMatch` | bool | false   | Give a multi-line `foreach` or `match` the split layout, `as` on a line. |
 
 ---
 

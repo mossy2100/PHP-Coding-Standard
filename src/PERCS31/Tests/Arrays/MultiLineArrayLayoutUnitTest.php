@@ -19,6 +19,12 @@ class MultiLineArrayLayoutUnitTest extends AbstractSniffTestCase
      */
     protected function getErrorList(string $testFile = ''): array
     {
+        // splitForeachAndMatch: an array that starts a split foreach or match header may start a line with it on,
+        // and not with it off. An array after `=` is reported either way.
+        if ($testFile === 'MultiLineArrayLayoutUnitTest.3.inc') {
+            return [27 => 1, 36 => 1, 46 => 1];
+        }
+
         // Each value on a line of its own.
         if ($testFile === 'MultiLineArrayLayoutUnitTest.2.inc') {
             return [

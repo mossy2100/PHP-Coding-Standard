@@ -14,10 +14,32 @@ class ControlStructureSpacingUnitTest extends AbstractSniffTestCase
     /**
      * Returns the lines where errors should occur.
      *
+     * @param string $testFile The name of the test input file.
      * @return array<int, int> Line number => error count.
      */
-    protected function getErrorList(): array
+    protected function getErrorList(string $testFile = ''): array
     {
+        // With splitForeachAndMatch on.
+        if ($testFile === 'ControlStructureSpacingUnitTest.2.inc') {
+            return [
+                // A foreach's expression on the ( line, with `as` and ) on the expression's last line.
+                71 => 1,
+                73 => 3,
+                // `as` on the expression's last line.
+                81 => 1,
+                // An array on the ( line.
+                87 => 1,
+                90 => 3,
+                // `as` indented twice, and its variables split over lines.
+                97 => 2,
+                // A comment before the break after `as` (not fixable).
+                106 => 1,
+                // A match's subject on the ( line.
+                113 => 1,
+                116 => 2,
+            ];
+        }
+
         return [
             // A space after the ( and before the ) of a multi-line foreach.
             66 => 1,

@@ -52,6 +52,13 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
   ends a statement (`checkComments` set to `true`). A comment at the top level isn't checked.
 - `PERCS31.Formatting.EmptyBody` requires every empty body as `{}`, as an error (`strict` set to `true`). PERCS31 only
   warns for a class, a function or a control structure, where PER says SHOULD, or nothing.
+- `PERCS31.ControlStructures.ControlStructureSpacing` gives a `foreach` or `match` header that's split over lines the
+  layout the other control structures have: the first expression on the line after `(`, and `) {` on a line of their
+  own. A `foreach`'s `as` starts a line too, with its variables after it. PER has no rule for either, so PERCS31 leaves
+  them alone (`splitForeachAndMatch` set to `true`). A header that fits on one line is still joined, by
+  [`RequireSingleLineHeader`](#jumbocontrolstructuresrequiresinglelineheader).
+- `PERCS31.Arrays.MultiLineArrayLayout` lets an array that starts such a header start a line, where PERCS31 requires
+  `foreach ([` and `match ([` (`splitForeachAndMatch` set to `true`).
 - `PERCS31.Operators.OperatorPlacement` requires a line in a control structure's condition to be indented exactly once
   past the `(` line if it starts with `&&` or `||`, and exactly once past its operand's line if it starts with any other
   operator. PERCS31 allows at least once (`requireExactConditionIndent` set to `true`).

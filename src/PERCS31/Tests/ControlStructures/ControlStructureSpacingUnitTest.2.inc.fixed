@@ -1,0 +1,129 @@
+<?php
+
+// phpcs:set PERCS31.ControlStructures.ControlStructureSpacing splitForeachAndMatch true
+
+// === VALID ===
+
+foreach ($items as $key => $item) {
+    run();
+}
+
+foreach (
+    array_filter($items, function ($item) {
+        return $item->ok;
+    })
+    as $item
+) {
+    run();
+}
+
+foreach (
+    [
+        'alpha',
+        'beta',
+    ]
+    as $key => $item
+) {
+    run();
+}
+
+// A destructuring list split over lines is the list's own layout.
+foreach (
+    $rows
+    as [
+        'id' => $id,
+        'name' => $name,
+    ]
+) {
+    run();
+}
+
+// A foreach inside the expression has its own `as`.
+foreach (
+    array_map(function ($row) {
+        foreach ($row as $cell) {
+            run();
+        }
+    }, $rows)
+    as $row
+) {
+    run();
+}
+
+$result = match ($value) {
+    1 => 'one',
+    default => 'other',
+};
+
+$result = match (
+    $this->lookup([
+        'alpha',
+        'beta',
+    ])
+) {
+    1 => 'one',
+    default => 'other',
+};
+
+// === INVALID ===
+
+// The expression on the ( line, and `as` and ) on the expression's last line.
+foreach (
+    array_filter($items, function ($item) {
+    return $item->ok;
+    })
+    as $item
+) {
+    run();
+}
+
+// `as` on the expression's last line.
+foreach (
+    array_filter($items, function ($item) {
+        return $item->ok;
+    })
+    as $item
+) {
+    run();
+}
+
+// An array on the ( line.
+foreach (
+    [
+    'alpha',
+    'beta',
+    ]
+    as $item
+) {
+    run();
+}
+
+// `as` indented twice, and its variables split over lines.
+foreach (
+    $this->repository->findAll()
+    as $key => $item
+) {
+    run();
+}
+
+// A comment before the break after `as` (not fixable).
+foreach (
+    $this->repository->findAll()
+    as $key // The key.
+    => $item
+) {
+    run();
+}
+
+// A match's subject on the ( line.
+$result = match (
+    $this->lookup([
+    'alpha',
+    'beta',
+    ])
+) {
+    1 => 'one',
+    default => 'other',
+};
+
+// phpcs:set PERCS31.ControlStructures.ControlStructureSpacing splitForeachAndMatch false

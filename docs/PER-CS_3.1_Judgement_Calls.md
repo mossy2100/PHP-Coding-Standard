@@ -1752,7 +1752,8 @@ condition MUST be on the next line".
 - An argument in an argument list. Both `foo([` and the first form below are allowed.
 - A condition of a `match` arm.
 - The first condition of a split `if`, `elseif`, `while`, `switch` or `for`, as in the second form below. `foreach ([`
-  and `match ([` are required, as neither has a split rule.
+  and `match ([` are required, as neither has a split rule. Jumbo gives both the split rule, as an extra, so there an
+  array that starts either header goes on the line after the `(` too.
 - A destructuring assignment.
 
 ```php

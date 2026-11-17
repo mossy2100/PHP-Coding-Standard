@@ -209,6 +209,15 @@
         </properties>
     </rule>
 
+    <!-- A foreach or match header split over lines takes the layout the other control structures do: the first
+         expression on the line after (, and ) { on a line of their own. A foreach's as starts a line too. PER has no
+         rule for either, so PERCS31 leaves them alone. -->
+    <rule ref="PERCS31.ControlStructures.ControlStructureSpacing">
+        <properties>
+            <property name="splitForeachAndMatch" value="true"/>
+        </properties>
+    </rule>
+
     <rule ref="Generic.CodeAnalysis.AssignmentInCondition"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.DisallowContinueWithoutIntegerOperandInSwitch"/>
     <!-- One space after a language construct such as return, echo or throw, with no line break. The Jumbo version of
@@ -349,6 +358,14 @@
     </rule>
     <rule ref="Squiz.Arrays.ArrayDeclaration.NoKeySpecified">
         <severity>5</severity>
+    </rule>
+
+    <!-- An array that starts a split foreach or match header may start a line, as that header's first expression goes
+         on the line after its ( in Jumbo. See PERCS31.ControlStructures.ControlStructureSpacing, above. -->
+    <rule ref="PERCS31.Arrays.MultiLineArrayLayout">
+        <properties>
+            <property name="splitForeachAndMatch" value="true"/>
+        </properties>
     </rule>
 
     <!-- Exactly one space around => in every match arm, array and yield, where PERCS31 allows more so arrows can be
