@@ -38,3 +38,17 @@ enum Suit
 
     public const Suit  Wild = self::Hearts;
 }
+
+// An enum case: two spaces after case, and a line break. A switch's case isn't checked here.
+enum Rank: string
+{
+    case Ace = 'A';
+    case  King = 'K';
+    case
+        Queen = 'Q';
+}
+
+switch ($rank) {
+    case  Rank::Ace:
+        break;
+}

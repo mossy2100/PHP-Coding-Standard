@@ -721,8 +721,8 @@ $handler = new ($this->handlerClass($request));
 
 ### PERCS31.Classes.ConstantDeclaration
 
-Requires a single space after a class constant's `const` keyword, and between its type and its name. A line break counts
-as more than a single space.
+Requires a single space after a class constant's `const` keyword, between its type and its name, and after an enum
+case's `case` keyword. A line break counts as more than a single space.
 
 **Why:** [PER Coding Style 3.1, Section 4.6](https://www.php-fig.org/per/coding-style/#46-modifier-keywords) says keywords MUST be on a single line, separated by a single space, and
 [section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says there MUST be a space between a property's type and its name. Neither names a constant's type or name,
@@ -732,6 +732,10 @@ but a constant is declared like a property, so the same spacing is required. See
 type. `SlevomatCodingStandard.Classes.PropertyDeclaration` makes these checks for a property only, and
 `SlevomatCodingStandard.Whitespaces.DuplicateSpaces` reports every run of spaces, which PER allows around operators. No
 inherited sniff checks a constant alone.
+
+An enum case is declared like a constant, and section 9's example writes `case Hearts = 'H';`, so one space after
+`case` is required too, reported as `SpaceAfterCase`. See
+[The Space After `case`](PER-CS_3.1_Judgement_Calls.md#the-space-after-case).
 
 A global constant isn't checked, as section 4 is about classes.
 

@@ -34,6 +34,9 @@ class ConstantDeclarationUnitTest extends AbstractSniffTestCase
             // In an interface and an enum.
             32 => 1,
             39 => 1,
+            // An enum case: two spaces after case, and a line break.
+            46 => 1,
+            48 => 1,
         ];
     }
 

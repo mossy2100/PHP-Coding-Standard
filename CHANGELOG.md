@@ -513,6 +513,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- **One space after an enum case's `case` keyword (breaking).** `case  Hearts`, and `case` then a line break, are now
+  reported by `PERCS31.Classes.ConstantDeclaration`, as `SpaceAfterCase`. Auto-fixable.
 - **PERCS31 allows a blank line wherever PER Coding Style 3.1 doesn't forbid one.** Section 2.3 allows blank lines
   "except where explicitly forbidden", so PERCS31 no longer reports these. Jumbo still reports each one, apart from a
   group `use`, which it bans.

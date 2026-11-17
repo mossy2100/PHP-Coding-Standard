@@ -11,7 +11,8 @@ use PHPCSUtils\Utils\Constants;
 use PHPCSUtils\Utils\Scopes;
 
 /**
- * Requires a single space after a class constant's `const` keyword, and between its type and its name.
+ * Requires a single space after a class constant's `const` keyword, between its type and its name, and after an enum
+ * case's `case` keyword.
  *
  * PER Coding Style 3.1, section 4.6, says all keywords MUST be on a single line, separated by a single space, and
  * section 4.3 says there MUST be a space between a property's type and its name. Neither names a constant's type or
@@ -21,6 +22,9 @@ use PHPCSUtils\Utils\Scopes;
  * property only, and SlevomatCodingStandard.Whitespaces.DuplicateSpaces reports every run of spaces, which PER allows
  * around operators. No sniff in PHP_CodeSniffer, PHPCSExtra, Slevomat or PhpCollective checks a constant alone.
  *
+ * An enum case is declared like a constant, and section 9 says enums follow the guidelines for class constants. Its
+ * example writes `case Hearts = 'H';`, so one space after `case` is read as the pattern, reported as SpaceAfterCase.
+ *
  * A line break counts as more than a single space. A global constant isn't checked, as section 4 is about classes.
  */
 class ConstantDeclarationSniff implements Sniff
@@ -29,6 +33,8 @@ class ConstantDeclarationSniff implements Sniff
 
     public const string CODE_SPACE_AFTER_TYPE = 'SpaceAfterType';
 
+    public const string CODE_SPACE_AFTER_CASE = 'SpaceAfterCase';
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -36,7 +42,7 @@ class ConstantDeclarationSniff implements Sniff
      */
     public function register(): array
     {
-        return [T_CONST];
+        return [T_CONST, T_ENUM_CASE];
     }
 
     /**
@@ -47,11 +53,25 @@ class ConstantDeclarationSniff implements Sniff
      */
     public function process(File $phpcsFile, int $stackPtr): void
     {
+        $first = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
+        if ($phpcsFile->getTokens()[$stackPtr]['code'] === T_ENUM_CASE) {
+            if ($first !== false) {
+                FixerHelper::requireSingleSpace(
+                    $phpcsFile,
+                    $stackPtr,
+                    $first,
+                    'Expected 1 space after the case keyword',
+                    self::CODE_SPACE_AFTER_CASE,
+                );
+            }
+
+            return;
+        }
+
         if (!Scopes::isOOConstant($phpcsFile, $stackPtr)) {
             return;
         }
 
-        $first = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
         if ($first !== false) {
             FixerHelper::requireSingleSpace(
                 $phpcsFile,

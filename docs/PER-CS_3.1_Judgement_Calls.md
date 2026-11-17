@@ -250,6 +250,21 @@ code PER allows.
 
 ---
 
+### Spacing Shown by Example
+
+**Issue:** The spec states some spacing rules, such as "There MUST be a space between type declaration and property
+name". Many others it only shows: one space between `function` and a function's name, or between a visibility and a
+property's name. It has no general rule for spacing, as 2.3 is for blank lines.
+
+**Decision:** Where every example writes a construct with the same spacing, that spacing is required, as with one space
+between a keyword and the name after it. This is different from a blank line, which 2.3 allows wherever the text
+doesn't explicitly forbid one. So PERCS31 infers a spacing rule from the examples, but never a ban on a blank line.
+
+**Why:** Nothing in the spec permits irregular spacing, as 2.3 permits blank lines, and nobody means to write
+`case  Hearts`. These patterns are obvious, and a standard that left them unchecked would miss plain slips.
+
+---
+
 ### What Goes in PERCS31
 
 **Issue:** The spec doesn't cover every formatting question, such as which line a comma goes on.
@@ -1905,6 +1920,18 @@ in an enum, and RECOMMENDS PascalCase.
 `Foo_Bar`, is an error.
 
 **Why:** Section 9 is more specific than PSR-1.
+
+---
+
+### The Space After `case`
+
+**Issue:** Section 9 doesn't say how many spaces go between an enum case's `case` keyword and its name. Its example
+writes `case Hearts = 'H';`.
+
+**Decision:** Exactly one, so `case  Hearts` is reported. A line break counts as more than one space.
+
+**Why:** The example shows it, and it's the pattern for every keyword before a name, such as `const`, `function` and
+`class`. See [Spacing Shown by Example](#spacing-shown-by-example).
 
 ---
 
