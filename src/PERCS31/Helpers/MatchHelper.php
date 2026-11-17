@@ -56,4 +56,52 @@ class MatchHelper
 
         return $arms;
     }
+
+    /**
+     * Find the first token of each condition of a `match` arm. A comma inside brackets belongs to something else, such
+     * as a call in a condition, so it's skipped. A trailing comma before the `=>` doesn't start another condition.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param array{start: int, arrow: int, end: int|null} $arm The arm, as findArms() returns it.
+     * @return list<int> The position of each condition's first token, in order.
+     */
+    public static function findConditions(File $phpcsFile, array $arm): array
+    {
+        $tokens = $phpcsFile->getTokens();
+        $conditions = [$arm['start']];
+        for ($i = $arm['start']; $i < $arm['arrow']; $i++) {
+            if ($tokens[$i]['code'] === T_COMMA) {
+                $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), $arm['arrow'], true);
+                if ($next !== false) {
+                    $conditions[] = $next;
+                }
+            }
+
+            $jumpTo = TokenHelper::findCloser($tokens[$i]);
+            if (is_int($jumpTo) && $jumpTo > $i && $jumpTo < $arm['arrow']) {
+                $i = $jumpTo;
+            }
+        }
+
+        return $conditions;
+    }
+
+    /**
+     * Check whether a `match` arm's list of conditions is split over lines: two of its conditions start on different
+     * lines. One condition that spans lines, such as an array, doesn't split the list.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param array{start: int, arrow: int, end: int|null} $arm The arm, as findArms() returns it.
+     * @return bool True if the list is split.
+     */
+    public static function hasSplitConditions(File $phpcsFile, array $arm): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $lines = [];
+        foreach (self::findConditions($phpcsFile, $arm) as $condition) {
+            $lines[$tokens[$condition]['line']] = true;
+        }
+
+        return count($lines) > 1;
+    }
 }

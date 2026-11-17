@@ -1,15 +1,44 @@
 <?php
 
-// phpcs:set PERCS31.Formatting.TrailingComma disallowInSplitMatchConditions true
+// A match arm's conditions split over lines.
+
+// === VALID ===
+
 $a = match ($x) {
     1,
-    2
-    => 3,
+    2, => 3,
     4,
-    5 => 6,
-    7,
-    8 => 9,
-    default => 10,
+    5,
+        => 6,
+    // One condition that spans lines doesn't split the list.
+    [
+        7,
+        8,
+    ] => 9,
+    10, [
+        11,
+    ] => 12,
+    // A break before the => doesn't either.
+    13, 14
+        => 15,
+    default => 16,
 };
 
-// phpcs:set PERCS31.Formatting.TrailingComma disallowInSplitMatchConditions false
+// === INVALID ===
+
+$b = match ($x) {
+    1,
+    2, => 3,
+    4,
+    5,
+        => 6,
+    7,
+    8, // Why.
+        => 9,
+    10, foo(
+        11,
+    ) => 12,
+    13, 14
+        => 15,
+    default => 16,
+};

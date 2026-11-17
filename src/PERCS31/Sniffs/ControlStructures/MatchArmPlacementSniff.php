@@ -12,16 +12,23 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Requires each `match` arm to start on a new line.
+ * Requires each `match` arm to start on a new line, and each condition of an arm to start a line when the arm's
+ * conditions are split over lines.
  *
  * PER Coding Style 3.1, section 5.2, says a `match` expression looks like its example, which has one arm per line. So
  * `1 => 2, default => 3,` on one line is reported, and the fix moves the second arm to the next line. Several
- * conditions in one arm, as in `1, 2, 3 => 'a',`, are one arm, so they're fine. The indent is left to
+ * conditions in one arm, as in `1, 2, 3 => 'a',`, are one arm, so they're fine.
+ *
+ * An arm's conditions are a list, and every list the spec splits over lines has one item per line: arguments (4.7),
+ * parameters (4.5), an array's values (11) and interfaces (4.1). So if two conditions start on different lines, each
+ * one starts a line. PERCS31.Formatting.TrailingComma requires the comma after the last. The indent is left to
  * PERCS31.WhiteSpace.ScopeIndent.
  */
 class MatchArmPlacementSniff implements Sniff
 {
     public const string CODE_NOT_ON_OWN_LINE = 'NotOnOwnLine';
+
+    public const string CODE_CONDITION_NOT_ON_OWN_LINE = 'ConditionNotOnOwnLine';
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -52,6 +59,8 @@ class MatchArmPlacementSniff implements Sniff
             if ($arm['end'] !== null) {
                 $this->checkNextArm($phpcsFile, $arm['end'], $closer);
             }
+
+            $this->checkConditions($phpcsFile, $arm);
         }
     }
 
@@ -78,5 +87,36 @@ class MatchArmPlacementSniff implements Sniff
 
         $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $comma));
         FixerHelper::replaceBetween($phpcsFile, $comma, $next, $phpcsFile->eolChar . $indent);
+    }
+
+    /**
+     * Check that each condition of an arm starts a line, if the arm's conditions are split over lines.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param array{start: int, arrow: int, end: int|null} $arm The arm, as MatchHelper::findArms() returns it.
+     */
+    private function checkConditions(File $phpcsFile, array $arm): void
+    {
+        if (!MatchHelper::hasSplitConditions($phpcsFile, $arm)) {
+            return;
+        }
+
+        $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $arm['start']));
+        foreach (MatchHelper::findConditions($phpcsFile, $arm) as $condition) {
+            $startsLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $condition, true) === $condition;
+            if ($condition === $arm['start'] || $startsLine) {
+                continue;
+            }
+
+            $before = $phpcsFile->findPrevious(T_WHITESPACE, ($condition - 1), $arm['start'], true);
+            if ($before === false) {
+                continue;
+            }
+
+            $error = 'Each condition of a match arm split over lines must start a line';
+            if ($phpcsFile->addFixableError($error, $condition, self::CODE_CONDITION_NOT_ON_OWN_LINE)) {
+                FixerHelper::replaceBetween($phpcsFile, $before, $condition, $phpcsFile->eolChar . $indent);
+            }
+        }
     }
 }

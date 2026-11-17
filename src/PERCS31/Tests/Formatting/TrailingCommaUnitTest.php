@@ -20,8 +20,10 @@ class TrailingCommaUnitTest extends AbstractSniffTestCase
     protected function getErrorList(string $testFile = ''): array
     {
         if ($testFile === 'TrailingCommaUnitTest.2.inc') {
-            // With disallowInSplitMatchConditions, a comma before => in a split list of conditions.
-            return [6 => 1, 9 => 1];
+            // A match arm's conditions. Split over lines with no comma after the last: before =>, before a wrapped
+            // =>, and before a comment. Then on one line with one: after a call split over lines, and before a wrapped
+            // =>.
+            return [31 => 1, 33 => 1, 36 => 1, 40 => 1, 41 => 1];
         }
 
         return [
@@ -35,6 +37,8 @@ class TrailingCommaUnitTest extends AbstractSniffTestCase
             29 => 1,
             // A multi-line match without one, before a comment.
             32 => 1,
+            // A match arm's conditions split over lines, with no comma after the last.
+            62 => 1,
             // Anonymous class arguments: a comma on one line, then none on several, with and without a comment.
             78 => 1,
             81 => 1,

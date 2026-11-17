@@ -528,12 +528,30 @@ have no comma.
 
 ### `match` Conditions
 
-**Issue:** 2.6 doesn't say whether a `match` arm's list of conditions is one of its lists. 5.2's example only has
-conditions on one line.
+**Issue:** 2.6's rule covers any comma-separated list that may end in a comma. A `match` arm's conditions are one, but
+5.2's example only has conditions on one line, and the spec never shows them split.
 
-**Decision:** A single-line list of conditions mustn't end in a comma. A split list may end in one or not.
+**Decision:** 2.6 applies as written.
 
-**Why:** A single-line list never takes a trailing comma. With no example of a split list, both forms are allowed.
+- Conditions on one line don't end in a comma, as in `1, 2 => 'a',`.
+- Conditions split over lines go one per line, and the last ends in a comma, before the `=>`:
+
+```php
+$label = match ($code) {
+    301,
+    302,
+    307, => 'Redirect',
+    default => 'Other',
+};
+```
+
+The list is split when two conditions start on different lines. One condition that spans lines, such as an array,
+doesn't split it, and neither does a line break before the `=>`. The `=>` may follow the last comma, as above, or start
+the next line.
+
+**Why:** 2.6 says "If the list is split across multiple lines, then the last item MUST have a trailing comma", and makes
+no exception for this list. One condition per line follows every other list the spec splits: arguments (4.7),
+parameters (4.5), an array's values (11) and interfaces (4.1).
 
 ---
 

@@ -122,6 +122,7 @@ class OperatorPlacementUnitTest extends AbstractSniffTestCase
 
         if ($testFile === 'OperatorPlacementUnitTest.7.inc') {
             // A walk back over fn with requireExactConditionIndent, which once never finished.
+            // A match arm's value wrapped at an operator, after conditions on one line and split over lines.
             return [];
         }
 

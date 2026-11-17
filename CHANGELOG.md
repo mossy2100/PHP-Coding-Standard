@@ -10,6 +10,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **A `match` arm's conditions split over lines (breaking).** PER Coding Style 3.1's trailing comma rule is now applied
+  to an arm's conditions as written. When they're split over lines, `PERCS31.Formatting.TrailingComma` requires a comma
+  after the last, before the `=>`, as `Missing`, and `PERCS31.ControlStructures.MatchArmPlacement` requires each
+  condition to start a line, as `ConditionNotOnOwnLine`. So `1,` then `2 => 'a',` is fixed to `1,` then `2, => 'a',`. A
+  split list passed before, with or without the comma. Both are auto-fixable. One condition that spans lines, such as
+  an array, doesn't split the list.
+- **A wrapped `match` arm in Jumbo (breaking).** When an arm's conditions are split over lines,
+  `Jumbo.ControlStructures.MatchArmWrapIndent` now requires each condition level with the first, as `ConditionIndent`,
+  and the `=>` on the next line, indented once, as `ArrowNotOnOwnLine`. Later conditions had to be indented once, and
+  the `=>` could follow the last one. Auto-fixable.
 - **A split `foreach` or `match` header in Jumbo (breaking).** A `foreach` or `match` header that spans lines now takes
   the layout the other control structures have: the first expression on the line after `(`, and `) {` on a line of
   their own. A `foreach`'s `as` starts a line too, level with the expression, with the loop's variables after it. So
@@ -594,6 +604,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+- **`disallowInSplitMatchConditions` (breaking).** The property is gone from `PERCS31.Formatting.TrailingComma`, and
+  Jumbo no longer sets it. It disallowed the comma before `=>` after split conditions, which is now required. Remove it
+  from any ruleset that sets it.
 - **`SlevomatCodingStandard.Variables.UselessVariable` from Jumbo.** A variable that's assigned and then returned on the
   next line is no longer reported.
 - **`SlevomatCodingStandard.Arrays.MultiLineArrayEndBracketPlacement` from PERCS31.** It only looks at a nested array

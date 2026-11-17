@@ -56,7 +56,7 @@ $l = match ($x) {
     [1, 2,] => 'a',
     default => foo(1, 2),
 };
-// A split list of conditions isn't checked.
+// A split list of conditions needs a comma after the last.
 $m = match ($x) {
     1,
     2 => 'a',

@@ -1249,18 +1249,27 @@ foreach ($customers  as  $id=>$customer) {
 ### PERCS31.ControlStructures.MatchArmPlacement
 
 Requires each `match` arm to start on a new line. Several conditions in one arm, as in `1, 2, 3 => 'a',`, are one arm.
+If an arm's conditions are split over lines, each condition starts a line.
 
 **Why:** [PER Coding Style 3.1, Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) says a `match` expression looks like its example, which has one arm per line.
 No inherited sniff checks it.
 
-**Auto-fixable:** yes, except with a comment in the way. The arm moves to the next line, and
-`PERCS31.WhiteSpace.ScopeIndent` indents it.
+An arm's conditions are a list, and every list the spec splits over lines has one item per line: arguments (4.7),
+parameters (4.5), an array's values (11) and interfaces (4.1). So if two conditions start on different lines, each one
+starts a line. One condition that spans lines, such as an array, doesn't split the list.
+[`PERCS31.Formatting.TrailingComma`](#percs31formattingtrailingcomma) requires the comma after the last condition.
+
+**Auto-fixable:** yes, except an arm with a comment in the way. The arm or condition moves to the next line, and
+`PERCS31.WhiteSpace.ScopeIndent` indents an arm.
 
 **Good:**
 
 ```php
 $label = match ($code) {
     200, 201 => 'OK',
+    301,
+    302,
+    307, => 'Redirect',
     default => 'Error',
 };
 ```
@@ -1270,6 +1279,12 @@ $label = match ($code) {
 ```php
 $label = match ($code) {
     200, 201 => 'OK', default => 'Error',
+};
+
+$label = match ($code) {
+    301, 302,
+    307, => 'Redirect',
+    default => 'Error',
 };
 ```
 
@@ -1681,7 +1696,8 @@ $user = $repository->
 Requires a trailing comma after the last arm of a multi-line `match`, the last name in a multi-line group `use`, the
 last item in a multi-line `list()`, or the last argument in multi-line arguments to an anonymous class, `clone()`,
 `exit()`, `die()` or a call through an expression, such as `$handlers[$name](`, and disallows one when the list is on a
-single line. It also disallows one in a `match` arm's conditions on a single line, e.g. `1, 2, => 'a'`.
+single line. A `match` arm's conditions are a list too: no comma before the `=>` when they're on one line, so
+`1, 2, => 'a'` is reported, and one when they're split over lines, as in `1,` then `2, => 'a'`.
 
 **Why:** [PER Coding Style 3.1, Section 2.6](https://www.php-fig.org/per/coding-style/#26-trailing-commas) says the last item of a list split across lines MUST have a trailing comma,
 and the last item of a list on one line MUST NOT. Slevomat's trailing comma sniffs cover calls, declarations and closure
@@ -1736,12 +1752,6 @@ $second = new class (
     2
 ) {};
 ```
-
-**Configuration:**
-
-| Property                         | Type | Default | Description                                                                 |
-| -------------------------------- | ---- | ------- | --------------------------------------------------------------------------- |
-| `disallowInSplitMatchConditions` | bool | false   | Disallow a comma before `=>` when an arm's conditions are split over lines. |
 
 ---
 
@@ -3237,9 +3247,6 @@ which PER Coding Style 3.1 needs.
 
 - **Whitespace after a unary `+`, `-`, `!`, `~` or `@` (6).** Section 6 leaves these operators undefined. Each has a
   property on [`PERCS31.Operators.UnaryOperatorSpacing`](#percs31operatorsunaryoperatorspacing) to check it, as the [Jumbo standard](Jumbo.md) does.
-- **A trailing comma in a split list of `match` conditions (2.6).** A comma before `=>` isn't required when an arm's
-  conditions are on several lines. Set `disallowInSplitMatchConditions` on `PERCS31.Formatting.TrailingComma` to
-  disallow one, as the [Jumbo standard](Jumbo.md) does.
 - **A trailing comma in a split attribute block holding one attribute (2.6).** No sniff requires one. Splitting such a
   block already breaks section 12.1, as nothing may come between `#[` and the attribute's name.
 - **Whether a fall-through comment is clear (5.2).** Any comment just before the next `case` or `default` passes, as the

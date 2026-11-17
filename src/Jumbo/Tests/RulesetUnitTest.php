@@ -335,13 +335,15 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that a match arm split before its value is brought onto one line if it fits, in Jumbo, and left in PERCS31.
+     * Test that a match arm split before its value is brought onto one line if it fits, in Jumbo. PERCS31 leaves it
+     * split, and adds the trailing comma a split list of conditions needs.
      */
     public function testWrappedMatchArmIsJoinedInJumboOnly(): void
     {
         $header = "<?php\n\ndeclare(strict_types=1);\n\nnamespace A;\n\n\$a = match (\$x) {\n";
         $footer = "    default => 9,\n};\n";
-        foreach (['Jumbo' => "    1, 2 => 3,\n", 'PERCS31' => "    1,\n    2\n    => 3,\n"] as $standard => $expected) {
+        $expectations = ['Jumbo' => "    1, 2 => 3,\n", 'PERCS31' => "    1,\n    2,\n    => 3,\n"];
+        foreach ($expectations as $standard => $expected) {
             $file = $this->copyToTempFile(null, $header . "    1,\n    2\n    => 3,\n" . $footer);
 
             try {

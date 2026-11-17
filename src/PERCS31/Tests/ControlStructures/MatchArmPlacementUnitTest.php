@@ -26,6 +26,9 @@ class MatchArmPlacementUnitTest extends AbstractSniffTestCase
             52 => 1,
             58 => 1,
             62 => 1,
+            // An arm's conditions split over lines, with two on a line, and with three after a comment.
+            78 => 1,
+            81 => 2,
         ];
     }
 

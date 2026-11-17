@@ -67,3 +67,26 @@ default => 3 };
 $j = match ($x) {
     1 => 2, /* Why. */ default => 3,
 };
+
+// An arm's conditions split over lines: each starts a line.
+$splitValid = match ($x) {
+    1,
+    2,
+    3, => 'a',
+    // One condition that spans lines doesn't split the list.
+    4, [
+        5,
+    ] => 'b',
+    default => 'c',
+};
+
+$splitInvalid = match ($x) {
+    1,
+    2,
+    3, => 'a',
+    4,
+    5,
+    6, /* Why. */
+    7, => 'b',
+    default => 'c',
+};

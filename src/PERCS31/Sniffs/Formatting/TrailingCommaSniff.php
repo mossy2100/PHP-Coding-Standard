@@ -31,21 +31,17 @@ use PHP_CodeSniffer\Util\Tokens;
  * Like Slevomat's call sniffs, this doesn't require a comma in an anonymous class's arguments, or `clone()`'s,
  * `exit()`'s, `die()`'s or such a call's, when the closing parenthesis follows the last one on its line, as in
  * `new class (function () {\n}) {`. Parentheses after `clone` followed by `->`, `?->`, `::` or `[` may only group an
- * expression, so they're skipped. A `match` arm's conditions are only checked on one line, so a split list of
- * conditions isn't required to have a comma before `=>`. Set disallowInSplitMatchConditions to disallow one there too,
- * as the Jumbo standard does.
+ * expression, so they're skipped.
+ *
+ * A `match` arm's conditions are a list too, so the same rule applies: no comma before the `=>` when they're on one
+ * line, as in `1, 2 => 'a',`, and one when they're split over lines, as in `1,` then `2, => 'a',`. The list is split
+ * when two of its conditions start on different lines.
  */
 class TrailingCommaSniff implements Sniff
 {
     public const string CODE_MISSING = 'Missing';
 
     public const string CODE_DISALLOWED = 'Disallowed';
-
-    /**
-     * Whether to disallow a comma before `=>` when a `match` arm's conditions are split over lines. PER's rule for a
-     * split list would require one, but its example only has conditions on one line, so by default it isn't checked.
-     */
-    public bool $disallowInSplitMatchConditions = false;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -196,7 +192,8 @@ class TrailingCommaSniff implements Sniff
     }
 
     /**
-     * Disallows a trailing comma in a `match` arm's conditions, when they're on one line.
+     * Checks the last of a `match` arm's conditions: it needs a trailing comma, before the `=>`, if the conditions are
+     * split across lines, and can't have one if they aren't.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $opener The position of the `match` body's opening brace.
@@ -207,22 +204,28 @@ class TrailingCommaSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
         foreach (MatchHelper::findArms($phpcsFile, $opener, $closer) as $arm) {
             $last = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($arm['arrow'] - 1), $arm['start'], true);
-            if (
-                $last === false
-                || $tokens[$last]['code'] !== T_COMMA
-                || (!$this->disallowInSplitMatchConditions && $tokens[$last]['line'] !== $tokens[$arm['start']]['line'])
-            ) {
+            if ($last === false) {
                 continue;
             }
 
-            $fix = $phpcsFile->addFixableError(
-                'The last item in a %s must not have a trailing comma',
-                $last,
-                self::CODE_DISALLOWED,
-                ['match condition list'],
-            );
-            if ($fix) {
-                $phpcsFile->fixer->replaceToken($last, '');
+            $isSplit = MatchHelper::hasSplitConditions($phpcsFile, $arm);
+            $hasComma = $tokens[$last]['code'] === T_COMMA;
+            if ($isSplit === $hasComma) {
+                continue;
+            }
+
+            if ($hasComma) {
+                $error = 'The last item in a %s must not have a trailing comma';
+                if ($phpcsFile->addFixableError($error, $last, self::CODE_DISALLOWED, ['match condition list'])) {
+                    $phpcsFile->fixer->replaceToken($last, '');
+                }
+
+                continue;
+            }
+
+            $error = 'The last item in a multi-line %s must have a trailing comma';
+            if ($phpcsFile->addFixableError($error, $last, self::CODE_MISSING, ['match condition list'])) {
+                $phpcsFile->fixer->addContent($last, ',');
             }
         }
     }

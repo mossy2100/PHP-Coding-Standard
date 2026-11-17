@@ -62,8 +62,6 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
 - `PERCS31.Operators.OperatorPlacement` requires a line in a control structure's condition to be indented exactly once
   past the `(` line if it starts with `&&` or `||`, and exactly once past its operand's line if it starts with any other
   operator. PERCS31 allows at least once (`requireExactConditionIndent` set to `true`).
-- `PERCS31.Formatting.TrailingComma` disallows a comma before a `match` arm's `=>` when its conditions are split over
-  lines, which PERCS31 doesn't check (`disallowInSplitMatchConditions` set to `true`).
 - `PERCS31.TypeHints.NullType` reports `T|null`, which should be `?T`, as an error, not a warning.
 - `Squiz.Arrays.ArrayDeclaration` also runs the checks PERCS31 leaves out. See [Squiz](#squiz).
 - `PERCS31.Operators.OperatorSpacing` also reports more than one space around an operator, with `ignoreNewlines` on and
@@ -469,12 +467,21 @@ each other's fixes. This sniff skips `exit` and `die`, and leaves everything els
 ### Jumbo.ControlStructures.MatchArmWrapIndent
 
 Requires a `match` arm's conditions, its `=>` and the first line of its value to be on one line, if they fit. Otherwise,
-a line starting with a later condition, the `=>`, or the value must be indented one level past the arm's first line. Set
-`indent` to change the number of spaces, which is 4 by default.
+it sets where the `=>` goes and how the arm's lines are indented. Set `indent` to change the number of spaces, which is
+4 by default.
+
+An arm that doesn't fit is wrapped in one of two ways:
+
+- **The conditions stay on one line.** A line starting with the `=>`, or with the value after it, is indented one level
+  past the arm's first line.
+- **The conditions are split,** one per line with a trailing comma, as PERCS31 requires. Each is level with the first,
+  and the `=>` starts the next line, indented once.
 
 **Why:** PER Coding Style 3.1 doesn't say how a wrapped arm is laid out, so this is an extra rule, matching how Jumbo
-treats calls and arrays that fit, and keeping each arm distinct. `PERCS31.Operators.OperatorPlacement` checks a line
-starting with an operator. A comment among the arm's parts is left to a person.
+treats calls and arrays that fit, and keeping each arm distinct. Putting the `=>` on its own line after split conditions
+is what makes their trailing comma useful: adding a condition then changes one line. PERCS31 allows the `=>` on the
+last condition's line too. `PERCS31.Operators.OperatorPlacement` checks a line starting with an operator. A comment
+among the arm's parts is left to a person.
 
 **Auto-fixable:** yes.
 
@@ -483,8 +490,11 @@ starting with an operator. A comment among the arm's parts is left to a person.
 ```php
 $label = match ($code) {
     200, 201 => 'OK',
+    $thisIsALongCondition, $andThisIsAnotherOne, $andAThirdCondition, $andAFourthCondition, $andAFifthCondition
+        => $this->describe($code),
     $thisIsAnExtremelyLongConditionThatTakesUpMostOfTheLineByItself,
-        $andThisIsAnotherOneThatWillNotFitOnTheSameLineAsThatOne => 'Long',
+    $andThisIsAnotherOneThatWillNotFitOnTheSameLineAsThatOne,
+        => 'Long',
     default => 'Error',
 };
 ```
@@ -494,7 +504,9 @@ $label = match ($code) {
 ```php
 $label = match ($code) {
     200,
-    201 => 'OK',
+    201, => 'OK',
+    $thisIsAnExtremelyLongConditionThatTakesUpMostOfTheLineByItself,
+        $andThisIsAnotherOneThatWillNotFitOnTheSameLineAsThatOne, => 'Long',
     default => 'Error',
 };
 ```

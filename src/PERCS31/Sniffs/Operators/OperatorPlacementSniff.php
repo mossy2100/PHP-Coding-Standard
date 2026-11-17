@@ -459,6 +459,15 @@ class OperatorPlacementSniff implements Sniff
                 break;
             }
 
+            // The comma after the last of a `match` arm's split conditions, before its `=>`, is inside the arm, so the
+            // arm's value still belongs to the line its last condition is on.
+            if ($code === T_COMMA) {
+                $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($i + 1), null, true);
+                if ($next !== false && $tokens[$next]['code'] === T_MATCH_ARROW) {
+                    continue;
+                }
+            }
+
             if (in_array($code, self::EXPRESSION_BOUNDARIES, true) && !Operators::isShortTernary($phpcsFile, $i)) {
                 break;
             }

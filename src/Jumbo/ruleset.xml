@@ -72,14 +72,6 @@
         <exclude name="SlevomatCodingStandard.TypeHints.ClassConstantTypeHint.UselessVarAnnotation"/>
     </rule>
 
-    <!-- ====== TRAILING COMMAS (2.6) ====== -->
-
-    <rule ref="PERCS31.Formatting.TrailingComma">
-        <properties>
-            <property name="disallowInSplitMatchConditions" value="true"/>
-        </properties>
-    </rule>
-
     <!-- ====== FILES AND NAMESPACES (3) ====== -->
 
     <!-- No closing tag at the end of a file, including one that mixes PHP and HTML, which PSR2.Files.ClosingTag
