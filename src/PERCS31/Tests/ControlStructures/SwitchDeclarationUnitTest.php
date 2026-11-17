@@ -97,6 +97,9 @@ class SwitchDeclarationUnitTest extends AbstractSniffTestCase
             238 => 1,
             246 => 1,
             247 => 1,
+            // The closing parenthesis of a split condition, indented too far, and too little.
+            258 => 1,
+            263 => 1,
         ];
     }
 

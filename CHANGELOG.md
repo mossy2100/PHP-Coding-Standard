@@ -662,6 +662,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **The `)` that ends a multi-line `case` condition (breaking).** On a line of its own, it passed with any indent.
+  `PERCS31.ControlStructures.SwitchDeclaration` now requires it level with the `case`, as section 5.2's example shows,
+  as `MultiLineConditionCloserIndent`. Auto-fixable.
 - **A block in a `case`, with statements after it.** `PERCS31.WhiteSpace.ScopeIndent` reported the block's closing
   brace, and `phpcbf` then left the brace and the statement after it indented wrongly. The brace is no longer checked.
   `PERCS31.ControlStructures.SwitchDeclaration` still reports the braces, as `WrongOpener`.

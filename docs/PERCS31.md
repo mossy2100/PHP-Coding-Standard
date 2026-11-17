@@ -1322,8 +1322,9 @@ after a closing brace by [`PERCS31.Formatting.AfterClosingBrace`](#percs31format
 
 A multi-line `case` condition must also follow the rule for any expression split inside parentheses. The first condition
 must be on the line after `(`, and each line must be indented at least once past the `case`. A condition that spans
-lines only because a call or array in it does is multi-line too, so `case foo(` over several lines is wrapped, as
-`case (`, then `foo(` on the next line.
+lines only because a call or array in it does is multi-line too, so `case foo(` over several lines is wrapped, as `case
+(`, then `foo(` on the next line. The `):` line is level with the `case`, as the example in section 5.2 shows, reported
+as `MultiLineConditionCloserIndent`.
 
 A `switch` with a `case` or `default` body wrapped in braces is reported as `WrongOpener`, and gets no other check from
 this sniff until the braces are removed. That works around a bug in the parent (PHP_CodeSniffer 4.0.4), which crashes

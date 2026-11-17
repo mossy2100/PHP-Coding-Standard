@@ -249,3 +249,17 @@ if ($a) {
             break;
     }
 }
+
+// The closing parenthesis of a split condition, on a line of its own, not lined up with the case.
+switch (true) {
+    case (
+        $a === 10
+        && $b === 20
+        ):
+        break;
+    case (
+        $a === 30
+        && $b === 40
+):
+        break;
+}

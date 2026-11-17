@@ -19,7 +19,7 @@ use PHP_CodeSniffer\Util\Tokens;
  * - Every non-empty case MUST end with a terminating statement, such as `break` or `return`, "even if they are the
  *   final one". The parent only checks a case that's followed by another. The fix adds `break;` before the `}`.
  * - A multi-line case condition MUST be wrapped in parentheses, and MUST end with a line containing only `):`. The fix
- *   adds the parentheses, or moves the `)` to its own line.
+ *   adds the parentheses, or moves the `)` to its own line. That line is level with the `case`, as the example shows.
  * - An expression split inside parentheses MUST have its first condition on the next line, with each subsequent line
  *   indented at least once. The fix moves the first condition, or indents the line once past the `case`.
  * - A non-empty case that continues into the next one MUST have a comment saying so. The parent only checks a `case`,
@@ -49,6 +49,8 @@ class SwitchDeclarationSniff extends Psr2Sniff
     public const string CODE_MULTI_LINE_CONDITION_FIRST_LINE = 'MultiLineConditionFirstLine';
 
     public const string CODE_MULTI_LINE_CONDITION_INDENT = 'MultiLineConditionIndent';
+
+    public const string CODE_MULTI_LINE_CONDITION_CLOSER_INDENT = 'MultiLineConditionCloserIndent';
 
     public const string CODE_TERMINATING_COMMENT = 'TerminatingComment';
 
@@ -302,6 +304,20 @@ class SwitchDeclarationSniff extends Psr2Sniff
 
         $beforeCloser = $phpcsFile->findPrevious(T_WHITESPACE, ($last - 1), $case, true);
         if ($beforeCloser === false || $tokens[$beforeCloser]['line'] !== $tokens[$last]['line']) {
+            // On a line of its own, the closing parenthesis lines up with the `case`, as section 5.2's example shows.
+            $found = $tokens[$last]['column'] - 1;
+            if ($beforeCloser !== false && $found !== strlen($indent)) {
+                FixerHelper::reportIndent(
+                    $phpcsFile,
+                    $last,
+                    strlen($indent),
+                    'The closing parenthesis of a multi-line case condition must line up with the case; expected %s'
+                        . ' spaces, found %s',
+                    self::CODE_MULTI_LINE_CONDITION_CLOSER_INDENT,
+                    [strlen($indent), $found],
+                );
+            }
+
             return;
         }
 
