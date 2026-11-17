@@ -19,6 +19,10 @@ use PHP_CodeSniffer\Util\Tokens;
  * It also skips a semicolon in the hooks of a promoted constructor parameter. Section 4.9 only allows a single short
  * hook on one line there, and PERCS31.Classes.PropertyHooks reports anything else, which a person has to move
  * to the class body. The parent's fix would split the hooks over lines first, leaving a layout nobody wants.
+ *
+ * The parent only compares the lines of two semicolons. So it misses a second statement that ends on a later line, as
+ * in `$a = 1; foo(`, or has no semicolon, as in `$a = 1; if ($b) {`. This sniff reports a statement that starts after
+ * a semicolon on the same line, when the parent doesn't.
  */
 class DisallowMultipleStatementsSniff extends GenericSniff
 {
@@ -45,6 +49,56 @@ class DisallowMultipleStatementsSniff extends GenericSniff
         }
 
         parent::process($phpcsFile, $stackPtr);
+
+        $this->checkStatementAfter($phpcsFile, $stackPtr);
+    }
+
+    /**
+     * Report a statement that starts on a semicolon's line, after it, when the next semicolon is on a later line. The
+     * parent reports the statement when its own semicolon is on that line too.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $semicolonPtr The position of the semicolon.
+     */
+    private function checkStatementAfter(File $phpcsFile, int $semicolonPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $line = $tokens[$semicolonPtr]['line'];
+        $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($semicolonPtr + 1), null, true);
+        if (
+            $next === false
+            || $tokens[$next]['line'] !== $line
+            || $tokens[$next]['code'] === T_CLOSE_CURLY_BRACKET
+            || $tokens[$next]['code'] === T_CLOSE_TAG
+        ) {
+            return;
+        }
+
+        // The semicolons in a for loop's parentheses separate expressions, not statements.
+        foreach (($tokens[$semicolonPtr]['nested_parenthesis'] ?? []) as $opener => $closer) {
+            $owner = $tokens[$opener]['parenthesis_owner'] ?? null;
+            if (is_int($owner) && $tokens[$owner]['code'] === T_FOR) {
+                return;
+            }
+        }
+
+        // Left to the parent, and to this sniff's exceptions for hooks.
+        $nextSemicolon = $phpcsFile->findNext(T_SEMICOLON, $next);
+        if ($nextSemicolon !== false && $tokens[$nextSemicolon]['line'] === $line) {
+            return;
+        }
+
+        $fix = $phpcsFile->addFixableError('Each PHP statement must be on a line by itself', $next, 'SameLine');
+        if (!$fix) {
+            return;
+        }
+
+        // The line break goes before the statement, so a comment after the semicolon stays with the first statement.
+        if ($tokens[($next - 1)]['code'] === T_WHITESPACE) {
+            $phpcsFile->fixer->replaceToken(($next - 1), $phpcsFile->eolChar);
+        } else {
+            $phpcsFile->fixer->addContentBefore($next, $phpcsFile->eolChar);
+        }
     }
 
     /**

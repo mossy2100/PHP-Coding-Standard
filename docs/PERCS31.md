@@ -1546,6 +1546,10 @@ It also skips the hooks of a promoted constructor parameter. Section 4.9 only al
 [`PERCS31.Classes.PropertyHooks`](#percs31classespropertyhooks) reports anything else, which a person has to move to the class body. Splitting the hooks
 over lines first would only leave a layout nobody wants.
 
+The Generic sniff only compares the lines of two semicolons. So this sniff also reports a statement that starts after
+a semicolon on the same line and ends on a later one, as in `$a = 1; foo(`, or has no semicolon, as in
+`$a = 1; if ($b) {`.
+
 **Auto-fixable:** yes.
 
 **Good:**
@@ -1564,6 +1568,10 @@ $b = 2;
 
 ```php
 $a = 1; $b = 2;
+
+$c = 1; if ($d) {
+    run();
+}
 ```
 
 ---

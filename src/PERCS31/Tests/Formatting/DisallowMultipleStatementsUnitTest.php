@@ -25,6 +25,12 @@ class DisallowMultipleStatementsUnitTest extends AbstractSniffTestCase
             31 => 1,
             // A short hook body, then a bodiless operation.
             34 => 1,
+            // A second statement that ends on a later line, or has no semicolon.
+            50 => 1,
+            54 => 1,
+            58 => 1,
+            // The same, with a comment after the first statement.
+            63 => 1,
         ];
     }
 

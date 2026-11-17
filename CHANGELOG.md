@@ -662,6 +662,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **Two statements on a line, when the second ends on a later line (breaking).** `$a = 1; foo(` and
+  `$a = 1; if ($b) {` passed, as the inherited check only compares the lines of two semicolons.
+  `PERCS31.Formatting.DisallowMultipleStatements` now reports the second statement, as `SameLine`, and its fix puts it
+  on a new line. A comment after the first statement stays on its line.
 - **A file's first statement indented too far.** `PERCS31.WhiteSpace.ConsistentIndent` never checked the first
   statement after the opening tag, so ` $a = 1;` passed with any indent. When that statement was split over lines, the
   correctly indented statement after it was reported instead, and `phpcbf` failed to fix the file. The first statement
