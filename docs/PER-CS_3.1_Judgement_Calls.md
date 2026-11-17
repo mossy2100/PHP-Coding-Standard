@@ -706,6 +706,31 @@ namespace has its own imports.
 
 ---
 
+### A `declare` After the Header
+
+**Issue:** The header has "One or more declare statements", and each block "MUST be in the order listed". The spec
+doesn't say whether that covers a `declare` statement after the rest of the code, or after markup.
+
+**Decision:** It doesn't. Only the `declare` statements in the header are checked for their order. One anywhere else
+isn't checked, so this passes:
+
+```php
+<?php
+
+namespace Vendor\Package;
+
+run();
+
+declare(ticks=1);
+```
+
+**Why:** A `declare` after the header is part of the code, not of the header. `declare(ticks=1)` applies from where
+it's written, so it has a reason to be anywhere. PHP itself rejects a `strict_types` declaration that isn't the first
+statement, and rejects or ignores a misplaced `encoding` one. Catching code that doesn't work is PHP's job, not a
+coding standard's.
+
+---
+
 ### `declare` Statements
 
 **Issue:** "Declare statements MUST NOT contain any spaces inside the parentheses" doesn't say whether that includes
