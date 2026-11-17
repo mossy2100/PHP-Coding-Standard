@@ -15,6 +15,11 @@ use PHPUnit\Framework\TestCase;
  * The per-sniff tests only cover the custom sniffs, and the spec examples only show that valid code passes. So without
  * these, nothing fails if an inherited sniff, one of its properties or its type is removed from the ruleset. Each row
  * is a small file that breaks one rule. phpcs runs once, over all of them.
+ *
+ * The last rows are for the sniffs that only come in through PSR-12, so that nothing passes unnoticed if a
+ * PHP_CodeSniffer release drops one from PSR-12. Two have no row. What Generic.PHP.DisallowShortOpenTag reports depends
+ * on PHP's short_open_tag setting. Generic.PHP.DisallowAlternativePHPTags's message for an ASP-style tag ends with the
+ * tag's line, so its code isn't on the line this test reads.
  */
 #[CoversNothing]
 class InheritedRulesUnitTest extends TestCase
@@ -247,6 +252,123 @@ class InheritedRulesUnitTest extends TestCase
         'a constant with no visibility' => [
             "<?php\n\nclass A\n{\n    const B = 1;\n}\n",
             'PSR12.Properties.ConstantVisibility.NotFound',
+            'error',
+        ],
+        // The sniffs below come in through PSR-12, and aren't named in the ruleset.
+        'a control structure with no braces' => [
+            "<?php\n\nif (\$a) run();\n",
+            'Generic.ControlStructures.InlineControlStructure.NotAllowed',
+            'error',
+        ],
+        'a byte order mark' => ["\u{FEFF}<?php\n\n\$a = 1;\n", 'Generic.Files.ByteOrderMark.Found', 'error'],
+        'Windows line endings' => ["<?php\r\n\r\n\$a = 1;\r\n", 'Generic.Files.LineEndings.InvalidEOLChar', 'error'],
+        'TRUE in upper case' => ["<?php\n\n\$a = TRUE;\n", 'Generic.PHP.LowerCaseConstant.Found', 'error'],
+        'a tab indent' => [
+            "<?php\n\nif (\$a) {\n\trun();\n}\n",
+            'Generic.WhiteSpace.DisallowTabIndent.TabsUsed',
+            'error',
+        ],
+        'a space before ++' => [
+            "<?php\n\n\$i ++;\n",
+            'Generic.WhiteSpace.IncrementDecrementSpacing.SpaceAfterIncrement',
+            'error',
+        ],
+        'a parameter with a default value before one without' => [
+            "<?php\n\nfunction a(\$b = 1, \$c): void {}\n",
+            'PEAR.Functions.ValidDefaultValue.NotAtEnd',
+            'error',
+        ],
+        'a method name in snake case' => [
+            "<?php\n\nclass A\n{\n    public function do_it(): void {}\n}\n",
+            'PSR1.Methods.CamelCapsMethodName.NotCamelCaps',
+            'error',
+        ],
+        'else if as two words' => [
+            "<?php\n\nif (\$a) {\n    run();\n} else if (\$b) {\n    stop();\n}\n",
+            'PSR2.ControlStructures.ElseIfDeclaration.NotAllowed',
+            'warning',
+        ],
+        'a closing tag in a PHP file' => ["<?php\n\n\$a = 1;\n?>\n", 'PSR2.Files.ClosingTag.NotAllowed', 'error'],
+        'no newline at the end of a file' => ["<?php\n\n\$a = 1;", 'PSR2.Files.EndFileNewline.NoneFound', 'error'],
+        'a blank line before a function\'s closing brace' => [
+            "<?php\n\nfunction a(): void\n{\n    run();\n\n}\n",
+            'PSR2.Methods.FunctionClosingBrace.SpacingBeforeClose',
+            'error',
+        ],
+        'static before the visibility of a method' => [
+            "<?php\n\nclass A\n{\n    static public function b(): void {}\n}\n",
+            'PSR2.Methods.MethodDeclaration.StaticBeforeVisibility',
+            'error',
+        ],
+        'a method name with a leading underscore' => [
+            "<?php\n\nclass A\n{\n    private function _b(): void {}\n}\n",
+            'PSR2.Methods.MethodDeclaration.Underscore',
+            'error',
+        ],
+        'no space after an anonymous class\'s keyword' => [
+            "<?php\n\n\$a = new class(\$b) {\n    public int \$c = 1;\n};\n",
+            'PSR12.Classes.AnonClassDeclaration.SpaceAfterKeyword',
+            'error',
+        ],
+        'new with no parentheses' => [
+            "<?php\n\n\$a = new Foo;\n",
+            'PSR12.Classes.ClassInstantiation.MissingParentheses',
+            'error',
+        ],
+        'a blank line after a class\'s opening brace' => [
+            "<?php\n\nclass A\n{\n\n    public int \$b = 1;\n}\n",
+            'PSR12.Classes.OpeningBraceSpace.Found',
+            'error',
+        ],
+        'an import with a leading backslash' => [
+            "<?php\n\nuse \\Foo\\Bar;\n",
+            'PSR12.Files.ImportStatement.LeadingSlash',
+            'error',
+        ],
+        'a statement on the opening tag\'s line' => ["<?php echo 1;\n", 'PSR12.Files.OpenTag.NotAlone', 'error'],
+        'a space before a return type\'s colon' => [
+            "<?php\n\nfunction a() : void {}\n",
+            'PSR12.Functions.ReturnTypeDeclaration.SpaceBeforeColon',
+            'error',
+        ],
+        'no space after if' => [
+            "<?php\n\nif(\$a) {\n    run();\n}\n",
+            'Squiz.ControlStructures.ControlSignature.SpaceAfterKeyword',
+            'error',
+        ],
+        'no space after a for loop\'s first semicolon' => [
+            "<?php\n\nfor (\$i = 0;\$i < 1; \$i++) {\n    run();\n}\n",
+            'Squiz.ControlStructures.ForLoopDeclaration.NoSpaceAfterFirst',
+            'error',
+        ],
+        'a space before a comma in a parameter list' => [
+            "<?php\n\nfunction a(\$b , \$c): void {}\n",
+            'Squiz.Functions.FunctionDeclarationArgumentSpacing.SpaceBeforeComma',
+            'error',
+        ],
+        'a method with no visibility' => [
+            "<?php\n\nclass A\n{\n    function b(): void {}\n}\n",
+            'Squiz.Scope.MethodScope.Missing',
+            'error',
+        ],
+        'spaces inside a cast' => [
+            "<?php\n\n\$a = ( int ) \$b;\n",
+            'Squiz.WhiteSpace.CastSpacing.ContainsWhiteSpace',
+            'error',
+        ],
+        'a blank line after a control structure\'s opening brace' => [
+            "<?php\n\nif (\$a) {\n\n    run();\n}\n",
+            'Squiz.WhiteSpace.ControlStructureSpacing.SpacingAfterOpen',
+            'error',
+        ],
+        'two spaces after a visibility keyword' => [
+            "<?php\n\nclass A\n{\n    public  function b(): void {}\n}\n",
+            'Squiz.WhiteSpace.ScopeKeywordSpacing.Incorrect',
+            'error',
+        ],
+        'a space at the end of a line' => [
+            "<?php\n\n\$a = 1; \n",
+            'Squiz.WhiteSpace.SuperfluousWhitespace.EndLine',
             'error',
         ],
     ];
