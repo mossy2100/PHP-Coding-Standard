@@ -647,6 +647,20 @@ effort, so a simple rule is applied consistently.
 
 ## 3. Declare Statements, Namespace, and Import Statements
 
+### Blank Lines in the Header
+
+**Issue:** "If present, each of the blocks below MUST be separated by a single blank line, and MUST NOT contain a blank
+line." The last block listed is "The remainder of the code in the file". Read literally, that bans every blank line
+after the header.
+
+**Decision:** The ban covers the header's blocks only, from the opening tag to the imports. The rest of the code may have
+blank lines wherever 2.3 allows them.
+
+**Why:** The literal reading contradicts 2.3, and every example in the spec with more than one statement after the
+header, such as 4.2's and 12.4's.
+
+---
+
 ### Several Imports in One `use`
 
 **Issue:** The header has "One or more class-based `use` import statements", but the spec doesn't say whether one
