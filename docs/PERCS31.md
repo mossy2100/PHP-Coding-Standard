@@ -1395,6 +1395,10 @@ until PHP_CodeSniffer handles several directives.
 The original's fix for the space before a block declare's `{` never ends on `){`, with no space at all. The fork's fix
 removes whatever is between them, then adds one space.
 
+A directive's name in upper or mixed case, as in `declare(STRICT_TYPES=1);`, is reported as `DirectiveNotLowercase`,
+and fixed. PHP accepts any case, but the spec writes everything PHP defines in lower case. See
+[The Case of a Directive](PER-CS_3.1_Judgement_Calls.md#the-case-of-a-directive).
+
 The original's check that a block declare's closing brace is on a new line is removed, as
 `PERCS31.WhiteSpace.ScopeClosingBrace` makes it. With both fixes, the result had a blank line before the brace.
 

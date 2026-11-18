@@ -736,6 +736,20 @@ namespace has its own imports.
 
 ---
 
+### The Case of a Directive
+
+**Issue:** 2.5 says "All PHP reserved keywords and types MUST be in lower case". A `declare` directive's name, such as
+`strict_types`, `ticks` or `encoding`, isn't a reserved keyword, and PHP accepts it in any case.
+
+**Decision:** It must be in lower case, so `declare(STRICT_TYPES=1);` is reported, and fixed to
+`declare(strict_types=1);`.
+
+**Why:** The spec writes everything PHP itself defines in lower case: its keywords and types (2.5), including `true`,
+`false` and `null`, a hook's `get` and `set` (see [Hook Names](#hook-names)), and the `php` in `<?php` (3). Every
+example writes a directive in lower case too.
+
+---
+
 ### A `declare` After the Header
 
 **Issue:** The header has "One or more declare statements", and each block "MUST be in the order listed". The spec
