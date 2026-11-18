@@ -359,12 +359,13 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that a global const statement with two constants is reported and split in Jumbo, and passes in PERCS31, as
-     * section 4.3 is about classes. A class's constants are reported in both.
+     * Test that a global const statement with two constants, or two spaces after const, is reported and fixed in
+     * Jumbo, and passes in PERCS31, as section 4 is about classes. A class's constants are reported in both.
      */
     public function testGlobalConstantsPerStatementInJumboOnly(): void
     {
-        $source = "<?php\n\ndeclare(strict_types=1);\n\nnamespace Vendor\\Package;\n\nconst A = 1, B = 2;\n";
+        $source = "<?php\n\ndeclare(strict_types=1);\n\nnamespace Vendor\\Package;\n\n"
+            . "const A = 1, B = 2;\nconst  C = 3;\n";
         $file = $this->copyToTempFile(null, $source);
         $args = ['-s', '--sniffs=PERCS31.Classes.ConstantDeclaration', '--report=emacs'];
 
@@ -379,7 +380,8 @@ class RulesetUnitTest extends TestCase
 
         $this->assertSame(0, $percs31['exitCode'], $percs31['output']);
         $this->assertStringContainsString('ConstantDeclaration.DisallowedMultiConstantDefinition', $jumbo['output']);
-        $this->assertStringContainsString("const A = 1;\nconst B = 2;\n", $fixed);
+        $this->assertStringContainsString('ConstantDeclaration.SpaceAfterConst', $jumbo['output']);
+        $this->assertStringContainsString("const A = 1;\nconst B = 2;\nconst C = 3;\n", $fixed);
     }
 
     /**

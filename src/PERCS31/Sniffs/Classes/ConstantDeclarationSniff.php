@@ -19,8 +19,7 @@ use SlevomatCodingStandard\Sniffs\Classes\DisallowMultiConstantDefinitionSniff;
  * SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition, called from here, so its fix splits the statement and
  * keeps its modifiers and type. The Slevomat sniff checks every `const` statement, and has no setting to skip a global
  * one, which section 4 doesn't cover, as it's about classes. So it isn't in the ruleset, and this sniff only gives it a
- * class's constants, reported as DisallowedMultiConstantDefinition. Set checkGlobalConstantCount to give it a global
- * `const` too. A `define()` call can only declare one constant.
+ * class's constants, reported as DisallowedMultiConstantDefinition. A `define()` call can only declare one constant.
  *
  * PER Coding Style 3.1, section 4.6, says all keywords MUST be on a single line, separated by a single space, and
  * section 4.3 says there MUST be a space between a property's type and its name. Neither names a constant's type or
@@ -33,7 +32,8 @@ use SlevomatCodingStandard\Sniffs\Classes\DisallowMultiConstantDefinitionSniff;
  * An enum case is declared like a constant, and section 9 says enums follow the guidelines for class constants. Its
  * example writes `case Hearts = 'H';`, so one space after `case` is read as the pattern, reported as SpaceAfterCase.
  *
- * A line break counts as more than a single space. A global constant isn't checked, as section 4 is about classes.
+ * A line break counts as more than a single space. A global constant isn't checked, as section 4 is about classes. Set
+ * checkGlobalConstants to check it for one constant per statement and one space after `const`, as Jumbo does.
  */
 class ConstantDeclarationSniff implements Sniff
 {
@@ -46,10 +46,10 @@ class ConstantDeclarationSniff implements Sniff
     public const string CODE_MULTI_CONSTANT = 'DisallowedMultiConstantDefinition';
 
     /**
-     * Whether a global `const` statement may declare only one constant too. Section 4.3's rule is about classes, so
-     * it's off by default. The Jumbo standard turns it on. The spacing checks apply to class constants only.
+     * Whether to check a global `const` statement too: one constant per statement, and one space after `const`. Section
+     * 4 is about classes, so it's off by default. The Jumbo standard turns it on.
      */
-    public bool $checkGlobalConstantCount = false;
+    public bool $checkGlobalConstants = false;
 
     /**
      * The Slevomat sniff that makes the check for one constant per statement, and its fix.
@@ -90,14 +90,12 @@ class ConstantDeclarationSniff implements Sniff
         }
 
         $isClassConstant = Scopes::isOOConstant($phpcsFile, $stackPtr);
-        if ($isClassConstant || $this->checkGlobalConstantCount) {
-            $this->multiConstantSniff ??= new DisallowMultiConstantDefinitionSniff();
-            $this->multiConstantSniff->process($phpcsFile, $stackPtr);
-        }
-
-        if (!$isClassConstant) {
+        if (!$isClassConstant && (!$this->checkGlobalConstants || $this->isInUseStatement($phpcsFile, $stackPtr))) {
             return;
         }
+
+        $this->multiConstantSniff ??= new DisallowMultiConstantDefinitionSniff();
+        $this->multiConstantSniff->process($phpcsFile, $stackPtr);
 
         if ($first !== false) {
             FixerHelper::requireSingleSpace(
@@ -107,6 +105,11 @@ class ConstantDeclarationSniff implements Sniff
                 'Expected 1 space after the const keyword',
                 self::CODE_SPACE_AFTER_CONST,
             );
+        }
+
+        // A global constant can't have a type.
+        if (!$isClassConstant) {
+            return;
         }
 
         $constant = Constants::getProperties($phpcsFile, $stackPtr);
@@ -121,5 +124,19 @@ class ConstantDeclarationSniff implements Sniff
                 self::CODE_SPACE_AFTER_TYPE,
             );
         }
+    }
+
+    /**
+     * Check whether a `const` keyword is part of an import, as in `use const Vendor\LIMIT;`.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the `const` keyword.
+     * @return bool True if the statement it's in starts with `use`.
+     */
+    private function isInUseStatement(File $phpcsFile, int $stackPtr): bool
+    {
+        $start = $phpcsFile->findStartOfStatement($stackPtr);
+
+        return $phpcsFile->getTokens()[$start]['code'] === T_USE;
     }
 }

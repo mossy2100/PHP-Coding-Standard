@@ -14,10 +14,17 @@ class ConstantDeclarationUnitTest extends AbstractSniffTestCase
     /**
      * Returns the lines where errors should occur.
      *
+     * @param string $testFile The name of the test input file.
      * @return array<int, int> Line number => error count.
      */
-    protected function getErrorList(): array
+    protected function getErrorList(string $testFile = ''): array
     {
+        if ($testFile === 'ConstantDeclarationUnitTest.2.inc') {
+            // Global constants, with checkGlobalConstants on: two spaces after const, a line break, and two constants
+            // in one statement.
+            return [17 => 1, 19 => 1, 22 => 1];
+        }
+
         return [
             // Two spaces after const, before a name and before a type.
             18 => 1,

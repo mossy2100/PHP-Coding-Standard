@@ -736,8 +736,9 @@ inherited sniff checks a constant alone.
 and keeps the modifiers and type. The Slevomat sniff checks every `const` statement, with no setting to skip a global
 one, so it isn't in the ruleset, and this sniff only gives it a class's constants, reported as
 `DisallowedMultiConstantDefinition`. A global `const` with several constants passes, as section 4 is about classes. Set
-`checkGlobalConstantCount` to check it too, as Jumbo does. Slevomat 8.31.3 or later is needed, which stops it flagging a
-comma inside parentheses, as in `const I = new Complex(0, 1);`.
+`checkGlobalConstants` to check a global `const` too, for one constant per statement and one space after `const`, as
+Jumbo does. Slevomat 8.31.3 or later is needed, which stops it flagging a comma inside parentheses, as in
+`const I = new Complex(0, 1);`.
 
 An enum case is declared like a constant, and section 9's example writes `case Hearts = 'H';`, so one space after
 `case` is required too, reported as `SpaceAfterCase`. See

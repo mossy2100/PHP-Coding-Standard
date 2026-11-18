@@ -35,11 +35,11 @@
          the closing brace (4.4, 7), which PSR2.Methods.FunctionClosingBrace reports. -->
     <rule ref="Squiz.WhiteSpace.FunctionOpeningBraceSpace.SpacingAfter"/>
 
-    <!-- One constant per statement for a global const too. PERCS31 only checks a class's constants, as section 4.3
-         is about classes. -->
+    <!-- One constant per statement, and one space after const, for a global const too. PERCS31 only checks a class's
+         constants, as section 4 is about classes. -->
     <rule ref="PERCS31.Classes.ConstantDeclaration">
         <properties>
-            <property name="checkGlobalConstantCount" value="true"/>
+            <property name="checkGlobalConstants" value="true"/>
         </properties>
     </rule>
 
