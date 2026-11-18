@@ -71,6 +71,9 @@ class OperatorPlacementUnitTest extends AbstractSniffTestCase
                 211 => 1,
                 // The same after a comment (not fixable).
                 218 => 1,
+                // A blank line before the ? and before the :.
+                225 => 1,
+                227 => 1,
             ];
         }
 

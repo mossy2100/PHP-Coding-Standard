@@ -1907,10 +1907,12 @@ one level, and the line with the `(` shows that the group continues the statemen
 **Issue:** 6.4 sets the layout of a split ternary, but not what counts as split.
 
 **Decision:** A ternary is split only when a line break is right before or after its `?` or `:`, ignoring comments. Then
-it takes the three-line form. A nested ternary is indented once more. A short ternary may be on two lines, with `?:`
-starting the second.
+it takes exactly three lines, unless a value or condition wraps over lines of its own, so a blank line before the `?` or
+`:` is reported. A nested ternary is indented once more. A short ternary may be on two lines, with `?:` starting the
+second.
 
-**Why:** A value or condition split over lines doesn't change the ternary's structure.
+**Why:** A value or condition split over lines doesn't change the ternary's structure. A blank line does, as 6.4 says a
+split ternary MUST "occupy 3 lines". It's one of the places the text rules a blank line out, as 2.3 allows.
 
 ---
 

@@ -218,3 +218,17 @@ $aloneWithComment = $ternaryOperatorExpr
     ? // Why.
     'fizz'
     : 'buzz';
+
+// A blank line before the ? and before the :.
+$blank = $ternaryOperatorExpr
+
+    ? 'fizz'
+
+    : 'buzz';
+
+// A value that wraps over lines of its own still passes.
+$wrapped = $ternaryOperatorExpr
+    ? [
+        'fizz',
+    ]
+    : 'buzz';

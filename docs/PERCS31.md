@@ -2429,7 +2429,9 @@ A short ternary with something between its `?` and `:`, such as `$a ? : $b`, is 
 
 **A full ternary.** Section 6.4 says a multi-line ternary MUST occupy three lines, never two. So a ternary split at its
 `?` or `:` takes three lines, with `?` and `:` each starting a line, indented once, reported as `TernaryLayout`. Each is
-followed by its value on the same line, so a `?` or `:` alone on a line is reported too.
+followed by its value on the same line, so a `?` or `:` alone on a line is reported too. A blank line before the `?` or
+`:` adds a line, so it's reported as `BlankLineInTernary`. Only a value or condition that wraps over lines of its own
+may make a ternary longer than three lines.
 `SlevomatCodingStandard.ControlStructures.DisallowTrailingMultiLineTernaryOperator` only reports a `?` at the end of a
 line, so it isn't used. No inherited sniff reports a ternary on two lines, a trailing `:`, or the wrong indentation. The
 `?` of a nullable type in a `set` hook's parameter, which PHP_CodeSniffer reads as a ternary's, is skipped.

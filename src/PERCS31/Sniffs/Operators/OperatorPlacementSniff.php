@@ -64,7 +64,9 @@ use SlevomatCodingStandard\Helpers\TernaryOperatorHelper;
  * PERCS31.Operators.OperatorSpacing, which joins them. Its placement is checked here once it's written `?:`.
  *
  * A full ternary: section 6.4 says a multi-line ternary MUST occupy 3 lines, never 2. So one split at its `?` or `:`
- * takes three lines, with `?` and `:` each starting a line, indented once, reported as TernaryLayout.
+ * takes three lines, with `?` and `:` each starting a line, indented once, reported as TernaryLayout. A blank line
+ * before the `?` or `:` would add a line, so it's reported too, as BlankLineInTernary. Only a value or condition that
+ * wraps over lines of its own may make it longer.
  * SlevomatCodingStandard.ControlStructures.DisallowTrailingMultiLineTernaryOperator only reports a `?` at the end of a
  * line, so it isn't used. This also reports a ternary on two lines, a trailing `:`, and `?` or `:` indented wrongly,
  * and fixes each to the three-line layout.
@@ -87,6 +89,8 @@ class OperatorPlacementSniff implements Sniff
     public const string CODE_INDENT = 'Indent';
 
     public const string CODE_TERNARY_LAYOUT = 'TernaryLayout';
+
+    public const string CODE_BLANK_LINE_IN_TERNARY = 'BlankLineInTernary';
 
     /**
      * Whether a line in a control structure's condition must be indented exactly as described, rather than at least
@@ -562,6 +566,9 @@ class OperatorPlacementSniff implements Sniff
             && $this->hasOperandOnLine($phpcsFile, $inlineThenPointer)
             && $this->hasOperandOnLine($phpcsFile, $inlineElsePointer)
         ) {
+            $this->checkBlankLineBefore($phpcsFile, $inlineThenPointer);
+            $this->checkBlankLineBefore($phpcsFile, $inlineElsePointer);
+
             return;
         }
 
@@ -585,6 +592,41 @@ class OperatorPlacementSniff implements Sniff
 
             $phpcsFile->fixer->addContentBefore($operator, $phpcsFile->eolChar . $indentation);
             $phpcsFile->fixer->addContent($operator, ' ');
+        }
+
+        $phpcsFile->fixer->endChangeset();
+    }
+
+    /**
+     * Report a blank line straight before a split ternary's `?` or `:`, as section 6.4 says a ternary MUST occupy 3
+     * lines, and fix it by removing every blank line there.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $operator The position of the `?` or `:`.
+     */
+    private function checkBlankLineBefore(File $phpcsFile, int $operator): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $blankLines = [];
+        for ($i = ($operator - 1); $i >= 0 && $tokens[$i]['code'] === T_WHITESPACE; $i--) {
+            if (LayoutHelper::isBlankLine($phpcsFile, $i)) {
+                $blankLines[] = $i;
+            }
+        }
+
+        if ($blankLines === []) {
+            return;
+        }
+
+        $error = 'A split ternary must take three lines, with no blank line before "%s"';
+        $data = [$tokens[$operator]['content']];
+        if (!$phpcsFile->addFixableError($error, $operator, self::CODE_BLANK_LINE_IN_TERNARY, $data)) {
+            return;
+        }
+
+        $phpcsFile->fixer->beginChangeset();
+        foreach ($blankLines as $blankLine) {
+            $phpcsFile->fixer->replaceToken($blankLine, '');
         }
 
         $phpcsFile->fixer->endChangeset();
