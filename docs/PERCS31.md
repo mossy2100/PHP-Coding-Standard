@@ -1494,6 +1494,10 @@ over three lines. This sniff skips the header's spacing checks in a file with ma
 The parent ends a `use` statement at its first comma, so it reports `use A, B;` as missing a blank line before `B`.
 Section 3 doesn't forbid several imports in one statement, so this sniff reads the statement to its semicolon.
 
+The parent also takes a comment at the end of a block's last line, as in `use A; // Why.`, for the start of the next
+block. So it reports a missing blank line, and its fix moves the comment onto a line of its own, where a
+`// phpcs:ignore` no longer applies to the `use`. This sniff counts the comment as part of the line it ends.
+
 Section 3 puts the imports before the rest of the code, and says that in a file with markup they MUST be at the top. The
 parent only looks at the header, so this sniff reports an import after the rest of the code, as `ImportAfterCode`. A
 file with more than one namespace is skipped, as each namespace has its own imports. In a file that starts with

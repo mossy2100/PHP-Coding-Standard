@@ -70,6 +70,12 @@ class FileHeaderUnitTest extends AbstractSniffTestCase
             return [5 => 1];
         }
 
+        if ($testFile === 'FileHeaderUnitTest.30.inc') {
+            // A comment at the end of a block's last line, with no blank line after it, or two. File 29 has a comment
+            // at the end of every block, each with one blank line after it, so nothing is reported.
+            return [3 => 1, 4 => 1];
+        }
+
         if ($testFile === 'FileHeaderUnitTest.2.inc') {
             // A blank line between a declare statement and a block declare.
             return [3 => 1];

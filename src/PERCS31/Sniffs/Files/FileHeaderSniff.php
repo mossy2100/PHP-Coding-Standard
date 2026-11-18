@@ -43,6 +43,10 @@ use PHPCSUtils\Utils\UseStatements;
  * the missing blank line before `B`. Section 3 doesn't forbid several imports in one statement, so this sniff extends
  * that line to its semicolon, and adds any `use` statements after it.
  *
+ * The parent also takes a comment at the end of a block's last line, as in `use A; // Why.`, for the start of the next
+ * block, so it reports a missing blank line, and its fix moves the comment onto a line of its own. This sniff counts
+ * such a comment as part of the line it ends.
+ *
  * The parent only looks at the header, so an import after the rest of the code passed. Section 3 puts the imports
  * before "The remainder of the code in the file", and says that in a file with markup they "MUST be present at the top
  * of the file". This sniff reports one as ImportAfterCode, but not in a file with more than one namespace, where each
@@ -118,6 +122,7 @@ class FileHeaderSniff extends Psr12Sniff
     {
         $tokens = $phpcsFile->getTokens();
         $lines = $this->completeUseLines($phpcsFile, parent::getHeaderLines($phpcsFile, $stackPtr));
+        $lines = $this->includeTrailingComments($phpcsFile, $lines);
         $last = end($lines);
         if ($last === false || !in_array($last['type'], ['tag', 'docblock', 'declare'], true)) {
             return $lines;
@@ -176,6 +181,40 @@ class FileHeaderSniff extends Psr12Sniff
 
             $lines[] = ['type' => $type, 'start' => $next, 'end' => $semicolon];
             $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($semicolon + 1), null, true);
+        }
+
+        return $lines;
+    }
+
+    /**
+     * Extend each header line to take in a comment at the end of it, which the parent took for the start of the next
+     * block, on the same line, with no blank line before it.
+     *
+     * The opening tag's line is left alone, as PSR12.Files.OpenTag decides whether a comment may follow the tag.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param array<int, array<string, mixed>> $lines The header's lines.
+     * @return array<int, array<string, mixed>> The header's lines.
+     */
+    private function includeTrailingComments(File $phpcsFile, array $lines): array
+    {
+        $tokens = $phpcsFile->getTokens();
+        foreach ($lines as $index => $line) {
+            $end = $line['end'];
+            assert(is_int($end));
+            if ($line['type'] === 'tag') {
+                continue;
+            }
+
+            $next = $phpcsFile->findNext(T_WHITESPACE, ($end + 1), null, true);
+            while (
+                $next !== false
+                && isset(Tokens::COMMENT_TOKENS[$tokens[$next]['code']])
+                && $tokens[$next]['line'] === $tokens[$end]['line']
+            ) {
+                $lines[$index]['end'] = $next;
+                $next = $phpcsFile->findNext(T_WHITESPACE, ($next + 1), null, true);
+            }
         }
 
         return $lines;
