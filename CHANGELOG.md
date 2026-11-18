@@ -171,11 +171,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   or function body that isn't `{}`, which was a warning. The sniff's new `strict` property, which Jumbo turns on, does
   that. PERCS31 doesn't check a control structure's empty body, as PER Coding Style 3.1 has no rule for it.
   Auto-fixable.
-- **Blank lines around trait `use` statements, in PERCS31 (breaking).** PERCS31 now reports a blank line between two
-  trait `use` statements, which only Jumbo did, and more than one after the last, as PER Coding Style 3.1's examples
-  show none between them and one after. `SlevomatCodingStandard.Classes.TraitUseSpacing` makes these checks, so
-  `PSR12.Traits.UseDeclaration.NoBlankLineAfterUse` and `BlankLineAfterLastUse` are now
-  `SlevomatCodingStandard.Classes.TraitUseSpacing.IncorrectLinesCountAfterLastUse`. Auto-fixable.
 - **A property hook's name in lower case (breaking).** `GET => 1;` and `Set(int $value) => $value;` are now reported, as
   PER Coding Style 3.1 requires keywords in lower case, and calls a hook's name "the hook keyword". The new
   `PERCS31.PHP.LowerCaseKeyword` replaces `Generic.PHP.LowerCaseKeyword`, and checks it too, so a `phpcs:ignore` for
@@ -559,9 +554,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - A blank line after a `case` or `default` label. Code on a label's line is now reported as
     `PERCS31.ControlStructures.SwitchDeclaration.StatementOnLabelLine` in PERCS31. Jumbo keeps `BodyOnNextLineCASE` and
     `BodyOnNextLineDEFAULT`, which report both.
-  - A blank line between two trait `use` statements, and more than one after the last.
-    `SlevomatCodingStandard.Classes.TraitUseSpacing` moves from PERCS31 to Jumbo, and PERCS31 uses
-    `PSR12.Traits.UseDeclaration.NoBlankLineAfterUse` for a last `use` statement with no blank line after it.
+  - A blank line between two trait `use` statements, and more than one after the last. Jumbo reports the first as
+    `PERCS31.Classes.TraitUseBlock.BlankLineBetweenUses`, which PERCS31 excludes, and the second with
+    `PhpCollective.WhiteSpace.EmptyLines`. They replace `SlevomatCodingStandard.Classes.TraitUseSpacing`, whose fix
+    deleted a comment at the end of the last `use` statement's line, so a `phpcs:ignore` that names it needs updating.
 - **A blank line between two items of a list (breaking).** PER Coding Style 3.1 allows blank lines "except where
   explicitly forbidden", so one between two items is now allowed in every list. These passed already in parameters,
   arrays and `match` arms. They now pass in a call's or an attribute's arguments, a closure's `use`
@@ -721,6 +717,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   after a `declare` or `namespace` statement, as missing the blank line after its block, even with one there. Its fix
   moved the comment onto a line of its own, where a `// phpcs:ignore` stopped applying. The comment now counts as part
   of the line it ends.
+- **A comment after the last trait `use`.** `use A; // Why.` as the last thing in a class was reported as missing a
+  blank line after it, and `phpcbf` failed, as two fixes undid each other. A comment at the end of the line now belongs
+  to the `use`. The check moves from `PSR12.Traits.UseDeclaration.NoBlankLineAfterUse` to
+  `PERCS31.Classes.TraitUseBlock.NoBlankLineAfterUse`, so update any reference to the old code.
 - **A block that's only part of a `case` body.** `PERCS31.ControlStructures.SwitchDeclaration` reported any block
   straight after a `case` or `default` label, even one followed by more of the body, such as `break`. Now it's only
   reported when the block is the whole body: its `}` is followed by the next label or the switch's `}`. A switch with

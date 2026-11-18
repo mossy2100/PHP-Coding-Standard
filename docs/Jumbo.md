@@ -58,6 +58,10 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
   structure header, with `PERCS31.ControlStructures.ControlStructureSpacing.BlankLineBeforeCloseParenthesis`.
 - No blank line in a trait's conflict block, with `PERCS31.Classes.TraitUseBlock.BlankLine`. PERCS31 excludes it,
   as only PER's example shows the block with none.
+- No blank line between two trait `use` statements, with `PERCS31.Classes.TraitUseBlock.BlankLineBetweenUses`, and
+  so exactly one after the last, with `PhpCollective.WhiteSpace.EmptyLines`. PERCS31 excludes the first, and allows
+  any number after the last, as section 4.2 only says there MUST be a blank line there. See
+  [Blank Lines Around `use`](PER-CS_3.1_Judgement_Calls.md#blank-lines-around-use).
 - One constant per `const` statement at file scope too, and one space after its `const` keyword. PERCS31 only checks a
   class's constants, as section 4 is about classes (`checkGlobalConstants` set to `true` on
   `PERCS31.Classes.ConstantDeclaration`). A `define()` call can only declare one constant.
@@ -174,10 +178,6 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
 - **Classes.RequireSelfReference**: Requires `self::` instead of `ClassName::` for self-references.
 - **Classes.RequireSingleLineMethodSignature**: Requires single-line format for short method signatures. Used through
   [`Jumbo.Classes.RequireSingleLineMethodSignature`](#jumboclassesrequiresinglelinemethodsignature), which skips a method with a hook on a promoted parameter.
-- **Classes.TraitUseSpacing**: Requires no blank line between trait `use` statements, and exactly one after the last.
-  PERCS31 allows one between, and any number after the last, as section 4.2 only says there MUST be a blank line
-  there. `PSR12.Traits.UseDeclaration.NoBlankLineAfterUse` is turned off, as this sniff reports the same. See
-  [Blank Lines Around `use`](PER-CS_3.1_Judgement_Calls.md#blank-lines-around-use).
 - **Commenting.AnnotationName**: Enforces correct annotation names.
 - **Commenting.DeprecatedAnnotationDeclaration**: Enforces the `@deprecated` annotation format.
 - **Commenting.EmptyComment**: Disallows empty comments.

@@ -465,8 +465,34 @@ class RulesetUnitTest extends TestCase
 
         $this->assertSame(0, $result['exitCode'], $result['output']);
         $this->assertSame(1, substr_count($lastResult['output'], 'error - '), $lastResult['output']);
-        $this->assertStringContainsString('PSR12.Traits.UseDeclaration.NoBlankLineAfterUse', $lastResult['output']);
+        $this->assertStringContainsString('TraitUseBlock.NoBlankLineAfterUse', $lastResult['output']);
         $this->assertSame($header . "class Last\n{\n    use First;\n\n    public int \$a = 1;\n}\n", $fixed);
+    }
+
+    /**
+     * Test that a comment at the end of the last trait use's line, with the class's closing brace next, passes, and
+     * that phpcbf leaves it alone. PSR12.Traits.UseDeclaration asked for a blank line before the brace, and
+     * PERCS31.Classes.ClassDeclaration removed it, until phpcbf failed.
+     */
+    public function testCommentAfterLastTraitUsePasses(): void
+    {
+        $source = "<?php\n\nnamespace Vendor\\Package;\n\nclass Single\n{\n    use First; // The first.\n}\n\n"
+            . "class Pair\n{\n    use First;\n    use Second; /* The second. */\n}\n\n"
+            . "class Block\n{\n    use First {\n        First::a as b;\n    } // The block.\n}\n";
+        $file = $this->copyToTempFile(null, $source);
+        $args = ['--standard=PERCS31', '--exclude=PSR1.Classes.ClassDeclaration'];
+
+        try {
+            $result = $this->runTool('phpcs', [...$args, '-s', '--report=emacs', $file]);
+            $fixer = $this->runTool('phpcbf', [...$args, $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame(0, $result['exitCode'], $result['output']);
+        $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
+        $this->assertSame($source, $fixed);
     }
 
     /**

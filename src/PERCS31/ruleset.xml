@@ -52,6 +52,9 @@
         <!-- Covered by PERCS31.Classes.ClassDeclaration.CloseBraceAfterBody, which reports the same blank line before
              the class's closing brace (4.1, 4.2) -->
         <exclude name="PSR12.Traits.UseDeclaration.BlankLineAfterLastUse"/>
+        <!-- Replaced by PERCS31.Classes.TraitUseBlock.NoBlankLineAfterUse, as this code takes a comment at the end of
+             the last use statement's line for something after it, and its fix then loops (4.2) -->
+        <exclude name="PSR12.Traits.UseDeclaration.NoBlankLineAfterUse"/>
         <!-- Replaced by PERCS31.Classes.TraitUseBlock's StatementOnOpenBraceLine and CloseBraceNotOnOwnLine, as these
              codes also report a blank line in a trait's conflict block, which nothing forbids (2.3, 4.2) -->
         <exclude name="PSR12.Traits.UseDeclaration.SpaceAfterOpeningBrace"/>
@@ -290,6 +293,9 @@
     <rule ref="PERCS31.Classes.TraitUseBlock">
         <!-- A blank line in a trait's conflict block isn't forbidden, as only 4.2's example shows none (2.3) -->
         <exclude name="PERCS31.Classes.TraitUseBlock.BlankLine"/>
+        <!-- A blank line between two trait use statements isn't forbidden, as 4.2 only requires one after the last
+             (2.3) -->
+        <exclude name="PERCS31.Classes.TraitUseBlock.BlankLineBetweenUses"/>
     </rule>
 
     <!-- abstract or final before readonly on a class (4.6) -->

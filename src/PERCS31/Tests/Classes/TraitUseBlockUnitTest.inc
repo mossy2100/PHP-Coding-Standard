@@ -54,3 +54,69 @@ class ValidBlock
         B::bigTalk as talk;
     }
 }
+
+// Valid: a comment at the end of the last trait use's line, with the class's closing brace next.
+class TrailingComment
+{
+    use A; // The first.
+}
+
+class TrailingBlockComment
+{
+    use A;
+    use B; /* The second. */
+}
+
+class TrailingBlockCloserComment
+{
+    use A {
+        A::smallTalk as talk;
+    } // The block.
+}
+
+// No blank line after the last trait use when more follows, with or without a comment at the end of its line.
+class NoBlankLine
+{
+    use A;
+    public int $a = 1;
+}
+
+class NoBlankLineComment
+{
+    use A; // The first.
+    public int $a = 1;
+}
+
+class CommentOnNextLine
+{
+    use A;
+    // A comment of its own follows the use.
+}
+
+class SameLine
+{
+    use A; public int $a = 1;
+}
+
+// A blank line between two trait uses: after a statement, after a conflict block, and before a comment.
+class BetweenUses
+{
+    use A;
+
+    use B {
+        B::smallTalk as talk;
+    }
+
+    use C;
+
+    // The fourth.
+    use D;
+}
+
+// Valid: a comment between two trait uses, with no blank line.
+class CommentBetweenUses
+{
+    use A;
+    // The second.
+    use B;
+}

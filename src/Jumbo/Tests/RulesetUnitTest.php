@@ -381,9 +381,10 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test the blank lines around trait use statements in Jumbo: none between two, exactly one after the last, and
-     * none before the class's closing brace, each reported once, and fixed. PERCS31 allows one between two, and
-     * several after the last.
+     * Test the blank lines around trait use statements in Jumbo: none between two, exactly one after the last, each
+     * reported once, and fixed. PERCS31 allows one between two, and several after the last. A comment at the end of
+     * the last use statement's line, before the class's closing brace, passes and is kept, which
+     * SlevomatCodingStandard.Classes.TraitUseSpacing's fix deleted.
      */
     public function testBlankLinesAroundTraitUseAreExactInJumbo(): void
     {
@@ -391,24 +392,32 @@ class RulesetUnitTest extends TestCase
         $source = $header . "class Between\n{\n    use First;\n\n    use Second;\n\n\n    public int \$a = 1;\n}\n";
         $file = $this->copyToTempFile(null, $source);
         $last = $this->copyToTempFile(null, $header . "class Last\n{\n    use First;\n    public int \$a = 1;\n}\n");
+        $commented = $header . "class Commented\n{\n    use First; // The first.\n}\n";
+        $commentedFile = $this->copyToTempFile(null, $commented);
         $args = ['-s', '--standard=Jumbo', '--report=emacs'];
 
         try {
             $result = $this->runTool('phpcs', [...$args, $file]);
             $lastResult = $this->runTool('phpcs', [...$args, $last]);
-            $this->runTool('phpcbf', ['--standard=Jumbo', $file]);
+            $commentedResult = $this->runTool('phpcs', [...$args, $commentedFile]);
+            $this->runTool('phpcbf', ['--standard=Jumbo', $file, $commentedFile]);
             $fixed = (string) file_get_contents($file);
+            $fixedCommented = (string) file_get_contents($commentedFile);
         } finally {
             unlink($file);
             unlink($last);
+            unlink($commentedFile);
         }
 
-        $this->assertSame(1, substr_count($result['output'], 'TraitUseSpacing.IncorrectLinesCountBetweenUses'));
-        $this->assertSame(1, substr_count($result['output'], 'TraitUseSpacing.IncorrectLinesCountAfterLastUse'));
-        $this->assertSame(1, substr_count($lastResult['output'], 'TraitUseSpacing.'), $lastResult['output']);
+        $this->assertSame(1, substr_count($result['output'], 'TraitUseBlock.BlankLineBetweenUses'), $result['output']);
+        $this->assertSame(1, substr_count($result['output'], 'WhiteSpace.EmptyLines.EmptyLines'), $result['output']);
+        $this->assertSame(1, substr_count($lastResult['output'], 'TraitUseBlock.'), $lastResult['output']);
+        $this->assertStringContainsString('TraitUseBlock.NoBlankLineAfterUse', $lastResult['output']);
         $this->assertStringNotContainsString('PSR12.Traits.UseDeclaration', $lastResult['output']);
+        $this->assertSame(0, $commentedResult['exitCode'], $commentedResult['output']);
         $expected = $header . "class Between\n{\n    use First;\n    use Second;\n\n    public int \$a = 1;\n}\n";
         $this->assertSame($expected, $fixed);
+        $this->assertSame($commented, $fixedCommented);
     }
 
     /**

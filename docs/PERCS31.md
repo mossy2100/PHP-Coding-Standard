@@ -67,9 +67,10 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 - **PSR12.Functions.NullableTypeDeclaration**, by [`PERCS31.Functions.NullableTypeDeclaration`](#percs31functionsnullabletypedeclaration), which also checks a `set`
   hook's parameter.
 - **PSR12.Operators.OperatorSpacing**, by [`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing), which also covers the pipe operator `|>`.
-- **PSR12.Traits.UseDeclaration** is kept. Its `NoBlankLineAfterUse` code reports a last trait `use` statement with no
-  blank line after it, when more follows in the class. A blank line between two `use` statements, and more than one
-  after the last, are allowed, as section 4.2 forbids neither. Its `BlankLineAfterLastUse` code is excluded, as
+- **PSR12.Traits.UseDeclaration** is kept. Its `NoBlankLineAfterUse` code is replaced by
+  [`PERCS31.Classes.TraitUseBlock`](#percs31classestraituseblock), as it takes a comment at the end of the last `use` statement's line for something after it.
+  A blank line between two `use` statements, and more than one after the last, are allowed, as section 4.2 forbids
+  neither. Its `BlankLineAfterLastUse` code is excluded, as
   [`PERCS31.Classes.ClassDeclaration`](#percs31classesclassdeclaration) reports the same blank line before the class's closing brace. Its `MultipleImport`
   code is replaced by `SlevomatCodingStandard.Classes.TraitUseDeclaration`, which also reports several traits in a `use`
   statement with a `{ }` block. Its `SpaceAfterOpeningBrace` and `SpaceBeforeClosingBrace` codes are replaced by
@@ -1004,6 +1005,18 @@ the opening brace's line is reported as `StatementOnOpenBraceLine`, and a closin
 `CloseBraceNotOnOwnLine`. A blank line in the block has its own code, `BlankLine`, which the ruleset excludes, as an
 example can't forbid a blank line. These replace `PSR12.Traits.UseDeclaration`'s `SpaceAfterOpeningBrace` and
 `SpaceBeforeClosingBrace`, which report a blank line too, and which the ruleset excludes.
+
+Section 4.2 also says the class's last trait `use` MUST have a blank line after it when more follows, and that otherwise
+the class's closing brace goes on the next line. A last `use` with something on the next line is reported as
+`NoBlankLineAfterUse`. A comment at the end of the `use` statement's line belongs to it, so `use A; // Why.` followed by
+the closing brace passes. A comment on a line of its own follows the `use`, so it needs a blank line before it. This
+replaces `PSR12.Traits.UseDeclaration`'s code of the same name, which takes a comment at the end of the line for
+something after the `use`. It then asks for a blank line before the closing brace, which
+[`PERCS31.Classes.ClassDeclaration`](#percs31classesclassdeclaration) removes, until `phpcbf` fails.
+
+A blank line between two trait `use` statements has its own code, `BlankLineBetweenUses`, which the ruleset excludes, as
+section 4.2 only requires a blank line after the last. A comment between them may stay, with no blank line around it.
+[Jumbo](Jumbo.md) turns it on.
 
 **Auto-fixable:** yes, unless a comment is in the way.
 

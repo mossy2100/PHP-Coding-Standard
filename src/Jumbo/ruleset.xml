@@ -76,19 +76,10 @@
         <severity>0</severity>
     </rule>
 
-    <!-- No blank line between trait use statements, and exactly one after the last. PERCS31 allows one between, and
-         any number after the last, as PER only says there MUST be a blank line there (4.2). PSR-12's code for a last
-         use statement with no blank line after it is turned off, as this sniff reports the same. -->
-    <rule ref="SlevomatCodingStandard.Classes.TraitUseSpacing">
-        <exclude name="SlevomatCodingStandard.Classes.TraitUseSpacing.IncorrectLinesCountBeforeFirstUse"/>
-        <properties>
-            <property name="linesCountBetweenUses" value="0"/>
-            <property name="linesCountAfterLastUse" value="1"/>
-            <property name="linesCountAfterLastUseWhenLastInClass" value="0"/>
-        </properties>
-    </rule>
-    <rule ref="PSR12.Traits.UseDeclaration.NoBlankLineAfterUse">
-        <severity>0</severity>
+    <!-- No blank line between trait use statements. PERCS31 excludes this code, as PER only requires a blank line after
+         the last (4.2). PhpCollective.WhiteSpace.EmptyLines allows no more than one there. -->
+    <rule ref="PERCS31.Classes.TraitUseBlock.BlankLineBetweenUses">
+        <severity>5</severity>
     </rule>
 
     <!-- No blank line straight after the opening brace, or straight before the closing brace, of a block declare, a

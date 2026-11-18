@@ -32,6 +32,17 @@ class TraitUseBlockUnitTest extends AbstractSniffTestCase
             41 => 1,
             43 => 1,
             45 => 1,
+            // No blank line after the last trait use, with a comment at the end of its line, before a comment of its
+            // own, and before a statement on the same line. A comment at the end of the line, with the class's closing
+            // brace next, passes.
+            80 => 1,
+            86 => 1,
+            92 => 1,
+            98 => 1,
+            // A blank line between two trait uses, after a statement, after a conflict block, and before a comment.
+            105 => 1,
+            109 => 1,
+            111 => 1,
         ];
     }
 

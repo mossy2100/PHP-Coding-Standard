@@ -9,6 +9,7 @@ use PERCS31\Helpers\LayoutHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\UseStatements;
 
 /**
  * Checks the `{ ... }` block of a trait `use`, where its conflicts are resolved: a single space after a visibility or
@@ -29,6 +30,19 @@ use PHP_CodeSniffer\Util\Tokens;
  * nothing forbids it, and an example can't set a ban on one. So it's reported separately, as BlankLine, which PERCS31
  * excludes and Jumbo turns on. These replace PSR12.Traits.UseDeclaration's SpaceAfterOpeningBrace and
  * SpaceBeforeClosingBrace codes, which report a blank line along with a statement on a brace's line.
+ *
+ * Section 4.2 also says the class's last trait `use` MUST have a blank line after it when more follows in the class,
+ * and when nothing follows, the class's closing brace goes on the next line. So a last `use` with something on the next
+ * line is reported, as NoBlankLineAfterUse. A comment at the end of the `use` statement's line belongs to it, so
+ * `use A; // Why.` followed by the class's closing brace passes. A comment on a line of its own does follow the `use`,
+ * so a blank line goes before it. This replaces PSR12.Traits.UseDeclaration's code of the same name, which takes a
+ * comment at the end of the line for something after the `use`, so it asks for a blank line before the closing brace,
+ * which PERCS31.Classes.ClassDeclaration then removes, until phpcbf fails.
+ *
+ * A blank line between two trait `use` statements isn't forbidden either, so it's reported as BlankLineBetweenUses,
+ * which PERCS31 excludes and Jumbo turns on. A comment between them may stay, with no blank line around it. This
+ * replaces SlevomatCodingStandard.Classes.TraitUseSpacing in Jumbo, whose fix deletes a comment at the end of the last
+ * `use` statement's line.
  */
 class TraitUseBlockSniff implements Sniff
 {
@@ -39,6 +53,10 @@ class TraitUseBlockSniff implements Sniff
     public const string CODE_CLOSE_BRACE_NOT_ON_OWN_LINE = 'CloseBraceNotOnOwnLine';
 
     public const string CODE_BLANK_LINE = 'BlankLine';
+
+    public const string CODE_NO_BLANK_LINE_AFTER_USE = 'NoBlankLineAfterUse';
+
+    public const string CODE_BLANK_LINE_BETWEEN_USES = 'BlankLineBetweenUses';
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -61,6 +79,7 @@ class TraitUseBlockSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
         if ($tokens[$stackPtr]['code'] === T_USE) {
             $this->checkConflictBlock($phpcsFile, $stackPtr);
+            $this->checkBlankLinesAfterUse($phpcsFile, $stackPtr);
             return;
         }
 
@@ -132,6 +151,95 @@ class TraitUseBlockSniff implements Sniff
             }
 
             if ($phpcsFile->addFixableError($error, $i, self::CODE_BLANK_LINE)) {
+                $phpcsFile->fixer->replaceToken($i, '');
+            }
+        }
+    }
+
+    /**
+     * Check the blank lines after a trait `use`: none before the next trait `use`, when that comes straight after it,
+     * and at least one after the class's last, when more follows in the class. A comment at the end of the statement's
+     * line is part of it. A `use` that isn't a trait's is skipped.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $use The position of the `use` keyword.
+     */
+    private function checkBlankLinesAfterUse(File $phpcsFile, int $use): void
+    {
+        if (!UseStatements::isTraitUse($phpcsFile, $use)) {
+            return;
+        }
+
+        $tokens = $phpcsFile->getTokens();
+        $classCloser = $tokens[(int) array_key_last($tokens[$use]['conditions'])]['scope_closer'] ?? null;
+        $end = $tokens[$use]['scope_closer'] ?? $phpcsFile->findNext(T_SEMICOLON, ($use + 1));
+        if (!is_int($classCloser) || !is_int($end)) {
+            return;
+        }
+
+        // A trait use straight after this one, with only comments between, has no blank line before it.
+        $nextCode = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($end + 1), $classCloser, true);
+        if ($nextCode !== false && $tokens[$nextCode]['code'] === T_USE) {
+            $this->checkBlankLinesBetween($phpcsFile, $end, $nextCode);
+            return;
+        }
+
+        // Only the last trait use is checked, as the parent did. A later one is reported as NotGrouped instead.
+        for ($i = ($end + 1); $i < $classCloser; $i++) {
+            if ($tokens[$i]['code'] === T_USE && UseStatements::isTraitUse($phpcsFile, $i)) {
+                return;
+            }
+        }
+
+        // A comment at the end of the statement's line is part of it.
+        $lineEnd = $end;
+        $next = $phpcsFile->findNext(T_WHITESPACE, ($end + 1), null, true);
+        while (
+            $next !== false
+            && isset(Tokens::COMMENT_TOKENS[$tokens[$next]['code']])
+            && $tokens[$next]['line'] === $tokens[$end]['line']
+        ) {
+            $lineEnd = $next;
+            $next = $phpcsFile->findNext(T_WHITESPACE, ($next + 1), null, true);
+        }
+
+        // With nothing after it, the class's closing brace follows, which ClassDeclaration checks.
+        if ($next === false || $next === $classCloser || $tokens[$next]['line'] > ($tokens[$end]['line'] + 1)) {
+            return;
+        }
+
+        $error = 'There must be a blank line after the last trait use statement';
+        if ($phpcsFile->addFixableError($error, $end, self::CODE_NO_BLANK_LINE_AFTER_USE)) {
+            if ($tokens[$next]['line'] === $tokens[$end]['line']) {
+                $break = $phpcsFile->eolChar . $phpcsFile->eolChar
+                    . str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $use));
+                if ($tokens[($next - 1)]['code'] === T_WHITESPACE) {
+                    $phpcsFile->fixer->replaceToken(($next - 1), $break);
+                } else {
+                    $phpcsFile->fixer->addContentBefore($next, $break);
+                }
+            } else {
+                $phpcsFile->fixer->addNewline($lineEnd);
+            }
+        }
+    }
+
+    /**
+     * Report each blank line between two trait `use` statements.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $end The position of the end of the first statement: its semicolon, or its block's closing brace.
+     * @param int $next The position of the second statement's `use` keyword.
+     */
+    private function checkBlankLinesBetween(File $phpcsFile, int $end, int $next): void
+    {
+        $error = 'There must be no blank line between two trait use statements';
+        for ($i = ($end + 1); $i < $next; $i++) {
+            if (!LayoutHelper::isBlankLine($phpcsFile, $i)) {
+                continue;
+            }
+
+            if ($phpcsFile->addFixableError($error, $i, self::CODE_BLANK_LINE_BETWEEN_USES)) {
                 $phpcsFile->fixer->replaceToken($i, '');
             }
         }
