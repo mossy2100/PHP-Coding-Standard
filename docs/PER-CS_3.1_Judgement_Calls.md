@@ -734,6 +734,10 @@ an import after that.
 **Decision:** An import after the rest of the code is reported. A file with more than one namespace is skipped, as each
 namespace has its own imports.
 
+A file with markup that starts with `<?php declare(strict_types=1) ?>` has the rest of its header in the next PHP block,
+as section 3 requires the declaration on the first line. So in such a file, an import after that block's header is
+reported, as is one after markup or a `<?=` block that comes before it.
+
 **Why:** An import after the code breaks the header's order.
 
 ---

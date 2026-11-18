@@ -715,8 +715,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **A comment after a call's trailing comma.** The fix for `foo($a, /* Why. */);` deleted the comment with the comma.
   `PERCS31.Functions.DisallowTrailingCommaInCall` now removes only the comma.
 - **An import after markup, in a file that starts with `<?php declare(strict_types=1) ?>` (breaking).**
-  `PERCS31.Files.FileHeader` skipped the whole file, so the import passed. It's now reported, as `ImportAfterCode`. An
-  import in the next PHP block, before any markup, still passes.
+  `PERCS31.Files.FileHeader` skipped the whole file, so the import passed. It's now reported, as `ImportAfterCode`. When
+  no markup or `<?=` block comes first, the header may carry on in the next PHP block, and an import after that block's
+  header is reported too, as in any PHP file.
 - **A split ternary with `?` or `:` alone on a line (breaking).** A ternary on four or five lines passed, though
   section 6.4 says it takes three. `PERCS31.Operators.OperatorPlacement` now reports it, as `TernaryLayout`, and its
   fix joins the value to its operator's line.

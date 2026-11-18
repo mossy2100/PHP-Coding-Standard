@@ -732,9 +732,9 @@ type. `SlevomatCodingStandard.Classes.PropertyDeclaration` makes these checks fo
 inherited sniff checks a constant alone.
 
 [Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says "There MUST NOT be more than one property or constant declared per statement". That's checked by
-`SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition`, which this sniff calls, so its fix splits the statement
-and keeps the modifiers and type. The Slevomat sniff checks every `const` statement, with no setting to skip a global
-one, so it isn't in the ruleset, and this sniff only gives it a class's constants, reported as
+`SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition`, which this sniff calls, so its fix splits the
+statement and keeps the modifiers and type. The Slevomat sniff checks every `const` statement, with no setting to skip a
+global one, so it isn't in the ruleset, and this sniff only gives it a class's constants, reported as
 `DisallowedMultiConstantDefinition`. A global `const` with several constants passes, as section 4 is about classes. Set
 `checkGlobalConstants` to check a global `const` too, for one constant per statement and one space after `const`, as
 Jumbo does. Slevomat 8.31.3 or later is needed, which stops it flagging a comma inside parentheses, as in
@@ -1335,16 +1335,15 @@ upper-case `CASE` or `DEFAULT` already.
 The original's `BreakNotNewLine` code is excluded too. PHP_CodeSniffer 4.0.4 takes a `throw` or `exit` inside an
 expression, as in `$b = foo() ?? throw new Exception();`, for the statement that ends the `case`, so the code was
 reported on compliant code, and its fix never finished. A terminating statement that shares a line is still reported:
-after the label by `StatementOnLabelLine`, after another statement by [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements), and
-after a closing brace by [`PERCS31.Formatting.AfterClosingBrace`](#percs31formattingafterclosingbrace).
+after the label by `StatementOnLabelLine`, after another statement by [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements),
+and after a closing brace by [`PERCS31.Formatting.AfterClosingBrace`](#percs31formattingafterclosingbrace).
 
 A multi-line `case` condition must also follow the rule for any expression split inside parentheses. The first condition
 must be on the line after `(`, and each line must be indented at least once past the `case`. A condition that spans
-lines only because a call or array in it does is multi-line too, so `case foo(` over several lines is wrapped, as `case
-(`, then `foo(` on the next line. The `):` line is level with the `case`, as the example in section 5.2 shows. One
+lines only because a call or array in it does is multi-line too, so `case foo(` over several lines is wrapped, as
+`case (`, then `foo(` on the next line. The `):` line is level with the `case`, as the example in section 5.2 shows. One
 indented further is reported as `MultiLineConditionCloserIndent`, and one indented too little by
-[`PERCS31.WhiteSpace.ScopeIndent`](#percs31whitespacescopeindent). See [Further
-Indents](PER-CS_3.1_Judgement_Calls.md#further-indents).
+[`PERCS31.WhiteSpace.ScopeIndent`](#percs31whitespacescopeindent). See [Further Indents](PER-CS_3.1_Judgement_Calls.md#further-indents).
 
 A `case` or `default` body wrapped in braces is reported as `BodyInBraces`. It's wrapped when a block starts straight
 after the label, and its `}` is followed by the next label or the switch's `}`. A block followed by more of the body,
@@ -1478,9 +1477,9 @@ Section 3 doesn't forbid several imports in one statement, so this sniff reads t
 
 Section 3 puts the imports before the rest of the code, and says that in a file with markup they MUST be at the top. The
 parent only looks at the header, so this sniff reports an import after the rest of the code, as `ImportAfterCode`. A
-file with more than one namespace is skipped, as each namespace has its own imports. In a file that starts with `<?php
-declare(strict_types=1) ?>`, the header may carry on in the next PHP block, so an import is only reported after the
-first markup.
+file with more than one namespace is skipped, as each namespace has its own imports. In a file that starts with
+`<?php declare(strict_types=1) ?>`, the header may carry on in the next PHP block. Then an import after that block's
+header is reported, as in any PHP file. If markup or a `<?=` block comes first, an import after it is reported.
 
 **Auto-fixable:** yes, as the parent, except `ImportAfterCode`, as moving an import can change what a name resolves to.
 
@@ -1758,8 +1757,8 @@ It also reports a trailing comma with a comment after it, on one line, in a para
 array and a short list, as in `[1, 2, /* Why. */]`. The sniffs that check those lists look for the comma straight
 before the closing bracket, so the comment hides it from them.
 
-**Auto-fixable:** yes. A missing comma goes after the last item, before any comment. A comma that isn't allowed is removed, and a comment after it is
-kept.
+**Auto-fixable:** yes. A missing comma goes after the last item, before any comment. A comma that isn't allowed is
+removed, and a comment after it is kept.
 
 **Good:**
 

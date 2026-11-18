@@ -48,8 +48,9 @@ use PHPCSUtils\Utils\UseStatements;
  * of the file". This sniff reports one as ImportAfterCode, but not in a file with more than one namespace, where each
  * namespace has its own imports. It isn't fixed, as moving an import can change what a name resolves to.
  *
- * A file that starts with `<?php declare(strict_types=1) ?>` may carry its header on in the next PHP block, so there an
- * import is only reported after the first markup.
+ * A file that starts with `<?php declare(strict_types=1) ?>` may carry its header on in the next PHP block, when no
+ * markup or `<?=` block comes before it. Then an import after that block's header is reported, as in any PHP file.
+ * Otherwise, an import after the first markup or `<?=` block is.
  */
 class FileHeaderSniff extends Psr12Sniff
 {
@@ -66,11 +67,15 @@ class FileHeaderSniff extends Psr12Sniff
      */
     public function process(File $phpcsFile, int $stackPtr): ?int
     {
-        // The header may carry on in the next PHP block, so only an import after markup is past the top of the file.
+        // The header may carry on in the next PHP block, if no markup or `<?=` block comes first. Then an import after
+        // that block's header is past it. Otherwise, an import after the markup or the `<?=` is.
         if (FileHeaderHelper::hasInlineDeclare($phpcsFile)) {
-            $markup = $this->findMarkup($phpcsFile, $stackPtr);
-            if ($markup !== null) {
-                $this->checkImportsAfterCode($phpcsFile, $stackPtr, false, $markup);
+            $output = $this->findOutput($phpcsFile, $stackPtr);
+            $nextTag = $phpcsFile->findNext(T_OPEN_TAG, ($stackPtr + 1));
+            if ($nextTag !== false && ($output === null || $nextTag < $output)) {
+                $this->checkImportsAfterCode($phpcsFile, $nextTag);
+            } elseif ($output !== null) {
+                $this->checkImportsAfterCode($phpcsFile, $stackPtr, false, $output);
             }
 
             return $phpcsFile->numTokens;
@@ -225,22 +230,23 @@ class FileHeaderSniff extends Psr12Sniff
     }
 
     /**
-     * Find the first markup after a position, ignoring white space between two PHP blocks.
+     * Find the first output after a position: markup, ignoring white space between two PHP blocks, or a `<?=` block.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position to search from.
-     * @return int|null The position of the first inline HTML token that isn't blank, or null if there's none.
+     * @return int|null The position of the first inline HTML token that isn't blank, or of the first `<?=` tag, or
+     *     null if there's neither.
      */
-    private function findMarkup(File $phpcsFile, int $stackPtr): ?int
+    private function findOutput(File $phpcsFile, int $stackPtr): ?int
     {
         $tokens = $phpcsFile->getTokens();
-        $markup = $phpcsFile->findNext(T_INLINE_HTML, ($stackPtr + 1));
-        while ($markup !== false) {
-            if (trim($tokens[$markup]['content']) !== '') {
-                return $markup;
+        $output = $phpcsFile->findNext([T_INLINE_HTML, T_OPEN_TAG_WITH_ECHO], ($stackPtr + 1));
+        while ($output !== false) {
+            if ($tokens[$output]['code'] === T_OPEN_TAG_WITH_ECHO || trim($tokens[$output]['content']) !== '') {
+                return $output;
             }
 
-            $markup = $phpcsFile->findNext(T_INLINE_HTML, ($markup + 1));
+            $output = $phpcsFile->findNext([T_INLINE_HTML, T_OPEN_TAG_WITH_ECHO], ($output + 1));
         }
 
         return null;
