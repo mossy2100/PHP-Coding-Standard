@@ -229,7 +229,9 @@
     <rule ref="SlevomatCodingStandard.Arrays.TrailingArrayComma"/>
 
     <!-- A trailing comma in a multi-line match, group use, list(), or the arguments of an anonymous class, clone(),
-         exit() or die(), and none on a single line (2.6) -->
+         exit(), die() or a call through an expression, as in $handlers[$name](, and none on a single line. The same
+         for a match arm's conditions. Also no trailing comma hidden by a comment after it, on one line, in a
+         parameter list, a closure's use list or an array (2.6). -->
     <rule ref="PERCS31.Formatting.TrailingComma"/>
 
     <!-- A trailing comma in an attribute block: none on one line, and one in a split block of several attributes (2.6).
@@ -416,7 +418,8 @@
         <exclude name="PERCS31.ControlStructures.SwitchDeclaration.BreakNotNewLine"/>
     </rule>
 
-    <!-- Each match arm on a new line, as in the example in 5.2 -->
+    <!-- Each match arm on a new line, as in the example in 5.2, and each condition of an arm on a line of its own when
+         the arm's conditions are split over lines -->
     <rule ref="PERCS31.ControlStructures.MatchArmPlacement"/>
 
     <!-- At least one space around => in a match arm and an array, as in the examples in 5.2 and 11, which are too
@@ -470,7 +473,8 @@
         </properties>
     </rule>
 
-    <!-- No space before the semicolon that ends an arrow function, and no line break after fn (7.1) -->
+    <!-- No space before the semicolon that ends an arrow function, no line break after fn, and no blank line before a
+         wrapped => (7.1) -->
     <rule ref="PERCS31.Functions.ArrowFunctionSpacing"/>
 
     <!-- No () on an anonymous class without arguments (8) -->

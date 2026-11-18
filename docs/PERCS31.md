@@ -72,7 +72,8 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   after the last, are allowed, as section 4.2 forbids neither. Its `BlankLineAfterLastUse` code is excluded, as
   [`PERCS31.Classes.ClassDeclaration`](#percs31classesclassdeclaration) reports the same blank line before the class's closing brace. Its
   `MultipleImport` code is replaced by `SlevomatCodingStandard.Classes.TraitUseDeclaration`, which also reports several
-  traits in a `use` statement with a `{ }` block.
+  traits in a `use` statement with a `{ }` block. Its `SpaceAfterOpeningBrace` and `SpaceBeforeClosingBrace` codes are
+  replaced by [`PERCS31.Classes.TraitUseBlock`](#percs31classestraituseblock), as they also report a blank line in the block.
 - **PSR12.Classes.AnonClassDeclaration** is kept, but its three comma spacing codes are replaced by
   `Universal.WhiteSpace.CommaSpacing`, which reports the same. Its six codes for the layout of the argument list are
   excluded, as [`PERCS31.Functions.FunctionCallLayout`](#percs31functionsfunctioncalllayout) reports the same problems.
@@ -235,7 +236,7 @@ section gives the reason.
 | `PERCS31.Classes.AnonClassLayout`                          | The space before an anonymous class's `{` and `extends`             | Yes     |
 | `PERCS31.Classes.ClassDeclaration`                         | Class declarations, allowing an empty body as `{}`                  | Yes     |
 | `PERCS31.Classes.ClassInstantiationParentheses`            | No `(new Foo())->bar()`, and an argument list after `new (...)`     | Yes     |
-| `PERCS31.Classes.ConstantDeclaration`                      | One space after a class constant's `const`, and after its type      | Yes     |
+| `PERCS31.Classes.ConstantDeclaration`                      | One constant per statement, and one space after `const` and `case`  | Yes     |
 | `PERCS31.Classes.EnumMemberVisibility`                     | `private`, not `protected`, for a method or constant in an enum     | Yes     |
 | `PERCS31.Classes.PropertyDeclaration`                      | No leading `_`, no `var`, and a visibility on a property            | No      |
 | `PERCS31.Classes.PropertyHooks`                            | A hook list's layout, `get` first, and a promoted parameter's hooks | Partly  |
@@ -245,7 +246,7 @@ section gives the reason.
 | `PERCS31.ControlStructures.ControlStructureEmptyStatement` | Braces on a structure with no body, `else` included                 | Yes     |
 | `PERCS31.ControlStructures.ControlStructureSpacing`        | The parentheses, with no split rule for `foreach` or `match`        | Yes     |
 | `PERCS31.ControlStructures.ForEachSpacing`                 | A space or line break each side of a `foreach`'s `as` and `=>`      | Yes     |
-| `PERCS31.ControlStructures.MatchArmPlacement`              | Each `match` arm starts on a new line                               | Yes     |
+| `PERCS31.ControlStructures.MatchArmPlacement`              | Each `match` arm, and each split condition, starts a line           | Yes     |
 | `PERCS31.ControlStructures.SwitchDeclaration`              | `switch` rules, with a `break` in the last case                     | Yes     |
 | `PERCS31.Files.DeclareStatement`                           | No spaces in `declare(...)`, with one directive or several          | Yes     |
 | `PERCS31.Files.Encoding`                                   | A file is encoded in UTF-8                                          | No      |
