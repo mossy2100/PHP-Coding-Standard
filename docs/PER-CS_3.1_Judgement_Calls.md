@@ -1418,6 +1418,9 @@ public string $department {
 **Why:** The MAY names the one thing allowed, "an additional blank line", so one is the most. Unlike a list, where 2.3
 is all there is to go on, the spec says here how many.
 
+4.9 is the one rule that says how many blank lines are allowed, so it overrides 2.3's general permission. It's a
+deliberate exception to [Keywords](#keywords): this MAY sets a limit, so going past it is reported.
+
 ---
 
 ### Blank Lines Inside a Hook's Braces
