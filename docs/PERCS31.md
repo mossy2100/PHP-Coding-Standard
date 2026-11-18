@@ -216,8 +216,8 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
   comma in a multi-line list (2.6). For a call, [`PERCS31.Functions.RequireTrailingCommaInCall`](#percs31functionsrequiretrailingcommaincall) replaces
   `Functions.RequireTrailingCommaInCall`.
 - **TypeHints.DNFTypeHintFormat**: Requires no spaces inside the parentheses (2.5). Its check for spaces around `|` and
-  `&` is replaced by [`PERCS31.TypeHints.CompoundTypeLayout`](#percs31typehintscompoundtypelayout), which allows a split type. Its checks for `null` last and
-  for `?T` are replaced by [`PERCS31.TypeHints.NullType`](#percs31typehintsnulltype), which covers every type.
+  `&` is replaced by [`PERCS31.TypeHints.CompoundType`](#percs31typehintscompoundtype), which allows a split type. Its checks for `null` last and for
+  `?T` are replaced by that sniff too, which covers every type.
 
 ---
 
@@ -275,8 +275,7 @@ section gives the reason.
 | `PERCS31.PHP.RequireCloneParentheses`                      | A warning for `clone $a`, or `clone($a)->b`, not `clone($a)`        | Yes     |
 | `PERCS31.PHP.TypeCast`                                     | `(bool)`, `(int)`, `(float)` and `(string)` in a cast               | Yes     |
 | `PERCS31.Strings.HeredocLayout`                            | Where a heredoc or nowdoc begins, and its indentation               | Yes     |
-| `PERCS31.TypeHints.CompoundTypeLayout`                     | No space around a type's `\|` or `&`, and one type per split line   | Yes     |
-| `PERCS31.TypeHints.NullType`                               | `null` last in a union, and `?T` for one type with `null`           | Yes     |
+| `PERCS31.TypeHints.CompoundType`                           | A compound type's spacing and split lines, and `null` last          | Yes     |
 | `PERCS31.WhiteSpace.ArrowSpacing`                          | The space around `=>` in `match` arms and arrays                    | Yes     |
 | `PERCS31.WhiteSpace.ConsistentIndent`                      | No line indented further than its scope, after a statement          | Yes     |
 | `PERCS31.WhiteSpace.ObjectOperatorSpacing`                 | No white space around `->`, `?->` and `::`                          | Yes     |
@@ -2563,12 +2562,12 @@ The `=` of a parameter's default value is a binary operator too, so `int $a    =
 `false` to leave it to that sniff, as the Jumbo standard does.
 
 The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operator, so it's skipped. [Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the
-union symbol MUST NOT have a space either side, which `PERCS31.TypeHints.CompoundTypeLayout` checks. The parent
+union symbol MUST NOT have a space either side, which `PERCS31.TypeHints.CompoundType` checks. The parent
 would require one.
 
 The `&` of a by-reference hook, e.g. `&get => $this->items;`, isn't an operator either, so it's skipped, here and by
 `PERCS31.Operators.OperatorPlacement`. So are the `|`, `&` and `?` of a `set` hook's parameter type, e.g.
-`set(int|string $value)`, which `PERCS31.TypeHints.CompoundTypeLayout` checks instead.
+`set(int|string $value)`, which `PERCS31.TypeHints.CompoundType` checks instead.
 
 A short ternary must be written `?:`, with nothing between the `?` and `:`, as [section 6.3](https://www.php-fig.org/per/coding-style/#63-ternary-operators) says it follows the rules for
 other binary operators, and its examples write it as one. Anything between them, such as `$a ? : $b`, is reported as
@@ -2896,10 +2895,11 @@ $alsoNotAllowed
 
 ---
 
-### PERCS31.TypeHints.CompoundTypeLayout
+### PERCS31.TypeHints.CompoundType
 
-Checks the layout of a union, intersection or DNF type: no space around its `|` and `&`, and when it's split across
-lines, one type per line, or for a DNF type, one union segment per line.
+Checks a union, intersection or DNF type. Its layout: no space around its `|` and `&`, and when it's split across lines,
+one type per line, or for a DNF type, one union segment per line. And `null`: last in a union, with `?T` recommended for
+a union of one type with `null`.
 
 **The spacing.** A space before or after a symbol, on its line, is reported as `SpaceAroundOperator`. A type may be
 split before a symbol, so a line break there is allowed. A symbol at the end of a line is reported as
@@ -2932,8 +2932,23 @@ doesn't see it.
 
 Section 2.5 doesn't set the indent. See [The Indent of a Split Type](PER-CS_3.1_Judgement_Calls.md#the-indent-of-a-split-type).
 
+**`null`.** `null` must be the last type in a union, reported as `NullNotLast`, and a union of one type with `null`
+should be written `?T`, reported as `ShortNullable`, a warning. Both are checked wherever a type can appear.
+
+Section 2.5 says `null` MUST be the last item, and that a union of a single simple type with `null` SHOULD be written
+`?T`. This replaces the `NullTypeHintNotOnLastPosition` and `RequiredShortNullable` checks of
+`SlevomatCodingStandard.TypeHints.DNFTypeHintFormat`, which gets some cases wrong:
+
+- It skips the `null` position in a type with an intersection, such as `null|(A&B)`.
+- For `null|int`, it only reports the missing `?T`, not the position. `?T` is a SHOULD, so with that code set to a
+  warning, the MUST is lost below warning level.
+- It doesn't check a typed constant, or a `set` hook's parameter, which PHP_CodeSniffer reads as an expression.
+- Its `?T` fix deletes `static` from a return type, so `static|null` becomes `?`, which is a parse error.
+
+So this sniff makes both checks everywhere. `?T` is a SHOULD, so a warning.
+
 **Auto-fixable:** yes, unless a comment comes before a `&` that starts a line inside parentheses. A symbol at the end of
-a line is moved to the start of the next.
+a line is moved to the start of the next. A `null` fix isn't made in a type split across lines, or with a comment in it.
 
 **Good:**
 
@@ -2954,6 +2969,16 @@ class Reflector
 {
     public \ReflectionObject
         |\ReflectionClass $reflect;
+}
+
+function find((A&B)|null $a): int|string|null
+{
+    // ...
+}
+
+class Limits
+{
+    public const ?int MAX = null;
 }
 ```
 
@@ -2985,46 +3010,7 @@ function spaced(
     \ReflectionObject |
     \ReflectionClass $reflect,
 ): int | string {}
-```
 
----
-
-### PERCS31.TypeHints.NullType
-
-Requires `null` to be the last type in a union, and recommends `?T` for a union of one type with `null`, wherever a type
-can appear. This replaces the `NullTypeHintNotOnLastPosition` and `RequiredShortNullable` checks of
-`SlevomatCodingStandard.TypeHints.DNFTypeHintFormat`.
-
-**Why:** [PER Coding Style 3.1, Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says `null` MUST be the last item, and that a union of a single simple type
-with `null` SHOULD be written `?T`. The Slevomat sniff gets some cases wrong:
-
-- It skips the `null` position in a type with an intersection, such as `null|(A&B)`.
-- For `null|int`, it only reports the missing `?T`, not the position. `?T` is a SHOULD, so with that code set to a
-  warning, the MUST is lost below warning level.
-- It doesn't check a typed constant, or a `set` hook's parameter, which PHP_CodeSniffer reads as an expression.
-- Its `?T` fix deletes `static` from a return type, so `static|null` becomes `?`, which is a parse error.
-
-So this sniff makes both checks everywhere. `?T` is a SHOULD, so a warning.
-
-**Auto-fixable:** yes. A type split across lines, or with a comment in it, is reported but not fixed.
-
-**Good:**
-
-```php
-function find((A&B)|null $a): int|string|null
-{
-    // ...
-}
-
-class Limits
-{
-    public const ?int MAX = null;
-}
-```
-
-**Bad:**
-
-```php
 function find(null|(A&B) $a): int|null|string
 {
     // ...

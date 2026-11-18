@@ -29,11 +29,11 @@ use PHPCSUtils\Utils\Parentheses;
  * Jumbo does, turns them back on.
  *
  * The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operator, so it's skipped. Section 2.5 says
- * the union symbol MUST NOT have a space either side, which PERCS31.TypeHints.CompoundTypeLayout checks.
+ * the union symbol MUST NOT have a space either side, which PERCS31.TypeHints.CompoundType checks.
  *
  * The `&` of a by-reference hook, e.g. `&get => $this->items;`, isn't an operator either, so it's skipped. So are the
  * `|`, `&` and `?` of a `set` hook's parameter type, e.g. `set(int|string $value)`, which PHP_CodeSniffer reads as
- * operators. PERCS31.TypeHints.CompoundTypeLayout checks them.
+ * operators. PERCS31.TypeHints.CompoundType checks them.
  *
  * The parent skips any `=` directly followed by `&`, so `$x=&$a` passes. PHP has no `=&` operator: it reads an `=`
  * and a reference `&`. So this sniff checks that `=` like any other, and it needs a space each side. `$x=&$a` is fixed

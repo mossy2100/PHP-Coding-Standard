@@ -77,7 +77,7 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
 - `PERCS31.Operators.OperatorPlacement` requires a line in a control structure's condition to be indented exactly once
   past the `(` line if it starts with `&&` or `||`, and exactly once past its operand's line if it starts with any other
   operator. PERCS31 allows at least once (`requireExactConditionIndent` set to `true`).
-- `PERCS31.TypeHints.NullType` reports `T|null`, which should be `?T`, as an error, not a warning.
+- `PERCS31.TypeHints.CompoundType` reports `T|null`, which should be `?T`, as an error, not a warning.
 - `Squiz.Arrays.ArrayDeclaration` also runs the checks PERCS31 leaves out. See [Squiz](#squiz).
 - `PERCS31.Operators.OperatorSpacing` also reports more than one space around an operator, with `ignoreNewlines` on and
   `ignoreSpacingBeforeAssignments` off. See [Squiz](#squiz).

@@ -103,7 +103,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **A space after an anonymous class's arguments (breaking).** `new class ($a)extends Foo` is now reported, by
   `PERCS31.Classes.AnonClassLayout`, as `SpaceAfterArguments`, and so is `new class ($a)implements Foo`. More than one
   space there was already an error, but none passed. Auto-fixable.
-- **The indent of a split type's lines (breaking).** `PERCS31.TypeHints.CompoundTypeLayout` now reports a line of a
+- **The indent of a split type's lines (breaking).** `PERCS31.TypeHints.CompoundType` now reports a line of a
   split compound type that's indented wrongly, as `Indent`. A line starting with `|` or `&` must be level with the
   type's first line when the type starts that line, as in a parameter list or a multi-catch, and indented once past it
   when other code comes first, as in `public A`, `public const A` or `): A`. It wasn't checked. Auto-fixable.
@@ -206,10 +206,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **A backed enum's type in lower case (breaking).** `PERCS31.PHP.LowerCaseType` now reports `enum Suit: STRING`, as
   `BackingTypeFound`, as PER Coding Style 3.1 requires types in lower case, and `Generic.PHP.LowerCaseType` doesn't
   check a backing type. Auto-fixable.
-- **`PERCS31.TypeHints.NullType` (breaking).** `null` must be the last type in a union everywhere a type can appear, as
-  PER Coding Style 3.1 requires: a type with an intersection, such as `null|(A&B)`, a typed constant, and a `set` hook's
-  parameter are now checked, and `null|int` is an error, not just the `?T` warning. A warning recommends `?T` in a typed
-  constant or a `set` hook's parameter, an error in Jumbo. Auto-fixable, except a split type.
+- **`null` last in a union (breaking).** `PERCS31.TypeHints.CompoundType` reports it as `NullNotLast`. `null` must be
+  the last type in a union everywhere a type can appear, as PER Coding Style 3.1 requires: a type with an intersection,
+  such as `null|(A&B)`, a typed constant, and a `set` hook's parameter are now checked, and `null|int` is an error, not
+  just the `?T` warning. A warning recommends `?T` in a typed constant or a `set` hook's parameter, an error in Jumbo.
+  Auto-fixable, except a split type.
 - **Single-line rules for statements, signatures and class headers (breaking).** In the Jumbo standard, new
   `Jumbo.Formatting.RequireSingleLineStatement`, `Jumbo.Functions.RequireSingleLineSignature` and
   `Jumbo.Classes.RequireSingleLineClassHeader` require code split across lines to be on one line, if it fits. With a
@@ -334,7 +335,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`SlevomatCodingStandard.Arrays.TrailingArrayComma` in PERCS31.** Requires the trailing comma after a multi-line
   array's last element, keyed or not, as PER Coding Style 3.1 requires, including after a heredoc. It replaces Squiz
   `ArrayDeclaration`'s `NoCommaAfterLast` and `NoComma`, between which the trailing comma was checked before.
-- **`PERCS31.TypeHints.CompoundTypeLayout` (breaking).** As PER Coding Style 3.1 requires, a compound type split across
+- **`PERCS31.TypeHints.CompoundType` (breaking).** As PER Coding Style 3.1 requires, a compound type split across
   lines has one type per line, or for a DNF type, one union segment per line with its intersections kept together.
   Auto-fixable.
 - **Continuation line indent (breaking).** As PER Coding Style 3.1 requires, a line starting with a wrapped operator,
@@ -394,7 +395,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   comments or `<exclude>` rules that name the old codes. In a file with markup, a `strict_types` declaration anywhere
   else is now an error, as PER requires, and Jumbo's fix for a missing one adds the first-line form. Auto-fixable. A
   file with markup before its first `<?php`, such as a template, isn't checked for a file header, as it has none.
-- **`PERCS31.TypeHints.CompoundTypeLayout`.** A union, intersection or DNF type can now be split across lines, with the
+- **`PERCS31.TypeHints.CompoundType`.** A union, intersection or DNF type can now be split across lines, with the
   `|` or `&` starting each line, as PER Coding Style 3.1 allows. It replaces
   `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.DisallowedWhitespaceAroundOperator`, which counted the line break
   as a space. Spaces around the symbol on one line, or the symbol at the end of a line, are still errors. Auto-fixable.
@@ -585,8 +586,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   condition or any other expression. Auto-fixable, in PERCS31 and Jumbo.
 - **A multi-catch's types may be split across lines (breaking).** `catch (` then `A` then `|B $e` then `) {` now passes
   in PERCS31, as PER Coding Style 3.1 lets a union type be split before `|`. It was reported twice, with no fix.
-  `PERCS31.TypeHints.CompoundTypeLayout` now checks the `|`, and `PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing` is
-  no longer used, so `catch (A | B $e)` is reported as `PERCS31.TypeHints.CompoundTypeLayout.SpaceAroundOperator`. A `|`
+  `PERCS31.TypeHints.CompoundType` now checks the `|`, and `PhpCollective.WhiteSpace.CatchTypeSeparatorSpacing` is
+  no longer used, so `catch (A | B $e)` is reported as `PERCS31.TypeHints.CompoundType.SpaceAroundOperator`. A `|`
   at the end of a line is now fixed.
 - **A leading underscore on a global constant is only reported in Jumbo.** PERCS31 no longer reports `const _FOO = 1;`
   outside a class, as PER Coding Style 3.1's rule is about showing visibility, which a global constant doesn't have.
@@ -853,9 +854,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`$a =` followed by a multi-line array is fixed to `$a = [`.** `phpcbf` gave `$a` then `= [` on the next line, as
   `PERCS31.Operators.OperatorPlacement` moved the `=` down while `PERCS31.Arrays.MultiLineArrayLayout` moved the `[` up.
   The operator sniff now leaves this case to the array sniff.
-- **A half-split type is fixed to one indent.** `PERCS31.TypeHints.CompoundTypeLayout`'s fix for `int|string` then
+- **A half-split type is fixed to one indent.** `PERCS31.TypeHints.CompoundType`'s fix for `int|string` then
   `|float` on the next line now lines the new break up with the `|` that already starts a line.
-- **`null` and `?T` on a static property.** `PERCS31.TypeHints.NullType` now reports `public static null|int $a` and
+- **`null` and `?T` on a static property.** `PERCS31.TypeHints.CompoundType` now reports `public static null|int $a` and
   `public static int|null $a`. It read the `static` modifier as part of the type, so both passed.
 - **`phpcbf` no longer fails on a closure's `use` on its own line.** With `use` on the line after the parameter list's
   closing parenthesis, two inherited fixes undid each other until `phpcbf` gave up. It's now joined to that line, as
@@ -893,8 +894,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   now reports the split, as PER Coding Style 3.1 allows no whitespace around the `...`, and fixes it to `foo(...)`.
 - **`phpcbf` no longer breaks a `static|null` return type (breaking).** The `?T` fix from
   `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat` changed `static|null` to `?`, a parse error, and `null|static` to
-  `?null`. `PERCS31.TypeHints.NullType` now makes the `?T` check for every type, as `ShortNullable`, and fixes both to
-  `?static`. A `phpcs:ignore` for `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.RequiredShortNullable` needs
+  `?null`. `PERCS31.TypeHints.CompoundType` now makes the `?T` check for every type, as `ShortNullable`, and fixes both
+  to `?static`. A `phpcs:ignore` for `SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.RequiredShortNullable` needs
   updating.
 - **`PERCS31.Formatting.EmptyBody` and a comment before the brace (breaking).** An empty body after a comment, as in
   `function () /* Why. */ {` then `};`, was not reported. It now is, and the fix puts `{}` after a block comment. After
@@ -913,7 +914,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   from the tag, so one indented too little is reported too.
 - **A `set` hook's parameter type.** `set(int|string $value)` and `set(A&B $value)` were reported as missing the spaces
   that PER Coding Style 3.1 forbids, and `phpcbf` added them. They now pass, and `set(int | string $value)` is reported
-  and fixed by `PERCS31.TypeHints.CompoundTypeLayout`. A split type there is checked as it is elsewhere.
+  and fixed by `PERCS31.TypeHints.CompoundType`. A split type there is checked as it is elsewhere.
   `set(?int $value)` no longer stops the file being checked, in either standard, and `set(? int $value)` is reported and
   fixed. This adds `PERCS31.Functions.NullableTypeDeclaration`, in place of PSR-12's sniff, and in Jumbo,
   `Jumbo.ControlStructures.RequireShortTernaryOperator`, in place of Slevomat's, so update any `phpcs:ignore` comments

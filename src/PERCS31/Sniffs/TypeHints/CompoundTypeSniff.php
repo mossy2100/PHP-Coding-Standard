@@ -11,10 +11,13 @@ use PERCS31\Helpers\PropertyHookHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\GetTokensAsString;
 
 /**
- * Checks the layout of a compound type: no space around its `|` and `&`, and when it's split across lines, one type,
- * or one union segment, per line, with the symbol at the start of each line.
+ * Checks a compound type: its layout, and where `null` goes in a union.
+ *
+ * The layout: no space around its `|` and `&`, and when it's split across lines, one type, or one union segment, per
+ * line, with the symbol at the start of each line.
  *
  * PER Coding Style 3.1, section 2.5, says the union symbol `|` and intersection symbol `&` MUST NOT have a leading or
  * trailing space, and that if a compound type is split across lines:
@@ -47,8 +50,24 @@ use PHP_CodeSniffer\Util\Tokens;
  * hooks, so it gives those symbols and parentheses other tokens, and Slevomat's sniff doesn't see them. So this sniff
  * also checks the space inside a DNF type's parentheses there, as SpaceInsideParentheses, which Slevomat's sniff
  * checks everywhere else.
+ *
+ * `null`: section 2.5 also says that if one of the ORed conditions is `null`, it MUST be the last item, and that a
+ * union of a single simple type with `null` SHOULD be written `?T`.
+ *
+ * SlevomatCodingStandard.TypeHints.DNFTypeHintFormat checks both, but gets some cases wrong:
+ * - It skips the `null` position in any type with an intersection, such as `null|(A&B)`.
+ * - For `null|int`, it only reports the missing `?T`, not the position. `?T` is a SHOULD, so with that code set to a
+ *   warning, the MUST is lost below warning level.
+ * - It doesn't check a typed constant (PHP 8.3), or a `set` hook's parameter, which PHP_CodeSniffer reads as an
+ *   expression.
+ * - Its `?T` fix deletes `static` from a return type, so `static|null` becomes `?`, which is a parse error.
+ *
+ * So this sniff makes both checks in every type, and the PERCS31 ruleset doesn't use Slevomat's
+ * NullTypeHintNotOnLastPosition or RequiredShortNullable codes.
+ *
+ * A type split across lines, or with a comment in it, is reported but not fixed.
  */
-class CompoundTypeLayoutSniff implements Sniff
+class CompoundTypeSniff implements Sniff
 {
     public const string CODE_MULTIPLE_TYPES_ON_LINE = 'MultipleTypesOnLine';
 
@@ -61,6 +80,10 @@ class CompoundTypeLayoutSniff implements Sniff
     public const string CODE_OPERATOR_AT_END_OF_LINE = 'OperatorAtEndOfLine';
 
     public const string CODE_SPACE_INSIDE_PARENTHESES = 'SpaceInsideParentheses';
+
+    public const string CODE_NULL_NOT_LAST = 'NullNotLast';
+
+    public const string CODE_SHORT_NULLABLE = 'ShortNullable';
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -104,6 +127,21 @@ class CompoundTypeLayoutSniff implements Sniff
         }
 
         [$typeStart, $typeEnd] = CompoundTypeHelper::findTypeBounds($phpcsFile, $stackPtr, $isHook);
+        $this->checkLines($phpcsFile, $typeStart, $typeEnd);
+        $this->checkNull($phpcsFile, $typeStart, $typeEnd);
+    }
+
+    /**
+     * Check the lines of a compound type split across lines: one type, or one union segment, on each, and each
+     * indented as the type's first line requires.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $typeStart The position of the type's first token.
+     * @param int $typeEnd The position of the type's last token.
+     */
+    private function checkLines(File $phpcsFile, int $typeStart, int $typeEnd): void
+    {
+        $tokens = $phpcsFile->getTokens();
         [$topLevel, $grouped] = CompoundTypeHelper::splitSymbols($phpcsFile, $typeStart, $typeEnd);
 
         foreach ($grouped as $symbol) {
@@ -135,6 +173,37 @@ class CompoundTypeLayoutSniff implements Sniff
                 $this->reportMultipleTypesOnLine($phpcsFile, $symbol, $error, $indent);
             } elseif (($tokens[$symbol]['column'] - 1) !== $indent) {
                 $this->reportIndent($phpcsFile, $symbol, $indent);
+            }
+        }
+    }
+
+    /**
+     * Check that `null` is the last type in a union, and that a union of one simple type with `null` is written `?T`.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $start The position of the type's first token.
+     * @param int $end The position of the type's last token.
+     */
+    private function checkNull(File $phpcsFile, int $start, int $end): void
+    {
+        $members = $this->findMembers($phpcsFile, $start, $end);
+        $nullIndex = $this->findNull($phpcsFile, $members);
+        if ($nullIndex === null || count($members) < 2) {
+            return;
+        }
+
+        $fixable = $this->isFixable($phpcsFile, $start, $end);
+        $type = $this->typeText($phpcsFile, $start, $end);
+        $isNullLast = $nullIndex === (count($members) - 1);
+        if (!$isNullLast) {
+            $this->reportNullNotLast($phpcsFile, $members, $nullIndex, $type, $fixable);
+        }
+
+        if (count($members) === 2) {
+            $other = $members[(1 - $nullIndex)];
+            if ($other[0] === $other[1]) {
+                // Fix it once null is last, so the two fixes don't clash.
+                $this->reportShortNullable($phpcsFile, $start, $end, $other[0], $type, $fixable && $isNullLast);
             }
         }
     }
@@ -318,6 +387,179 @@ class CompoundTypeLayoutSniff implements Sniff
 
         $phpcsFile->fixer->replaceToken($stackPtr, '');
         $phpcsFile->fixer->addContentBefore($next, $tokens[$stackPtr]['content']);
+        $phpcsFile->fixer->endChangeset();
+    }
+
+    /**
+     * Split a type into the members of its union, outside any DNF parentheses.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $start The position of the type's first token.
+     * @param int $end The position of the type's last token.
+     * @return list<array{int, int}> The first and last tokens of each member.
+     */
+    private function findMembers(File $phpcsFile, int $start, int $end): array
+    {
+        $tokens = $phpcsFile->getTokens();
+        [$topLevel] = CompoundTypeHelper::splitSymbols($phpcsFile, $start, $end);
+        $unions = array_filter(
+            $topLevel,
+            static fn(int $symbol): bool => in_array($tokens[$symbol]['code'], [T_TYPE_UNION, T_BITWISE_OR], true),
+        );
+
+        $members = [];
+        $from = $start;
+        foreach ([...$unions, ($end + 1)] as $to) {
+            $first = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, $from, $to, true);
+            $last = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($to - 1), $from, true);
+            if ($first !== false && $last !== false) {
+                $members[] = [$first, $last];
+            }
+
+            $from = $to + 1;
+        }
+
+        return $members;
+    }
+
+    /**
+     * Find which member of a union is `null`.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param list<array{int, int}> $members The first and last tokens of each member.
+     * @return int|null The member's index, or null if no member is `null`.
+     */
+    private function findNull(File $phpcsFile, array $members): ?int
+    {
+        $tokens = $phpcsFile->getTokens();
+        foreach ($members as $index => [$first, $last]) {
+            if ($first === $last && strtolower($tokens[$first]['content']) === 'null') {
+                return $index;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Check whether a type can be fixed: it's on one line, with no comment in it.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $start The position of the type's first token.
+     * @param int $end The position of the type's last token.
+     * @return bool True if it can.
+     */
+    private function isFixable(File $phpcsFile, int $start, int $end): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+
+        return $tokens[$start]['line'] === $tokens[$end]['line']
+            && $phpcsFile->findNext(Tokens::COMMENT_TOKENS, $start, ($end + 1)) === false;
+    }
+
+    /**
+     * Get a type's text for a message, without whitespace or comments.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $start The position of the type's first token.
+     * @param int $end The position of the type's last token.
+     * @return string The type.
+     */
+    private function typeText(File $phpcsFile, int $start, int $end): string
+    {
+        return GetTokensAsString::noEmpties($phpcsFile, $start, $end);
+    }
+
+    /**
+     * Report a `null` that isn't the last member, and fix it by moving it to the end.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param list<array{int, int}> $members The first and last tokens of each member.
+     * @param int $nullIndex The index of the `null` member.
+     * @param string $type The type's text, for the message.
+     * @param bool $fixable Whether the type can be fixed.
+     */
+    private function reportNullNotLast(
+        File $phpcsFile,
+        array $members,
+        int $nullIndex,
+        string $type,
+        bool $fixable,
+    ): void {
+        $error = 'null must be the last type in a union; found "%s"';
+        $nullPtr = $members[$nullIndex][0];
+        if (!$fixable) {
+            $phpcsFile->addError($error, $nullPtr, self::CODE_NULL_NOT_LAST, [$type]);
+            return;
+        }
+
+        $fix = $phpcsFile->addFixableError($error, $nullPtr, self::CODE_NULL_NOT_LAST, [$type]);
+        if (!$fix) {
+            return;
+        }
+
+        $tokens = $phpcsFile->getTokens();
+        $content = $tokens[$nullPtr]['content'];
+        $lastEnd = $members[(count($members) - 1)][1];
+
+        $phpcsFile->fixer->beginChangeset();
+        if ($nullIndex === 0) {
+            // Remove `null|`, up to the next member.
+            $phpcsFile->fixer->replaceToken($nullPtr, '');
+            FixerHelper::blankBetween($phpcsFile, $nullPtr, $members[1][0]);
+        } else {
+            // Remove `|null`, from the end of the member before it, which is just before the `|`.
+            $symbol = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($nullPtr - 1), null, true);
+            $previousEnd = $symbol === false
+                ? false
+                : $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($symbol - 1), null, true);
+            if ($previousEnd === false) {
+                $phpcsFile->fixer->rollbackChangeset();
+                return;
+            }
+
+            FixerHelper::blankBetween($phpcsFile, $previousEnd, $nullPtr);
+            $phpcsFile->fixer->replaceToken($nullPtr, '');
+        }
+
+        $phpcsFile->fixer->addContent($lastEnd, '|' . $content);
+        $phpcsFile->fixer->endChangeset();
+    }
+
+    /**
+     * Report a union of one simple type with `null`, and fix it by writing it as `?T`.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $start The position of the type's first token.
+     * @param int $end The position of the type's last token.
+     * @param int $otherPtr The position of the type that isn't `null`.
+     * @param string $type The type's text, for the message.
+     * @param bool $fixable Whether to fix it.
+     */
+    private function reportShortNullable(
+        File $phpcsFile,
+        int $start,
+        int $end,
+        int $otherPtr,
+        string $type,
+        bool $fixable,
+    ): void {
+        $shortForm = '?' . $phpcsFile->getTokens()[$otherPtr]['content'];
+        $warning = 'A union of one type and null should be written as ?T; found "%s", use "%s"';
+        $data = [$type, $shortForm];
+        if (!$fixable) {
+            $phpcsFile->addWarning($warning, $otherPtr, self::CODE_SHORT_NULLABLE, $data);
+            return;
+        }
+
+        $fix = $phpcsFile->addFixableWarning($warning, $otherPtr, self::CODE_SHORT_NULLABLE, $data);
+        if (!$fix) {
+            return;
+        }
+
+        $phpcsFile->fixer->beginChangeset();
+        $phpcsFile->fixer->replaceToken($start, $shortForm);
+        FixerHelper::blankBetween($phpcsFile, $start, ($end + 1));
         $phpcsFile->fixer->endChangeset();
     }
 }

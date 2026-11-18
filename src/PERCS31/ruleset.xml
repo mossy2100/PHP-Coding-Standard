@@ -182,10 +182,10 @@
     <rule ref="PERCS31.PHP.TypeCast"/>
 
     <!-- No spaces inside the parentheses of a DNF type (2.5). The sniff's other properties are left unset, which turns
-         their checks off. PERCS31.TypeHints.CompoundTypeLayout checks the space around | and &, as it allows a
-         type split before one. PERCS31.TypeHints.NullType checks where null goes, and ?T, as it also covers a type
-         with an intersection, a typed constant and a set hook's parameter, and this sniff's ?T fix turns a static|null
-         return type into ?, a parse error. -->
+         their checks off. PERCS31.TypeHints.CompoundType checks the space around | and &, as it allows a type
+         split before one. It also checks where null goes, and ?T, as it covers a type with an intersection, a typed
+         constant and a set hook's parameter, and this sniff's ?T fix turns a static|null return type into ?, a parse
+         error. -->
     <rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat">
         <properties>
             <property name="withSpacesInsideParentheses" value="no"/>
@@ -195,11 +195,9 @@
     <!-- No space around | or & in a compound type, but a split before one allowed, including the | between a
          multi-catch's types. A compound type split across lines has one type, or one union segment, per line, each
          level with the type's first line, or indented once past it when other code comes before the type on that line
-         (2.5) -->
-    <rule ref="PERCS31.TypeHints.CompoundTypeLayout"/>
-    <!-- null last in a union, and a warning recommending ?T for a union of one type with null, as it's a SHOULD,
-         everywhere a type can appear (2.5) -->
-    <rule ref="PERCS31.TypeHints.NullType"/>
+         (2.5). null last in a union, and a warning recommending ?T for a union of one type with null, as it's a
+         SHOULD, everywhere a type can appear (2.5). -->
+    <rule ref="PERCS31.TypeHints.CompoundType"/>
 
     <!-- No space after the ? of a nullable type, wherever a type can appear (4.5) -->
     <rule ref="PERCS31.Functions.NullableTypeDeclaration"/>

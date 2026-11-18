@@ -260,7 +260,7 @@ class RulesetUnitTest extends TestCase
 
     /**
      * Test that a `static|null` return type is fixed to `?static`, with null in either position, and still parses.
-     * Slevomat's fix for it left `?` and `?null`, so PERCS31.TypeHints.NullType makes the check instead.
+     * Slevomat's fix for it left `?` and `?null`, so PERCS31.TypeHints.CompoundType makes the check instead.
      */
     public function testStaticOrNullReturnTypeIsFixedToShortNullable(): void
     {
@@ -279,7 +279,7 @@ class RulesetUnitTest extends TestCase
         }
 
         $this->assertSame(2, substr_count($result['output'], 'warning - A union of one type and null'));
-        $this->assertSame(1, substr_count($result['output'], 'PERCS31.TypeHints.NullType.NullNotLast'));
+        $this->assertSame(1, substr_count($result['output'], 'PERCS31.TypeHints.CompoundType.NullNotLast'));
         $this->assertStringNotContainsString('SlevomatCodingStandard.TypeHints.DNFTypeHintFormat', $result['output']);
         $this->assertSame(str_replace(['static|null', 'null|static'], '?static', $source), $fixed);
         $this->assertSame(0, $after['exitCode'], $after['output']);
