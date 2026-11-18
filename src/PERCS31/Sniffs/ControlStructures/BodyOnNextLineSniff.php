@@ -14,8 +14,8 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * PER Coding Style 3.1, section 5, says the body MUST be on the next line after the opening brace. It says nothing
  * about an empty body, which has nothing to put on the next line, so `catch (Exception $e) {}` is allowed, as `{}` is
- * for an empty class, function or closure (4, 4.4, 7). An empty body isn't checked here at all, as
- * PERCS31.Formatting.EmptyBody reports one that isn't `{}`.
+ * for an empty class, function or closure (4, 4.4, 7). An empty body isn't checked here at all. With its strict
+ * property on, as in the Jumbo standard, PERCS31.Formatting.EmptyBody reports one that isn't `{}`.
  *
  * This replaces the NewlineAfterOpenBrace check of Squiz.ControlStructures.ControlSignature, which reports `{}`. That
  * check is in the middle of the Squiz sniff's process(), with no property to change it, so a subclass can't skip it for

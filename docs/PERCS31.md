@@ -252,7 +252,7 @@ section gives the reason.
 | `PERCS31.Files.FileHeader`                                 | The file header, allowing `<?php declare(...) ?>` above markup      | Yes     |
 | `PERCS31.Formatting.AfterClosingBrace`                     | No statement after a `}`, or comment after a class's or function's  | Partly  |
 | `PERCS31.Formatting.DisallowMultipleStatements`            | One statement per line, allowing `{ get; set; }`                    | Yes     |
-| `PERCS31.Formatting.EmptyBody`                             | An empty class, function, closure or structure body is `{}`         | Yes     |
+| `PERCS31.Formatting.EmptyBody`                             | An empty class, function, closure or anonymous class body is `{}`   | Yes     |
 | `PERCS31.Formatting.MethodChaining`                        | A split chain's first method, its `->` and their indent             | Yes     |
 | `PERCS31.Formatting.TrailingComma`                         | Trailing commas in `match`, group `use`, `list()` and some calls    | Yes     |
 | `PERCS31.Functions.ArrowFunctionSpacing`                   | An arrow function's `;`, the line after `fn`, and a wrapped `=>`    | Yes     |
@@ -1041,16 +1041,17 @@ Requires a control structure's body to start on the line after its opening brace
 replaces the `NewlineAfterOpenBrace` check of `Squiz.ControlStructures.ControlSignature`.
 
 **Why:** [PER Coding Style 3.1, Section 5](https://www.php-fig.org/per/coding-style/#5-control-structures) says the body MUST be on the next line after the opening brace. It has no rule
-for an empty body, which has nothing to put on the next line, so an empty body isn't checked here.
-[`PERCS31.Formatting.EmptyBody`](#percs31formattingemptybody) warns about one that isn't `{}`.
+for an empty body, which has nothing to put on the next line, so an empty body isn't checked, here or by any other
+PERCS31 sniff.
 
 The Squiz check reports `{}`. It's in the middle of that sniff's `process()`, with no property to change it, so a
 subclass can't skip it for one case. So the ruleset excludes its code, and this sniff makes the same check, copied from
 PHP_CodeSniffer 4.0.4 with its message and code. It changes one thing: an empty body isn't reported. No other installed
 sniff makes the check with that exception.
 
-A comment after the brace on its line is allowed, as by the Squiz check. An empty body that isn't `{}`, such as `{ }` or
-braces on separate lines, gets a warning from `PERCS31.Formatting.EmptyBody`. The [Jumbo standard](Jumbo.md) makes that an error.
+A comment after the brace on its line is allowed, as by the Squiz check. An empty body isn't checked, so `{}`, `{ }` and
+braces on separate lines all pass. The [Jumbo standard](Jumbo.md) requires `{}`, with the `strict` property of
+[`PERCS31.Formatting.EmptyBody`](#percs31formattingemptybody).
 
 **Auto-fixable:** yes.
 
@@ -1134,9 +1135,9 @@ do {
 } while ($i < 10);
 ```
 
-**Auto-fixable:** yes. A structure with parentheses gets its braces on two lines, and `else;` becomes `else {}`.
-[`PERCS31.Formatting.EmptyBody`](#percs31formattingemptybody) then asks for `{}` on one line. An `else` with a comment before its `;` is left to a
-person.
+**Auto-fixable:** yes. A structure with parentheses gets its braces on two lines, and `else;` becomes `else {}`. Both
+pass, as an empty body isn't checked. The [Jumbo standard](Jumbo.md) then asks for `{}` on one line. An `else` with a comment
+before its `;` is left to a person.
 
 **Good:**
 
