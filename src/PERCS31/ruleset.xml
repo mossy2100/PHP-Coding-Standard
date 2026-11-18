@@ -142,7 +142,8 @@
         <exclude name="PERCS31.Classes.ClassDeclaration.ExtendsInterfaceSameLine"/>
     </rule>
     <rule ref="PERCS31.Functions.MultiLineFunctionDeclaration">
-        <!-- A blank line before a parameter list's or a use list's closing parenthesis isn't forbidden (2.3, 4.5, 7) -->
+        <!-- A blank line before a parameter list's or a use list's closing parenthesis isn't forbidden (2.3, 4.5,
+             7) -->
         <exclude name="PERCS31.Functions.MultiLineFunctionDeclaration.BlankLineBeforeCloseBracket"/>
         <!-- Replaced by the sniff's own BlankLine check, which allows a blank line between two items (2.3, 12.4) -->
         <exclude name="PERCS31.Functions.MultiLineFunctionDeclaration.EmptyLine"/>
@@ -544,7 +545,8 @@
         <exclude name="Squiz.Arrays.ArrayDeclaration.NoCommaAfterLast"/>
         <!-- A closing bracket not on a new line is reported by Generic.Arrays.ArrayIndent -->
         <exclude name="Squiz.Arrays.ArrayDeclaration.CloseBraceNewLine"/>
-        <!-- Replaced by PERCS31.Arrays.MultiLineArrayLayout, as it reads an attribute on a value as an earlier value -->
+        <!-- Replaced by PERCS31.Arrays.MultiLineArrayLayout, as it reads an attribute on a value as an earlier
+             value -->
         <exclude name="Squiz.Arrays.ArrayDeclaration.ValueNoNewline"/>
     </rule>
 

@@ -70,16 +70,15 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 - **PSR12.Traits.UseDeclaration** is kept. Its `NoBlankLineAfterUse` code reports a last trait `use` statement with no
   blank line after it, when more follows in the class. A blank line between two `use` statements, and more than one
   after the last, are allowed, as section 4.2 forbids neither. Its `BlankLineAfterLastUse` code is excluded, as
-  [`PERCS31.Classes.ClassDeclaration`](#percs31classesclassdeclaration) reports the same blank line before the class's closing brace. Its
-  `MultipleImport` code is replaced by `SlevomatCodingStandard.Classes.TraitUseDeclaration`, which also reports several
-  traits in a `use` statement with a `{ }` block. Its `SpaceAfterOpeningBrace` and `SpaceBeforeClosingBrace` codes are
-  replaced by [`PERCS31.Classes.TraitUseBlock`](#percs31classestraituseblock), as they also report a blank line in the block.
+  [`PERCS31.Classes.ClassDeclaration`](#percs31classesclassdeclaration) reports the same blank line before the class's closing brace. Its `MultipleImport`
+  code is replaced by `SlevomatCodingStandard.Classes.TraitUseDeclaration`, which also reports several traits in a `use`
+  statement with a `{ }` block. Its `SpaceAfterOpeningBrace` and `SpaceBeforeClosingBrace` codes are replaced by
+  [`PERCS31.Classes.TraitUseBlock`](#percs31classestraituseblock), as they also report a blank line in the block.
 - **PSR12.Classes.AnonClassDeclaration** is kept, but its three comma spacing codes are replaced by
   `Universal.WhiteSpace.CommaSpacing`, which reports the same. Its six codes for the layout of the argument list are
   excluded, as [`PERCS31.Functions.FunctionCallLayout`](#percs31functionsfunctioncalllayout) reports the same problems.
-- **Squiz.Functions.FunctionDeclaration** is excluded, as
-  [`PERCS31.Functions.MultiLineFunctionDeclaration`](#percs31functionsmultilinefunctiondeclaration) reports the space after `function` and before the
-  opening parenthesis, with a fix.
+- **Squiz.Functions.FunctionDeclaration** is excluded, as [`PERCS31.Functions.MultiLineFunctionDeclaration`](#percs31functionsmultilinefunctiondeclaration) reports the
+  space after `function` and before the opening parenthesis, with a fix.
 - **PSR12.Properties.ConstantVisibility** is kept, but a constant with no visibility is an error, not a warning, as
   [Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says MUST.
 - **PSR2.Classes.ClassDeclaration**, **Squiz.Functions.MultiLineFunctionDeclaration** and
@@ -106,9 +105,9 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 default value's `=` is a binary operator, which section 6.2 allows more than one space around.
 [`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing) checks it instead.
 
-Its `SpacingAfterReference` and `SpacingAfterVariadic` are excluded too.
-[`PERCS31.Operators.UnaryOperatorSpacing`](#percs31operatorsunaryoperatorspacing) reports a space after every reference `&`, and
-`Generic.WhiteSpace.SpreadOperatorSpacingAfter` after every spread `...`, a parameter's included.
+Its `SpacingAfterReference` and `SpacingAfterVariadic` are excluded too. [`PERCS31.Operators.UnaryOperatorSpacing`](#percs31operatorsunaryoperatorspacing)
+reports a space after every reference `&`, and `Generic.WhiteSpace.SpreadOperatorSpacingAfter` after every spread `...`,
+a parameter's included.
 
 ---
 
@@ -337,8 +336,8 @@ allowed, as each has to start a line:
 PER's own example puts a nested array's `[` on its own line, hence the first exception. [Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls) puts each argument
 of a split argument list on its own line, hence the second, and a `match` arm starts a line too. Sections 5.1 to 5.4 put
 the first condition of a split control structure on the line after the `(`, hence the fourth. A `foreach` and a `match`
-have no such rule, so `foreach ([` and `match ([` are required, unless `splitForeachAndMatch` is on, as it is in
-[Jumbo](Jumbo.md), which gives both the split rule. No inherited sniff checks it.
+have no such rule, so `foreach ([` and `match ([` are required, unless `splitForeachAndMatch` is on, as it is in [Jumbo](Jumbo.md),
+which gives both the split rule. No inherited sniff checks it.
 
 **The values.** Each value starts on a new line, including the first, reported as `ValueNoNewline`. Section 11 says that
 when an array is split across lines, the first value MUST be on the next line, and there MUST be only one value per
@@ -486,12 +485,12 @@ first attribute, but a blank line may not.
 
 It also reports a blank line between a docblock and the attributes after it, between two attribute blocks, or between
 the last attribute and its target, and anything but a single space between an attribute and its parameter on the same
-line, as section 12.2 requires. A blank line between a parameter and the next parameter's attributes is allowed, as
-12.2 also says.
+line, as section 12.2 requires. A blank line between a parameter and the next parameter's attributes is allowed, as 12.2
+also says.
 
 A comment between an attribute and its target is reported too, as `CommentBeforeTarget`, as the attributes go
-immediately prior to the structure. That includes a comment between two attribute blocks, which is between the first
-one and its target, and a comment on the same line, as in `#[A] /* Why. */ #[B] int $a`. A comment at the end of an
+immediately prior to the structure. That includes a comment between two attribute blocks, which is between the first one
+and its target, and a comment on the same line, as in `#[A] /* Why. */ #[B] int $a`. A comment at the end of an
 attribute's line, as in `#[Override] // Stringable`, is fine. Section 12.2 only says "prior to the parameter", but a
 comment before a parameter is reported too.
 
@@ -669,8 +668,7 @@ as `InterfaceNotOnOwnLine`.
 
 Section 4.1 also forbids a blank line after the opening brace, which this sniff reports as `BlankLineAfterOpenBrace`.
 That replaces `PSR12.Classes.OpeningBraceSpace`, which also reports an anonymous class. Section 8 gives an anonymous
-class the closure rules, which allow a blank line there. See
-[PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md#blank-lines-in-an-anonymous-classs-body).
+class the closure rules, which allow a blank line there. See [PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md#blank-lines-in-an-anonymous-classs-body).
 
 **Auto-fixable:** yes.
 
@@ -752,11 +750,8 @@ global one, so it isn't in the ruleset, and this sniff only gives it a class's c
 Jumbo does. Slevomat 8.31.3 or later is needed, which stops it flagging a comma inside parentheses, as in
 `const I = new Complex(0, 1);`.
 
-An enum case is declared like a constant, and section 9's example writes `case Hearts = 'H';`, so one space after
-`case` is required too, reported as `SpaceAfterCase`. See
-[The Space After `case`](PER-CS_3.1_Judgement_Calls.md#the-space-after-case).
-
-A global constant isn't checked, as section 4 is about classes.
+An enum case is declared like a constant, and section 9's example writes `case Hearts = 'H';`, so one space after `case`
+is required too, reported as `SpaceAfterCase`. See [The Space After `case`](PER-CS_3.1_Judgement_Calls.md#the-space-after-case).
 
 **Auto-fixable:** yes, unless a comment is in the way.
 
@@ -1137,8 +1132,8 @@ do {
 ```
 
 **Auto-fixable:** yes. A structure with parentheses gets its braces on two lines, and `else;` becomes `else {}`. Both
-pass, as an empty body isn't checked. The [Jumbo standard](Jumbo.md) then asks for `{}` on one line. An `else` with a comment
-before its `;` is left to a person.
+pass, as an empty body isn't checked. The [Jumbo standard](Jumbo.md) then asks for `{}` on one line. An `else` with a comment before
+its `;` is left to a person.
 
 **Good:**
 
@@ -1172,9 +1167,9 @@ line is reported, as `CloseParenthesisNotOnOwnLine`. A blank line before the `)`
 code, `BlankLineBeforeCloseParenthesis`, which the ruleset excludes. Both replace the parent's `CloseParenthesisLine`,
 which reports either, and which the ruleset excludes.
 
-A standard that wants one layout for every split header, as [Jumbo](Jumbo.md) does, turns `splitForeachAndMatch` on. A
-multi-line `foreach` or `match` then gets the parent's rule too: the first expression on the line after `(`, and `)` on
-a line of its own. A `foreach`'s `as` also starts a line, level with the expression, with the loop's variables after it:
+A standard that wants one layout for every split header, as [Jumbo](Jumbo.md) does, turns `splitForeachAndMatch` on. A multi-line
+`foreach` or `match` then gets the parent's rule too: the first expression on the line after `(`, and `)` on a line of
+its own. A `foreach`'s `as` also starts a line, level with the expression, with the loop's variables after it:
 
 ```php
 foreach (
@@ -1373,8 +1368,7 @@ A `case` or `default` body wrapped in braces is reported as `BodyInBraces`. It's
 after the label, and its `}` is followed by the next label or the switch's `}`. A block followed by more of the body,
 even just `break`, passes, as section 5.2 only forbids wrapping the body, and the case gets every other check, measured
 from its colon. The original reports every block straight after a label. It also crashes after a braced body, so the
-rest of the file wasn't checked, and `phpcbf` stopped, which the fork fixes. See
-[A Block in a `case`](PER-CS_3.1_Judgement_Calls.md#a-block-in-a-case).
+rest of the file wasn't checked, and `phpcbf` stopped, which the fork fixes. See [A Block in a `case`](PER-CS_3.1_Judgement_Calls.md#a-block-in-a-case).
 
 **Auto-fixable:** yes. The fix adds `break;` before the `}`, adds the parentheses, moves the `)` to its own line, moves
 the first condition to the next line, or indents a line. It's left to a person when there's a comment in the way, or the
@@ -1599,8 +1593,8 @@ It also skips the hooks of a promoted constructor parameter. Section 4.9 only al
 [`PERCS31.Classes.PropertyHooks`](#percs31classespropertyhooks) reports anything else, which a person has to move to the class body. Splitting the hooks
 over lines first would only leave a layout nobody wants.
 
-The Generic sniff only compares the lines of two semicolons. So this sniff also reports a statement that starts after
-a semicolon on the same line and ends on a later one, as in `$a = 1; foo(`, or has no semicolon, as in
+The Generic sniff only compares the lines of two semicolons. So this sniff also reports a statement that starts after a
+semicolon on the same line and ends on a later one, as in `$a = 1; foo(`, or has no semicolon, as in
 `$a = 1; if ($b) {`.
 
 **Auto-fixable:** yes.
@@ -1643,8 +1637,8 @@ comment isn't empty.
 Section 5 has no rule for a control structure's empty body, so it isn't checked. Both `catch (Exception $e) {}` and the
 braces on separate lines pass.
 
-Set `strict` to make every empty body that isn't `{}` an error, including a control structure's, as the
-[Jumbo standard](Jumbo.md) does.
+Set `strict` to make every empty body that isn't `{}` an error, including a control structure's, as the [Jumbo standard](Jumbo.md)
+does.
 
 Section 7 also says an empty closure SHOULD be replaced with an arrow function, "if possible", as in `fn() => null`. An
 empty closure that could be one gets a warning, as `ClosureNotArrowFunction`, whatever `strict` is. It isn't possible
@@ -1780,8 +1774,8 @@ requires in a split list. A single argument split over lines, as in `clone($a, [
 list, so a comma after it is reported, as [`PERCS31.Functions.DisallowTrailingCommaInCall`](#percs31functionsdisallowtrailingcommaincall) does for a call.
 
 It also reports a trailing comma with a comment after it, on one line, in a parameter list, a closure's `use` list, an
-array and a short list, as in `[1, 2, /* Why. */]`. The sniffs that check those lists look for the comma straight
-before the closing bracket, so the comment hides it from them.
+array and a short list, as in `[1, 2, /* Why. */]`. The sniffs that check those lists look for the comma straight before
+the closing bracket, so the comment hides it from them.
 
 **Auto-fixable:** yes. A missing comma goes after the last item, before any comment. A comma that isn't allowed is
 removed, and a comment after it is kept.
@@ -1977,12 +1971,12 @@ except in an empty body written as `{}` on one line, e.g. `function reset(): voi
 case, and leaves everything else to the parent. For an empty body after a single-line signature, the parent's
 `CloseBracketNewLine` check is skipped too, as it can't be run on its own. See [PERCS31.Formatting.EmptyBody](#percs31formattingemptybody).
 
-The parent also reports every blank line in a multi-line parameter or `use` list. [Section 2.3](https://www.php-fig.org/per/coding-style/#23-lines) allows blank lines
-"except where explicitly forbidden", and [section 12.4](https://www.php-fig.org/per/coding-style/#124-example)'s example has one between two parameters. So the ruleset
-excludes the parent's `EmptyLine` code, and this sniff reports blank lines itself, as `BlankLine`. One between two
-parameters, or two of a closure's `use` variables, is allowed. One straight after `(` is reported, and so is one after
-a parameter's attributes, which section 12.2 forbids. One straight before `)` has its own code,
-`BlankLineBeforeCloseBracket`, which the ruleset excludes, as sections 4.5 and 7 don't forbid it.
+The parent also reports every blank line in a multi-line parameter or `use` list. [Section 2.3](https://www.php-fig.org/per/coding-style/#23-lines) allows blank lines "except
+where explicitly forbidden", and [section 12.4](https://www.php-fig.org/per/coding-style/#124-example)'s example has one between two parameters. So the ruleset excludes the
+parent's `EmptyLine` code, and this sniff reports blank lines itself, as `BlankLine`. One between two parameters, or two
+of a closure's `use` variables, is allowed. One straight after `(` is reported, and so is one after a parameter's
+attributes, which section 12.2 forbids. One straight before `)` has its own code, `BlankLineBeforeCloseBracket`, which
+the ruleset excludes, as sections 4.5 and 7 don't forbid it.
 
 The parent also wants every line of a multi-line parameter or `use` list at the same indent, so it reports a default
 value wrapped at an operator, as in `string $name = 'a'` then `. 'b',`. That line continues its parameter, so
@@ -2564,8 +2558,8 @@ The `=` of a parameter's default value is a binary operator too, so `int $a    =
 `false` to leave it to that sniff, as the Jumbo standard does.
 
 The `|` in a multi-catch, e.g. `catch (A|B $e)`, is a union type, not an operator, so it's skipped. [Section 2.5](https://www.php-fig.org/per/coding-style/#25-keywords-and-types) says the
-union symbol MUST NOT have a space either side, which `PERCS31.TypeHints.CompoundType` checks. The parent
-would require one.
+union symbol MUST NOT have a space either side, which `PERCS31.TypeHints.CompoundType` checks. The parent would require
+one.
 
 The `&` of a by-reference hook, e.g. `&get => $this->items;`, isn't an operator either, so it's skipped, here and by
 `PERCS31.Operators.OperatorPlacement`. So are the `|`, `&` and `?` of a `set` hook's parameter type, e.g.
@@ -2601,8 +2595,8 @@ $name = $given ? : $default;
 
 ### PERCS31.Operators.UnaryOperatorSpacing
 
-Disallows whitespace, including a line break, after a reference `&`. It can also check a prefix unary `+`, `-`, `!`,
-`~` and `@`, which are off by default.
+Disallows whitespace, including a line break, after a reference `&`. It can also check a prefix unary `+`, `-`, `!`, `~`
+and `@`, which are off by default.
 
 **Why:** [Section 4.5](https://www.php-fig.org/per/coding-style/#45-method-and-function-parameters) says "When using the reference operator `&` before an argument, there MUST NOT be a space after
 it."
@@ -2618,18 +2612,17 @@ PERCS31 reads that as the rule for the operator, wherever it's used:
 
 A bitwise `&` isn't a reference, so it's skipped, including in a parameter's default value.
 
-[Section 6](https://www.php-fig.org/per/coding-style/#6-operators) leaves the other five operators undefined, so their checks are off. A standard that wants them, as
-[Jumbo](Jumbo.md) does, turns each on with its property. A binary `+` or `-` is skipped, as
-[`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing) checks it. The space in `- -$a` and `+ +$a` is left alone, as without it PHP reads
-`--` or `++`.
+[Section 6](https://www.php-fig.org/per/coding-style/#6-operators) leaves the other five operators undefined, so their checks are off. A standard that wants them, as [Jumbo](Jumbo.md) does,
+turns each on with its property. A binary `+` or `-` is skipped, as [`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing) checks it. The
+space in `- -$a` and `+ +$a` is left alone, as without it PHP reads `--` or `++`.
 
 Section 4.5 has the same rule for the spread operator `...`, which `Generic.WhiteSpace.SpreadOperatorSpacingAfter`
 checks. `Generic.WhiteSpace.IncrementDecrementSpacing` checks `++` and `--`. A cast keeps the single space after it that
 section 6.1 requires.
 
 It replaces `Squiz.Functions.FunctionDeclarationArgumentSpacing`'s `SpacingAfterReference`, which only checks a
-parameter. `SlevomatCodingStandard.PHP.ReferenceSpacing` isn't used, as it reads a bitwise `&` in a
-parameter's default value as a reference, and its fix then fights the one that puts the space back.
+parameter. `SlevomatCodingStandard.PHP.ReferenceSpacing` isn't used, as it reads a bitwise `&` in a parameter's default
+value as a reference, and its fix then fights the one that puts the space back.
 
 **Auto-fixable:** yes, unless a comment is between the operator and its operand.
 
@@ -3032,12 +3025,12 @@ Requires at least one space before and after the `=>` in a `match` arm, an array
 lined up.
 
 **Why:** [PER Coding Style 3.1, Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) shows a `match` expression with one space each side of `=>`, and says to
-"note the placement of parentheses, spaces, and braces". [Section 11](https://www.php-fig.org/per/coding-style/#11-arrays)'s example, which "shows correct array usage",
-has one space each side of an array's `=>` too. So a space each side is required.
+"note the placement of parentheses, spaces, and braces". [Section 11](https://www.php-fig.org/per/coding-style/#11-arrays)'s example, which "shows correct array usage", has
+one space each side of an array's `=>` too. So a space each side is required.
 
-Neither example lines its arrows up, but each has too few arrows to rule that out, and [Section 6](https://www.php-fig.org/per/coding-style/#6-operators) says "multiple
-spaces MAY be used for readability purposes" wherever space is permitted around an operator. So more than one space is
-allowed. The [Jumbo standard](Jumbo.md) turns `allowSeveralSpaces` off, to require exactly one.
+Neither example lines its arrows up, but each has too few arrows to rule that out, and [Section 6](https://www.php-fig.org/per/coding-style/#6-operators) says "multiple spaces
+MAY be used for readability purposes" wherever space is permitted around an operator. So more than one space is allowed.
+The [Jumbo standard](Jumbo.md) turns `allowSeveralSpaces` off, to require exactly one.
 
 PER says nothing about a `yield`'s `=>`, so it's treated as an array's is, for consistency. A `foreach`'s, an arrow
 function's and a property hook's `=>` have their own sniffs.
@@ -3154,13 +3147,13 @@ Disallows white space around `->`, `?->` and `::`, except a line break before `-
 split chain. A line break around `::` is reported. This replaces `Squiz.WhiteSpace.ObjectOperatorSpacing`, which it
 extends.
 
-**Why:** [Section 6](https://www.php-fig.org/per/coding-style/#6-operators) doesn't list these, and says "All operators not described here are left undefined". That
-means section 6 has no rule for them, not that no other section may. Two sections present examples as templates, which
-makes each one a rule:
+**Why:** [Section 6](https://www.php-fig.org/per/coding-style/#6-operators) doesn't list these, and says "All operators not described here are left undefined". That means
+section 6 has no rule for them, not that no other section may. Two sections present examples as templates, which makes
+each one a rule:
 
 - [Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls)'s "lines [that] show correct calls" have `$foo->bar($arg1);` and `Foo::bar($arg2, $arg3);`.
-- [Section 4.2](https://www.php-fig.org/per/coding-style/#42-using-traits) says `insteadof` and `as` "MUST be used as follows taking note of indentation, spacing, and new
-  lines", with `A::smallTalk insteadof B;`.
+- [Section 4.2](https://www.php-fig.org/per/coding-style/#42-using-traits) says `insteadof` and `as` "MUST be used as follows taking note of indentation, spacing, and new lines",
+  with `A::smallTalk insteadof B;`.
 
 Every other example agrees, such as `self::Spades` in [Section 9](https://www.php-fig.org/per/coding-style/#9-enumerations). See "Operators Not Listed" in
 [PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md#operators-not-listed).
@@ -3329,6 +3322,6 @@ Only the default of `ignoreIndentationTokens` differs from the original's, which
 - **An arrow function with a `throw` or `exit` in a `case` body.** PHP_CodeSniffer 4.0.4 never finishes on
   `$b = fn() => throw new Exception();` directly inside a `case` or `default`, under any standard, as it hangs before
   any sniff runs. Wrap the body in a closure, or move the arrow function out of the `switch`.
-- **A CRLF line in a file that starts with LF line endings.** `Generic.Files.LineEndings` only looks at the file's
-  first line ending, so the line is reported as trailing whitespace, by `Squiz.WhiteSpace.SuperfluousWhitespace`, with
-  a warning that the file has mixed line endings. `phpcbf` still fixes it to LF.
+- **A CRLF line in a file that starts with LF line endings.** `Generic.Files.LineEndings` only looks at the file's first
+  line ending, so the line is reported as trailing whitespace, by `Squiz.WhiteSpace.SuperfluousWhitespace`, with a
+  warning that the file has mixed line endings. `phpcbf` still fixes it to LF.

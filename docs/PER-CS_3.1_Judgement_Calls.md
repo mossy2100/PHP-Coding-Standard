@@ -257,8 +257,8 @@ name". Many others it only shows: one space between `function` and a function's 
 property's name. It has no general rule for spacing, as 2.3 is for blank lines.
 
 **Decision:** Where every example writes a construct with the same spacing, that spacing is required, as with one space
-between a keyword and the name after it. This is different from a blank line, which 2.3 allows wherever the text
-doesn't explicitly forbid one. So PERCS31 infers a spacing rule from the examples, but never a ban on a blank line.
+between a keyword and the name after it. This is different from a blank line, which 2.3 allows wherever the text doesn't
+explicitly forbid one. So PERCS31 infers a spacing rule from the examples, but never a ban on a blank line.
 
 **Why:** Nothing in the spec permits irregular spacing, as 2.3 permits blank lines, and nobody means to write
 `case  Hearts`. These patterns are obvious, and a standard that left them unchecked would miss plain slips.
@@ -367,12 +367,12 @@ See [Line Length](LineLength.md) to change the limit.
 only bans a tab that indents. It doesn't say whether one may be used elsewhere, as in `$a =` then a tab then `1;`.
 
 **Decision:** A tab is reported anywhere outside a string, including between two tokens, before a trailing comment and
-inside a comment's text. The fix replaces it with spaces up to the next tab stop, which is every 4 columns, so the
-code keeps the layout it had.
+inside a comment's text. The fix replaces it with spaces up to the next tab stop, which is every 4 columns, so the code
+keeps the layout it had.
 
 **Why:** A tab is never a space. The spec's spacing rules all say "space", as in 6.2's "at least one space", and every
-example separates tokens with spaces. See [Spacing Shown by Example](#spacing-shown-by-example). PHP_CodeSniffer reads
-the same PSR-12 wording this way.
+example separates tokens with spaces. See [Spacing Shown by Example](#spacing-shown-by-example). PHP_CodeSniffer reads the same PSR-12 wording this
+way.
 
 ---
 
@@ -524,8 +524,7 @@ parameters, closure `use` lists, arrays, `match` arms, a `match` arm's condition
 class's arguments, `clone()`, `exit()`, `die()` and attribute blocks. `clone ($a)->c` is skipped, as its parentheses may
 only group the object.
 
-A `match` has two lists: its arms, and the conditions at the start of each arm. See
-[`match` Conditions](#match-conditions).
+A `match` has two lists: its arms, and the conditions at the start of each arm. See [`match` Conditions](#match-conditions).
 
 **Why:** The rule's purpose, cleaner diffs, applies equally to every comma-separated list split over lines.
 
@@ -602,8 +601,8 @@ A line break before the `=>` isn't in the list, so it doesn't split it. The `=>`
 start the next line.
 
 **Why:** 2.6 says "If the list is split across multiple lines, then the last item MUST have a trailing comma", and makes
-no exception for this list. One condition per line follows every other list the spec splits: arguments (4.7),
-parameters (4.5), an array's values (11) and interfaces (4.1).
+no exception for this list. One condition per line follows every other list the spec splits: arguments (4.7), parameters
+(4.5), an array's values (11) and interfaces (4.1).
 
 ---
 
@@ -653,8 +652,8 @@ effort, so a simple rule is applied consistently.
 line." The last block listed is "The remainder of the code in the file". Read literally, that bans every blank line
 after the header.
 
-**Decision:** The ban covers the header's blocks only, from the opening tag to the imports. The rest of the code may have
-blank lines wherever 2.3 allows them.
+**Decision:** The ban covers the header's blocks only, from the opening tag to the imports. The rest of the code may
+have blank lines wherever 2.3 allows them.
 
 **Why:** The literal reading contradicts 2.3, and every example in the spec with more than one statement after the
 header, such as 4.2's and 12.4's.
@@ -715,8 +714,8 @@ use A\{
     C};
 ```
 
-A blank line anywhere in a group `use`, after the `{`, between two names or before the `}`, is reported. Section 3
-says a block of the file header "MUST NOT contain a blank line", and a group `use` is part of the block of imports.
+A blank line anywhere in a group `use`, after the `{`, between two names or before the `}`, is reported. Section 3 says
+a block of the file header "MUST NOT contain a blank line", and a group `use` is part of the block of imports.
 
 **Why:** The two examples are the only forms the spec shows, and they match its rules for a single-line and a multi-line
 array (11).
@@ -766,9 +765,9 @@ reported, as is one after markup or a `<?=` block that comes before it.
 `declare(strict_types=1);`.
 
 **Why:** The spec writes what PHP itself defines in lower case: its keywords and types (2.5), including `true`, `false`
-and `null`, a hook's `get` and `set` (see [Hook Names](#hook-names)), and the `php` in `<?php` (3). Every example writes
-a directive in lower case too. The one exception is the magic constants, such as `__DIR__`, which are conventionally
-upper case, and whose case isn't checked. See [Magic Constants](#magic-constants).
+and `null`, a hook's `get` and `set` (see [Hook Names](#hook-names)), and the `php` in `<?php` (3). Every example writes a directive in
+lower case too. The one exception is the magic constants, such as `__DIR__`, which are conventionally upper case, and
+whose case isn't checked. See [Magic Constants](#magic-constants).
 
 ---
 
@@ -790,10 +789,10 @@ run();
 declare(ticks=1);
 ```
 
-**Why:** A `declare` after the header is part of the code, not of the header. `declare(ticks=1)` applies from where
-it's written, so it has a reason to be anywhere. PHP itself rejects a `strict_types` declaration that isn't the first
-statement, and rejects or ignores a misplaced `encoding` one. Catching code that doesn't work is PHP's job, not a
-coding standard's.
+**Why:** A `declare` after the header is part of the code, not of the header. `declare(ticks=1)` applies from where it's
+written, so it has a reason to be anywhere. PHP itself rejects a `strict_types` declaration that isn't the first
+statement, and rejects or ignores a misplaced `encoding` one. Catching code that doesn't work is PHP's job, not a coding
+standard's.
 
 ---
 
@@ -999,8 +998,8 @@ way.
 which is about classes, and doesn't say whether it covers a global `const`.
 
 **Decision:** It covers a constant in a class, an interface, a trait, an enum or an anonymous class. A global `const`
-with several constants passes. [Jumbo](Jumbo.md) reports it too, as an extra rule, and requires one space after a
-global `const`. A `define()` call can only declare one constant.
+with several constants passes. [Jumbo](Jumbo.md) reports it too, as an extra rule, and requires one space after a global `const`. A
+`define()` call can only declare one constant.
 
 **Why:** Section 4 is about classes, as "Global Constants (PSR-1)" and "Spacing in a Constant Declaration" read it too.
 
@@ -1042,8 +1041,8 @@ also delete the comment.
 
 ### A Blank Line at the Start of a Body
 
-**Issue:** 4.4 says a function's or method's "closing brace MUST go on the next line following the body", and section
-7 says the same of a closure. Neither says anything about the line after the opening brace.
+**Issue:** 4.4 says a function's or method's "closing brace MUST go on the next line following the body", and section 7
+says the same of a closure. Neither says anything about the line after the opening brace.
 
 **Decision:** A blank line straight before the closing brace is reported. Blank lines straight after the opening brace
 are allowed. [Jumbo](Jumbo.md) reports those too, as an extra rule.
@@ -1082,7 +1081,8 @@ on the next line, and PHP_CodeSniffer reads the same PSR-12 wording this way.
 explicitly forbidden". The spec's examples rarely show a blank line in a list, so it's unclear where one is allowed.
 
 **Decision:** Blank lines are allowed between two items of every list: parameters, a closure's `use` variables, a call's
-or an attribute's arguments, an array's values, a `match`'s arms and interfaces after `implements`. A comment between two items is allowed too. So this passes:
+or an attribute's arguments, an array's values, a `match`'s arms and interfaces after `implements`. A comment between
+two items is allowed too. So this passes:
 
 ```php
 $mailer->send(
@@ -1109,8 +1109,8 @@ allowed. 4.5 and 7 only put the `)` and the `{` "together on their own line", an
 The same goes for a split control structure header: 5.1 to 5.4 use the same words, and 5.3 says nothing about a `do`
 `while`'s `)`.
 
-[Jumbo](Jumbo.md) is stricter, as extra rules: no multi-line list starts or ends with a blank line, and no more than
-one comes between two items.
+[Jumbo](Jumbo.md) is stricter, as extra rules: no multi-line list starts or ends with a blank line, and no more than one comes
+between two items.
 
 **Why:** 2.3 only excludes a blank line that's explicitly forbidden, and an example that doesn't happen to have one
 isn't a ban. 12.4's example has a blank line between two parameters, which shows the spec's authors use them this way.
@@ -1264,8 +1264,8 @@ $all = [...$first, ...$second];
 
 A space or a line break after the `...` in any of these is an error.
 
-The `...` of a first-class callable, as in `strlen(...)`, isn't a spread, as it has nothing after it to unpack. 4.8
-sets its spacing.
+The `...` of a first-class callable, as in `strlen(...)`, isn't a spread, as it has nothing after it to unpack. 4.8 sets
+its spacing.
 
 **Why:** It's the same operator in each place, so the same rule is used, as for
 [A Reference `&` Outside a Parameter List](#a-reference--outside-a-parameter-list).
@@ -1415,8 +1415,7 @@ statements.
 - One space before a hook's own `{`, as in `get {`.
 - `{ get; set; }` on one line is one block, not two statements.
 
-A by-reference hook's `&` is covered by
-[A Reference `&` Outside a Parameter List](#a-reference--outside-a-parameter-list) (4.5).
+A by-reference hook's `&` is covered by [A Reference `&` Outside a Parameter List](#a-reference--outside-a-parameter-list) (4.5).
 
 **Why:** The first follows 4.9's examples. The second follows 4.10's, which write `{ get; set; }` on one line.
 
@@ -1512,8 +1511,8 @@ empty body, with braces and nothing between them, and no body at all, as in `whi
 **Decision:**
 
 - **No body:** the structure MUST have braces, so `while (next($items));` and `else;` are errors.
-- **An empty body:** it isn't checked. `{}` on the same line and the braces on separate lines both pass.
-  [Jumbo](Jumbo.md) requires `{}`, as an extra rule.
+- **An empty body:** it isn't checked. `{}` on the same line and the braces on separate lines both pass. [Jumbo](Jumbo.md) requires
+  `{}`, as an extra rule.
 
 So these are right:
 
@@ -1547,9 +1546,9 @@ if ($ready) {
 **Why:** The rule says each structure's body MUST be enclosed by braces, and makes no exception for one with no body. A
 `;` straight after a condition is also easy to add by accident, and to miss when reading.
 
-For an empty body, the spec has no rule in section 5, and braces on separate lines meet both of its rules: the body
-on the next line after the `{`, and the `}` on the next line after the body. The SHOULD for `{}` covers a class (4) and
-a function (4.4) only.
+For an empty body, the spec has no rule in section 5, and braces on separate lines meet both of its rules: the body on
+the next line after the `{`, and the `}` on the next line after the body. The SHOULD for `{}` covers a class (4) and a
+function (4.4) only.
 
 ---
 
@@ -1735,8 +1734,8 @@ place of the space before or after `as` or `=>`. Otherwise it only gets section 
 
 **Issue:** 5.4's example has three expressions, so it doesn't show how an empty one is spaced.
 
-**Decision:** No space comes before a semicolon, whether or not an expression does. So an empty middle expression
-leaves the two semicolons together:
+**Decision:** No space comes before a semicolon, whether or not an expression does. So an empty middle expression leaves
+the two semicolons together:
 
 | Code                    | Result                                   |
 | ----------------------- | ---------------------------------------- |
@@ -1766,13 +1765,11 @@ though it's debatable whether those are operators at all: PHP's operator precede
   - `->` and `?->` have none after them. They have none before them either, unless one starts a line in a split chain,
     where only the line break and the indent come before it.
 - A reference `&` and a spread `...` have no white space after them, by 4.5's rules. See
-  [A Reference `&` Outside a Parameter List](#a-reference--outside-a-parameter-list) and
-  [The Spread Operator Outside a Parameter List](#the-spread-operator-outside-a-parameter-list).
+  [A Reference `&` Outside a Parameter List](#a-reference--outside-a-parameter-list) and [The Spread Operator Outside a Parameter List](#the-spread-operator-outside-a-parameter-list).
 - Unary `+`, `-`, `!`, `~` and `@` aren't checked, as no section has a rule for them. Jumbo checks them.
 
 **Why:** "Left undefined" means section 6 has no rule for an operator, not that no other section may have one. The spec
-presents these examples as templates, which makes each one a rule (see
-[Rule Text and Examples](#rule-text-and-examples)):
+presents these examples as templates, which makes each one a rule (see [Rule Text and Examples](#rule-text-and-examples)):
 
 - `$foo->bar($arg1);` and `Foo::bar($arg2, $arg3);`, in 4.7's "lines [that] show correct calls".
 - `A::smallTalk insteadof B;` and `C::mediumTalk as FooBar;`, in 4.2, which says `insteadof` and `as` "MUST be used as
@@ -2016,9 +2013,8 @@ classes follow the closure rules instead, and section 4 defines "class" as "all 
 with no mention of anonymous classes.
 
 **Decision:** An anonymous class follows the closure rules. A blank line after its opening brace is allowed, and one
-before its closing brace is reported, as for a closure. See
-[A Blank Line at the Start of a Body](#a-blank-line-at-the-start-of-a-body). [Jumbo](Jumbo.md) reports both, as an
-extra rule.
+before its closing brace is reported, as for a closure. See [A Blank Line at the Start of a Body](#a-blank-line-at-the-start-of-a-body). [Jumbo](Jumbo.md) reports both, as
+an extra rule.
 
 **Why:** Section 8 names closures explicitly, and section 4's definition of a class leaves anonymous classes out.
 
