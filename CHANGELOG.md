@@ -703,8 +703,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   of an anonymous class's argument list, each got a second message, from `Squiz.Functions.FunctionDeclaration` and
   `PSR12.Classes.AnonClassDeclaration`. Those codes are now excluded, as PERCS31's own sniffs report the same problems.
 - **The `)` that ends a multi-line `case` condition (breaking).** On a line of its own, it passed with any indent.
-  `PERCS31.ControlStructures.SwitchDeclaration` now requires it level with the `case`, as section 5.2's example shows,
-  as `MultiLineConditionCloserIndent`. Auto-fixable.
+  `PERCS31.ControlStructures.SwitchDeclaration` now reports it indented further than the `case`, as
+  `MultiLineConditionCloserIndent`, as section 5.2's example has it level. Too little was already reported, by
+  `PERCS31.WhiteSpace.ScopeIndent`. Auto-fixable.
 - **A block in a `case`, with statements after it.** `PERCS31.WhiteSpace.ScopeIndent` reported the block's closing
   brace, and `phpcbf` then left the brace and the statement after it indented wrongly. The brace is no longer checked.
   `PERCS31.ControlStructures.SwitchDeclaration` reports a block only when it's the whole body.

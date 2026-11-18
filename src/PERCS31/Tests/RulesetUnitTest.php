@@ -863,6 +863,37 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that the closing line of a multi-line case condition is reported once, whether it's indented too far or too
+     * little, and fixed to line up with the case.
+     */
+    public function testCaseConditionCloserIsReportedOnceAndFixed(): void
+    {
+        $condition = "    case (\n        \$a === 10\n        && \$b === 20\n";
+        $body = "        break;\n}\n";
+        $file = $this->copyToTempFile(null, "<?php\n\nswitch (true) {\n$condition        ):\n$body");
+        $little = $this->copyToTempFile(null, "<?php\n\nswitch (true) {\n$condition  ):\n$body");
+        $args = ['-s', '--standard=PERCS31', '--report=emacs'];
+
+        try {
+            $tooFar = $this->runTool('phpcs', [...$args, $file]);
+            $tooLittle = $this->runTool('phpcs', [...$args, $little]);
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file, $little]);
+            $fixed = (string) file_get_contents($file);
+            $fixedLittle = (string) file_get_contents($little);
+        } finally {
+            unlink($file);
+            unlink($little);
+        }
+
+        $expected = "<?php\n\nswitch (true) {\n$condition    ):\n$body";
+        $this->assertSame(1, substr_count($tooFar['output'], ' error - '), $tooFar['output']);
+        $this->assertStringContainsString('MultiLineConditionCloserIndent', $tooFar['output']);
+        $this->assertSame(1, substr_count($tooLittle['output'], ' error - '), $tooLittle['output']);
+        $this->assertSame($expected, $fixed);
+        $this->assertSame($expected, $fixedLittle);
+    }
+
+    /**
      * Test that a heredoc argument indented too little is fixed with its body and closing marker moved together, and
      * the result passes. The inherited fix for the argument's indent moved the marker but not the body, which is a
      * parse error.

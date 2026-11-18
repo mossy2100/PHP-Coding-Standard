@@ -1341,8 +1341,10 @@ after a closing brace by [`PERCS31.Formatting.AfterClosingBrace`](#percs31format
 A multi-line `case` condition must also follow the rule for any expression split inside parentheses. The first condition
 must be on the line after `(`, and each line must be indented at least once past the `case`. A condition that spans
 lines only because a call or array in it does is multi-line too, so `case foo(` over several lines is wrapped, as `case
-(`, then `foo(` on the next line. The `):` line is level with the `case`, as the example in section 5.2 shows, reported
-as `MultiLineConditionCloserIndent`.
+(`, then `foo(` on the next line. The `):` line is level with the `case`, as the example in section 5.2 shows. One
+indented further is reported as `MultiLineConditionCloserIndent`, and one indented too little by
+[`PERCS31.WhiteSpace.ScopeIndent`](#percs31whitespacescopeindent). See [Further
+Indents](PER-CS_3.1_Judgement_Calls.md#further-indents).
 
 A `case` or `default` body wrapped in braces is reported as `BodyInBraces`. It's wrapped when a block starts straight
 after the label, and its `}` is followed by the next label or the switch's `}`. A block followed by more of the body,

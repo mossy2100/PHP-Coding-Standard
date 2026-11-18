@@ -106,9 +106,9 @@ class SwitchDeclarationUnitTest extends AbstractSniffTestCase
             238 => 1,
             246 => 1,
             247 => 1,
-            // The closing parenthesis of a split condition, indented too far, and too little.
+            // The closing parenthesis of a split condition, indented too far. Too little, on line 263, is left to
+            // PERCS31.WhiteSpace.ScopeIndent.
             258 => 1,
-            263 => 1,
         ];
     }
 

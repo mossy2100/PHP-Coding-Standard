@@ -420,8 +420,10 @@ the same PSR-12 wording this way.
 - A value wrapped after `=>`: once past its key's line (11).
 - Dead code after a `break`: level with the statement that ends the case.
 - A statement in a closure, anonymous class or `switch`: the usual indent for its body.
+- The `):` line that ends a multi-line `case` condition: level with the `case`, as section 5.2's example shows.
 
-**Why:** Each follows the nearest example, or the general rule of one indent per level.
+**Why:** Each follows the nearest example, or the general rule of one indent per level. The `):` line also matches the
+closing line of every other split bracket, such as a split `if` condition's `) {`, a call's `)` and an array's `]`.
 
 ---
 

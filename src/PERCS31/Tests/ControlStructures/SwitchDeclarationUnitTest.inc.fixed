@@ -263,7 +263,7 @@ if ($a) {
     }
 }
 
-// The closing parenthesis of a split condition, on a line of its own, not lined up with the case.
+// The closing parenthesis of a split condition: too far, and too little, which is left to ScopeIndent.
 switch (true) {
     case (
         $a === 10
@@ -273,6 +273,6 @@ switch (true) {
     case (
         $a === 30
         && $b === 40
-    ):
+):
         break;
 }

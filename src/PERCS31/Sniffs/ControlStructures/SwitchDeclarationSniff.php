@@ -30,8 +30,9 @@ use PHP_CodeSniffer\Util\Tokens;
  *   the final one". The original only checks a case that's followed by another. The fix adds `break;` before the `}`.
  * - A non-empty `default` that falls through needs a comment, as a `case` does. The original only checks a `case`.
  * - A multi-line case condition MUST be wrapped in parentheses, and MUST end with a line containing only `):`, level
- *   with the `case`, as the example shows. Its first condition goes on the line after `(`, and each line is indented
- *   at least once. The fixes add the parentheses, move the `)` or the first condition, or indent the line.
+ *   with the `case`, as the example shows. A `):` indented too little is left to PERCS31.WhiteSpace.ScopeIndent. Its
+ *   first condition goes on the line after `(`, and each line is indented at least once. The fixes add the parentheses,
+ *   move the `)` or the first condition, or indent the line.
  * - Code on a label's line, after its colon, is reported as StatementOnLabelLine. A comment there is allowed. The
  *   original's BodyOnNextLine codes report that, and a blank line after the label too, which section 5.2 doesn't
  *   forbid. The PERCS31 ruleset excludes them, and Jumbo uses them in place of StatementOnLabelLine.
@@ -645,8 +646,9 @@ class SwitchDeclarationSniff implements Sniff
         $beforeCloser = $phpcsFile->findPrevious(T_WHITESPACE, ($last - 1), $case, true);
         if ($beforeCloser === false || $tokens[$beforeCloser]['line'] !== $tokens[$last]['line']) {
             // On a line of its own, the closing parenthesis lines up with the `case`, as section 5.2's example shows.
+            // Too little is left to PERCS31.WhiteSpace.ScopeIndent, which reports it, so it isn't reported twice.
             $found = $tokens[$last]['column'] - 1;
-            if ($beforeCloser !== false && $found !== strlen($indent)) {
+            if ($beforeCloser !== false && $found > strlen($indent)) {
                 FixerHelper::reportIndent(
                     $phpcsFile,
                     $last,
