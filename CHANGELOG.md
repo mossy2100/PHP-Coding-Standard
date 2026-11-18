@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **A blank line before an arrow function's wrapped `=>` (breaking).** `PERCS31.Functions.ArrowFunctionSpacing` now
+  reports one, as `BlankLineBeforeArrow`, as PER Coding Style 3.1 puts a wrapped `=>` on the second line.
+  Auto-fixable.
 - **No blank line at the start or end of a block, in Jumbo (breaking).** Jumbo now reports a blank line straight after
   the opening brace of a function, method or closure, with `Squiz.WhiteSpace.FunctionOpeningBraceSpace`. The new
   `Jumbo.WhiteSpace.BlockBlankLines` reports one straight after the opening brace, or straight before the closing

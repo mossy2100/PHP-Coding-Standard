@@ -22,3 +22,8 @@ $h = static fn
     &($x) => $x;
 $i = fn // Why.
 ($x) => $x;
+
+// A blank line before a wrapped =>.
+$j = fn(int $x): int
+
+    => $x;

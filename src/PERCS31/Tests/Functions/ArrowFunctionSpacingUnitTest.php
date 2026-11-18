@@ -29,6 +29,8 @@ class ArrowFunctionSpacingUnitTest extends AbstractSniffTestCase
             19 => 1,
             21 => 1,
             23 => 1,
+            // A blank line before a wrapped =>.
+            29 => 1,
         ];
     }
 

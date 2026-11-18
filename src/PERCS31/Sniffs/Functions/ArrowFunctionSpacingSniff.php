@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\Functions;
 
 use PERCS31\Helpers\FixerHelper;
+use PERCS31\Helpers\LayoutHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Disallows a space before the semicolon that ends an arrow function's expression, and a line break after `fn`.
+ * Disallows a space before the semicolon that ends an arrow function's expression, a line break after `fn`, and a blank
+ * line before a wrapped `=>`.
  *
  * PER Coding Style 3.1, section 7.1, says the semicolon at the end of a short closure's expression MUST NOT be
  * preceded by a space. SlevomatCodingStandard.Functions.ArrowFunctionDeclaration checks the spacing around `fn` and
@@ -20,12 +22,17 @@ use PHP_CodeSniffer\Util\Tokens;
  * Section 7.1 also says the `fn` keyword MUST NOT be succeeded by a space. The Slevomat sniff checks that, but not when
  * a line break follows `fn`, as its allowMultiLine property turns that check off, and PERCS31 needs the property on so
  * that `=>` may start the next line. So this sniff reports a line break after `fn`, and the fix removes it.
+ *
+ * Section 7.1 also says that if the expression is split to a subsequent line, the `=>` MUST be included on the second
+ * line. So a blank line before a wrapped `=>` is reported, as BlankLineBeforeArrow, and the fix removes it.
  */
 class ArrowFunctionSpacingSniff implements Sniff
 {
     public const string CODE_SPACE_BEFORE = 'SpaceBefore';
 
     public const string CODE_LINE_BREAK_AFTER_FN = 'LineBreakAfterFn';
+
+    public const string CODE_BLANK_LINE_BEFORE_ARROW = 'BlankLineBeforeArrow';
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -46,6 +53,7 @@ class ArrowFunctionSpacingSniff implements Sniff
     public function process(File $phpcsFile, int $stackPtr): void
     {
         $this->checkLineBreakAfterFn($phpcsFile, $stackPtr);
+        $this->checkBlankLineBeforeArrow($phpcsFile, $stackPtr);
 
         $tokens = $phpcsFile->getTokens();
         $closer = $tokens[$stackPtr]['scope_closer'] ?? null;
@@ -79,6 +87,44 @@ class ArrowFunctionSpacingSniff implements Sniff
         }
 
         FixerHelper::replaceBetween($phpcsFile, $expressionEnd, $closer, '');
+    }
+
+    /**
+     * Report a blank line before a wrapped `=>`, and fix it by removing every blank line there.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of `fn`.
+     */
+    private function checkBlankLineBeforeArrow(File $phpcsFile, int $stackPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $arrow = $tokens[$stackPtr]['scope_opener'] ?? null;
+        if (!is_int($arrow)) {
+            return;
+        }
+
+        $blankLines = [];
+        for ($i = ($arrow - 1); $i > $stackPtr && $tokens[$i]['code'] === T_WHITESPACE; $i--) {
+            if (LayoutHelper::isBlankLine($phpcsFile, $i)) {
+                $blankLines[] = $i;
+            }
+        }
+
+        if ($blankLines === []) {
+            return;
+        }
+
+        $error = 'There must be no blank line before an arrow function\'s wrapped "=>"';
+        if (!$phpcsFile->addFixableError($error, $arrow, self::CODE_BLANK_LINE_BEFORE_ARROW)) {
+            return;
+        }
+
+        $phpcsFile->fixer->beginChangeset();
+        foreach ($blankLines as $blankLine) {
+            $phpcsFile->fixer->replaceToken($blankLine, '');
+        }
+
+        $phpcsFile->fixer->endChangeset();
     }
 
     /**

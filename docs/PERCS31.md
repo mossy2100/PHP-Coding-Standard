@@ -250,7 +250,7 @@ section gives the reason.
 | `PERCS31.Formatting.EmptyBody`                             | An empty class, function, closure or structure body is `{}`         | Yes     |
 | `PERCS31.Formatting.MethodChaining`                        | A split chain's first method, its `->` and their indent             | Yes     |
 | `PERCS31.Formatting.TrailingComma`                         | Trailing commas in `match`, group `use`, `list()` and some calls    | Yes     |
-| `PERCS31.Functions.ArrowFunctionSpacing`                   | No space before an arrow function's `;`, or line break after `fn`   | Yes     |
+| `PERCS31.Functions.ArrowFunctionSpacing`                   | An arrow function's `;`, the line after `fn`, and a wrapped `=>`    | Yes     |
 | `PERCS31.Functions.DisallowTrailingCommaInCall`            | No trailing comma in a call, unless the argument list is split      | Yes     |
 | `PERCS31.Functions.FunctionCallLayout`                     | A call's argument list, including `clone()`'s                       | Yes     |
 | `PERCS31.Functions.MultiLineFunctionDeclaration`           | Function, closure and `fn` declarations, allowing `{}` bodies       | Yes     |
@@ -1825,7 +1825,8 @@ $second = new class (
 
 ### PERCS31.Functions.ArrowFunctionSpacing
 
-Disallows a space or line break before the semicolon that ends an arrow function, and a line break after `fn`.
+Disallows a space or line break before the semicolon that ends an arrow function, a line break after `fn`, and a blank
+line before a wrapped `=>`.
 
 **Why:** [PER Coding Style 3.1, Section 7.1](https://www.php-fig.org/per/coding-style/#71-short-closures) says the semicolon at the end of the expression MUST NOT be preceded by a
 space. `SlevomatCodingStandard.Functions.ArrowFunctionDeclaration` checks the spacing around `fn` and `=>`, but not
@@ -1834,6 +1835,9 @@ this. PER has no such rule for other statements, so `$a = 1 ;` isn't checked.
 Section 7.1 also says the `fn` keyword MUST NOT be succeeded by a space. The Slevomat sniff reports a space there, but
 not a line break, as `allowMultiLine`, which lets `=>` start the next line, turns that check off. So this sniff reports
 a line break after `fn`, as `LineBreakAfterFn`.
+
+Section 7.1 also says that when the expression is split to a subsequent line, the `=>` MUST be on the second line. So a
+blank line before a wrapped `=>` is reported, as `BlankLineBeforeArrow`.
 
 **Auto-fixable:** yes, unless a comment follows `fn` on its line.
 
