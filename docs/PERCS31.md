@@ -1341,9 +1341,12 @@ lines only because a call or array in it does is multi-line too, so `case foo(` 
 (`, then `foo(` on the next line. The `):` line is level with the `case`, as the example in section 5.2 shows, reported
 as `MultiLineConditionCloserIndent`.
 
-A `switch` with a `case` or `default` body wrapped in braces is reported as `WrongOpener`, and gets no other check from
-this sniff until the braces are removed. That works around a bug in the parent (PHP_CodeSniffer 4.0.4), which crashes
-after a braced body, so the rest of the file wasn't checked, and `phpcbf` stopped.
+A `case` or `default` body wrapped in braces is reported as `WrongOpener`. It's wrapped when a block starts straight
+after the label, and its `}` is followed by the next label or the switch's `}`. A block followed by more of the body,
+even just `break`, passes, as section 5.2 only forbids wrapping the body. The parent reports every block straight after
+a label, so it isn't run on a switch that has one. That also works around a bug in the parent (PHP_CodeSniffer 4.0.4),
+which crashes after a braced body, so the rest of the file wasn't checked, and `phpcbf` stopped. Such a switch gets no
+other check from this sniff. See [A Block in a `case`](PER-CS_3.1_Judgement_Calls.md#a-block-in-a-case).
 
 **Auto-fixable:** yes. The fix adds `break;` before the `}`, adds the parentheses, moves the `)` to its own line, moves
 the first condition to the next line, or indents a line. It's left to a person when there's a comment in the way, or the

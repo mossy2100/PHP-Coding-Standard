@@ -692,6 +692,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
 ### Fixed
 
+- **A block that's only part of a `case` body.** `PERCS31.ControlStructures.SwitchDeclaration` reported any block
+  straight after a `case` or `default` label as `WrongOpener`, even one followed by more of the body, such as `break`.
+  Now it's only reported when the block is the whole body: its `}` is followed by the next label or the switch's `}`.
 - **Problems reported twice in PERCS31.** The space after `function` and before a declaration's `(`, and the layout
   of an anonymous class's argument list, each got a second message, from `Squiz.Functions.FunctionDeclaration` and
   `PSR12.Classes.AnonClassDeclaration`. Those codes are now excluded, as PERCS31's own sniffs report the same problems.

@@ -2,7 +2,7 @@
 
 // The parent's BodyOnNextLine codes report code on a label's line, and a blank line straight after a label.
 // A comment on a label's line is allowed.
-// A blank line straight after a label is reported.
+// The PERCS31 ruleset excludes these codes, and Jumbo uses them.
 
 switch ($a) {
     case 1:

@@ -46,6 +46,9 @@ class SwitchDeclarationUnitTest extends AbstractSniffTestCase
                 19 => 1,
                 // The last case of a switch after them has no terminating statement.
                 27 => 1,
+                // A block followed by a comment, then the next label, wraps the body. A block followed by a break, or
+                // by more statements, doesn't, so lines 33 and 38 aren't reported.
+                50 => 1,
             ];
         }
 

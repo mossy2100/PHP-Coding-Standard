@@ -27,3 +27,30 @@ switch ($a) {
     case 1:
         echo 1;
 }
+
+// A block that's only part of the body passes: one followed by a break, or by more statements.
+switch ($a) {
+    case 1:
+        {
+            echo 1;
+        }
+        break;
+    case 2:
+        {
+            echo 2;
+        }
+        echo 3;
+        break;
+    default:
+        break;
+}
+
+// A block followed by a comment, then the next label, wraps the body.
+switch ($a) {
+    case 1: {
+        echo 1;
+    } // No break.
+    case 2:
+        echo 2;
+        break;
+}

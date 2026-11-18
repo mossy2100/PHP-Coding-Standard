@@ -1606,6 +1606,35 @@ brace (4). PHP_CodeSniffer reads the same PSR-12 rule this way.
 
 ---
 
+### A Block in a `case`
+
+**Issue:** 5.2 says "The `case` body MUST NOT be wrapped in `{}`". A block can also be part of a body, with more
+statements after it. PHP_CodeSniffer reads both the same way.
+
+**Decision:** A body is wrapped when a block starts straight after the label, and the block's `}` is followed by the
+next `case` or `default`, or the switch's `}`, ignoring comments. That's reported. A block followed by anything else,
+even just `break`, is part of the body, and passes:
+
+```php
+switch ($size) {
+    // Reported: the block is the whole body.
+    case 1: {
+        run();
+    }
+    case 2:
+        {
+            run();
+        }
+        // Passes: the break is part of the body too.
+        break;
+}
+```
+
+**Why:** The rule is there to stop a case being written as if it took a block, as an `if` does. A block followed by more
+of the body doesn't wrap it, so the text doesn't forbid it.
+
+---
+
 ### Blank Line After a `case` Label
 
 **Issue:** 5.2 doesn't forbid a blank line straight after a `case` or `default` label.

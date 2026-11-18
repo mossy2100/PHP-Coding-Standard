@@ -29,10 +29,12 @@ use PHP_CodeSniffer\Util\Tokens;
  * findNestedTerminator() through Closure::bind, rather than copying it. After a PHP_CodeSniffer upgrade, check that
  * the method still exists with the same signature, as a private method can change without notice.
  *
- * A switch with a `case` or `default` body wrapped in braces is reported here, with the parent's WrongOpener code, and
- * the parent isn't run on it. This works around a bug in PSR2.ControlStructures.SwitchDeclaration (PHP_CodeSniffer
- * 4.0.4): after a braced body, it reads a scope_condition the next label's closer doesn't have, which aborts the
- * file's checks, and stops phpcbf altogether. So such a switch gets no other check until the braces are removed.
+ * A switch with a block straight after a `case` or `default` label isn't given to the parent. The parent reports every
+ * such block, but section 5.2 only forbids a body wrapped in braces, so this sniff reports a block only when it's the
+ * whole body: its `}` is followed straight away by the next label or the switch's `}`. A block followed by more of the
+ * body, even `break`, passes. The parent also has a bug (PHP_CodeSniffer 4.0.4): after a braced body, it reads a
+ * scope_condition the next label's closer doesn't have, which aborts the file's checks, and stops phpcbf altogether.
+ * So such a switch gets no other check from this sniff.
  *
  * Everything else is left to the parent. That includes the `case` line, which MUST consist only of the keyword, the
  * condition and a colon. The parent's BodyOnNextLine check reports code there, and a blank line straight after the
@@ -135,11 +137,15 @@ class SwitchDeclarationSniff extends Psr2Sniff
     }
 
     /**
-     * Report each `case` or `default` whose body is wrapped in braces, as the parent does, with its WrongOpener code.
+     * Report each `case` or `default` whose body is wrapped in braces, with the parent's WrongOpener code.
+     *
+     * The parent reports any block straight after a label, but section 5.2 only forbids wrapping the body in braces. A
+     * block followed by more of the body, even just `break`, doesn't wrap it, so it isn't reported here.
      *
      * @param File $phpcsFile The file being scanned.
      * @param list<int> $cases The positions of the switch's `case` and `default` keywords.
-     * @return bool True if any was reported, so the parent, which can crash on such a switch, isn't run.
+     * @return bool True if any label has a block straight after it, so the parent, which reports every such block,
+     *     and can crash on such a switch, isn't run.
      */
     private function reportBracedBodies(File $phpcsFile, array $cases): bool
     {
@@ -151,16 +157,43 @@ class SwitchDeclarationSniff extends Psr2Sniff
                 continue;
             }
 
+            $hasBracedBody = true;
+            if (!$this->wrapsWholeBody($phpcsFile, $opener)) {
+                continue;
+            }
+
             $phpcsFile->addError(
                 '%s statements must not use a braced block after the colon',
                 $case,
                 self::CODE_WRONG_OPENER,
                 [strtoupper($tokens[$case]['content'])],
             );
-            $hasBracedBody = true;
         }
 
         return $hasBracedBody;
+    }
+
+    /**
+     * Check whether a block straight after a label wraps the whole of the case's body: the next thing after its `}`,
+     * apart from white space and comments, is another label or the switch's `}`. A block followed by anything else,
+     * even a `break`, is a block inside the body.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the block's `{`.
+     * @return bool True if the block is the whole body.
+     */
+    private function wrapsWholeBody(File $phpcsFile, int $opener): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        // PHP_CodeSniffer gives a case's braces a scope, but not a bracket_closer.
+        $closer = $tokens[$opener]['scope_closer'] ?? null;
+        if (!is_int($closer)) {
+            return true;
+        }
+
+        $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($closer + 1), null, true);
+
+        return $next === false || in_array($tokens[$next]['code'], [T_CASE, T_DEFAULT, T_CLOSE_CURLY_BRACKET], true);
     }
 
     /**
