@@ -1700,7 +1700,8 @@ $noop = static function (): void {
 Checks a method chain split across lines:
 
 - The first method is on the next line, not on the line with the object. Property accesses before it, as in
-  `$this->query`, can stay on that line.
+  `$this->query`, can stay on that line. A blank line before the first method is reported as
+  `BlankLineBeforeFirstMethod`. One before a later method is allowed.
 - Each `->` or `?->` starts its line. One at the end of a line is reported as `OperatorAtEndOfLine`.
 - Each of those lines is indented once past the line the chain starts on, reported as `Indent`.
 

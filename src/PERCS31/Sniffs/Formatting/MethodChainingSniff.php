@@ -17,7 +17,9 @@ use PHP_CodeSniffer\Util\Tokens;
  * line, and each of those lines is indented once past the line the chain starts on.
  *
  * PER Coding Style 3.1, section 4.7, says method chaining MAY be put on separate lines, each indented once, and that
- * when it is, the first method MUST be on the next line. Its example starts each wrapped line with the `->`.
+ * when it is, the first method MUST be on the next line. Its example starts each wrapped line with the `->`. So a blank
+ * line before the first method is reported too, as BlankLineBeforeFirstMethod. One before a later method is allowed,
+ * as section 2.3 allows blank lines wherever nothing forbids them.
  *
  * A chain is every `->` and `?->` in one expression: the part of a statement between the nearest operators, commas or
  * enclosing brackets, at the same parenthesis depth. So in `$a->isValid() && $b->check()`, each call is a chain of its
@@ -43,6 +45,8 @@ class MethodChainingSniff implements Sniff
     public const string CODE_OPERATOR_AT_END_OF_LINE = 'OperatorAtEndOfLine';
 
     public const string CODE_INDENT = 'Indent';
+
+    public const string CODE_BLANK_LINE_BEFORE_FIRST_METHOD = 'BlankLineBeforeFirstMethod';
 
     /**
      * The object operators that link a chain.
@@ -93,10 +97,45 @@ class MethodChainingSniff implements Sniff
             $endsLine = $tokens[$name]['line'] !== $tokens[$operator]['line'];
             if (!$endsLine && !LayoutHelper::startsLine($phpcsFile, $operator)) {
                 $this->report($phpcsFile, $operator);
+            } elseif (!$endsLine) {
+                $this->checkBlankLineBefore($phpcsFile, $operator);
             }
 
             return;
         }
+    }
+
+    /**
+     * Report a blank line straight before the first method's operator, and fix it by removing every blank line there.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $operator The position of the first method's object operator.
+     */
+    private function checkBlankLineBefore(File $phpcsFile, int $operator): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $blankLines = [];
+        for ($i = ($operator - 1); $i >= 0 && $tokens[$i]['code'] === T_WHITESPACE; $i--) {
+            if (LayoutHelper::isBlankLine($phpcsFile, $i)) {
+                $blankLines[] = $i;
+            }
+        }
+
+        if ($blankLines === []) {
+            return;
+        }
+
+        $error = 'The first method of a split chain must be on the next line, with no blank line before it';
+        if (!$phpcsFile->addFixableError($error, $operator, self::CODE_BLANK_LINE_BEFORE_FIRST_METHOD)) {
+            return;
+        }
+
+        $phpcsFile->fixer->beginChangeset();
+        foreach ($blankLines as $blankLine) {
+            $phpcsFile->fixer->replaceToken($blankLine, '');
+        }
+
+        $phpcsFile->fixer->endChangeset();
     }
 
     /**

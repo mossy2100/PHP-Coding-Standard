@@ -47,6 +47,8 @@ class MethodChainingUnitTest extends AbstractSniffTestCase
             103 => 1,
             104 => 1,
             109 => 1,
+            // A blank line before the first method.
+            114 => 1,
         ];
     }
 

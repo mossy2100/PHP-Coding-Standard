@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **A blank line before a split chain's first method (breaking).** `PERCS31.Formatting.MethodChaining` now reports one,
+  as `BlankLineBeforeFirstMethod`, as PER Coding Style 3.1 puts the first method on the next line. A blank line before
+  a later method is still allowed. Auto-fixable.
 - **A blank line before an arrow function's wrapped `=>` (breaking).** `PERCS31.Functions.ArrowFunctionSpacing` now
   reports one, as `BlankLineBeforeArrow`, as PER Coding Style 3.1 puts a wrapped `=>` on the second line.
   Auto-fixable.

@@ -107,3 +107,10 @@ $x = $cond
 $total = $base
     + $this->items
     ->sum('price');
+
+// A blank line before the first method, which is reported, and before a later one, which isn't.
+$someInstance
+
+    ->create()
+
+    ->run();
