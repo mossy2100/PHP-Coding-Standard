@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\ControlStructures;
 
 use PERCS31\Helpers\FixerHelper;
-use PERCS31\Helpers\LayoutHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -506,7 +505,7 @@ class SwitchDeclarationSniff implements Sniff
         $error = 'The %s body must start on the line following the statement';
         $data = [strtoupper((string) $tokens[$case]['content'])];
         if ($phpcsFile->addFixableError($error, $case, self::CODE_STATEMENT_ON_LABEL_LINE, $data)) {
-            $padding = str_repeat(' ', ($tokens[$case]['column'] - 1 + LayoutHelper::INDENT));
+            $padding = str_repeat(' ', ($tokens[$case]['column'] - 1 + $this->indent));
             $phpcsFile->fixer->addContentBefore($next, $phpcsFile->eolChar . $padding);
         }
     }
@@ -704,7 +703,7 @@ class SwitchDeclarationSniff implements Sniff
         $phpcsFile->fixer->beginChangeset();
         FixerHelper::blankBetween($phpcsFile, $opener, $condition);
 
-        $phpcsFile->fixer->addContent($opener, $phpcsFile->eolChar . $indent . str_repeat(' ', LayoutHelper::INDENT));
+        $phpcsFile->fixer->addContent($opener, $phpcsFile->eolChar . $indent . str_repeat(' ', $this->indent));
         $phpcsFile->fixer->endChangeset();
     }
 
@@ -719,7 +718,7 @@ class SwitchDeclarationSniff implements Sniff
     private function checkConditionIndent(File $phpcsFile, int $case, int $opener, int $closer): void
     {
         $tokens = $phpcsFile->getTokens();
-        $minimum = ($tokens[$case]['column'] - 1 + LayoutHelper::INDENT);
+        $minimum = ($tokens[$case]['column'] - 1 + $this->indent);
         $skipped = Tokens::HEREDOC_TOKENS + Tokens::STRING_TOKENS + [T_WHITESPACE => T_WHITESPACE];
         for ($i = ($opener + 1); $i < $closer; $i++) {
             $isLineStart = $tokens[$i]['line'] !== $tokens[($i - 1)]['line'];
