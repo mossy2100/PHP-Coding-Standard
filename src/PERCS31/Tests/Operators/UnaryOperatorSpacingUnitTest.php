@@ -19,7 +19,7 @@ class UnaryOperatorSpacingUnitTest extends AbstractSniffTestCase
      */
     protected function getErrorList(string $testFile = ''): array
     {
-        // The default settings, which only check the reference and spread operators.
+        // The default settings, which only check the reference operator.
         if ($testFile === 'UnaryOperatorSpacingUnitTest.1.inc') {
             return [
                 // A function that returns by reference, a by-reference parameter and a by-reference variadic.
@@ -44,17 +44,6 @@ class UnaryOperatorSpacingUnitTest extends AbstractSniffTestCase
                 // A by-reference hook, long and inline.
                 84 => 1,
                 87 => 1,
-                // The spread operator: variadic parameters, and an array's values.
-                107 => 2,
-                109 => 2,
-                // A call's arguments, with a space and with a line break, and a constructor's.
-                112 => 1,
-                113 => 1,
-                115 => 1,
-                // An arrow function's variadic parameter, and the call in its body.
-                116 => 2,
-                // A comment between ... and its operand (not fixable).
-                117 => 1,
             ];
         }
 
@@ -98,8 +87,6 @@ class UnaryOperatorSpacingUnitTest extends AbstractSniffTestCase
             58 => 1,
             59 => 1,
             63 => 2,
-            // The spread operator, which is on by default.
-            69 => 1,
         ];
     }
 

@@ -46,8 +46,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   Auto-fixable, unless a comment sits before a line break after `as`. It's `splitForeachAndMatch`, a new property on
   `PERCS31.ControlStructures.ControlStructureSpacing` and `PERCS31.Arrays.MultiLineArrayLayout`, off by default, as PER
   Coding Style 3.1 has no rule for either. PERCS31 is unchanged. A header that fits on one line is still joined.
-- **`PERCS31.Operators.UnaryOperatorSpacing` (breaking).** Disallows whitespace after a reference `&` and a spread
-  `...`, wherever each is used. PER Coding Style 3.1 states both rules for a parameter, and each is read as the rule for
+- **A reference `&` and a spread `...` (breaking).** `PERCS31.Operators.UnaryOperatorSpacing` disallows whitespace
+  after a reference `&`, and `Generic.WhiteSpace.SpreadOperatorSpacingAfter` after a spread `...`, wherever each is
+  used. PER Coding Style 3.1 states both rules for a parameter, and each is read as the rule for
   the operator. Auto-fixable, unless a comment is in the way.
   - A reference `&`: a parameter, a closure's `use` list, an assignment, a `foreach`, an array, a function that returns
     by reference and a by-reference hook. So `$x = & $a` and `$x =& $a` are both fixed to `$x = &$a`, where the second
@@ -56,11 +57,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     PERCS31 only checked a parameter's before. A first-class callable's `...`, as in `foo(...)`, isn't a spread, and is
     never checked.
 
-  It's `Jumbo.Operators.UnaryOperatorSpacing`, moved and extended, with a property for each operator:
-  `checkReferenceOperator` and `checkSpreadOperator`, on by default, and `checkPlusOperator`, `checkNegationOperator`,
-  `checkNotOperator`, `checkBitwiseNotOperator` and `checkErrorControlOperator`, which Jumbo turns on. It replaces
-  these, so a `phpcs:ignore` or an `<exclude>` that names one needs the new code,
-  `PERCS31.Operators.UnaryOperatorSpacing.WhitespaceAfter`:
+  The PERCS31 sniff is `Jumbo.Operators.UnaryOperatorSpacing`, moved and extended, with a property for each operator:
+  `checkReferenceOperator`, on by default, and `checkPlusOperator`, `checkNegationOperator`, `checkNotOperator`,
+  `checkBitwiseNotOperator` and `checkErrorControlOperator`, which Jumbo turns on. The two replace these, so a
+  `phpcs:ignore` or an `<exclude>` that names one needs the new code,
+  `PERCS31.Operators.UnaryOperatorSpacing.WhitespaceAfter`, or for a spread,
+  `Generic.WhiteSpace.SpreadOperatorSpacingAfter.TooMuchSpace`:
   - `Jumbo.Operators.UnaryOperatorSpacing`, for `+`, `~` and `@`.
   - `Generic.Formatting.SpaceAfterNot`, for `!`, in Jumbo.
   - `SlevomatCodingStandard.Operators.NegationOperatorSpacing`, for `-`, in Jumbo.

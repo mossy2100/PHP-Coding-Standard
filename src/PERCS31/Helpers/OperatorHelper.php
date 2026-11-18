@@ -9,8 +9,7 @@ use PHP_CodeSniffer\Util\Tokens;
 use PHPCSUtils\Utils\Operators;
 
 /**
- * Helper class for telling a unary operator from a binary one: a `+`, `-` or `&`, and a spread `...` from a first-class
- * callable's.
+ * Helper class for telling a unary operator from a binary one: a `+`, `-` or `&`.
  */
 class OperatorHelper
 {
@@ -87,26 +86,10 @@ class OperatorHelper
     }
 
     /**
-     * Check whether a `...` is the spread operator, as in `foo(...$args)`, `[...$a]` or `int ...$rest`, rather than a
-     * first-class callable's, as in `foo(...)`. A callable's `...` has no operand: the next thing after it is the
-     * closing parenthesis.
+     * Check whether a `+`, `-` or `&` is a prefix unary operator.
      *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $stackPtr The position of the `...`.
-     * @return bool True if the `...` has an operand.
-     */
-    public static function isSpread(File $phpcsFile, int $stackPtr): bool
-    {
-        $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($stackPtr + 1), null, true);
-
-        return $next !== false && $phpcsFile->getTokens()[$next]['code'] !== T_CLOSE_PARENTHESIS;
-    }
-
-    /**
-     * Check whether a `+`, `-`, `&` or `...` is a prefix unary operator.
-     *
-     * A `...` is one unless it's a first-class callable's, and a `&` is one if it's a reference. Otherwise a `+`, `-`
-     * or `&` is judged by the token before it, such as an operator, a `(` or `,`, or the end of a statement or block.
+     * A `&` is one if it's a reference. Otherwise a `+`, `-` or `&` is judged by the token before it, such as an
+     * operator, a `(` or `,`, or the end of a statement or block.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position of the operator.
@@ -115,10 +98,6 @@ class OperatorHelper
     public static function isUnary(File $phpcsFile, int $stackPtr): bool
     {
         $tokens = $phpcsFile->getTokens();
-        if ($tokens[$stackPtr]['code'] === T_ELLIPSIS) {
-            return self::isSpread($phpcsFile, $stackPtr);
-        }
-
         if ($tokens[$stackPtr]['code'] === T_BITWISE_AND && self::isReference($phpcsFile, $stackPtr)) {
             return true;
         }

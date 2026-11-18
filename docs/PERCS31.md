@@ -105,9 +105,9 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 default value's `=` is a binary operator, which section 6.2 allows more than one space around.
 [`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing) checks it instead.
 
-Its `SpacingAfterReference` and `SpacingAfterVariadic` are excluded too, as
-[`PERCS31.Operators.UnaryOperatorSpacing`](#percs31operatorsunaryoperatorspacing) reports a space after every reference `&` and every spread `...`, a
-parameter's included.
+Its `SpacingAfterReference` and `SpacingAfterVariadic` are excluded too.
+[`PERCS31.Operators.UnaryOperatorSpacing`](#percs31operatorsunaryoperatorspacing) reports a space after every reference `&`, and
+`Generic.WhiteSpace.SpreadOperatorSpacingAfter` after every spread `...`, a parameter's included.
 
 ---
 
@@ -129,6 +129,11 @@ Three custom sniffs extend php-collective sniffs.
 - **Generic.Formatting.SpaceAfterCast**: Requires exactly one space after a cast, e.g. `(int) $value` (6.1).
 - **Generic.Strings.UnnecessaryHeredoc**: Warns about a heredoc with no interpolation or escape sequences, which could
   be a nowdoc (10).
+- **Generic.WhiteSpace.SpreadOperatorSpacingAfter**: Disallows white space, including a line break, after a spread
+  `...`, wherever it's used: a variadic parameter, as in `int ...$rest`, a call's arguments, as in `foo(...$args)`, and
+  an array, as in `[...$a]` (4.5). Section 4.5 states the rule for a parameter, and it's read as the rule for the
+  operator. A first-class callable's `...`, as in `foo(...)`, isn't a spread, so it's skipped, and
+  `Universal.WhiteSpace.FirstClassCallableSpacing` checks it (4.8). Auto-fixable, unless a comment follows the `...`.
 
 ### Squiz
 
@@ -264,7 +269,7 @@ section gives the reason.
 | `PERCS31.NamingConventions.ValidEnumCaseName`              | Enum cases in PascalCase                                            | No      |
 | `PERCS31.Operators.OperatorPlacement`                      | A wrapped operator starts its line, and a split ternary takes three | Yes     |
 | `PERCS31.Operators.OperatorSpacing`                        | At least one space around binary operators, including `\|>`         | Yes     |
-| `PERCS31.Operators.UnaryOperatorSpacing`                   | No whitespace after a reference `&` or a spread `...`               | Yes     |
+| `PERCS31.Operators.UnaryOperatorSpacing`                   | No whitespace after a reference `&`                                 | Yes     |
 | `PERCS31.PHP.LowerCaseKeyword`                             | Keywords in lower case, including a property hook's `get` or `set`  | Yes     |
 | `PERCS31.PHP.LowerCaseType`                                | Types in lower case, including a `set` hook's and an enum's type    | Yes     |
 | `PERCS31.PHP.RequireCloneParentheses`                      | A warning for `clone $a`, or `clone($a)->b`, not `clone($a)`        | Yes     |
@@ -2595,15 +2600,13 @@ $name = $given ? : $default;
 
 ### PERCS31.Operators.UnaryOperatorSpacing
 
-Disallows whitespace, including a line break, after a reference `&` and the spread operator `...`. It can also check a
-prefix unary `+`, `-`, `!`, `~` and `@`, which are off by default.
+Disallows whitespace, including a line break, after a reference `&`. It can also check a prefix unary `+`, `-`, `!`,
+`~` and `@`, which are off by default.
 
-**Why:** [Section 4.5](https://www.php-fig.org/per/coding-style/#45-method-and-function-parameters) has a rule for each:
+**Why:** [Section 4.5](https://www.php-fig.org/per/coding-style/#45-method-and-function-parameters) says "When using the reference operator `&` before an argument, there MUST NOT be a space after
+it."
 
-- "When using the reference operator `&` before an argument, there MUST NOT be a space after it."
-- "There MUST NOT be a space between the variadic three dot operator and the argument name."
-
-PERCS31 reads each as the rule for the operator, wherever it's used. A reference `&`:
+PERCS31 reads that as the rule for the operator, wherever it's used:
 
 - A parameter, and a closure's `use` list.
 - A reference assignment, as in `$x = &$a`.
@@ -2612,28 +2615,19 @@ PERCS31 reads each as the rule for the operator, wherever it's used. A reference
 - A function, closure or arrow function that returns by reference, as in `function &find()`.
 - A by-reference hook, as in `&get`.
 
-A spread `...`:
-
-- A variadic parameter, as in `int ...$rest`.
-- A call's arguments, as in `foo(...$args)`.
-- An array, as in `[...$a]`.
-
-Each is told from its other use:
-
-- A bitwise `&` isn't a reference, so it's skipped, including in a parameter's default value.
-- A first-class callable's `...`, as in `foo(...)`, has no operand, so it's skipped. Section 4.8 sets its spacing, which
-  `Universal.WhiteSpace.FirstClassCallableSpacing` checks.
+A bitwise `&` isn't a reference, so it's skipped, including in a parameter's default value.
 
 [Section 6](https://www.php-fig.org/per/coding-style/#6-operators) leaves the other five operators undefined, so their checks are off. A standard that wants them, as
 [Jumbo](Jumbo.md) does, turns each on with its property. A binary `+` or `-` is skipped, as
 [`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing) checks it. The space in `- -$a` and `+ +$a` is left alone, as without it PHP reads
 `--` or `++`.
 
-`Generic.WhiteSpace.IncrementDecrementSpacing` checks `++` and `--`. A cast keeps the single space after it that
+Section 4.5 has the same rule for the spread operator `...`, which `Generic.WhiteSpace.SpreadOperatorSpacingAfter`
+checks. `Generic.WhiteSpace.IncrementDecrementSpacing` checks `++` and `--`. A cast keeps the single space after it that
 section 6.1 requires.
 
-It replaces `Squiz.Functions.FunctionDeclarationArgumentSpacing`'s `SpacingAfterReference` and `SpacingAfterVariadic`,
-which only check a parameter. `SlevomatCodingStandard.PHP.ReferenceSpacing` isn't used, as it reads a bitwise `&` in a
+It replaces `Squiz.Functions.FunctionDeclarationArgumentSpacing`'s `SpacingAfterReference`, which only checks a
+parameter. `SlevomatCodingStandard.PHP.ReferenceSpacing` isn't used, as it reads a bitwise `&` in a
 parameter's default value as a reference, and its fix then fights the one that puts the space back.
 
 **Auto-fixable:** yes, unless a comment is between the operator and its operand.
@@ -2651,9 +2645,6 @@ function &find(array &$items, string $key): mixed
 {
     return $items[$key];
 }
-
-$merged = merge(...$lists);
-$all = [...$first, ...$second];
 ```
 
 **Bad:**
@@ -2670,9 +2661,6 @@ function & find(array & $items, string $key): mixed
 {
     return $items[$key];
 }
-
-$merged = merge(... $lists);
-$all = [... $first, ... $second];
 ```
 
 **Configuration:**
@@ -2680,7 +2668,6 @@ $all = [... $first, ... $second];
 | Property                    | Type | Default | Description                                  |
 | --------------------------- | ---- | ------- | -------------------------------------------- |
 | `checkReferenceOperator`    | bool | true    | Check the reference operator, as in `&$a`.   |
-| `checkSpreadOperator`       | bool | true    | Check the spread operator, as in `...$a`.    |
 | `checkPlusOperator`         | bool | false   | Check the unary plus operator, as in `+$a`.  |
 | `checkNegationOperator`     | bool | false   | Check the negation operator, as in `-$a`.    |
 | `checkNotOperator`          | bool | false   | Check the logical not operator, as in `!$a`. |

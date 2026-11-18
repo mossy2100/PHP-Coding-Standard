@@ -65,9 +65,6 @@ function defaults(int $a = - 1, bool $b = ! A): int
     };
 }
 
-// The spread operator, which is on by default.
-$unpacked = foo(... $args);
-
 // phpcs:set PERCS31.Operators.UnaryOperatorSpacing checkPlusOperator false
 // phpcs:set PERCS31.Operators.UnaryOperatorSpacing checkNegationOperator false
 // phpcs:set PERCS31.Operators.UnaryOperatorSpacing checkNotOperator false

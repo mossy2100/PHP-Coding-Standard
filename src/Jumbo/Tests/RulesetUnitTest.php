@@ -110,15 +110,17 @@ class RulesetUnitTest extends TestCase
 
     /**
      * Test that PERCS31 only reports whitespace after a reference `&` and a spread `...`, as PER leaves the other unary
-     * operators undefined, and Jumbo reports it after `+`, `-`, `!`, `~` and `@` too. A variadic parameter's `...` is
-     * reported once, and a first-class callable's isn't a spread.
+     * operators undefined, and Jumbo reports it after `+`, `-`, `!`, `~` and `@` too. A spread is reported by
+     * Generic.WhiteSpace.SpreadOperatorSpacingAfter. A variadic parameter's `...` is reported once, and a first-class
+     * callable's isn't a spread.
      */
     public function testUnaryOperatorSpacingChecksOnlyReferenceAndSpreadInPercs31(): void
     {
         $source = "<?php\n\n\$a = & \$b;\n\$c = + \$b;\n\$d = - \$b;\n\$e = ! \$b;\n\$f = ~ \$b;\n\$g = @ foo();\n"
             . "\$h = foo(... \$b);\n\$i = fn(int ... \$j): array => \$j;\n\$k = foo(...);\n";
         $file = $this->copyToTempFile(null, $source);
-        $sniffs = 'PERCS31.Operators.UnaryOperatorSpacing,Squiz.Functions.FunctionDeclarationArgumentSpacing';
+        $sniffs = 'PERCS31.Operators.UnaryOperatorSpacing,Generic.WhiteSpace.SpreadOperatorSpacingAfter,'
+            . 'Squiz.Functions.FunctionDeclarationArgumentSpacing';
         $args = ['-s', '--sniffs=' . $sniffs, '--report=emacs', $file];
 
         try {
@@ -130,12 +132,16 @@ class RulesetUnitTest extends TestCase
 
         $code = 'PERCS31.Operators.UnaryOperatorSpacing.WhitespaceAfter';
 
-        $this->assertSame(3, substr_count($percs31['output'], $code), $percs31['output']);
+        $spreadCode = 'Generic.WhiteSpace.SpreadOperatorSpacingAfter.TooMuchSpace';
+
+        $this->assertSame(1, substr_count($percs31['output'], $code), $percs31['output']);
+        $this->assertSame(2, substr_count($percs31['output'], $spreadCode), $percs31['output']);
         $this->assertStringContainsString(':3:', $percs31['output']);
         $this->assertStringContainsString(':9:', $percs31['output']);
         $this->assertStringContainsString(':10:', $percs31['output']);
         $this->assertStringNotContainsString('SpacingAfterVariadic', $percs31['output']);
-        $this->assertSame(8, substr_count($jumbo['output'], $code), $jumbo['output']);
+        $this->assertSame(6, substr_count($jumbo['output'], $code), $jumbo['output']);
+        $this->assertSame(2, substr_count($jumbo['output'], $spreadCode), $jumbo['output']);
         $this->assertStringNotContainsString('SpacingAfterVariadic', $jumbo['output']);
     }
 

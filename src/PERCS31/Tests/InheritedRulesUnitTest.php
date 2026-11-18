@@ -268,6 +268,21 @@ class InheritedRulesUnitTest extends TestCase
             'Generic.WhiteSpace.IncrementDecrementSpacing.SpaceAfterIncrement',
             'error',
         ],
+        'a space after a spread in a call' => [
+            "<?php\n\n\$a = foo(... \$b);\n",
+            'Generic.WhiteSpace.SpreadOperatorSpacingAfter.TooMuchSpace',
+            'error',
+        ],
+        'a space after a variadic parameter\'s spread' => [
+            "<?php\n\nfunction a(int ... \$b): void {}\n",
+            'Generic.WhiteSpace.SpreadOperatorSpacingAfter.TooMuchSpace',
+            'error',
+        ],
+        'a line break after a spread in an array' => [
+            "<?php\n\n\$a = [...\n    \$b];\n",
+            'Generic.WhiteSpace.SpreadOperatorSpacingAfter.TooMuchSpace',
+            'error',
+        ],
         'a parameter with a default value before one without' => [
             "<?php\n\nfunction a(\$b = 1, \$c): void {}\n",
             'PEAR.Functions.ValidDefaultValue.NotAtEnd',

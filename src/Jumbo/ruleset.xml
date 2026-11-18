@@ -350,8 +350,7 @@
     <rule ref="Jumbo.ControlStructures.RequireShortTernaryOperator"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.RequireTernaryOperator"/>
 
-    <!-- No whitespace after a prefix unary +, -, !, ~ or @, as well as the reference & and spread that PERCS31
-         checks -->
+    <!-- No whitespace after a prefix unary +, -, !, ~ or @, as well as the reference & that PERCS31 checks -->
     <rule ref="PERCS31.Operators.UnaryOperatorSpacing">
         <properties>
             <property name="checkPlusOperator" value="true"/>

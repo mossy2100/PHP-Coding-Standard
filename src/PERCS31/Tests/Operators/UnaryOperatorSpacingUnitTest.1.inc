@@ -1,6 +1,6 @@
 <?php
 
-// By default, only the reference and spread operators are checked.
+// By default, only the reference operator is checked.
 
 // === VALID ===
 
@@ -86,32 +86,3 @@ class InvalidHook
 
     public array $inline = [] { & get => $this->inline; }
 }
-
-// === THE SPREAD OPERATOR ===
-
-function validVariadic(int ...$rest): array
-{
-    return [...$rest, 'a' => 1];
-}
-
-$unpacked = foo(...$args);
-$instance = new Foo(...$args);
-
-// A first-class callable's ... has no operand, so it's skipped, whatever its spacing.
-$callable = foo(...);
-$method = $object->method(...);
-$static = Foo::make(...);
-$spaced = foo( ... );
-$spacedAfter = foo(... );
-
-function invalidVariadic(int ... $rest, int &... $more): array
-{
-    return [... $rest, 'a' => 1, ... $more];
-}
-
-$unpacked = foo(... $args);
-$unpackedLine = foo(1, ...
-    $args);
-$instance = new Foo(... $args);
-$arrow = fn(... $values) => foo(... $values);
-$commented = foo(... /* Why. */ $args);

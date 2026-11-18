@@ -86,7 +86,7 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
   `checkDefaultValues` set to `false`).
 - `PSR2.Files.ClosingTag` is excluded, as `Zend.Files.ClosingTag` reports the same closing tags, and more. See [Zend](#zend).
 - `PERCS31.Operators.UnaryOperatorSpacing` also disallows whitespace after a prefix unary `+`, `-`, `!`, `~` and `@`,
-  as in `- $a` and `! $a`. PERCS31 only checks the reference `&` and the spread `...`, as PER leaves the others
+  as in `- $a` and `! $a`. PERCS31 only checks the reference `&` with it, as PER leaves the others
   undefined. Each has its own property, such as `checkNotOperator`, and Jumbo sets them all to `true`.
 - `PERCS31.NamingConventions.UpperCaseConstantName` has `checkGlobalConstants` set to `true`, so a global constant, from
   `const` or `define()`, and an alias of a constant, must be in UPPER_CASE. PERCS31 doesn't check this, as PER doesn't
