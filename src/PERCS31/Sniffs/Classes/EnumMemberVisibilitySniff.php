@@ -6,6 +6,7 @@ namespace PERCS31\Sniffs\Classes;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use PHPCSUtils\Utils\Constants;
 use PHPCSUtils\Utils\Scopes;
 
 /**
@@ -43,14 +44,10 @@ class EnumMemberVisibilitySniff implements Sniff
         }
 
         $tokens = $phpcsFile->getTokens();
-
-        // The keyword is among the modifiers, after the previous member or the enum's opening brace.
-        $start = $phpcsFile->findPrevious(
-            [T_SEMICOLON, T_OPEN_CURLY_BRACKET, T_CLOSE_CURLY_BRACKET, T_ATTRIBUTE_END],
-            ($stackPtr - 1),
-        );
-        $protectedPtr = $phpcsFile->findPrevious(T_PROTECTED, ($stackPtr - 1), ($start === false ? null : $start));
-        if ($protectedPtr === false) {
+        [$protectedPtr, $finalPtr] = $tokens[$stackPtr]['code'] === T_CONST
+            ? $this->findConstantModifiers($phpcsFile, $stackPtr)
+            : $this->findMethodModifiers($phpcsFile, $stackPtr);
+        if ($protectedPtr === null) {
             return;
         }
 
@@ -67,8 +64,7 @@ class EnumMemberVisibilitySniff implements Sniff
 
         $phpcsFile->fixer->beginChangeset();
         $phpcsFile->fixer->replaceToken($protectedPtr, 'private');
-        $finalPtr = $phpcsFile->findPrevious(T_FINAL, ($stackPtr - 1), ($start === false ? null : $start));
-        if ($finalPtr !== false) {
+        if ($finalPtr !== null) {
             $phpcsFile->fixer->replaceToken($finalPtr, '');
             if ($tokens[($finalPtr + 1)]['code'] === T_WHITESPACE) {
                 $phpcsFile->fixer->replaceToken(($finalPtr + 1), '');
@@ -76,5 +72,45 @@ class EnumMemberVisibilitySniff implements Sniff
         }
 
         $phpcsFile->fixer->endChangeset();
+    }
+
+    /**
+     * Find a constant's `protected` and `final` keywords, with PHPCSUtils.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $constPtr The position of `const`.
+     * @return array{int|null, int|null} The positions of `protected` and `final`, each null if it isn't there.
+     */
+    private function findConstantModifiers(File $phpcsFile, int $constPtr): array
+    {
+        $constant = Constants::getProperties($phpcsFile, $constPtr);
+        $scopePtr = $constant['scope_token'];
+        $finalPtr = $constant['final_token'];
+
+        return [
+            $constant['scope'] === 'protected' && is_int($scopePtr) ? $scopePtr : null,
+            is_int($finalPtr) ? $finalPtr : null,
+        ];
+    }
+
+    /**
+     * Find a method's `protected` and `final` keywords. They're among its modifiers, after the previous member or the
+     * enum's opening brace. PHPCSUtils gives a method's visibility, but not where its keyword is.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $functionPtr The position of `function`.
+     * @return array{int|null, int|null} The positions of `protected` and `final`, each null if it isn't there.
+     */
+    private function findMethodModifiers(File $phpcsFile, int $functionPtr): array
+    {
+        $found = $phpcsFile->findPrevious(
+            [T_SEMICOLON, T_OPEN_CURLY_BRACKET, T_CLOSE_CURLY_BRACKET, T_ATTRIBUTE_END],
+            ($functionPtr - 1),
+        );
+        $start = $found === false ? null : $found;
+        $protectedPtr = $phpcsFile->findPrevious(T_PROTECTED, ($functionPtr - 1), $start);
+        $finalPtr = $phpcsFile->findPrevious(T_FINAL, ($functionPtr - 1), $start);
+
+        return [$protectedPtr === false ? null : $protectedPtr, $finalPtr === false ? null : $finalPtr];
     }
 }
