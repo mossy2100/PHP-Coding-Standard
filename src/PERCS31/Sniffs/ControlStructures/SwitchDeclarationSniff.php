@@ -14,17 +14,17 @@ use PHP_CodeSniffer\Util\Tokens;
  * Checks `switch` statements, with the rules in PER Coding Style 3.1, section 5.2.
  *
  * This is a fork of PSR2.ControlStructures.SwitchDeclaration from PHP_CodeSniffer 4.0.4, rewritten in this package's
- * style. Its codes and messages are the original's. It isn't a subclass, as the original's checks are all inside one
- * long process(), and two of its problems are in the middle of it:
+ * style. Its codes and messages are the original's, apart from two codes renamed for clarity. It isn't a subclass, as
+ * the original's checks are all inside one long process(), and two of its problems are in the middle of it:
  * - It reports any block straight after a `case` or `default` label, as WrongOpener. Section 5.2 says "The `case` body
  *   MUST NOT be wrapped in `{}`", and a block followed by more of the body, even just `break`, doesn't wrap it.
  * - After a braced body, it reads a scope_condition the next label's closer doesn't have, which aborts the file's
  *   checks, and stops phpcbf altogether.
  *
  * Every change from the original is marked with a "PERCS31:" comment. They are:
- * - A body is reported as wrapped in braces, as WrongOpener, only when a block starts straight after the label, and its
- *   `}` is followed by the next label or the switch's `}`. A block followed by anything else is part of the body, and
- *   the case gets every other check, measured from its colon.
+ * - A body is reported as wrapped in braces, as BodyInBraces, only when a block starts straight after the label, and
+ *   its `}` is followed by the next label or the switch's `}`. A block followed by anything else is part of the body,
+ *   and the case gets every other check, measured from its colon.
  * - The closer's scope_condition is checked before it's read, which fixes the crash.
  * - The last case, if not empty, MUST end with a terminating statement, such as `break` or `return`, "even if they are
  *   the final one". The original only checks a case that's followed by another. The fix adds `break;` before the `}`.
@@ -35,6 +35,9 @@ use PHP_CodeSniffer\Util\Tokens;
  * - Code on a label's line, after its colon, is reported as StatementOnLabelLine. A comment there is allowed. The
  *   original's BodyOnNextLine codes report that, and a blank line after the label too, which section 5.2 doesn't
  *   forbid. The PERCS31 ruleset excludes them, and Jumbo uses them in place of StatementOnLabelLine.
+ * - Two codes are renamed. The original's WrongOpener, for a body wrapped in braces, is BodyInBraces, and its message
+ *   follows section 5.2's words. Its WrongOpenercase and WrongOpenerdefault, for a label that ends in `;` or `?>`, are
+ *   MissingColon.
  *
  * To update the fork to a new PHP_CodeSniffer release, compare the original with the code here that isn't marked, and
  * run the tests. Remove the fork once upstream handles both problems.
@@ -55,7 +58,9 @@ class SwitchDeclarationSniff implements Sniff
 
     public const string CODE_TERMINATING_COMMENT = 'TerminatingComment';
 
-    public const string CODE_WRONG_OPENER = 'WrongOpener';
+    public const string CODE_BODY_IN_BRACES = 'BodyInBraces';
+
+    public const string CODE_MISSING_COLON = 'MissingColon';
 
     public const string CODE_STATEMENT_ON_LABEL_LINE = 'StatementOnLabelLine';
 
@@ -149,15 +154,15 @@ class SwitchDeclarationSniff implements Sniff
         // checked from its colon, as any other.
         $colon = $this->findColon($phpcsFile, $case);
         if ($colon === null) {
-            $this->reportWrongOpener($phpcsFile, $case, $opener, $type);
+            $this->reportMissingColon($phpcsFile, $case, $opener, $type);
             return;
         }
 
         if ($tokens[$opener]['code'] === T_OPEN_CURLY_BRACKET && $this->wrapsWholeBody($phpcsFile, $opener)) {
             $phpcsFile->addError(
-                '%s statements must not use a braced block after the colon',
+                'The %s body must not be wrapped in braces',
                 $case,
-                self::CODE_WRONG_OPENER,
+                self::CODE_BODY_IN_BRACES,
                 [strtoupper($type)],
             );
             return;
@@ -238,17 +243,17 @@ class SwitchDeclarationSniff implements Sniff
      * @param int $opener The position of the label's scope opener.
      * @param string $type The kind of label, `case` or `default`.
      */
-    private function reportWrongOpener(File $phpcsFile, int $case, int $opener, string $type): void
+    private function reportMissingColon(File $phpcsFile, int $case, int $opener, string $type): void
     {
         $tokens = $phpcsFile->getTokens();
         $error = '%s statements must be defined using a colon';
         $data = [strtoupper($type)];
         if ($tokens[$opener]['code'] !== T_SEMICOLON && $tokens[$opener]['code'] !== T_CLOSE_TAG) {
-            $phpcsFile->addError($error, $case, self::CODE_WRONG_OPENER . $type, $data);
+            $phpcsFile->addError($error, $case, self::CODE_MISSING_COLON, $data);
             return;
         }
 
-        if (!$phpcsFile->addFixableError($error, $case, self::CODE_WRONG_OPENER . $type, $data)) {
+        if (!$phpcsFile->addFixableError($error, $case, self::CODE_MISSING_COLON, $data)) {
             return;
         }
 

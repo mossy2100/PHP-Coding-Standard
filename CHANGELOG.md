@@ -693,11 +693,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - **A block that's only part of a `case` body.** `PERCS31.ControlStructures.SwitchDeclaration` reported any block
-  straight after a `case` or `default` label as `WrongOpener`, even one followed by more of the body, such as `break`.
-  Now it's only reported when the block is the whole body: its `}` is followed by the next label or the switch's `}`. A
-  switch with such a block also got no other check from the sniff. It's now a fork of
-  `PSR2.ControlStructures.SwitchDeclaration`, so every switch gets every check, and a fall-through into a case that
-  starts with a block is handled too.
+  straight after a `case` or `default` label, even one followed by more of the body, such as `break`. Now it's only
+  reported when the block is the whole body: its `}` is followed by the next label or the switch's `}`. A switch with
+  such a block also got no other check from the sniff. It's now a fork of `PSR2.ControlStructures.SwitchDeclaration`, so
+  every switch gets every check, and a fall-through into a case that starts with a block is handled too. Two of the
+  original's codes are renamed for clarity: `WrongOpener`, for a body wrapped in braces, is now `BodyInBraces`, and
+  `WrongOpenercase` and `WrongOpenerdefault`, for a label that ends in `;` instead of `:`, are now `MissingColon`.
 - **Problems reported twice in PERCS31.** The space after `function` and before a declaration's `(`, and the layout
   of an anonymous class's argument list, each got a second message, from `Squiz.Functions.FunctionDeclaration` and
   `PSR12.Classes.AnonClassDeclaration`. Those codes are now excluded, as PERCS31's own sniffs report the same problems.
@@ -706,7 +707,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   as `MultiLineConditionCloserIndent`. Auto-fixable.
 - **A block in a `case`, with statements after it.** `PERCS31.WhiteSpace.ScopeIndent` reported the block's closing
   brace, and `phpcbf` then left the brace and the statement after it indented wrongly. The brace is no longer checked.
-  `PERCS31.ControlStructures.SwitchDeclaration` still reports the braces, as `WrongOpener`.
+  `PERCS31.ControlStructures.SwitchDeclaration` reports a block only when it's the whole body.
 - **A trailing comma with a comment after it, on one line (breaking).** `function a($b, /* Why. */) {}` passed, as did
   the same in a closure's `use` list, an array and a short list, as the comment hid the comma from the sniffs that check
   those lists. `PERCS31.Formatting.TrailingComma` now reports it, as `Disallowed`, and its fix keeps the comment.
@@ -778,8 +779,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   method of a split chain, and the fix moved it. A chain now ends at an operator, a comma or an enclosing bracket.
 - **A braced `case` body before a `default` no longer stops the run.** `PERCS31.ControlStructures.SwitchDeclaration`
   crashed on some `switch` statements with a `case` body wrapped in braces, so the rest of the file wasn't checked,
-  and `phpcbf` could end with a fatal error. The braces are now reported, as `WrongOpener`, without the crash. Such a
-  `switch` gets no other check from this sniff until the braces are removed.
+  and `phpcbf` could end with a fatal error. The braces are now reported, as `BodyInBraces`, without the crash.
 - **A braced `case` body before another label no longer hangs.** `phpcs` never finished on a `switch` whose braced
   `case` body's `}` shared a line with the next `case` or `default`, as in `} default:`, and `phpcbf` could reach
   that state from other code. `PERCS31.WhiteSpace.ScopeIndent` now gets through it, so the braces are reported.

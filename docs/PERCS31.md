@@ -1313,7 +1313,7 @@ $label = match ($code) {
 ### PERCS31.ControlStructures.SwitchDeclaration
 
 Checks `switch` statements. This is a fork of `PSR2.ControlStructures.SwitchDeclaration` from PHP_CodeSniffer 4.0.4,
-with its codes and messages, and adds these rules:
+with its codes and messages, apart from two renamed for clarity, and adds these rules:
 
 - The last non-empty case MUST end with a terminating statement, such as `break`, `return` or `throw`.
 - A multi-line case condition MUST be wrapped in parentheses, with `):` on a line of its own.
@@ -1344,7 +1344,7 @@ lines only because a call or array in it does is multi-line too, so `case foo(` 
 (`, then `foo(` on the next line. The `):` line is level with the `case`, as the example in section 5.2 shows, reported
 as `MultiLineConditionCloserIndent`.
 
-A `case` or `default` body wrapped in braces is reported as `WrongOpener`. It's wrapped when a block starts straight
+A `case` or `default` body wrapped in braces is reported as `BodyInBraces`. It's wrapped when a block starts straight
 after the label, and its `}` is followed by the next label or the switch's `}`. A block followed by more of the body,
 even just `break`, passes, as section 5.2 only forbids wrapping the body, and the case gets every other check, measured
 from its colon. The original reports every block straight after a label. It also crashes after a braced body, so the
