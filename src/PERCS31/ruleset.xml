@@ -235,11 +235,12 @@
          parameter list, a closure's use list or an array (2.6). -->
     <rule ref="PERCS31.Formatting.TrailingComma"/>
 
-    <!-- A trailing comma in an attribute block: none on one line, and one in a split block of several attributes (2.6).
-         The code that forbids one in a split block of one attribute is excluded, as 2.6 says a split list MUST have
-         one. -->
+    <!-- No trailing comma in an attribute block (2.6). 12.1 keeps #[ and ] on the attributes' own lines, and 12.3 puts
+         split attributes in separate blocks, so a block's list is never split, even when an attribute's arguments are.
+         The code that requires a comma in a multi-line block of several attributes is excluded, as 12.3 already
+         rejects that block. -->
     <rule ref="Universal.Attributes.TrailingComma">
-        <exclude name="Universal.Attributes.TrailingComma.ForbiddenSingleAttributeMultiLine"/>
+        <exclude name="Universal.Attributes.TrailingComma.RequiredMultiAttributeMultiLine"/>
     </rule>
 
     <!-- A comma with no space before it and one after in any other list, such as an array, group use, match

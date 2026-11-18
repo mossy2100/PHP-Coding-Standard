@@ -155,9 +155,10 @@ Reference: [PHPCSExtra repository and documentation](https://github.com/PHPCSSta
 - **Universal.Attributes.BracketSpacing**: Disallows a space after `#[` or before `]`, e.g. `#[ Override ]` (12.1).
 - **Universal.Attributes.DisallowAttributeParentheses**: Disallows `()` on an attribute with no arguments, e.g.
   `#[Override()]` (12.1).
-- **Universal.Attributes.TrailingComma**: Disallows a trailing comma in an attribute block on one line, and requires one
-  in a split block of several attributes (2.6). Its `ForbiddenSingleAttributeMultiLine` code is excluded, as it forbids
-  the comma in a split block of one attribute, where 2.6 requires it.
+- **Universal.Attributes.TrailingComma**: Disallows a trailing comma in any attribute block, including after one
+  attribute whose arguments span lines, e.g. `#[Foo(` ... `),]` (2.6). 12.1 and 12.3 mean a block's list is never split.
+  Its `RequiredMultiAttributeMultiLine` code is excluded, as 12.3 already rejects a multi-line block of several
+  attributes.
 - **Universal.Classes.DisallowAnonClassParentheses**: Disallows `()` on an anonymous class with no arguments, e.g.
   `new class () {}` (8).
 - **Universal.Constants.LowercaseClassResolutionKeyword**: Requires `::class` in lower case (2.5).

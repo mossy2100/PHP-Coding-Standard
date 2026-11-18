@@ -362,8 +362,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `match`, the last name in a multi-line group `use`, the last item in a multi-line `list()`, and the last argument in
   multi-line arguments to an anonymous class, `clone()`, `exit()` or `die()` must have a trailing comma, and one on a
   single line is an error, including in a `match` arm's conditions. Auto-fixable.
-- **`Universal.Attributes.TrailingComma` (breaking).** A trailing comma in an attribute block on one line is an error,
-  and so is a missing one in a split block of several attributes, as PER Coding Style 3.1 requires. Auto-fixable.
+- **`Universal.Attributes.TrailingComma` (breaking).** A trailing comma in an attribute block is an error, including
+  after one attribute whose arguments span lines, as in `#[Foo(` ... `),]`. PER Coding Style 3.1 never lets an attribute
+  block be split, so its list never takes one. Auto-fixable.
 - **Blank lines and spacing around attributes (breaking).** As PER Coding Style 3.1 requires,
   `PERCS31.Attributes.AttributeLayout` now reports a blank line between a docblock and the attributes after it, or
   between two attribute blocks, and anything but a single space between an attribute and its parameter on the same line.

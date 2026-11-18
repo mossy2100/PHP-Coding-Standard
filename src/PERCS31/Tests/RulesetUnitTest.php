@@ -954,25 +954,35 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that a trailing comma in an attribute block on one line is an error, and that one in a split block of one
-     * attribute isn't, as section 2.6 of PER requires it. Universal.Attributes.TrailingComma forbids it by default.
+     * Test that an attribute block never has a trailing comma, as sections 12.1 and 12.3 mean its list is never split.
+     * One after a single attribute whose arguments span lines is reported and removed, and one without passes. A block
+     * of several attributes split over lines isn't asked for a comma, as 12.3 already rejects it.
      */
     public function testAttributeTrailingComma(): void
     {
-        $source = "<?php\n\n#[Foo, Bar,]\nfunction a(): void {}\n\n#[Foo(\n    1,\n),]\nfunction b(): void {}\n";
+        $split = "#[Foo(\n    1,\n)";
+        $source = "<?php\n\n#[Foo, Bar,]\nfunction a(): void {}\n\n$split,]\nfunction b(): void {}\n\n"
+            . "$split]\nfunction c(): void {}\n\n$split, Bar]\nfunction d(): void {}\n";
         $file = $this->copyToTempFile(null, $source);
+        $args = ['-s', '--standard=PERCS31', '--sniffs=Universal.Attributes.TrailingComma'];
 
         try {
-            $result = $this->runTool(
-                'phpcs',
-                ['-s', '--standard=PERCS31', '--sniffs=Universal.Attributes.TrailingComma', '--report=emacs', $file],
-            );
+            $result = $this->runTool('phpcs', [...$args, '--report=emacs', $file]);
+            $this->runTool('phpcbf', [...$args, $file]);
+            $fixed = (string) file_get_contents($file);
         } finally {
             unlink($file);
         }
 
-        $this->assertMatchesRegularExpression('/:3:\\d+: error - .*ForbiddenSingleLine/', $result['output']);
-        $this->assertStringNotContainsString('ForbiddenSingleAttributeMultiLine', $result['output']);
+        preg_match_all('/:(\d+):\d+: error - .*\.(\w+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
+        $reports = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
+        $expected = "<?php\n\n#[Foo, Bar]\nfunction a(): void {}\n\n$split]\nfunction b(): void {}\n\n"
+            . "$split]\nfunction c(): void {}\n\n$split, Bar]\nfunction d(): void {}\n";
+
+        $reported = ['3 ForbiddenSingleLine', '8 ForbiddenSingleAttributeMultiLine'];
+
+        $this->assertSame($reported, $reports, $result['output']);
+        $this->assertSame($expected, $fixed);
     }
 
     /**

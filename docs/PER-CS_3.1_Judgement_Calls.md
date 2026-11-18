@@ -521,12 +521,29 @@ instead.
 
 **Decision:** A multi-line list needs a trailing comma, and a single-line list mustn't have one, for arguments,
 parameters, closure `use` lists, arrays, `match` arms, a `match` arm's conditions, group `use`, `list()`, an anonymous
-class's arguments, `clone()`, `exit()`, `die()` and attribute blocks. `clone ($a)->c` is skipped, as its parentheses may
-only group the object.
+class's arguments, `clone()`, `exit()`, `die()` and an attribute's arguments. `clone ($a)->c` is skipped, as its
+parentheses may only group the object.
 
 A `match` has two lists: its arms, and the conditions at the start of each arm. See [`match` Conditions](#match-conditions).
 
-**Why:** The rule's purpose, cleaner diffs, applies equally to every comma-separated list split over lines.
+An attribute block is never split, so it never has a trailing comma. 12.1 puts the first attribute straight after `#[`,
+and the `]` straight after the last, and 12.3 puts the attributes of a split list in separate blocks. The only block
+over several lines holds one attribute whose arguments span lines, and the comma after its `)` is reported:
+
+```php
+// Reported.
+#[Foo(
+    1,
+),]
+
+// Right.
+#[Foo(
+    1,
+)]
+```
+
+**Why:** The rule's purpose, cleaner diffs, applies equally to every comma-separated list split over lines. An attribute
+block's own rules leave no way to split one.
 
 ---
 
