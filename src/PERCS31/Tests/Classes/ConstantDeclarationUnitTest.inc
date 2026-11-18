@@ -52,3 +52,33 @@ switch ($rank) {
     case  Rank::Ace:
         break;
 }
+
+// Two constants in one statement, in a class, an interface, a trait, an enum and an anonymous class. A global const
+// isn't checked, as section 4.3 is about classes, and a comma inside a value isn't a second constant.
+const GLOBAL_A = 1, GLOBAL_B = 2;
+
+class Several
+{
+    final public const int A = 1, B = 2;
+    public const C = [1, 2], D = max(1, 2);
+    public const E = [1, 2];
+}
+
+interface SeveralInterface
+{
+    public const A = 1, B = 2;
+}
+
+trait SeveralTrait
+{
+    public const A = 1, B = 2;
+}
+
+enum SeveralEnum
+{
+    public const A = 1, B = 2;
+}
+
+$several = new class {
+    public const A = 1, B = 2;
+};

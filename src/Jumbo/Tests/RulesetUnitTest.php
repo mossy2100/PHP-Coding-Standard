@@ -359,6 +359,30 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a global const statement with two constants is reported and split in Jumbo, and passes in PERCS31, as
+     * section 4.3 is about classes. A class's constants are reported in both.
+     */
+    public function testGlobalConstantsPerStatementInJumboOnly(): void
+    {
+        $source = "<?php\n\ndeclare(strict_types=1);\n\nnamespace Vendor\\Package;\n\nconst A = 1, B = 2;\n";
+        $file = $this->copyToTempFile(null, $source);
+        $args = ['-s', '--sniffs=PERCS31.Classes.ConstantDeclaration', '--report=emacs'];
+
+        try {
+            $percs31 = $this->runTool('phpcs', ['--standard=PERCS31', ...$args, $file]);
+            $jumbo = $this->runTool('phpcs', ['--standard=Jumbo', ...$args, $file]);
+            $this->runTool('phpcbf', ['--standard=Jumbo', '--sniffs=PERCS31.Classes.ConstantDeclaration', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame(0, $percs31['exitCode'], $percs31['output']);
+        $this->assertStringContainsString('ConstantDeclaration.DisallowedMultiConstantDefinition', $jumbo['output']);
+        $this->assertStringContainsString("const A = 1;\nconst B = 2;\n", $fixed);
+    }
+
+    /**
      * Test that a blank line after a case label is reported in Jumbo only, as PER doesn't forbid one, that a statement
      * on the label's line is reported once in both standards, and that a comment there isn't reported in either.
      */

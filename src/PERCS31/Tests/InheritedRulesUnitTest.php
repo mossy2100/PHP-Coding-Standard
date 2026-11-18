@@ -153,11 +153,6 @@ class InheritedRulesUnitTest extends TestCase
             'SlevomatCodingStandard.Classes.ClassKeywordOrder.WrongClassKeywordOrder',
             'error',
         ],
-        'two constants in a statement' => [
-            "<?php\n\nclass A\n{\n    public const B = 1, C = 2;\n}\n",
-            'SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition.DisallowedMultiConstantDefinition',
-            'error',
-        ],
         'final after the visibility on a constant' => [
             "<?php\n\nclass A\n{\n    public final const B = 1;\n}\n",
             'Universal.Constants.ModifierKeywordOrder.Incorrect',

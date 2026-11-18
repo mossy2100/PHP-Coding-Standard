@@ -942,6 +942,19 @@ way.
 
 ---
 
+### One Constant Per Statement
+
+**Issue:** 4.3 says "There MUST NOT be more than one property or constant declared per statement". It's in section 4,
+which is about classes, and doesn't say whether it covers a global `const`.
+
+**Decision:** It covers a constant in a class, an interface, a trait, an enum or an anonymous class. A global `const`
+with several constants passes. [Jumbo](Jumbo.md) reports it too, as an extra rule. A `define()` call can only declare
+one constant.
+
+**Why:** Section 4 is about classes, as "Global Constants (PSR-1)" and "Spacing in a Constant Declaration" read it too.
+
+---
+
 ### Visibility on a Promoted Parameter
 
 **Issue:** 4.3 requires visibility on properties, but doesn't mention constructor promotion, where `readonly` alone

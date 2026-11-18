@@ -9,10 +9,18 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHPCSUtils\Utils\Constants;
 use PHPCSUtils\Utils\Scopes;
+use SlevomatCodingStandard\Sniffs\Classes\DisallowMultiConstantDefinitionSniff;
 
 /**
- * Requires a single space after a class constant's `const` keyword, between its type and its name, and after an enum
- * case's `case` keyword.
+ * Requires one constant per class constant statement, a single space after its `const` keyword and between its type
+ * and its name, and a single space after an enum case's `case` keyword.
+ *
+ * Section 4.3 says "There MUST NOT be more than one property or constant declared per statement". That's checked by
+ * SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition, called from here, so its fix splits the statement and
+ * keeps its modifiers and type. The Slevomat sniff checks every `const` statement, and has no setting to skip a global
+ * one, which section 4 doesn't cover, as it's about classes. So it isn't in the ruleset, and this sniff only gives it a
+ * class's constants, reported as DisallowedMultiConstantDefinition. Set checkGlobalConstantCount to give it a global
+ * `const` too. A `define()` call can only declare one constant.
  *
  * PER Coding Style 3.1, section 4.6, says all keywords MUST be on a single line, separated by a single space, and
  * section 4.3 says there MUST be a space between a property's type and its name. Neither names a constant's type or
@@ -34,6 +42,19 @@ class ConstantDeclarationSniff implements Sniff
     public const string CODE_SPACE_AFTER_TYPE = 'SpaceAfterType';
 
     public const string CODE_SPACE_AFTER_CASE = 'SpaceAfterCase';
+
+    public const string CODE_MULTI_CONSTANT = 'DisallowedMultiConstantDefinition';
+
+    /**
+     * Whether a global `const` statement may declare only one constant too. Section 4.3's rule is about classes, so
+     * it's off by default. The Jumbo standard turns it on. The spacing checks apply to class constants only.
+     */
+    public bool $checkGlobalConstantCount = false;
+
+    /**
+     * The Slevomat sniff that makes the check for one constant per statement, and its fix.
+     */
+    private ?DisallowMultiConstantDefinitionSniff $multiConstantSniff = null;
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -68,7 +89,13 @@ class ConstantDeclarationSniff implements Sniff
             return;
         }
 
-        if (!Scopes::isOOConstant($phpcsFile, $stackPtr)) {
+        $isClassConstant = Scopes::isOOConstant($phpcsFile, $stackPtr);
+        if ($isClassConstant || $this->checkGlobalConstantCount) {
+            $this->multiConstantSniff ??= new DisallowMultiConstantDefinitionSniff();
+            $this->multiConstantSniff->process($phpcsFile, $stackPtr);
+        }
+
+        if (!$isClassConstant) {
             return;
         }
 

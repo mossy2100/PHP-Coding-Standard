@@ -37,6 +37,15 @@ class ConstantDeclarationUnitTest extends AbstractSniffTestCase
             // An enum case: two spaces after case, and a line break.
             46 => 1,
             48 => 1,
+            // Two constants in one statement: in the valid class above, whose spacing is right, and then in a class
+            // (twice), an interface, a trait, an enum and an anonymous class.
+            13 => 1,
+            62 => 1,
+            63 => 1,
+            69 => 1,
+            74 => 1,
+            79 => 1,
+            83 => 1,
         ];
     }
 

@@ -513,6 +513,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- **One constant per statement, for class constants only, in PERCS31 (breaking).** `const A = 1, B = 2;` at file
+  scope now passes in PERCS31, as section 4.3 is about classes. Jumbo still reports it. The check moves from
+  `SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition` in the ruleset into
+  `PERCS31.Classes.ConstantDeclaration`, which calls it, so its code is now
+  `PERCS31.Classes.ConstantDeclaration.DisallowedMultiConstantDefinition`. A new property, `checkGlobalConstantCount`,
+  checks a global `const` too. Auto-fixable, as before.
 - **One space after an enum case's `case` keyword (breaking).** `case  Hearts`, and `case` then a line break, are now
   reported by `PERCS31.Classes.ConstantDeclaration`, as `SpaceAfterCase`. Auto-fixable.
 - **PERCS31 allows a blank line wherever PER Coding Style 3.1 doesn't forbid one.** Section 2.3 allows blank lines

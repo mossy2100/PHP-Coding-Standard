@@ -191,8 +191,6 @@ Reference: [Slevomat coding standard repository and documentation](https://githu
   it is excluded, as [`PERCS31.Classes.ClassDeclaration`](#percs31classesclassdeclaration) reports the same.
 - **Classes.ClassKeywordOrder**: Requires `abstract` or `final` before `readonly` on a class, e.g.
   `final readonly class` (4.6).
-- **Classes.DisallowMultiConstantDefinition**: Disallows several constants in one statement (4.3). Needs Slevomat 8.31.3
-  or later, which stops it flagging a comma inside parentheses, as in `const I = new Complex(0, 1);`.
 - **Classes.DisallowMultiPropertyDefinition**: Disallows several properties in one statement (4.3).
 - **Classes.PropertyDeclaration**: Requires the modifier order, and the spacing around the modifiers and the type,
   including on promoted properties (4.3, 4.6). Its check for a space after a nullable type's `?` is replaced by
@@ -721,8 +719,8 @@ $handler = new ($this->handlerClass($request));
 
 ### PERCS31.Classes.ConstantDeclaration
 
-Requires a single space after a class constant's `const` keyword, between its type and its name, and after an enum
-case's `case` keyword. A line break counts as more than a single space.
+Requires one constant per class constant statement, a single space after its `const` keyword and between its type and
+its name, and a single space after an enum case's `case` keyword. A line break counts as more than a single space.
 
 **Why:** [PER Coding Style 3.1, Section 4.6](https://www.php-fig.org/per/coding-style/#46-modifier-keywords) says keywords MUST be on a single line, separated by a single space, and
 [section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says there MUST be a space between a property's type and its name. Neither names a constant's type or name,
@@ -732,6 +730,14 @@ but a constant is declared like a property, so the same spacing is required. See
 type. `SlevomatCodingStandard.Classes.PropertyDeclaration` makes these checks for a property only, and
 `SlevomatCodingStandard.Whitespaces.DuplicateSpaces` reports every run of spaces, which PER allows around operators. No
 inherited sniff checks a constant alone.
+
+[Section 4.3](https://www.php-fig.org/per/coding-style/#43-properties-and-constants) says "There MUST NOT be more than one property or constant declared per statement". That's checked by
+`SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition`, which this sniff calls, so its fix splits the statement
+and keeps the modifiers and type. The Slevomat sniff checks every `const` statement, with no setting to skip a global
+one, so it isn't in the ruleset, and this sniff only gives it a class's constants, reported as
+`DisallowedMultiConstantDefinition`. A global `const` with several constants passes, as section 4 is about classes. Set
+`checkGlobalConstantCount` to check it too, as Jumbo does. Slevomat 8.31.3 or later is needed, which stops it flagging a
+comma inside parentheses, as in `const I = new Complex(0, 1);`.
 
 An enum case is declared like a constant, and section 9's example writes `case Hearts = 'H';`, so one space after
 `case` is required too, reported as `SpaceAfterCase`. See

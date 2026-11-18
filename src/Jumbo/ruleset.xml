@@ -35,6 +35,14 @@
          the closing brace (4.4, 7), which PSR2.Methods.FunctionClosingBrace reports. -->
     <rule ref="Squiz.WhiteSpace.FunctionOpeningBraceSpace.SpacingAfter"/>
 
+    <!-- One constant per statement for a global const too. PERCS31 only checks a class's constants, as section 4.3
+         is about classes. -->
+    <rule ref="PERCS31.Classes.ConstantDeclaration">
+        <properties>
+            <property name="checkGlobalConstantCount" value="true"/>
+        </properties>
+    </rule>
+
     <!-- No blank line straight before the closing parenthesis of a parameter list, a closure's use list or an argument
          list, so no multi-line list starts or ends with one. PERCS31 excludes these codes, as PER has no rule for
          either. -->

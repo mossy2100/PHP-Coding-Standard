@@ -234,14 +234,15 @@ class RulesetUnitTest extends TestCase
 
     /**
      * Test that a comma inside parentheses in a constant's value isn't read as a second constant, and a real second
-     * constant is fixed with its modifiers and type kept. These need Slevomat 8.31.3.
+     * constant is fixed with its modifiers and type kept. These need Slevomat 8.31.3. A global const with two constants
+     * passes, as section 4.3 is about classes.
      */
     public function testConstantsPerStatement(): void
     {
-        $source = "<?php\n\nconst I = new Complex(0, 1);\n\n"
+        $source = "<?php\n\nconst I = new Complex(0, 1);\nconst J = 1, K = 2;\n\n"
             . "class Holder\n{\n    final public const int A = 1, B = 2;\n}\n";
         $file = $this->copyToTempFile(null, $source);
-        $args = ['-s', '--standard=PERCS31', '--sniffs=SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition'];
+        $args = ['-s', '--standard=PERCS31', '--sniffs=PERCS31.Classes.ConstantDeclaration'];
 
         try {
             $result = $this->runTool('phpcs', [...$args, '--report=emacs', $file]);
@@ -251,7 +252,9 @@ class RulesetUnitTest extends TestCase
             unlink($file);
         }
 
-        $this->assertSame(1, substr_count($result['output'], 'DisallowMultiConstantDefinition'), $result['output']);
+        $this->assertSame(1, substr_count($result['output'], 'DisallowedMultiConstantDefinition'), $result['output']);
+        $pattern = '/:8:\\d+: error - .*DisallowedMultiConstantDefinition/';
+        $this->assertMatchesRegularExpression($pattern, $result['output']);
         $this->assertStringContainsString("final public const int A = 1;\n    final public const int B = 2;", $fixed);
     }
 

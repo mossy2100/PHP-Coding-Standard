@@ -55,6 +55,9 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
   `PERCS31.Functions.MultiLineFunctionDeclaration.BlankLineBeforeCloseBracket`, for a parameter list and a closure's
   `use` list, and `PERCS31.Functions.FunctionCallLayout.BlankLineBeforeCloseBracket`, for an argument list. See
   [Blank Lines in a List](PER-CS_3.1_Judgement_Calls.md#blank-lines-in-a-list).
+- One constant per `const` statement at file scope too. PERCS31 only checks a class's constants, as section 4.3 is about
+  classes (`checkGlobalConstantCount` set to `true` on `PERCS31.Classes.ConstantDeclaration`). A `define()` call can
+  only declare one constant.
 - No blank line after a `case` or `default` label, which PERCS31 allows. Jumbo turns on
   `PERCS31.ControlStructures.SwitchDeclaration`'s `BodyOnNextLineCASE` and `BodyOnNextLineDEFAULT` codes, which report
   that and code on the label's line, and turns off `StatementOnLabelLine`, which reports the second alone.
