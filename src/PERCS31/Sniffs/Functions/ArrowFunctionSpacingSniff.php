@@ -103,28 +103,15 @@ class ArrowFunctionSpacingSniff implements Sniff
             return;
         }
 
-        $blankLines = [];
-        for ($i = ($arrow - 1); $i > $stackPtr && $tokens[$i]['code'] === T_WHITESPACE; $i--) {
-            if (LayoutHelper::isBlankLine($phpcsFile, $i)) {
-                $blankLines[] = $i;
-            }
-        }
-
+        $blankLines = LayoutHelper::findBlankLinesBefore($phpcsFile, $arrow);
         if ($blankLines === []) {
             return;
         }
 
         $error = 'There must be no blank line before an arrow function\'s wrapped "=>"';
-        if (!$phpcsFile->addFixableError($error, $arrow, self::CODE_BLANK_LINE_BEFORE_ARROW)) {
-            return;
+        if ($phpcsFile->addFixableError($error, $arrow, self::CODE_BLANK_LINE_BEFORE_ARROW)) {
+            FixerHelper::removeTokens($phpcsFile, $blankLines);
         }
-
-        $phpcsFile->fixer->beginChangeset();
-        foreach ($blankLines as $blankLine) {
-            $phpcsFile->fixer->replaceToken($blankLine, '');
-        }
-
-        $phpcsFile->fixer->endChangeset();
     }
 
     /**

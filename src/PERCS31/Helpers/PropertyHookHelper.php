@@ -313,8 +313,12 @@ class PropertyHookHelper
             $closer = self::findCloser($phpcsFile, $opener);
             $scopes[$opener] = $closer;
 
-            // Now scan inside the hook list for get/set block bodies.
-            self::findHookBodies($phpcsFile, $opener, $closer, $scopes);
+            // Each hook body in braces is a scope too.
+            foreach (self::parseHooks($phpcsFile, $opener, $closer) ?? [] as $hook) {
+                if ($hook['bodyOpener'] !== null) {
+                    $scopes[$hook['bodyOpener']] = self::findCloser($phpcsFile, $hook['bodyOpener']);
+                }
+            }
         }
 
         return $scopes;
@@ -550,72 +554,6 @@ class PropertyHookHelper
         assert(is_int($closer));
 
         return $closer;
-    }
-
-    /**
-     * Find get/set block bodies inside a property hook list.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $containerOpener Position of the hook list's opening brace.
-     * @param int $containerCloser Position of the hook list's closing brace.
-     * @param array<int, int> $scopes Reference to the scopes array to populate.
-     */
-    private static function findHookBodies(
-        File $phpcsFile,
-        int $containerOpener,
-        int $containerCloser,
-        array &$scopes,
-    ): void {
-        $tokens = $phpcsFile->getTokens();
-
-        for ($i = ($containerOpener + 1); $i < $containerCloser; $i++) {
-            // Look for 'get' or 'set' keywords.
-            if ($tokens[$i]['code'] !== T_STRING) {
-                continue;
-            }
-
-            $content = strtolower($tokens[$i]['content']);
-            if ($content !== 'get' && $content !== 'set') {
-                continue;
-            }
-
-            // Look for opening brace after get/set (skipping whitespace, parameters, return type).
-            $next = ($i + 1);
-            $parenDepth = 0;
-
-            while ($next < $containerCloser) {
-                $code = $tokens[$next]['code'];
-
-                // Track parentheses (for set($value) parameters).
-                if ($code === T_OPEN_PARENTHESIS) {
-                    $parenDepth++;
-                } elseif ($code === T_CLOSE_PARENTHESIS) {
-                    $parenDepth--;
-                }
-
-                // Found arrow function syntax (get => ...) - no block body.
-                if ($parenDepth === 0 && $code === T_DOUBLE_ARROW) {
-                    break;
-                }
-
-                // Found opening brace - this is a hook body.
-                if ($parenDepth === 0 && $code === T_OPEN_CURLY_BRACKET) {
-                    $bodyCloser = self::findCloser($phpcsFile, $next);
-                    $scopes[$next] = $bodyCloser;
-
-                    // Skip past this hook body.
-                    $i = $bodyCloser;
-                    break;
-                }
-
-                // Found semicolon - end of arrow syntax.
-                if ($code === T_SEMICOLON) {
-                    break;
-                }
-
-                $next++;
-            }
-        }
     }
 
     /**

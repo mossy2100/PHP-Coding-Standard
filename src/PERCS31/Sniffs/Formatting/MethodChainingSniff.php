@@ -113,29 +113,15 @@ class MethodChainingSniff implements Sniff
      */
     private function checkBlankLineBefore(File $phpcsFile, int $operator): void
     {
-        $tokens = $phpcsFile->getTokens();
-        $blankLines = [];
-        for ($i = ($operator - 1); $i >= 0 && $tokens[$i]['code'] === T_WHITESPACE; $i--) {
-            if (LayoutHelper::isBlankLine($phpcsFile, $i)) {
-                $blankLines[] = $i;
-            }
-        }
-
+        $blankLines = LayoutHelper::findBlankLinesBefore($phpcsFile, $operator);
         if ($blankLines === []) {
             return;
         }
 
         $error = 'The first method of a split chain must be on the next line, with no blank line before it';
-        if (!$phpcsFile->addFixableError($error, $operator, self::CODE_BLANK_LINE_BEFORE_FIRST_METHOD)) {
-            return;
+        if ($phpcsFile->addFixableError($error, $operator, self::CODE_BLANK_LINE_BEFORE_FIRST_METHOD)) {
+            FixerHelper::removeTokens($phpcsFile, $blankLines);
         }
-
-        $phpcsFile->fixer->beginChangeset();
-        foreach ($blankLines as $blankLine) {
-            $phpcsFile->fixer->replaceToken($blankLine, '');
-        }
-
-        $phpcsFile->fixer->endChangeset();
     }
 
     /**

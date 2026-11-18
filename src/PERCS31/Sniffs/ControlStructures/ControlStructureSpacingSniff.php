@@ -208,7 +208,7 @@ class ControlStructureSpacingSniff extends Psr12Sniff
     private function checkAs(File $phpcsFile, int $stackPtr, int $opener, int $closer): void
     {
         $tokens = $phpcsFile->getTokens();
-        $as = $this->findNextAtHeaderLevel($phpcsFile, ($opener + 1), $closer, static fn(array $token): bool
+        $as = TokenHelper::findNextAtLevel($phpcsFile, ($opener + 1), $closer, static fn(array $token): bool
             => $token['code'] === T_AS);
         $before = $as === null ? false : $phpcsFile->findPrevious(T_WHITESPACE, ($as - 1), $opener, true);
         if ($as === null || $before === false) {
@@ -254,7 +254,7 @@ class ControlStructureSpacingSniff extends Psr12Sniff
         // The first token after `as` that's on a later line. A comment holds its own line break, so the lines are
         // compared, not the whitespace.
         $asLine = $tokens[$as]['line'];
-        $after = $this->findNextAtHeaderLevel($phpcsFile, ($as + 1), ($last + 1), static fn(array $token): bool
+        $after = TokenHelper::findNextAtLevel($phpcsFile, ($as + 1), ($last + 1), static fn(array $token): bool
             => $token['code'] !== T_WHITESPACE && $token['line'] > $asLine);
         if ($after === null) {
             return;
@@ -268,32 +268,5 @@ class ControlStructureSpacingSniff extends Psr12Sniff
         if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $as, $code)) {
             FixerHelper::replaceBetween($phpcsFile, (int) $before, $after, ' ');
         }
-    }
-
-    /**
-     * Find the next token that matches, directly inside a header's parentheses, skipping anything in nested
-     * parentheses, brackets or braces, such as a closure in the expression.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $start The position to start at.
-     * @param int $end The position to stop before.
-     * @param callable(array<string, mixed>): bool $matches Whether a token is the one wanted.
-     * @return int|null The token's position, or null if there's none.
-     */
-    private function findNextAtHeaderLevel(File $phpcsFile, int $start, int $end, callable $matches): ?int
-    {
-        $tokens = $phpcsFile->getTokens();
-        for ($i = $start; $i < $end; $i++) {
-            if ($matches($tokens[$i])) {
-                return $i;
-            }
-
-            $nestedCloser = TokenHelper::findCloser($tokens[$i]);
-            if ($nestedCloser !== null && $nestedCloser > $i) {
-                $i = $nestedCloser;
-            }
-        }
-
-        return null;
     }
 }

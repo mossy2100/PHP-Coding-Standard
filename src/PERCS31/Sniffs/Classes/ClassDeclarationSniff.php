@@ -71,29 +71,16 @@ class ClassDeclarationSniff extends Psr2Sniff
             return;
         }
 
-        $blankLines = [];
-        for ($i = ($opener + 1); isset($tokens[$i]) && $tokens[$i]['code'] === T_WHITESPACE; $i++) {
-            if (LayoutHelper::isBlankLine($phpcsFile, $i)) {
-                $blankLines[] = $i;
-            }
-        }
-
+        $blankLines = LayoutHelper::findBlankLinesAfter($phpcsFile, $opener);
         if ($blankLines === []) {
             return;
         }
 
         $error = 'The opening brace of a %s must not be followed by a blank line';
         $data = [strtolower($tokens[$stackPtr]['content'])];
-        if (!$phpcsFile->addFixableError($error, $opener, self::CODE_BLANK_LINE_AFTER_OPEN_BRACE, $data)) {
-            return;
+        if ($phpcsFile->addFixableError($error, $opener, self::CODE_BLANK_LINE_AFTER_OPEN_BRACE, $data)) {
+            FixerHelper::removeTokens($phpcsFile, $blankLines);
         }
-
-        $phpcsFile->fixer->beginChangeset();
-        foreach ($blankLines as $blankLine) {
-            $phpcsFile->fixer->replaceToken($blankLine, '');
-        }
-
-        $phpcsFile->fixer->endChangeset();
     }
 
     /**

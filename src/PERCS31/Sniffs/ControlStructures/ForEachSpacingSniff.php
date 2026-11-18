@@ -58,7 +58,13 @@ class ForEachSpacingSniff implements Sniff
             return;
         }
 
-        $asPtr = $this->findInParentheses($phpcsFile, T_AS, $opener, $closer);
+        // Directly in the parentheses, so the `=>` of an array or a list isn't taken for the loop's.
+        $asPtr = TokenHelper::findNextAtLevel(
+            $phpcsFile,
+            ($opener + 1),
+            $closer,
+            static fn(array $token): bool => $token['code'] === T_AS,
+        );
         if ($asPtr === null) {
             return;
         }
@@ -66,40 +72,18 @@ class ForEachSpacingSniff implements Sniff
         $this->checkSpacing($phpcsFile, $asPtr, true, self::CODE_SPACING_BEFORE_AS);
         $this->checkSpacing($phpcsFile, $asPtr, false, self::CODE_SPACING_AFTER_AS);
 
-        $arrowPtr = $this->findInParentheses($phpcsFile, T_DOUBLE_ARROW, $asPtr, $closer);
+        $arrowPtr = TokenHelper::findNextAtLevel(
+            $phpcsFile,
+            ($asPtr + 1),
+            $closer,
+            static fn(array $token): bool => $token['code'] === T_DOUBLE_ARROW,
+        );
         if ($arrowPtr === null) {
             return;
         }
 
         $this->checkSpacing($phpcsFile, $arrowPtr, true, self::CODE_SPACING_BEFORE_ARROW);
         $this->checkSpacing($phpcsFile, $arrowPtr, false, self::CODE_SPACING_AFTER_ARROW);
-    }
-
-    /**
-     * Find a token directly in a `foreach`'s parentheses, not inside brackets, braces or other parentheses there. So
-     * the `=>` of an array or a list isn't taken for the loop's.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int|string $code The token code to find.
-     * @param int $after The position to search after.
-     * @param int $closer The position of the `foreach`'s closing parenthesis.
-     * @return int|null The token's position, or null if there's none.
-     */
-    private function findInParentheses(File $phpcsFile, int|string $code, int $after, int $closer): ?int
-    {
-        $tokens = $phpcsFile->getTokens();
-        for ($i = ($after + 1); $i < $closer; $i++) {
-            if ($tokens[$i]['code'] === $code) {
-                return $i;
-            }
-
-            $end = TokenHelper::findCloser($tokens[$i]);
-            if ($end !== null && $end > $i) {
-                $i = $end;
-            }
-        }
-
-        return null;
     }
 
     /**

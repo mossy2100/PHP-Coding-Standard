@@ -176,6 +176,33 @@ class TokenHelper
     }
 
     /**
+     * Find the next token that matches, at the level the search starts on, skipping anything in nested parentheses,
+     * brackets or braces, such as a closure or an array.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $start The position to start at.
+     * @param int $end The position to stop before.
+     * @param callable(array<string, mixed>): bool $matches Whether a token is the one wanted.
+     * @return int|null The token's position, or null if there's none.
+     */
+    public static function findNextAtLevel(File $phpcsFile, int $start, int $end, callable $matches): ?int
+    {
+        $tokens = $phpcsFile->getTokens();
+        for ($i = $start; $i < $end; $i++) {
+            if ($matches($tokens[$i])) {
+                return $i;
+            }
+
+            $nestedCloser = self::findCloser($tokens[$i]);
+            if ($nestedCloser !== null && $nestedCloser > $i) {
+                $i = $nestedCloser;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Find the innermost bracket, parenthesis or brace that a token is inside, within its statement.
      *
      * Walking back, any complete bracketed group is skipped, such as an earlier element. The walk stops at a `;` or a

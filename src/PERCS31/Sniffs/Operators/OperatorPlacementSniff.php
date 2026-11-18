@@ -607,29 +607,16 @@ class OperatorPlacementSniff implements Sniff
     private function checkBlankLineBefore(File $phpcsFile, int $operator): void
     {
         $tokens = $phpcsFile->getTokens();
-        $blankLines = [];
-        for ($i = ($operator - 1); $i >= 0 && $tokens[$i]['code'] === T_WHITESPACE; $i--) {
-            if (LayoutHelper::isBlankLine($phpcsFile, $i)) {
-                $blankLines[] = $i;
-            }
-        }
-
+        $blankLines = LayoutHelper::findBlankLinesBefore($phpcsFile, $operator);
         if ($blankLines === []) {
             return;
         }
 
         $error = 'A split ternary must take three lines, with no blank line before "%s"';
         $data = [$tokens[$operator]['content']];
-        if (!$phpcsFile->addFixableError($error, $operator, self::CODE_BLANK_LINE_IN_TERNARY, $data)) {
-            return;
+        if ($phpcsFile->addFixableError($error, $operator, self::CODE_BLANK_LINE_IN_TERNARY, $data)) {
+            FixerHelper::removeTokens($phpcsFile, $blankLines);
         }
-
-        $phpcsFile->fixer->beginChangeset();
-        foreach ($blankLines as $blankLine) {
-            $phpcsFile->fixer->replaceToken($blankLine, '');
-        }
-
-        $phpcsFile->fixer->endChangeset();
     }
 
     /**

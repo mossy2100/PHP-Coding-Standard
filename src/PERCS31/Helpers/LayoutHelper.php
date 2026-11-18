@@ -115,6 +115,46 @@ class LayoutHelper
     }
 
     /**
+     * Find the blank lines straight before a token, with only whitespace between them and the token.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $ptr The position of the token.
+     * @return list<int> The position of each blank line's whitespace token, nearest first.
+     */
+    public static function findBlankLinesBefore(File $phpcsFile, int $ptr): array
+    {
+        $tokens = $phpcsFile->getTokens();
+        $blankLines = [];
+        for ($i = ($ptr - 1); $i >= 0 && $tokens[$i]['code'] === T_WHITESPACE; $i--) {
+            if (self::isBlankLine($phpcsFile, $i)) {
+                $blankLines[] = $i;
+            }
+        }
+
+        return $blankLines;
+    }
+
+    /**
+     * Find the blank lines straight after a token, with only whitespace between the token and them.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $ptr The position of the token.
+     * @return list<int> The position of each blank line's whitespace token, nearest first.
+     */
+    public static function findBlankLinesAfter(File $phpcsFile, int $ptr): array
+    {
+        $tokens = $phpcsFile->getTokens();
+        $blankLines = [];
+        for ($i = ($ptr + 1); isset($tokens[$i]) && $tokens[$i]['code'] === T_WHITESPACE; $i++) {
+            if (self::isBlankLine($phpcsFile, $i)) {
+                $blankLines[] = $i;
+            }
+        }
+
+        return $blankLines;
+    }
+
+    /**
      * Find the blank lines at the start and the end of a list: straight after its opening bracket, and straight before
      * its closing one.
      *

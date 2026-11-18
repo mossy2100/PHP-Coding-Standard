@@ -137,6 +137,22 @@ class FixerHelper
     }
 
     /**
+     * Empty each of the given tokens, such as blank lines, in a changeset of its own.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param list<int> $ptrs The positions of the tokens.
+     */
+    public static function removeTokens(File $phpcsFile, array $ptrs): void
+    {
+        $phpcsFile->fixer->beginChangeset();
+        foreach ($ptrs as $ptr) {
+            $phpcsFile->fixer->replaceToken($ptr, '');
+        }
+
+        $phpcsFile->fixer->endChangeset();
+    }
+
+    /**
      * Replace everything between two tokens with the given content.
      *
      * Like blankBetween(), it doesn't start a changeset, so several gaps can be set in one.
