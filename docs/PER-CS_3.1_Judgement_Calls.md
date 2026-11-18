@@ -1027,6 +1027,26 @@ the spec's own.
 
 ---
 
+### A Blank Line Before a Function's Opening Brace
+
+**Issue:** 4.4 says a function's or method's "opening brace MUST go on its own line". Unlike 4.1's rule for a class, it
+doesn't say the brace MUST NOT be preceded by a blank line.
+
+**Decision:** The brace goes on the line straight after the declaration, so a blank line before it is reported:
+
+```php
+function fooBarBaz($arg1)
+
+{
+    return $arg1;
+}
+```
+
+**Why:** Nobody writes this, and it's very unlikely the spec's authors meant to allow it. Every example puts the brace
+on the next line, and PHP_CodeSniffer reads the same PSR-12 wording this way.
+
+---
+
 ## 4.5 Method and Function Parameters
 
 ### Blank Lines in a List
