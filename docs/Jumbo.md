@@ -1,8 +1,8 @@
 # Jumbo Coding Standard
 
 A PHP_CodeSniffer standard for PHP 8.4 and later: [PERCS31](PERCS31.md), for PER Coding Style 3.1, plus extra rules reflecting my
-preferences and common practices. These add consistent naming, modern PHP, and stricter choices where PER allows more
-than one layout.
+preferences and habits developed coding PHP for over 20 years. These add consistent naming, modern PHP, and stricter
+choices where PER allows more than one layout.
 
 Everything PERCS31 checks, Jumbo checks too, apart from the changes listed under [PERCS31](#percs31). This page documents what Jumbo
 adds. For the PER rules, see [PERCS31](PERCS31.md).

@@ -8,10 +8,16 @@ PER rules wrong, such as rejecting an empty body written as `{}`, and don't yet 
 property hooks and the pipe operator. This standard fixes both, using sniffs from PHP_CodeSniffer, Slevomat, PHPCSExtra
 and php-collective where they fit, and custom sniffs where nothing did.
 
-Where the spec is unclear, contradicts itself or says nothing, [PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md) gives the reading PERCS31
-takes, and why.
+PLEASE NOTE: The PER-CS 3.1 specification is untidy at best. There are many ambiguities, inconsistencies, apparent
+omissions, and outright errors. Where the spec is unclear, contradicts itself or says nothing,
+[PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md) gives the reading this coding standard takes, and why.
 
-The [Jumbo standard](Jumbo.md) is PERCS31 plus extra rules. Use PERCS31 on its own to follow PER Coding Style without them.
+The [Jumbo standard](Jumbo.md) adds extra rules that:
+
+1. Resolve the ambiguities and inconsistencies in the specification.
+2. Add a little extra strictness to produce neat, consistent, readable, and maintainable code.
+
+Use PERCS31 on its own to follow PER Coding Style without them.
 
 **Contents:**
 
