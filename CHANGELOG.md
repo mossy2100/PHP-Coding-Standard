@@ -717,6 +717,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   after a `declare` or `namespace` statement, as missing the blank line after its block, even with one there. Its fix
   moved the comment onto a line of its own, where a `// phpcs:ignore` stopped applying. The comment now counts as part
   of the line it ends.
+- **A CRLF line ending after the first line.** `Generic.Files.LineEndings` only checked the file's first line ending,
+  so a CRLF after it in a string, a heredoc or markup wasn't reported or fixed, only warned about as mixed line endings.
+  The new `PERCS31.Files.LineEndings` replaces it, reporting each line that ends in CRLF, and fixing it to LF.
+  Reference its `InvalidEOLChar` code instead of `Generic.Files.LineEndings.InvalidEOLChar`.
 - **A comment after the last trait `use`.** `use A; // Why.` as the last thing in a class was reported as missing a
   blank line after it, and `phpcbf` failed, as two fixes undid each other. A comment at the end of the line now belongs
   to the `use`. The check moves from `PSR12.Traits.UseDeclaration.NoBlankLineAfterUse` to

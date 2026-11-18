@@ -1024,6 +1024,31 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a CRLF in a string, after an LF first line, is an error, with no warning that the file has mixed line
+     * endings, and that phpcbf converts it to LF. Generic.Files.LineEndings only looked at the first line.
+     */
+    public function testCrlfInStringAfterLfFirstLineIsFixed(): void
+    {
+        $source = "<?php\n\n\$a = 'x\r\ny';\n\$b = <<<'EOT'\n    x\r\n    EOT;\n";
+        $file = $this->copyToTempFile(null, $source);
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+            $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        preg_match_all('/:(\d+):\d+: (\w+) - .*\(([\w.]+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
+        $reports = array_map(static fn(array $match): string => "$match[1] $match[2] $match[3]", $matches);
+        $code = 'PERCS31.Files.LineEndings.InvalidEOLChar';
+
+        $this->assertSame(["3 error $code", "6 error $code"], $reports, $result['output']);
+        $this->assertSame(str_replace("\r\n", "\n", $source), $fixed);
+    }
+
+    /**
      * Test that a line over 120 characters is a warning, not an error, and that the warning over 80 characters is
      * hidden by default, and shown at severity 4.
      */

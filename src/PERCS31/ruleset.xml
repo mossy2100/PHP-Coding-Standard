@@ -92,6 +92,8 @@
         <!-- Covered by PERCS31.Functions.MultiLineFunctionDeclaration, which reports the space after function and
              before the opening parenthesis, with a fix (4.4) -->
         <exclude name="Squiz.Functions.FunctionDeclaration"/>
+        <!-- Replaced by PERCS31.Files.LineEndings, which checks every line, not only the first (2.2) -->
+        <exclude name="Generic.Files.LineEndings"/>
     </rule>
 
     <!-- Visibility on every constant is a MUST (4.3), but PSR12.Properties.ConstantVisibility only gives a warning -->
@@ -110,6 +112,13 @@
 
     <!-- A file is encoded in UTF-8 (2.1, PSR-1 2.2). PSR-12 includes Generic.Files.ByteOrderMark for the BOM -->
     <rule ref="PERCS31.Files.Encoding"/>
+
+    <!-- Every line ends in LF, including a line in a string, a heredoc or markup, after a first line that does (2.2) -->
+    <rule ref="PERCS31.Files.LineEndings"/>
+    <!-- The warning that a file has mixed line endings, as PERCS31.Files.LineEndings reports each wrong one -->
+    <rule ref="Internal.LineEndings.Mixed">
+        <severity>0</severity>
+    </rule>
 
     <!-- Line length (2.3): a warning over 120 characters, no hard limit, and a severity 4 warning over 80, which phpcs
          only shows with warning-severity set to 4. The sniff has one warning limit, so 80 is its lineLimit, and 120 is

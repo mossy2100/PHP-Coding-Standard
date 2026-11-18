@@ -251,7 +251,6 @@ class InheritedRulesUnitTest extends TestCase
             'error',
         ],
         'a byte order mark' => ["\u{FEFF}<?php\n\n\$a = 1;\n", 'Generic.Files.ByteOrderMark.Found', 'error'],
-        'Windows line endings' => ["<?php\r\n\r\n\$a = 1;\r\n", 'Generic.Files.LineEndings.InvalidEOLChar', 'error'],
         'TRUE in upper case' => ["<?php\n\n\$a = TRUE;\n", 'Generic.PHP.LowerCaseConstant.Found', 'error'],
         'a tab indent' => [
             "<?php\n\nif (\$a) {\n\trun();\n}\n",

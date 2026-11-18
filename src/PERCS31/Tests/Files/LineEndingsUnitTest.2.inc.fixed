@@ -1,0 +1,24 @@
+<?php
+
+// A CRLF on a line after an LF first line, wherever it is.
+$a = 1;
+// A comment.
+/**
+ * A docblock.
+ */
+function a(): void {}
+$b = 'x
+y';
+$c = "x
+y";
+$d = <<<EOT
+    $a
+    EOT;
+$e = <<<'EOT'
+    x
+    EOT;
+?>
+<p>Markup</p>
+<?php
+
+$f = 2;

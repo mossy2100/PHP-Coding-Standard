@@ -47,6 +47,7 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 
 - **Generic.Formatting.DisallowMultipleStatements**, by [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements), which allows
   `{ get; set; }` on an abstract or interface property.
+- **Generic.Files.LineEndings**, by [`PERCS31.Files.LineEndings`](#percs31fileslineendings), which checks every line, not only the first.
 - **Generic.PHP.LowerCaseKeyword**, by [`PERCS31.PHP.LowerCaseKeyword`](#percs31phplowercasekeyword), which also checks a property hook's name.
   **Squiz.ControlStructures.LowercaseDeclaration** and **Squiz.Functions.LowercaseFunctionKeywords** are excluded, as it
   reports every keyword they do, so an upper-case `IF` or `FUNCTION` was reported twice.
@@ -252,6 +253,7 @@ section gives the reason.
 | `PERCS31.Files.DeclareStatement`                           | No spaces in `declare(...)`, with one directive or several          | Yes     |
 | `PERCS31.Files.Encoding`                                   | A file is encoded in UTF-8                                          | No      |
 | `PERCS31.Files.FileHeader`                                 | The file header, allowing `<?php declare(...) ?>` above markup      | Yes     |
+| `PERCS31.Files.LineEndings`                                | Every line ends in LF, in strings and markup too                    | Yes     |
 | `PERCS31.Formatting.AfterClosingBrace`                     | No statement after a `}`, or comment after a class's or function's  | Partly  |
 | `PERCS31.Formatting.DisallowMultipleStatements`            | One statement per line, allowing `{ get; set; }`                    | Yes     |
 | `PERCS31.Formatting.EmptyBody`                             | An empty class, function, closure or anonymous class body is `{}`   | Yes     |
@@ -1529,6 +1531,25 @@ header is reported, as in any PHP file. If markup or a `<?=` block comes first, 
 </body>
 </html>
 ```
+
+---
+
+### PERCS31.Files.LineEndings
+
+Requires every line of a file to end in LF. This replaces `Generic.Files.LineEndings`.
+
+**Why:** [PER Coding Style 3.1, Section 2.2](https://www.php-fig.org/per/coding-style/#22-files) says "All PHP files MUST use the Unix LF (linefeed) line ending only".
+The parent only compares the line ending found on the file's first line. When that one is LF, a CRLF on a later line
+passed, with only PHP_CodeSniffer's warning that the file has mixed line endings. One after code or a comment was
+reported as trailing white space, but one in a string, a heredoc or markup wasn't reported or fixed at all.
+
+When the first line ends in CRLF, the parent reports the file once, on line 1. Otherwise, each line that ends in CRLF is
+reported, as `InvalidEOLChar`, wherever it is. The ruleset turns off `Internal.LineEndings.Mixed`, as each line is
+reported instead. A CRLF after code or a comment also gets `Squiz.WhiteSpace.SuperfluousWhitespace.EndLine`, as that
+sniff sees the CR as trailing white space.
+
+**Auto-fixable:** yes. Each CRLF becomes LF, in a string or heredoc too, as the parent's fix does for a file that's
+CRLF throughout.
 
 ---
 
@@ -3340,6 +3361,3 @@ Only the default of `ignoreIndentationTokens` differs from the original's, which
 - **An arrow function with a `throw` or `exit` in a `case` body.** PHP_CodeSniffer 4.0.4 never finishes on
   `$b = fn() => throw new Exception();` directly inside a `case` or `default`, under any standard, as it hangs before
   any sniff runs. Wrap the body in a closure, or move the arrow function out of the `switch`.
-- **A CRLF line in a file that starts with LF line endings.** `Generic.Files.LineEndings` only looks at the file's first
-  line ending, so the line is reported as trailing whitespace, by `Squiz.WhiteSpace.SuperfluousWhitespace`, with a
-  warning that the file has mixed line endings. `phpcbf` still fixes it to LF.
