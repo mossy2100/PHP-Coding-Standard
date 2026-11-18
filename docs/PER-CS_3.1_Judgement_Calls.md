@@ -750,9 +750,10 @@ reported, as is one after markup or a `<?=` block that comes before it.
 **Decision:** It must be in lower case, so `declare(STRICT_TYPES=1);` is reported, and fixed to
 `declare(strict_types=1);`.
 
-**Why:** The spec writes everything PHP itself defines in lower case: its keywords and types (2.5), including `true`,
-`false` and `null`, a hook's `get` and `set` (see [Hook Names](#hook-names)), and the `php` in `<?php` (3). Every
-example writes a directive in lower case too.
+**Why:** The spec writes what PHP itself defines in lower case: its keywords and types (2.5), including `true`, `false`
+and `null`, a hook's `get` and `set` (see [Hook Names](#hook-names)), and the `php` in `<?php` (3). Every example writes
+a directive in lower case too. The one exception is the magic constants, such as `__DIR__`, which are conventionally
+upper case, and whose case isn't checked. See [Magic Constants](#magic-constants).
 
 ---
 
