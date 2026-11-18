@@ -55,3 +55,24 @@ switch ($a) {
         echo 2;
         break;
 }
+
+// A block that's part of a body doesn't stop the switch's other checks: two spaces after case, a space before the
+// colon, a fall-through with no comment, a break after a block that isn't indented as the body, and a last case with
+// no terminating statement.
+switch ($a) {
+    case 0:
+        {
+            echo 0;
+        }
+        break;
+    case 1:
+        echo 1;
+    case 2:
+        {
+            echo 2;
+        }
+        break;
+    case 3:
+        echo 3;
+        break;
+}

@@ -49,6 +49,12 @@ class SwitchDeclarationUnitTest extends AbstractSniffTestCase
                 // A block followed by a comment, then the next label, wraps the body. A block followed by a break, or
                 // by more statements, doesn't, so lines 33 and 38 aren't reported.
                 50 => 1,
+                // A block that's part of a body doesn't stop the other checks: two spaces after case, a space before
+                // the colon and a fall-through, a break after a block not indented as the body, and a last case with
+                // no terminating statement.
+                67 => 3,
+                73 => 1,
+                74 => 1,
             ];
         }
 

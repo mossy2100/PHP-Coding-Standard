@@ -1312,24 +1312,27 @@ $label = match ($code) {
 
 ### PERCS31.ControlStructures.SwitchDeclaration
 
-Checks `switch` statements. This replaces `PSR2.ControlStructures.SwitchDeclaration`, and adds these rules:
+Checks `switch` statements. This is a fork of `PSR2.ControlStructures.SwitchDeclaration` from PHP_CodeSniffer 4.0.4,
+with its codes and messages, and adds these rules:
 
 - The last non-empty case MUST end with a terminating statement, such as `break`, `return` or `throw`.
 - A multi-line case condition MUST be wrapped in parentheses, with `):` on a line of its own.
 - A non-empty `default` that continues into the next case MUST have a comment saying so, as a `case` must.
 
-**Why:** [PER Coding Style 3.1, Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) sets these rules. The parent only checks a case that's followed by another,
-and doesn't check multi-line conditions.
+**Why:** [PER Coding Style 3.1, Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match) sets these rules. The original only checks a case that's followed by another,
+and doesn't check multi-line conditions. It's a fork, not a subclass, as two of the original's problems are in the
+middle of its one long check: it reports a block that's only part of a body, and it crashes after a braced body. See
+below.
 
 Code on a label's line, after the colon, is reported as `StatementOnLabelLine`. A comment there is allowed, as in
-`case 1: // The first.` The parent's `BodyOnNextLineCASE` and `BodyOnNextLineDEFAULT` codes report the same, and a
+`case 1: // The first.` The original's `BodyOnNextLineCASE` and `BodyOnNextLineDEFAULT` codes report the same, and a
 blank line straight after a label too, which section 5.2 doesn't forbid. So the ruleset excludes them. See
 [Blank Line After a `case` Label](PER-CS_3.1_Judgement_Calls.md#blank-line-after-a-case-label).
 
-The parent's `caseNotLower` and `defaultNotLower` codes are excluded, as [`PERCS31.PHP.LowerCaseKeyword`](#percs31phplowercasekeyword) reports an
+The original's `caseNotLower` and `defaultNotLower` codes are excluded, as [`PERCS31.PHP.LowerCaseKeyword`](#percs31phplowercasekeyword) reports an
 upper-case `CASE` or `DEFAULT` already.
 
-The parent's `BreakNotNewLine` code is excluded too. PHP_CodeSniffer 4.0.4 takes a `throw` or `exit` inside an
+The original's `BreakNotNewLine` code is excluded too. PHP_CodeSniffer 4.0.4 takes a `throw` or `exit` inside an
 expression, as in `$b = foo() ?? throw new Exception();`, for the statement that ends the `case`, so the code was
 reported on compliant code, and its fix never finished. A terminating statement that shares a line is still reported:
 after the label by `StatementOnLabelLine`, after another statement by [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements), and
@@ -1343,10 +1346,10 @@ as `MultiLineConditionCloserIndent`.
 
 A `case` or `default` body wrapped in braces is reported as `WrongOpener`. It's wrapped when a block starts straight
 after the label, and its `}` is followed by the next label or the switch's `}`. A block followed by more of the body,
-even just `break`, passes, as section 5.2 only forbids wrapping the body. The parent reports every block straight after
-a label, so it isn't run on a switch that has one. That also works around a bug in the parent (PHP_CodeSniffer 4.0.4),
-which crashes after a braced body, so the rest of the file wasn't checked, and `phpcbf` stopped. Such a switch gets no
-other check from this sniff. See [A Block in a `case`](PER-CS_3.1_Judgement_Calls.md#a-block-in-a-case).
+even just `break`, passes, as section 5.2 only forbids wrapping the body, and the case gets every other check, measured
+from its colon. The original reports every block straight after a label. It also crashes after a braced body, so the
+rest of the file wasn't checked, and `phpcbf` stopped, which the fork fixes. See
+[A Block in a `case`](PER-CS_3.1_Judgement_Calls.md#a-block-in-a-case).
 
 **Auto-fixable:** yes. The fix adds `break;` before the `}`, adds the parentheses, moves the `)` to its own line, moves
 the first condition to the next line, or indents a line. It's left to a person when there's a comment in the way, or the
