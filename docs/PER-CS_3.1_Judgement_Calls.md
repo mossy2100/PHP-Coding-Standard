@@ -361,6 +361,21 @@ See [Line Length](LineLength.md) to change the limit.
 
 ## 2.4 Indenting
 
+### A Tab Outside the Indent
+
+**Issue:** "Code MUST use an indent of 4 spaces for each indent level, and MUST NOT use tabs for indenting." The text
+only bans a tab that indents. It doesn't say whether one may be used elsewhere, as in `$a =` then a tab then `1;`.
+
+**Decision:** A tab is reported anywhere outside a string, including between two tokens, before a trailing comment and
+inside a comment's text. The fix replaces it with spaces up to the next tab stop, which is every 4 columns, so the
+code keeps the layout it had.
+
+**Why:** A tab is never a space. The spec's spacing rules all say "space", as in 6.2's "at least one space", and every
+example separates tokens with spaces. See [Spacing Shown by Example](#spacing-shown-by-example). PHP_CodeSniffer reads
+the same PSR-12 wording this way.
+
+---
+
 ### PHP Inside Markup
 
 **Issue:** 2.4 sets the indent for code, but not for PHP blocks inside HTML or other markup.
