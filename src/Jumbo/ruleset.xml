@@ -54,7 +54,7 @@
     </rule>
 
     <!-- No blank line in a trait's conflict block. PERCS31 excludes this code, as PER only shows the block with none. -->
-    <rule ref="PERCS31.Classes.TraitAliasSpacing.BlankLine">
+    <rule ref="PERCS31.Classes.TraitUseBlock.BlankLine">
         <severity>5</severity>
     </rule>
 

@@ -7,9 +7,9 @@ namespace PERCS31\Tests\Classes;
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffTestCase;
 
 /**
- * Unit tests for PERCS31.Classes.TraitAliasSpacing sniff.
+ * Unit tests for PERCS31.Classes.TraitUseBlock sniff.
  */
-class TraitAliasSpacingUnitTest extends AbstractSniffTestCase
+class TraitUseBlockUnitTest extends AbstractSniffTestCase
 {
     /**
      * Returns the lines where errors should occur.

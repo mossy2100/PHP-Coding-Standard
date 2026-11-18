@@ -239,7 +239,7 @@ section gives the reason.
 | `PERCS31.Classes.EnumMemberVisibility`                     | `private`, not `protected`, for a method or constant in an enum     | Yes     |
 | `PERCS31.Classes.PropertyDeclaration`                      | No leading `_`, no `var`, and a visibility on a property            | No      |
 | `PERCS31.Classes.PropertyHooks`                            | A hook list's layout, `get` first, and a promoted parameter's hooks | Partly  |
-| `PERCS31.Classes.TraitAliasSpacing`                        | A trait's `as` clause spacing, and its conflict block's lines       | Yes     |
+| `PERCS31.Classes.TraitUseBlock`                            | A trait's `as` clause spacing, and its conflict block's lines       | Yes     |
 | `PERCS31.ControlStructures.BodyOnNextLine`                 | A structure's body on the line after its `{`, allowing `{}`         | Yes     |
 | `PERCS31.ControlStructures.CatchVariableSpacing`           | One space between a `catch`'s type and its variable                 | Yes     |
 | `PERCS31.ControlStructures.ControlStructureEmptyStatement` | Braces on a structure with no body, `else` included                 | Yes     |
@@ -988,7 +988,7 @@ interface Named
 
 ---
 
-### PERCS31.Classes.TraitAliasSpacing
+### PERCS31.Classes.TraitUseBlock
 
 Requires a single space after a visibility or `final` in a trait's `as` clause, as in `sayBye as private myBye;`. A line
 break there is reported too. Also checks the lines of a trait's conflict block, the `{ ... }` after `use A, B`.

@@ -107,7 +107,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   split compound type that's indented wrongly, as `Indent`. A line starting with `|` or `&` must be level with the
   type's first line when the type starts that line, as in a parameter list or a multi-catch, and indented once past it
   when other code comes first, as in `public A`, `public const A` or `): A`. It wasn't checked. Auto-fixable.
-- **`PERCS31.Classes.TraitAliasSpacing` (breaking).** Requires a single space after a visibility or `final` in a trait's
+- **`PERCS31.Classes.TraitUseBlock` (breaking).** Requires a single space after a visibility or `final` in a trait's
   `as` clause. `sayBye as private  myBye;` passed, though PER Coding Style 3.1 sets the spacing there by its example.
   Auto-fixable, unless a comment is in the way.
 - **A blank line just inside a multi-line array, or anywhere in a group `use` (breaking).** A blank line after a
@@ -540,7 +540,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     a new code, `BlankLineBeforeCloseBracket`, in `PERCS31.Functions.MultiLineFunctionDeclaration` and
     `PERCS31.Functions.FunctionCallLayout`, which PERCS31 excludes and Jumbo turns on. One after the opening
     parenthesis is still `BlankLine`, in both.
-  - A blank line in a trait's conflict block, the `{ ... }` after `use A, B`. `PERCS31.Classes.TraitAliasSpacing` now
+  - A blank line in a trait's conflict block, the `{ ... }` after `use A, B`. `PERCS31.Classes.TraitUseBlock` now
     reports a statement on the opening brace's line, as `StatementOnOpenBraceLine`, and a closing brace on a
     statement's line, as `CloseBraceNotOnOwnLine`, and a blank line as `BlankLine`, which PERCS31 excludes and Jumbo
     turns on. They replace `PSR12.Traits.UseDeclaration`'s `SpaceAfterOpeningBrace` and `SpaceBeforeClosingBrace`, so a

@@ -11,8 +11,9 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Requires a single space after a visibility or `final` in a trait's `as` clause, as in `sayBye as private myBye;`, and
- * checks the lines of a trait's conflict block, the `{ ... }` after `use A, B`.
+ * Checks the `{ ... }` block of a trait `use`, where its conflicts are resolved: a single space after a visibility or
+ * `final` in an `as` clause, as in `sayBye as private myBye;`, and each statement and the closing brace on a line of
+ * its own.
  *
  * PER Coding Style 3.1, section 4.2, says `insteadof` and `as` MUST be used as its example shows, "taking note of
  * indentation, spacing, and new lines". PSR12.Traits.UseDeclaration checks the space each side of `as`, but not the
@@ -29,7 +30,7 @@ use PHP_CodeSniffer\Util\Tokens;
  * excludes and Jumbo turns on. These replace PSR12.Traits.UseDeclaration's SpaceAfterOpeningBrace and
  * SpaceBeforeClosingBrace codes, which report a blank line along with a statement on a brace's line.
  */
-class TraitAliasSpacingSniff implements Sniff
+class TraitUseBlockSniff implements Sniff
 {
     public const string CODE_SPACE_AFTER_MODIFIER = 'SpaceAfterModifier';
 

@@ -1,4 +1,4 @@
-<?php // phpcs:disable PERCS31.Classes.TraitAliasSpacing.BlankLine
+<?php // phpcs:disable PERCS31.Classes.TraitUseBlock.BlankLine
 
 class Talker
 {
@@ -34,7 +34,7 @@ class OneLineBlock
     use A, B { A::smallTalk insteadof B; }
 }
 
-// phpcs:enable PERCS31.Classes.TraitAliasSpacing.BlankLine -- Blank lines in a conflict block, which PERCS31 allows.
+// phpcs:enable PERCS31.Classes.TraitUseBlock.BlankLine -- Blank lines in a conflict block, which PERCS31 allows.
 class BlankBlock
 {
     use A, B {
