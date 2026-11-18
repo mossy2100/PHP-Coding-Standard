@@ -672,8 +672,21 @@ after the header.
 **Decision:** The ban covers the header's blocks only, from the opening tag to the imports. The rest of the code may
 have blank lines wherever 2.3 allows them.
 
+The file docblock is one of those blocks, so a blank line inside it is reported: a line that's empty, or only spaces,
+with no `*`. A line with only a `*` isn't blank, so a docblock's paragraphs are separated with one:
+
+```php
+/**
+ * Handles user authentication and session management.
+ *
+ * @package App\Auth
+ */
+```
+
+A class's or a function's docblock isn't part of the header, so it isn't checked. See [Comments](#comments).
+
 **Why:** The literal reading contradicts 2.3, and every example in the spec with more than one statement after the
-header, such as 4.2's and 12.4's.
+header, such as 4.2's and 12.4's. The file docblock is listed as a block, so the ban on a blank line covers it too.
 
 ---
 

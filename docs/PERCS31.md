@@ -1513,6 +1513,11 @@ The parent also takes a comment at the end of a block's last line, as in `use A;
 block. So it reports a missing blank line, and its fix moves the comment onto a line of its own, where a
 `// phpcs:ignore` no longer applies to the `use`. This sniff counts the comment as part of the line it ends.
 
+Section 3 says a header block MUST NOT contain a blank line, and the file docblock is one of them. So a line inside it
+that's empty, or only spaces, is reported, as `SpacingInsideDocblockBlock`, and fixed to a `*` line, lined up with the
+other stars. A line with only a `*` isn't blank. A docblock with no stars isn't fixed. See
+[Blank Lines in the Header](PER-CS_3.1_Judgement_Calls.md#blank-lines-in-the-header).
+
 Section 3 puts the imports before the rest of the code, and says that in a file with markup they MUST be at the top. The
 parent only looks at the header, so this sniff reports an import after the rest of the code, as `ImportAfterCode`. A
 file with more than one namespace is skipped, as each namespace has its own imports. In a file that starts with

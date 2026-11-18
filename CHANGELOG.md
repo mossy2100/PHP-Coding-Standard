@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **A blank line inside the file docblock (breaking).** `PERCS31.Files.FileHeader` now reports a line inside the file
+  docblock that's empty, or only spaces, as `SpacingInsideDocblockBlock`, as PER Coding Style 3.1 says a header block
+  MUST NOT contain a blank line. A line with only a `*` is fine. Auto-fixable, to a `*` line.
 - **A blank line in a split ternary (breaking).** `PERCS31.Operators.OperatorPlacement` now reports a blank line
   before a split ternary's `?` or `:`, as `BlankLineInTernary`, as PER Coding Style 3.1 says a split ternary MUST occupy
   three lines. Auto-fixable.

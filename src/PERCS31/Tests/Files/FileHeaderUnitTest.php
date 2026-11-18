@@ -70,6 +70,17 @@ class FileHeaderUnitTest extends AbstractSniffTestCase
             return [5 => 1];
         }
 
+        if ($testFile === 'FileHeaderUnitTest.31.inc') {
+            // A blank line in the file docblock, empty and only spaces. A line with a star, and a blank line in a class
+            // docblock, aren't reported.
+            return [5 => 1, 8 => 1];
+        }
+
+        if ($testFile === 'FileHeaderUnitTest.32.inc') {
+            // A blank line in a file docblock with no stars, which isn't fixed.
+            return [5 => 1];
+        }
+
         if ($testFile === 'FileHeaderUnitTest.30.inc') {
             // A comment at the end of a block's last line, with no blank line after it, or two. File 29 has a comment
             // at the end of every block, each with one blank line after it, so nothing is reported.

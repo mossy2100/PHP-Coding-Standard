@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PERCS31\Sniffs\Files;
 
 use PERCS31\Helpers\FileHeaderHelper;
+use PERCS31\Helpers\FixerHelper;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\PSR12\Sniffs\Files\FileHeaderSniff as Psr12Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -19,6 +20,10 @@ use PHPCSUtils\Utils\UseStatements;
  * `<?php declare(strict_types=1) ?>`. PSR12.Files.FileHeader reads that as a header, and requires blank lines after
  * the tag and the declaration. This sniff skips such a file, as the parent skips other files that mix PHP and markup,
  * and leaves everything else to the parent.
+ *
+ * Section 3 says a header block MUST NOT contain a blank line, and the file docblock is one, but the parent only checks
+ * the lines between two statements. This sniff reports a line inside the file docblock that's empty, or only spaces, as
+ * SpacingInsideDocblockBlock, and fixes it to a `*` line. A line with only a `*` isn't blank.
  *
  * Section 3 also lists "One or more declare statements" as one block, with no blank line in it. The parent ends the
  * header at a block declare, so it wants a blank line before one. This sniff counts one as a declare statement, so
@@ -61,6 +66,8 @@ class FileHeaderSniff extends Psr12Sniff
     public const string CODE_STRICT_TYPES_NOT_ON_FIRST_LINE = 'StrictTypesNotOnFirstLine';
 
     public const string CODE_IMPORT_AFTER_CODE = 'ImportAfterCode';
+
+    public const string CODE_BLANK_LINE_IN_DOCBLOCK = 'SpacingInsideDocblockBlock';
 
     /**
      * Processes this test, when one of its tokens is encountered.
@@ -109,6 +116,77 @@ class FileHeaderSniff extends Psr12Sniff
         $result = parent::process($phpcsFile, $stackPtr);
 
         return is_int($result) ? $result : null;
+    }
+
+    /**
+     * Check the spacing and grouping of the header's blocks, as the parent does, and that the file docblock has no
+     * blank line in it.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param array<int, array<string, mixed>> $headerLines The header's lines, from getHeaderLines().
+     */
+    public function processHeaderLines(File $phpcsFile, array $headerLines): void
+    {
+        parent::processHeaderLines($phpcsFile, $headerLines);
+
+        foreach ($headerLines as $line) {
+            if ($line['type'] === 'docblock' && is_int($line['start'])) {
+                $this->checkDocblockBlankLines($phpcsFile, $line['start']);
+            }
+        }
+    }
+
+    /**
+     * Report each blank line inside the file docblock: a line with no `*`, empty or only spaces. Section 3 says a
+     * header block MUST NOT contain a blank line. The fix turns it into a `*` line, lined up with the other stars, so
+     * the paragraph break and the comment's text are kept. A docblock with no stars to line up with isn't fixed.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the docblock's opening tag.
+     */
+    private function checkDocblockBlankLines(File $phpcsFile, int $opener): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $closer = $tokens[$opener]['comment_closer'] ?? null;
+        if (!is_int($closer)) {
+            return;
+        }
+
+        $star = $phpcsFile->findNext(T_DOC_COMMENT_STAR, ($opener + 1), $closer);
+        $prefix = $star === false ? null : str_repeat(' ', ($tokens[$star]['column'] - 1)) . '*';
+
+        $error = 'Header blocks must not contain blank lines';
+        for ($i = ($opener + 1); $i < $closer; $i++) {
+            // Look at each line from its first token, and skip the opening tag's line.
+            if ($tokens[$i]['column'] !== 1) {
+                continue;
+            }
+
+            $last = $i;
+            while (isset($tokens[($last + 1)]) && $tokens[($last + 1)]['line'] === $tokens[$i]['line']) {
+                $last++;
+            }
+
+            $isBlank = true;
+            for ($j = $i; $j <= $last; $j++) {
+                $isBlank = $isBlank && $tokens[$j]['code'] === T_DOC_COMMENT_WHITESPACE;
+            }
+
+            if ($isBlank && $last < $closer) {
+                $code = self::CODE_BLANK_LINE_IN_DOCBLOCK;
+                if (FixerHelper::addFixableErrorIf($phpcsFile, $prefix !== null, $error, $i, $code)) {
+                    $phpcsFile->fixer->beginChangeset();
+                    for ($j = $i; $j < $last; $j++) {
+                        $phpcsFile->fixer->replaceToken($j, '');
+                    }
+
+                    $phpcsFile->fixer->replaceToken($last, $prefix . $phpcsFile->eolChar);
+                    $phpcsFile->fixer->endChangeset();
+                }
+            }
+
+            $i = $last;
+        }
     }
 
     /**
