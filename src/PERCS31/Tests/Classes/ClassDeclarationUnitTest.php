@@ -23,6 +23,9 @@ class ClassDeclarationUnitTest extends AbstractSniffTestCase
             17 => 1,
             // Two spaces after the class keyword.
             21 => 1,
+            // A blank line after the opening brace of a class, and two after an enum's.
+            30 => 1,
+            36 => 1,
         ];
     }
 

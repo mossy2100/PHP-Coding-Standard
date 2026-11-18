@@ -11,6 +11,9 @@
         <exclude name="Generic.WhiteSpace.ScopeIndent"/>
         <!-- Replaced by a PERCS31 version that allows { get; set; } on an abstract or interface property (4.10) -->
         <exclude name="Generic.Formatting.DisallowMultipleStatements"/>
+        <!-- Replaced by PERCS31.Classes.ClassDeclaration.BlankLineAfterOpenBrace, which skips an anonymous class, as
+             section 8 gives it the closure rules, which allow a blank line after the brace (2.3, 4.1, 8) -->
+        <exclude name="PSR12.Classes.OpeningBraceSpace"/>
         <!-- Replaced by PERCS31 versions that allow an empty body as {} (4, 4.4, 7, 8) -->
         <exclude name="PSR2.Classes.ClassDeclaration"/>
         <exclude name="Squiz.Functions.MultiLineFunctionDeclaration"/>

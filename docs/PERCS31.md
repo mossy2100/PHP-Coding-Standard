@@ -54,6 +54,8 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 - **Generic.NamingConventions.UpperCaseConstantName**, from PSR-1, by [`PERCS31.NamingConventions.UpperCaseConstantName`](#percs31namingconventionsuppercaseconstantname),
   which allows PascalCase for an enum constant.
 - **PSR12.Classes.ClosingBrace**, by [`PERCS31.Formatting.AfterClosingBrace`](#percs31formattingafterclosingbrace), which checks every closing brace.
+- **PSR12.Classes.OpeningBraceSpace**, by [`PERCS31.Classes.ClassDeclaration`](#percs31classesclassdeclaration), which doesn't report a blank line after an
+  anonymous class's opening brace.
 - **PSR12.ControlStructures.BooleanOperatorPlacement** is kept, with `allowOnly` set to `first`, so a wrapped `&&` or
   `||` in a condition starts the line (5.1, 6.4). PSR-12 only requires consistency.
 - **PSR12.ControlStructures.ControlStructureSpacing**, by [`PERCS31.ControlStructures.ControlStructureSpacing`](#percs31controlstructurescontrolstructurespacing), which
@@ -659,6 +661,11 @@ empty body, the checks on `extends` and `implements` still run. See [PERCS31.For
 blank lines "except where explicitly forbidden", and nothing forbids one between two interfaces. So the ruleset excludes
 that code and `ExtendsInterfaceSameLine`, and this sniff reports an interface that shares a line with the one before it,
 as `InterfaceNotOnOwnLine`.
+
+Section 4.1 also forbids a blank line after the opening brace, which this sniff reports as `BlankLineAfterOpenBrace`.
+That replaces `PSR12.Classes.OpeningBraceSpace`, which also reports an anonymous class. Section 8 gives an anonymous
+class the closure rules, which allow a blank line there. See
+[PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md#blank-lines-in-an-anonymous-classs-body).
 
 **Auto-fixable:** yes.
 

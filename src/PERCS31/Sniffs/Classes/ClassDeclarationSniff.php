@@ -24,10 +24,17 @@ use PHP_CodeSniffer\Util\Tokens;
  * blank line, with the same message. Section 2.3 allows blank lines "except where explicitly forbidden", and nothing
  * forbids one between two interfaces. The parent's check can't be run without that, so the PERCS31 ruleset excludes
  * both codes, and this sniff reports an interface that shares a line with the one before it (InterfaceNotOnOwnLine).
+ *
+ * Section 4.1 also says the opening brace MUST NOT be followed by a blank line, so one is reported, as
+ * BlankLineAfterOpenBrace. This replaces PSR12.Classes.OpeningBraceSpace, which also reports an anonymous class.
+ * Section 8 gives an anonymous class the closure rules, which have no rule for the line after the brace, so it isn't
+ * checked, as this sniff doesn't listen for one.
  */
 class ClassDeclarationSniff extends Psr2Sniff
 {
     public const string CODE_INTERFACE_NOT_ON_OWN_LINE = 'InterfaceNotOnOwnLine';
+
+    public const string CODE_BLANK_LINE_AFTER_OPEN_BRACE = 'BlankLineAfterOpenBrace';
 
     /**
      * Processes this test, when one of its tokens is encountered.
@@ -46,6 +53,47 @@ class ClassDeclarationSniff extends Psr2Sniff
         }
 
         parent::process($phpcsFile, $stackPtr);
+        $this->checkBlankLineAfterOpenBrace($phpcsFile, $stackPtr);
+    }
+
+    /**
+     * Report a blank line straight after the opening brace, as section 4.1 forbids one, and fix it by removing every
+     * blank line there.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the class, interface, trait or enum keyword.
+     */
+    private function checkBlankLineAfterOpenBrace(File $phpcsFile, int $stackPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $opener = $tokens[$stackPtr]['scope_opener'] ?? null;
+        if (!is_int($opener)) {
+            return;
+        }
+
+        $blankLines = [];
+        for ($i = ($opener + 1); isset($tokens[$i]) && $tokens[$i]['code'] === T_WHITESPACE; $i++) {
+            if (LayoutHelper::isBlankLine($phpcsFile, $i)) {
+                $blankLines[] = $i;
+            }
+        }
+
+        if ($blankLines === []) {
+            return;
+        }
+
+        $error = 'The opening brace of a %s must not be followed by a blank line';
+        $data = [strtolower($tokens[$stackPtr]['content'])];
+        if (!$phpcsFile->addFixableError($error, $opener, self::CODE_BLANK_LINE_AFTER_OPEN_BRACE, $data)) {
+            return;
+        }
+
+        $phpcsFile->fixer->beginChangeset();
+        foreach ($blankLines as $blankLine) {
+            $phpcsFile->fixer->replaceToken($blankLine, '');
+        }
+
+        $phpcsFile->fixer->endChangeset();
     }
 
     /**

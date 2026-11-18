@@ -310,11 +310,6 @@ class InheritedRulesUnitTest extends TestCase
             'PSR12.Classes.ClassInstantiation.MissingParentheses',
             'error',
         ],
-        'a blank line after a class\'s opening brace' => [
-            "<?php\n\nclass A\n{\n\n    public int \$b = 1;\n}\n",
-            'PSR12.Classes.OpeningBraceSpace.Found',
-            'error',
-        ],
         'an import with a leading backslash' => [
             "<?php\n\nuse \\Foo\\Bar;\n",
             'PSR12.Files.ImportStatement.LeadingSlash',

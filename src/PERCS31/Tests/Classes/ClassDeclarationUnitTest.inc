@@ -23,3 +23,18 @@ final class  BadSpacing extends Exception {}
 final class Split extends Exception
 {
 }
+
+// === INVALID: a blank line after the opening brace ===
+
+final class BlankAfterBrace
+{
+
+    public int $a = 1;
+}
+
+enum BlankEnum
+{
+
+
+    case Hearts;
+}

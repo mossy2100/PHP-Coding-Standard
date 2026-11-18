@@ -529,6 +529,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     a new code, `BlankLineBeforeCloseBracket`, in `PERCS31.Functions.MultiLineFunctionDeclaration` and
     `PERCS31.Functions.FunctionCallLayout`, which PERCS31 excludes and Jumbo turns on. One after the opening
     parenthesis is still `BlankLine`, in both.
+  - A blank line after an anonymous class's opening brace, as section 8 gives it the closure rules.
+    `PERCS31.Classes.ClassDeclaration` now reports a blank line after a named class's opening brace, as
+    `BlankLineAfterOpenBrace`, and replaces `PSR12.Classes.OpeningBraceSpace`, so a `phpcs:ignore` for that code needs
+    updating.
   - A blank line before the closing parenthesis of a split control structure header, as in `if (`, a condition, a
     blank line and `) {`. `PERCS31.ControlStructures.ControlStructureSpacing` reports it as
     `BlankLineBeforeCloseParenthesis`, which PERCS31 excludes and Jumbo turns on, and a `)` on the last condition's

@@ -307,6 +307,29 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a blank line after an anonymous class's opening brace passes in PERCS31, which gives it the closure
+     * rules, and is an error in Jumbo. One after a named class's brace is an error in both.
+     */
+    public function testBlankLineAfterAnonClassBraceIsReportedInJumboOnly(): void
+    {
+        $header = "<?php\n\ndeclare(strict_types=1);\n\nnamespace Vendor\\Package;\n\n";
+        $anon = "\$a = new class {\n\n    public int \$b = 1;\n};\n";
+        $named = "final class Named\n{\n\n    public int \$b = 1;\n}\n";
+        $file = $this->copyToTempFile(null, $header . $anon . "\n" . $named);
+
+        try {
+            $per = $this->runTool('phpcs', ['--standard=PERCS31', '-s', '--report=emacs', $file])['output'];
+            $jumbo = $this->runTool('phpcs', ['--standard=Jumbo', '-s', '--report=emacs', $file])['output'];
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertStringNotContainsString(':7:', $per);
+        $this->assertStringContainsString(':13:1: error', $per);
+        $this->assertStringContainsString(':7:16: error', $jumbo);
+    }
+
+    /**
      * Test that a blank line before a split control structure header's closing parenthesis passes in PERCS31, and is
      * an error in Jumbo, whose fix removes it.
      */

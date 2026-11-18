@@ -1994,6 +1994,21 @@ examples show both.
 
 ---
 
+### Blank Lines in an Anonymous Class's Body
+
+**Issue:** 4.1 forbids a blank line after a class's opening brace and before its closing one. Section 8 says anonymous
+classes follow the closure rules instead, and section 4 defines "class" as "all classes, interfaces, traits, and enums",
+with no mention of anonymous classes.
+
+**Decision:** An anonymous class follows the closure rules. A blank line after its opening brace is allowed, and one
+before its closing brace is reported, as for a closure. See
+[A Blank Line at the Start of a Body](#a-blank-line-at-the-start-of-a-body). [Jumbo](Jumbo.md) reports both, as an
+extra rule.
+
+**Why:** Section 8 names closures explicitly, and section 4's definition of a class leaves anonymous classes out.
+
+---
+
 ### After the Arguments
 
 **Issue:** Section 8's text doesn't say whether a space goes between an anonymous class's arguments and `extends` or
