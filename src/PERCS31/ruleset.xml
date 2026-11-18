@@ -254,7 +254,8 @@
     <rule ref="PERCS31.Files.FileHeader"/>
 
     <!-- A group use split across lines: one name per line, indented once, the first on the line after the {, and the }
-         on a line of its own, with no blank line after the { or before the }, as the examples in 3 show -->
+         on a line of its own, as the examples in 3 show. No blank line in it, as a header block can't contain one
+         (3). -->
     <rule ref="PERCS31.Namespaces.GroupUseLayout"/>
 
     <!-- No spaces inside a declare statement's parentheses, including one with several directives (3) -->

@@ -12,14 +12,17 @@ use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Requires a group `use` split across lines to have one name per line, with the first on the line after the `{`, and
- * the `}` on a line of its own, each name indented once past the `use` line, and disallows a space just inside the
- * braces of a group `use` on one line.
+ * the `}` on a line of its own, each name indented once past the `use` line, with no blank line in it, and disallows a
+ * space just inside the braces of a group `use` on one line.
  *
  * PER Coding Style 3.1, section 3, shows a group `use` on one line, as in `use Vendor\Package\{ClassA, ClassB};`, and
  * one split across lines with a name on each line. Its text sets no layout, so the examples are read as the two
  * allowed forms, as for a single-line and a multi-line array (section 11). A group that mixes them, as in
- * `use A\{B,` then `C,` then `};`, is reported. A blank line after the `{`, between two names or before the `}` is
- * allowed, as section 2.3 allows one wherever nothing forbids it.
+ * `use A\{B,` then `C,` then `};`, is reported.
+ *
+ * Section 3 also says a block of the file header MUST NOT contain a blank line, and a group `use` is part of the block
+ * of imports. So a blank line anywhere in one, after the `{`, between two names or before the `}`, is reported as
+ * BlankLine.
  *
  * Every single-line example, in section 3 and in the overview, has no space after the `{` or before the `}`, as in
  * `{ClassA as A, ClassB}`. That's read as setting the spacing, as it's how the spec writes every bracketed list.
@@ -43,6 +46,8 @@ class GroupUseLayoutSniff implements Sniff
     public const string CODE_SPACE_BEFORE_CLOSE_BRACE = 'SpaceBeforeCloseBrace';
 
     public const string CODE_NAME_INDENT = 'NameIndent';
+
+    public const string CODE_BLANK_LINE = 'BlankLine';
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -104,6 +109,29 @@ class GroupUseLayoutSniff implements Sniff
         }
 
         $this->checkNameIndents($phpcsFile, $stackPtr, $closer, strlen($nameIndent));
+        $this->checkBlankLines($phpcsFile, $stackPtr, $closer);
+    }
+
+    /**
+     * Report each blank line in a group use split across lines, and fix it by removing it, as section 3 says a block
+     * of the file header MUST NOT contain one.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $opener The position of the group's `{`.
+     * @param int $closer The position of the group's `}`.
+     */
+    private function checkBlankLines(File $phpcsFile, int $opener, int $closer): void
+    {
+        for ($i = ($opener + 1); $i < $closer; $i++) {
+            if (!LayoutHelper::isBlankLine($phpcsFile, $i)) {
+                continue;
+            }
+
+            $error = 'There must be no blank line in a group use';
+            if ($phpcsFile->addFixableError($error, $i, self::CODE_BLANK_LINE)) {
+                $phpcsFile->fixer->replaceToken($i, '');
+            }
+        }
     }
 
     /**

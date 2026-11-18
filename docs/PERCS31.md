@@ -2062,13 +2062,16 @@ $largest = max(
 ### PERCS31.Namespaces.GroupUseLayout
 
 Requires a group `use` split across lines to have one name per line, indented once past the `use` line, with the first
-on the line after the `{`, and the `}` on a line of its own. A blank line after the `{`, between two names or before the
-`}` is allowed. In a group `use` on one line, it disallows a space after the `{` or before the `}`.
+on the line after the `{`, the `}` on a line of its own, and no blank line in it. In a group `use` on one line, it
+disallows a space after the `{` or before the `}`.
 
 **Why:** [PER Coding Style 3.1, Section 3](https://www.php-fig.org/per/coding-style/#3-declare-statements-namespace-and-import-statements) shows a group `use` on one line, and one split with a name on each line. Its
 text sets no layout, so the two examples are read as the two allowed forms, as for a single-line and a multi-line array.
 See [PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md#a-group-use-split-over-lines). No inherited sniff checks which line a name is on, its indent, or the space inside the
 braces.
+
+Section 3 also says a block of the file header MUST NOT contain a blank line, and a group `use` is part of the block of
+imports. So a blank line anywhere in one is reported, as `BlankLine`.
 
 Every single-line example, in section 3 and in the overview, is written `{ClassA as A, ClassB}`, with no space inside
 the braces. That's read as setting the spacing, as it's how the spec writes every list in brackets.

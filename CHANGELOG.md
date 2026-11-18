@@ -99,12 +99,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`PERCS31.Classes.TraitAliasSpacing` (breaking).** Requires a single space after a visibility or `final` in a trait's
   `as` clause. `sayBye as private  myBye;` passed, though PER Coding Style 3.1 sets the spacing there by its example.
   Auto-fixable, unless a comment is in the way.
-- **A blank line just inside a multi-line array or a split group `use` (breaking).** A blank line after a multi-line
-  array's `[` is now reported, by `PERCS31.Arrays.ArrayBracketSpacing`, as `BlankLineAfterOpener`. PER Coding Style 3.1
-  puts the first value on the next line, and only a blank line before the `]` was reported. A blank line after a split
-  group `use`'s `{`, or before its `}`, is reported too, by `PERCS31.Namespaces.GroupUseLayout`, as
-  `BlankLineAfterOpenBrace` or `BlankLineBeforeCloseBrace`. A blank line between values or names is still allowed. All
-  are auto-fixable.
+- **A blank line just inside a multi-line array, or anywhere in a group `use` (breaking).** A blank line after a
+  multi-line array's `[` is now reported, by `PERCS31.Arrays.ArrayBracketSpacing`, as `BlankLineAfterOpener`. PER Coding
+  Style 3.1 puts the first value on the next line, and only a blank line before the `]` was reported. A blank line
+  between values is still allowed. A blank line anywhere in a group `use` is reported too, by
+  `PERCS31.Namespaces.GroupUseLayout`, as `BlankLine`, as section 3 says a block of the file header MUST NOT contain
+  one. Both are auto-fixable.
 - **Spacing in an import (breaking).** A space just inside the braces of a group `use` on one line is now reported, by
   `PERCS31.Namespaces.GroupUseLayout`, as `SpaceAfterOpenBrace` or `SpaceBeforeCloseBrace`, so `use Foo\{ A, B };` must
   be `use Foo\{A, B};`. And `Universal.UseStatements.KeywordSpacing` now requires one space after `use`, `function` and
@@ -523,8 +523,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **One space after an enum case's `case` keyword (breaking).** `case  Hearts`, and `case` then a line break, are now
   reported by `PERCS31.Classes.ConstantDeclaration`, as `SpaceAfterCase`. Auto-fixable.
 - **PERCS31 allows a blank line wherever PER Coding Style 3.1 doesn't forbid one.** Section 2.3 allows blank lines
-  "except where explicitly forbidden", so PERCS31 no longer reports these. Jumbo still reports each one, apart from a
-  group `use`, which it bans.
+  "except where explicitly forbidden", so PERCS31 no longer reports these. Jumbo still reports each one.
   - A blank line before the closing parenthesis of a parameter list, a closure's `use` list or an argument list. It has
     a new code, `BlankLineBeforeCloseBracket`, in `PERCS31.Functions.MultiLineFunctionDeclaration` and
     `PERCS31.Functions.FunctionCallLayout`, which PERCS31 excludes and Jumbo turns on. One after the opening
@@ -535,11 +534,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - A blank line between two trait `use` statements, and more than one after the last.
     `SlevomatCodingStandard.Classes.TraitUseSpacing` moves from PERCS31 to Jumbo, and PERCS31 uses
     `PSR12.Traits.UseDeclaration.NoBlankLineAfterUse` for a last `use` statement with no blank line after it.
-  - A blank line after a group `use`'s `{`, or before its `}`. `PERCS31.Namespaces.GroupUseLayout`'s
-    `BlankLineAfterOpenBrace` and `BlankLineBeforeCloseBrace` codes are removed.
 - **A blank line between two items of a list (breaking).** PER Coding Style 3.1 allows blank lines "except where
   explicitly forbidden", so one between two items is now allowed in every list. These passed already in parameters,
-  arrays, `match` arms and a group `use`. They now pass in a call's or an attribute's arguments, a closure's `use`
+  arrays and `match` arms. They now pass in a call's or an attribute's arguments, a closure's `use`
   list and a list of interfaces, and more than one in a row passes between parameters. A blank line straight after a
   list's opening bracket, straight before its closing one, or after a parameter's attributes is still an error. Three
   codes changed, so a `phpcs:ignore` or an `<exclude>` that names one needs the new code:

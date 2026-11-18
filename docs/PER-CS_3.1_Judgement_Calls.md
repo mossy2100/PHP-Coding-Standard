@@ -701,7 +701,8 @@ use A\{
     C};
 ```
 
-A blank line after the `{`, between two names or before the `}` is allowed, as nothing in section 3 forbids one.
+A blank line anywhere in a group `use`, after the `{`, between two names or before the `}`, is reported. Section 3
+says a block of the file header "MUST NOT contain a blank line", and a group `use` is part of the block of imports.
 
 **Why:** The two examples are the only forms the spec shows, and they match its rules for a single-line and a multi-line
 array (11).
@@ -1032,8 +1033,7 @@ the spec's own.
 explicitly forbidden". The spec's examples rarely show a blank line in a list, so it's unclear where one is allowed.
 
 **Decision:** Blank lines are allowed between two items of every list: parameters, a closure's `use` variables, a call's
-or an attribute's arguments, an array's values, a `match`'s arms, a group `use`'s names and interfaces after
-`implements`. A comment between two items is allowed too. So this passes:
+or an attribute's arguments, an array's values, a `match`'s arms and interfaces after `implements`. A comment between two items is allowed too. So this passes:
 
 ```php
 $mailer->send(

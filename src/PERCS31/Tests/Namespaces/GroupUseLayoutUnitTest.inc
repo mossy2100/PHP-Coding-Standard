@@ -47,7 +47,7 @@ use const Vendor\Spaced\{  CONSTANT_A};
 // No space there is valid.
 use Vendor\Tight\{ClassA as A, ClassB, ClassC as C};
 
-// A blank line after the opening brace, and before the closing one, is allowed, as nothing forbids one.
+// A blank line after the opening brace, and before the closing one, is reported, and removed.
 use Vendor\Blank\{
 
     ClassA,
@@ -59,7 +59,7 @@ use Vendor\BlankComment\{
 
 };
 
-// A blank line between names is allowed.
+// A blank line between names is reported, and removed.
 use Vendor\Between\{
     ClassA,
 
