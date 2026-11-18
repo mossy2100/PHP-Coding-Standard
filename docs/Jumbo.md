@@ -54,7 +54,8 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
   array, as PER forbids no other. Jumbo turns on the codes it excludes:
   `PERCS31.Functions.MultiLineFunctionDeclaration.BlankLineBeforeCloseBracket`, for a parameter list and a closure's
   `use` list, and `PERCS31.Functions.FunctionCallLayout.BlankLineBeforeCloseBracket`, for an argument list. See
-  [Blank Lines in a List](PER-CS_3.1_Judgement_Calls.md#blank-lines-in-a-list).
+  [Blank Lines in a List](PER-CS_3.1_Judgement_Calls.md#blank-lines-in-a-list). The same goes for a split control
+  structure header, with `PERCS31.ControlStructures.ControlStructureSpacing.BlankLineBeforeCloseParenthesis`.
 - One constant per `const` statement at file scope too, and one space after its `const` keyword. PERCS31 only checks a
   class's constants, as section 4 is about classes (`checkGlobalConstants` set to `true` on
   `PERCS31.Classes.ConstantDeclaration`). A `define()` call can only declare one constant.

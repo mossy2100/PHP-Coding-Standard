@@ -36,6 +36,12 @@ use PHP_CodeSniffer\Util\Tokens;
  *
  * PERCS31.Arrays.MultiLineArrayLayout has a property of the same name, which lets an array that starts such a header
  * start a line.
+ *
+ * Sections 5.1 to 5.4 say the closing parenthesis and opening brace of a split header MUST be "placed together on their
+ * own line". So a `)` on the last expression's line is reported, as CloseParenthesisNotOnOwnLine. A blank line before
+ * the `)` isn't forbidden, as section 2.3 allows one wherever nothing forbids it, so it's reported separately, as
+ * BlankLineBeforeCloseParenthesis, which PERCS31 excludes and Jumbo turns on. The parent's CloseParenthesisLine reports
+ * both, so PERCS31 excludes it.
  */
 class ControlStructureSpacingSniff extends Psr12Sniff
 {
@@ -48,6 +54,10 @@ class ControlStructureSpacingSniff extends Psr12Sniff
     public const string CODE_AS_INDENT = 'AsIndent';
 
     public const string CODE_VARIABLES_NOT_ON_AS_LINE = 'VariablesNotOnAsLine';
+
+    public const string CODE_CLOSE_PARENTHESIS_NOT_ON_OWN_LINE = 'CloseParenthesisNotOnOwnLine';
+
+    public const string CODE_BLANK_LINE_BEFORE_CLOSE_PARENTHESIS = 'BlankLineBeforeCloseParenthesis';
 
     /**
      * Whether a multi-line `foreach` or `match` takes the split layout the other control structures do, with a
@@ -73,12 +83,12 @@ class ControlStructureSpacingSniff extends Psr12Sniff
             || !is_int($closer)
             || $tokens[$opener]['line'] === $tokens[$closer]['line']
         ) {
-            parent::process($phpcsFile, $stackPtr);
+            $this->processSplitLayout($phpcsFile, $stackPtr);
             return;
         }
 
         if ($this->splitForeachAndMatch) {
-            parent::process($phpcsFile, $stackPtr);
+            $this->processSplitLayout($phpcsFile, $stackPtr);
             if ($tokens[$stackPtr]['code'] === T_FOREACH) {
                 $this->checkAs($phpcsFile, $stackPtr, $opener, $closer);
             }
@@ -92,6 +102,72 @@ class ControlStructureSpacingSniff extends Psr12Sniff
         }
 
         $this->checkSpace($phpcsFile, $stackPtr, ($closer - 1), 'before the closing', self::CODE_SPACE_BEFORE_CLOSE);
+    }
+
+    /**
+     * Run the parent's checks, and check the closing parenthesis of a split header.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the control structure's keyword.
+     */
+    private function processSplitLayout(File $phpcsFile, int $stackPtr): void
+    {
+        parent::process($phpcsFile, $stackPtr);
+        $this->checkCloseParenthesis($phpcsFile, $stackPtr);
+    }
+
+    /**
+     * Check that the closing parenthesis of a split header is on a line of its own, as CloseParenthesisNotOnOwnLine,
+     * and that no blank line comes before it, as BlankLineBeforeCloseParenthesis.
+     *
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the control structure's keyword.
+     */
+    private function checkCloseParenthesis(File $phpcsFile, int $stackPtr): void
+    {
+        $tokens = $phpcsFile->getTokens();
+        $opener = $tokens[$stackPtr]['parenthesis_opener'] ?? null;
+        $closer = $tokens[$stackPtr]['parenthesis_closer'] ?? null;
+        if (!is_int($opener) || !is_int($closer) || $tokens[$opener]['line'] === $tokens[$closer]['line']) {
+            return;
+        }
+
+        $last = $phpcsFile->findPrevious(T_WHITESPACE, ($closer - 1), $opener, true);
+        if ($last === false || $last === $opener) {
+            return;
+        }
+
+        if ($tokens[$last]['line'] === $tokens[$closer]['line']) {
+            $error = 'The closing parenthesis of a multi-line control structure must be on a line of its own';
+            if ($phpcsFile->addFixableError($error, $closer, self::CODE_CLOSE_PARENTHESIS_NOT_ON_OWN_LINE)) {
+                $phpcsFile->fixer->addNewlineBefore($closer);
+            }
+
+            return;
+        }
+
+        if ($tokens[$closer]['line'] === ($tokens[$last]['line'] + 1)) {
+            return;
+        }
+
+        $error = 'Blank line not allowed before the closing parenthesis of a multi-line control structure';
+        if (!$phpcsFile->addFixableError($error, $closer, self::CODE_BLANK_LINE_BEFORE_CLOSE_PARENTHESIS)) {
+            return;
+        }
+
+        // Keep the line break after the last expression, and the closing parenthesis's indent.
+        $phpcsFile->fixer->beginChangeset();
+        for ($i = ($last + 1); $i < $closer; $i++) {
+            if ($tokens[$i]['line'] === $tokens[$closer]['line']) {
+                break;
+            }
+
+            if ($tokens[$i]['line'] !== $tokens[$last]['line']) {
+                $phpcsFile->fixer->replaceToken($i, '');
+            }
+        }
+
+        $phpcsFile->fixer->endChangeset();
     }
 
     /**

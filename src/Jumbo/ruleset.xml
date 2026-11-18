@@ -53,6 +53,12 @@
         <severity>5</severity>
     </rule>
 
+    <!-- No blank line straight before the closing parenthesis of a split control structure header. PERCS31 excludes
+         this code, as PER only puts the ) and the { together on their own line. -->
+    <rule ref="PERCS31.ControlStructures.ControlStructureSpacing.BlankLineBeforeCloseParenthesis">
+        <severity>5</severity>
+    </rule>
+
     <!-- No blank line after a case or default label. The parent's codes report that, and a statement on the label's
          line, so the code PERCS31 uses for the statement alone is turned off. -->
     <rule ref="PERCS31.ControlStructures.SwitchDeclaration.BodyOnNextLineCASE">

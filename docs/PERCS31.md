@@ -1148,6 +1148,11 @@ applies one to both anyway, so it rejects an array in the header, and a call wit
 For a multi-line `foreach` or `match`, this sniff only checks what section 5 requires of every control structure: no
 space after the `(` or before the `)`.
 
+Sections 5.1 to 5.4 put a split header's `)` and `{` "together on their own line", so a `)` on the last expression's
+line is reported, as `CloseParenthesisNotOnOwnLine`. A blank line before the `)` isn't forbidden, so it has its own
+code, `BlankLineBeforeCloseParenthesis`, which the ruleset excludes. Both replace the parent's `CloseParenthesisLine`,
+which reports either, and which the ruleset excludes.
+
 A standard that wants one layout for every split header, as [Jumbo](Jumbo.md) does, turns `splitForeachAndMatch` on. A
 multi-line `foreach` or `match` then gets the parent's rule too: the first expression on the line after `(`, and `)` on
 a line of its own. A `foreach`'s `as` also starts a line, level with the expression, with the loop's variables after it:

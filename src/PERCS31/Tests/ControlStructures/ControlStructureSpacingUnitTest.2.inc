@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable PERCS31.ControlStructures.ControlStructureSpacing.CloseParenthesisLine
 
 // phpcs:set PERCS31.ControlStructures.ControlStructureSpacing splitForeachAndMatch true
 

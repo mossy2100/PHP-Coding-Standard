@@ -307,6 +307,30 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
+     * Test that a blank line before a split control structure header's closing parenthesis passes in PERCS31, and is
+     * an error in Jumbo, whose fix removes it.
+     */
+    public function testBlankLineBeforeCloseParenthesisIsReportedInJumboOnly(): void
+    {
+        $source = "<?php\n\nwhile (\n    next(\$items)\n\n) {\n    run();\n}\n";
+        $file = $this->copyToTempFile(null, $source);
+        $sniff = '--sniffs=PERCS31.ControlStructures.ControlStructureSpacing';
+
+        try {
+            $per = $this->runTool('phpcs', ['--standard=PERCS31', $sniff, '-s', '--report=emacs', $file])['output'];
+            $jumbo = $this->runTool('phpcs', ['--standard=Jumbo', $sniff, '-s', '--report=emacs', $file])['output'];
+            $this->runTool('phpcbf', ['--standard=Jumbo', $sniff, $file]);
+            $fixed = (string) file_get_contents($file);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertStringNotContainsString('ControlStructureSpacing', $per);
+        $this->assertStringContainsString('ControlStructureSpacing.BlankLineBeforeCloseParenthesis', $jumbo);
+        $this->assertSame("<?php\n\nwhile (\n    next(\$items)\n) {\n    run();\n}\n", $fixed);
+    }
+
+    /**
      * Test that a comment indented too far after a statement passes in PERCS31, which has no rule for a comment's
      * indent, and is an error in Jumbo.
      */

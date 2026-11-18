@@ -51,6 +51,15 @@ class ControlStructureSpacingUnitTest extends AbstractSniffTestCase
             // A space after the ( and before the ) of a multi-line match.
             98 => 1,
             100 => 1,
+            // A split header's ) on the last expression's line.
+            108 => 1,
+            // A blank line before a split header's ) in an if, a while, a for, a switch and a do while. PERCS31
+            // excludes this code, and Jumbo turns it on.
+            116 => 1,
+            123 => 1,
+            132 => 1,
+            139 => 1,
+            149 => 1,
         ];
     }
 

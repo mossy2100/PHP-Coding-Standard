@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable PERCS31.ControlStructures.ControlStructureSpacing.CloseParenthesisLine
 
 // === VALID: a multi-line foreach ===
 
@@ -102,3 +102,46 @@ $label = match ($this->lookup([
 ])) {
     default => 'none',
 };
+
+// === INVALID: a split header's ) on the last expression's line, or after a blank line ===
+
+if (
+    $a
+    && $b
+) {
+    foo();
+}
+
+if (
+    $a
+    && $b
+) {
+    foo();
+}
+
+while (
+    $a
+) {
+    foo();
+}
+
+for (
+    $i = 0;
+    $i < 10;
+    $i++
+) {
+    foo();
+}
+
+switch (
+    $a
+) {
+    default:
+        break;
+}
+
+do {
+    foo();
+} while (
+    $a
+);

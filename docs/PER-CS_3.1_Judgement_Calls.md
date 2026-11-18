@@ -1059,6 +1059,8 @@ A blank line is only reported where the text rules it out:
 
 So a blank line straight before the closing parenthesis of a parameter list, a `use` list or an argument list is
 allowed. 4.5 and 7 only put the `)` and the `{` "together on their own line", and 4.7 says nothing about a call's `)`.
+The same goes for a split control structure header: 5.1 to 5.4 use the same words, and 5.3 says nothing about a `do`
+`while`'s `)`.
 
 [Jumbo](Jumbo.md) is stricter, as extra rules: no multi-line list starts or ends with a blank line, and no more than
 one comes between two items.

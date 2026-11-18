@@ -529,6 +529,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     a new code, `BlankLineBeforeCloseBracket`, in `PERCS31.Functions.MultiLineFunctionDeclaration` and
     `PERCS31.Functions.FunctionCallLayout`, which PERCS31 excludes and Jumbo turns on. One after the opening
     parenthesis is still `BlankLine`, in both.
+  - A blank line before the closing parenthesis of a split control structure header, as in `if (`, a condition, a
+    blank line and `) {`. `PERCS31.ControlStructures.ControlStructureSpacing` reports it as
+    `BlankLineBeforeCloseParenthesis`, which PERCS31 excludes and Jumbo turns on, and a `)` on the last condition's
+    line as `CloseParenthesisNotOnOwnLine`. They replace the parent's `CloseParenthesisLine`, so a `phpcs:ignore` for
+    that code needs updating.
   - A blank line after a `case` or `default` label. Code on a label's line is now reported as
     `PERCS31.ControlStructures.SwitchDeclaration.StatementOnLabelLine` in PERCS31. Jumbo keeps `BodyOnNextLineCASE` and
     `BodyOnNextLineDEFAULT`, which report both.

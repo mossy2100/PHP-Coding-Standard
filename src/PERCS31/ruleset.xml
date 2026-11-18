@@ -375,7 +375,14 @@
     <rule ref="PERCS31.ControlStructures.BodyOnNextLine"/>
 
     <!-- A control structure's parentheses, without PSR-12's rules for a multi-line foreach or match (5, 5.2, 5.5) -->
-    <rule ref="PERCS31.ControlStructures.ControlStructureSpacing"/>
+    <rule ref="PERCS31.ControlStructures.ControlStructureSpacing">
+        <!-- Replaced by the sniff's own CloseParenthesisNotOnOwnLine check, as the parent's code also reports a blank
+             line before a split header's closing parenthesis -->
+        <exclude name="PERCS31.ControlStructures.ControlStructureSpacing.CloseParenthesisLine"/>
+        <!-- A blank line before a split header's closing parenthesis isn't forbidden, as 5.1 to 5.4 only put the ) and
+             the { together on their own line (2.3) -->
+        <exclude name="PERCS31.ControlStructures.ControlStructureSpacing.BlankLineBeforeCloseParenthesis"/>
+    </rule>
 
     <!-- One space between a catch's type and its variable, as the example in 5.6 shows -->
     <rule ref="PERCS31.ControlStructures.CatchVariableSpacing"/>
