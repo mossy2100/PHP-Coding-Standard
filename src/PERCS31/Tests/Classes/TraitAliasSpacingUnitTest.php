@@ -26,6 +26,12 @@ class TraitAliasSpacingUnitTest extends AbstractSniffTestCase
             19 => 1,
             // A comment in the way (not fixable).
             22 => 1,
+            // A statement on the opening brace's line, and the closing brace on its line.
+            34 => 2,
+            // Blank lines in a conflict block.
+            41 => 1,
+            43 => 1,
+            45 => 1,
         ];
     }
 

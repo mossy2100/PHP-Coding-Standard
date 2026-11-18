@@ -234,7 +234,7 @@ section gives the reason.
 | `PERCS31.Classes.EnumMemberVisibility`                     | `private`, not `protected`, for a method or constant in an enum     | Yes     |
 | `PERCS31.Classes.PropertyDeclaration`                      | No leading `_`, no `var`, and a visibility on a property            | No      |
 | `PERCS31.Classes.PropertyHooks`                            | A hook list's layout, `get` first, and a promoted parameter's hooks | Partly  |
-| `PERCS31.Classes.TraitAliasSpacing`                        | One space after a visibility or `final` in a trait's `as` clause    | Yes     |
+| `PERCS31.Classes.TraitAliasSpacing`                        | A trait's `as` clause spacing, and its conflict block's lines       | Yes     |
 | `PERCS31.ControlStructures.BodyOnNextLine`                 | A structure's body on the line after its `{`, allowing `{}`         | Yes     |
 | `PERCS31.ControlStructures.CatchVariableSpacing`           | One space between a `catch`'s type and its variable                 | Yes     |
 | `PERCS31.ControlStructures.ControlStructureEmptyStatement` | Braces on a structure with no body, `else` included                 | Yes     |
@@ -986,7 +986,7 @@ interface Named
 ### PERCS31.Classes.TraitAliasSpacing
 
 Requires a single space after a visibility or `final` in a trait's `as` clause, as in `sayBye as private myBye;`. A line
-break there is reported too.
+break there is reported too. Also checks the lines of a trait's conflict block, the `{ ... }` after `use A, B`.
 
 **Why:** [PER Coding Style 3.1, Section 4.2](https://www.php-fig.org/per/coding-style/#42-using-traits) says `insteadof` and `as` MUST be used as its example shows, "taking note of
 indentation, spacing, and new lines". `PSR12.Traits.UseDeclaration` checks the space each side of `as` and `insteadof`,
@@ -997,6 +997,12 @@ It's a sniff of its own, not a subclass. The Squiz sniff's skip is in the middle
 the PSR-12 sniff would rename every one of its codes for one new check.
 
 A modifier with no alias, as in `sayHello as protected;`, has nothing after it to check.
+
+Section 4.2's example puts each statement of a conflict block on a line of its own, between the braces. A statement on
+the opening brace's line is reported as `StatementOnOpenBraceLine`, and a closing brace on a statement's line as
+`CloseBraceNotOnOwnLine`. A blank line in the block has its own code, `BlankLine`, which the ruleset excludes, as an
+example can't forbid a blank line. These replace `PSR12.Traits.UseDeclaration`'s `SpaceAfterOpeningBrace` and
+`SpaceBeforeClosingBrace`, which report a blank line too, and which the ruleset excludes.
 
 **Auto-fixable:** yes, unless a comment is in the way.
 

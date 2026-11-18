@@ -52,6 +52,10 @@
         <!-- Covered by PERCS31.Classes.ClassDeclaration.CloseBraceAfterBody, which reports the same blank line before
              the class's closing brace (4.1, 4.2) -->
         <exclude name="PSR12.Traits.UseDeclaration.BlankLineAfterLastUse"/>
+        <!-- Replaced by PERCS31.Classes.TraitAliasSpacing's StatementOnOpenBraceLine and CloseBraceNotOnOwnLine, as these
+             codes also report a blank line in a trait's conflict block, which nothing forbids (2.3, 4.2) -->
+        <exclude name="PSR12.Traits.UseDeclaration.SpaceAfterOpeningBrace"/>
+        <exclude name="PSR12.Traits.UseDeclaration.SpaceBeforeClosingBrace"/>
         <!-- Replaced by SlevomatCodingStandard.Classes.TraitUseDeclaration, which also reports several traits in a use
              statement with a { } block (4.2) -->
         <exclude name="PSR12.Traits.UseDeclaration.MultipleImport"/>
@@ -279,7 +283,10 @@
 
     <!-- One space after a visibility or final in a trait's as clause, as in sayBye as private myBye; (4.2).
          PSR12.Traits.UseDeclaration checks the space each side of as and insteadof. -->
-    <rule ref="PERCS31.Classes.TraitAliasSpacing"/>
+    <rule ref="PERCS31.Classes.TraitAliasSpacing">
+        <!-- A blank line in a trait's conflict block isn't forbidden, as only 4.2's example shows none (2.3) -->
+        <exclude name="PERCS31.Classes.TraitAliasSpacing.BlankLine"/>
+    </rule>
 
     <!-- abstract or final before readonly on a class (4.6) -->
     <rule ref="SlevomatCodingStandard.Classes.ClassKeywordOrder"/>

@@ -529,6 +529,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     a new code, `BlankLineBeforeCloseBracket`, in `PERCS31.Functions.MultiLineFunctionDeclaration` and
     `PERCS31.Functions.FunctionCallLayout`, which PERCS31 excludes and Jumbo turns on. One after the opening
     parenthesis is still `BlankLine`, in both.
+  - A blank line in a trait's conflict block, the `{ ... }` after `use A, B`. `PERCS31.Classes.TraitAliasSpacing` now
+    reports a statement on the opening brace's line, as `StatementOnOpenBraceLine`, and a closing brace on a
+    statement's line, as `CloseBraceNotOnOwnLine`, and a blank line as `BlankLine`, which PERCS31 excludes and Jumbo
+    turns on. They replace `PSR12.Traits.UseDeclaration`'s `SpaceAfterOpeningBrace` and `SpaceBeforeClosingBrace`, so a
+    `phpcs:ignore` for those codes needs updating.
   - A blank line after an anonymous class's opening brace, as section 8 gives it the closure rules.
     `PERCS31.Classes.ClassDeclaration` now reports a blank line after a named class's opening brace, as
     `BlankLineAfterOpenBrace`, and replaces `PSR12.Classes.OpeningBraceSpace`, so a `phpcs:ignore` for that code needs

@@ -946,6 +946,19 @@ statements, and 2.3 allows blank lines "except where explicitly forbidden".
 
 ---
 
+### Blank Lines in a Conflict Block
+
+**Issue:** 4.2 says `insteadof` and `as` "MUST be used as follows taking note of indentation, spacing, and new lines".
+Its example has no blank line in the `{ ... }` block, but the text doesn't forbid one.
+
+**Decision:** Each statement goes on a line of its own between the braces, as the example shows. Blank lines in the
+block are allowed. [Jumbo](Jumbo.md) allows none, as an extra rule.
+
+**Why:** 2.3 allows blank lines "except where explicitly forbidden", and an example never sets a ban on one. See
+[Spacing Shown by Example](#spacing-shown-by-example).
+
+---
+
 ### A Comment Before the First `use`
 
 **Issue:** 4.2 says the `use` keyword for traits "MUST be declared on the next line after the opening brace". It doesn't

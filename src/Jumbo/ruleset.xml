@@ -53,6 +53,11 @@
         <severity>5</severity>
     </rule>
 
+    <!-- No blank line in a trait's conflict block. PERCS31 excludes this code, as PER only shows the block with none. -->
+    <rule ref="PERCS31.Classes.TraitAliasSpacing.BlankLine">
+        <severity>5</severity>
+    </rule>
+
     <!-- No blank line straight before the closing parenthesis of a split control structure header. PERCS31 excludes
          this code, as PER only puts the ) and the { together on their own line. -->
     <rule ref="PERCS31.ControlStructures.ControlStructureSpacing.BlankLineBeforeCloseParenthesis">

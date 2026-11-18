@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable PERCS31.Classes.TraitAliasSpacing.BlankLine
 
 class Talker
 {
@@ -26,4 +26,31 @@ class Talker
 // An as elsewhere isn't a trait's.
 foreach ($items as $key => $value) {
     echo $key, $value;
+}
+
+// A statement on the opening brace's line, and a closing brace on a statement's line.
+class OneLineBlock
+{
+    use A, B { A::smallTalk insteadof B; }
+}
+
+// phpcs:enable PERCS31.Classes.TraitAliasSpacing.BlankLine -- Blank lines in a conflict block, which PERCS31 allows.
+class BlankBlock
+{
+    use A, B {
+
+        A::smallTalk insteadof B;
+
+        B::bigTalk as talk;
+
+    }
+}
+
+// Valid: one statement per line between the braces.
+class ValidBlock
+{
+    use A, B {
+        A::smallTalk insteadof B;
+        B::bigTalk as talk;
+    }
 }
