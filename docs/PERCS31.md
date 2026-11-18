@@ -1607,19 +1607,20 @@ $c = 1; if ($d) {
 
 ### PERCS31.Formatting.EmptyBody
 
-Reports an empty class, interface, trait, enum, function, method, closure, anonymous class or control structure body
-that isn't written as `{}` on the same line as the declaration, after a single space. It's a warning, except for a
-closure or anonymous class, where it's an error.
+Reports an empty class, interface, trait, enum, function, method, closure or anonymous class body that isn't written as
+`{}` on the same line as the declaration, after a single space. It's a warning, except for a closure or anonymous class,
+where it's an error.
 
 **Why:** [PER Coding Style 3.1, Sections 4 and 4.4](https://www.php-fig.org/per/coding-style/#4-classes-properties-and-methods) says an empty class or function body SHOULD be abbreviated that way,
 including a constructor that only promotes properties. [Section 7](https://www.php-fig.org/per/coding-style/#7-closures) says an empty closure body MUST be, and [section 8](https://www.php-fig.org/per/coding-style/#8-anonymous-classes) says
 an anonymous class MUST follow the same rules as a closure. No inherited sniff checks any of these. A body containing a
 comment isn't empty.
 
-Section 5 has no rule for a control structure's empty body. It's read as a class's or a function's is, so it SHOULD be
-`{}` too, as in `catch (Exception $e) {}`. The braces on separate lines get a warning.
+Section 5 has no rule for a control structure's empty body, so it isn't checked. Both `catch (Exception $e) {}` and the
+braces on separate lines pass.
 
-Set `strict` to make every empty body that isn't `{}` an error, as the [Jumbo standard](Jumbo.md) does.
+Set `strict` to make every empty body that isn't `{}` an error, including a control structure's, as the
+[Jumbo standard](Jumbo.md) does.
 
 Section 7 also says an empty closure SHOULD be replaced with an arrow function, "if possible", as in `fn() => null`. An
 empty closure that could be one gets a warning, as `ClosureNotArrowFunction`, whatever `strict` is. It isn't possible

@@ -101,7 +101,7 @@ function commentedClosures(): array
     ];
 }
 
-// A control structure's empty body should be {} too.
+// A control structure's empty body isn't checked, as PER has no rule for it.
 try {
     run();
 } catch (Exception $e) {

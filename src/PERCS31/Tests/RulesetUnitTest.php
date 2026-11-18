@@ -470,8 +470,8 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that a control structure's empty body passes as `{}`. A space between the braces, and a body on the
-     * brace's line, are reported.
+     * Test that a control structure's empty body passes as `{}`, and with a space between the braces, as PERCS31
+     * doesn't check an empty one. A body on the brace's line is reported.
      */
     public function testEmptyControlStructureBodyMayBeAbbreviated(): void
     {
@@ -490,7 +490,7 @@ class RulesetUnitTest extends TestCase
 
         $this->assertSame(0, $result['exitCode'], $result['output']);
         $this->assertSame(1, substr_count($invalidResult['output'], 'BodyOnNextLine.NewlineAfterOpenBrace'));
-        $this->assertSame(1, substr_count($invalidResult['output'], 'EmptyBody.NotAbbreviated'));
+        $this->assertSame(0, substr_count($invalidResult['output'], 'EmptyBody.NotAbbreviated'));
     }
 
     /**

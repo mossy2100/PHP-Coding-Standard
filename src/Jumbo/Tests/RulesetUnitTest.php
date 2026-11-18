@@ -283,8 +283,8 @@ class RulesetUnitTest extends TestCase
     }
 
     /**
-     * Test that a control structure's empty body with the braces on separate lines is a warning in PERCS31 and an
-     * error in Jumbo, whose fix writes it as `{}`.
+     * Test that a control structure's empty body with the braces on separate lines passes in PERCS31, and is an error
+     * in Jumbo, whose fix writes it as `{}`.
      */
     public function testEmptyControlStructureBodyMustBeAbbreviatedInJumbo(): void
     {
@@ -301,7 +301,7 @@ class RulesetUnitTest extends TestCase
             unlink($file);
         }
 
-        $this->assertStringContainsString('warning - An empty while body should be written as {}', $per);
+        $this->assertStringNotContainsString('EmptyBody', $per);
         $this->assertStringContainsString('error - An empty while body must be written as {}', $jumbo);
         $this->assertSame($header . "while (next(\$items)) {}\n", $fixed);
     }

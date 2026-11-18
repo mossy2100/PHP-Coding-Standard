@@ -12,8 +12,8 @@ use PHP_CodeSniffer\Util\Tokens;
 use PHPCSUtils\Utils\MessageHelper;
 
 /**
- * Reports an empty class, function, closure, anonymous class or control structure body that isn't written as `{}` after
- * a single space.
+ * Reports an empty class, function, closure or anonymous class body that isn't written as `{}` after a single space,
+ * and with strict on, an empty control structure body too.
  *
  * PER Coding Style 3.1, sections 4 and 4.4, says an empty class, interface, trait, enum, function or method body
  * should be abbreviated as `{}` on the same line as the previous symbol, separated by a space. It's a SHOULD, so this
@@ -24,10 +24,10 @@ use PHPCSUtils\Utils\MessageHelper;
  * A body after a `//` or `#` comment, as in `function a() // Why.` then `{` and `}`, is reported but not fixed, as the
  * `{}` can't go on the comment's line.
  *
- * Section 5 says nothing about a control structure's empty body. It's read as a class's or a function's is, so it
- * SHOULD be `{}` too, as in `catch (Exception $e) {}`, and this sniff gives a warning.
+ * Section 5 says nothing about a control structure's empty body, so it isn't checked by default.
  *
- * With strict on, as in the Jumbo standard, every empty body must be `{}`, so each of these is an error.
+ * With strict on, as in the Jumbo standard, every empty body must be `{}`, including a control structure's, as in
+ * `catch (Exception $e) {}`, so each of these is an error.
  *
  * Section 7 also says an empty closure SHOULD be replaced with an arrow function, "if possible", as in `fn() => null`.
  * This sniff gives a warning for one, as ClosureNotArrowFunction, and the fix replaces it, dropping any `use` list. It
@@ -42,8 +42,8 @@ class EmptyBodySniff implements Sniff
     public const string CODE_CLOSURE_NOT_ARROW_FUNCTION = 'ClosureNotArrowFunction';
 
     /**
-     * Whether every empty body must be `{}`, so one that isn't is an error. PER Coding Style 3.1 only says SHOULD for
-     * a class or function, and nothing for a control structure, so it's off by default.
+     * Whether every empty body must be `{}`, including a control structure's, so one that isn't is an error. PER Coding
+     * Style 3.1 only says SHOULD for a class or function, and nothing for a control structure, so it's off by default.
      */
     public bool $strict = false;
 
@@ -66,7 +66,8 @@ class EmptyBodySniff implements Sniff
     public function process(File $phpcsFile, int $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
-        if (!EmptyBodyHelper::isEmpty($phpcsFile, $stackPtr)) {
+        $isControlStructure = in_array($tokens[$stackPtr]['code'], EmptyBodyHelper::CONTROL_STRUCTURE_TOKENS, true);
+        if ((!$this->strict && $isControlStructure) || !EmptyBodyHelper::isEmpty($phpcsFile, $stackPtr)) {
             return;
         }
 

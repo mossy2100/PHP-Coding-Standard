@@ -80,8 +80,6 @@ class EmptyBodyUnitTest extends AbstractSniffTestCase
             41 => 1,
             // Function.
             56 => 1,
-            // A catch with the braces on separate lines.
-            107 => 1,
             // Empty closures that should be arrow functions: plain, with parameters, with a use list, static, with
             // a return type, with an attribute, and with the braces on separate lines.
             144 => 1,

@@ -249,8 +249,8 @@
 
     <!-- ====== CONTROL STRUCTURES (5) ====== -->
 
-    <!-- Every empty body as {}, as an error. PERCS31 warns for a class, function or control structure, where PER says
-         SHOULD or nothing. -->
+    <!-- Every empty body as {}, as an error, including a control structure's. PERCS31 warns for a class or function,
+         where PER says SHOULD, and doesn't check a control structure, where PER says nothing. -->
     <rule ref="PERCS31.Formatting.EmptyBody">
         <properties>
             <property name="strict" value="true"/>

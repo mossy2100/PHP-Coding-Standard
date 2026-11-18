@@ -155,10 +155,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   every other empty body as `{}`. The braces on separate lines still pass. The new
   `PERCS31.ControlStructures.BodyOnNextLine` replaces `Squiz.ControlStructures.ControlSignature.NewlineAfterOpenBrace`,
   so a `phpcs:ignore` for that code needs updating.
-- **`{}` for an empty control structure body (breaking).** An empty `catch`, `while`, `if` or other body with the
-  braces on separate lines now gets a warning from `PERCS31.Formatting.EmptyBody`, as the spec writes every other empty
-  body as `{}`. In Jumbo it's an error, and so is an empty class or function body that isn't `{}`, which was a warning.
-  The sniff's new `strict` property, which Jumbo turns on, does that. Auto-fixable.
+- **`{}` for an empty control structure body, in Jumbo (breaking).** An empty `catch`, `while`, `if` or other body with
+  the braces on separate lines is now an error in Jumbo, from `PERCS31.Formatting.EmptyBody`, and so is an empty class
+  or function body that isn't `{}`, which was a warning. The sniff's new `strict` property, which Jumbo turns on, does
+  that. PERCS31 doesn't check a control structure's empty body, as PER Coding Style 3.1 has no rule for it.
+  Auto-fixable.
 - **Blank lines around trait `use` statements, in PERCS31 (breaking).** PERCS31 now reports a blank line between two
   trait `use` statements, which only Jumbo did, and more than one after the last, as PER Coding Style 3.1's examples
   show none between them and one after. `SlevomatCodingStandard.Classes.TraitUseSpacing` makes these checks, so

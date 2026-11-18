@@ -1459,8 +1459,8 @@ empty body, with braces and nothing between them, and no body at all, as in `whi
 **Decision:**
 
 - **No body:** the structure MUST have braces, so `while (next($items));` and `else;` are errors.
-- **An empty body:** it SHOULD be written as `{}` on the same line, after a single space. The braces on separate lines
-  get a warning.
+- **An empty body:** it isn't checked. `{}` on the same line and the braces on separate lines both pass.
+  [Jumbo](Jumbo.md) requires `{}`, as an extra rule.
 
 So these are right:
 
@@ -1474,6 +1474,11 @@ try {
 if ($ready) {
     run();
 } else {}
+
+try {
+    run();
+} catch (Exception $e) {
+}
 ```
 
 These are errors:
@@ -1486,20 +1491,12 @@ if ($ready) {
 } else;
 ```
 
-This gets a warning:
-
-```php
-try {
-    run();
-} catch (Exception $e) {
-}
-```
-
 **Why:** The rule says each structure's body MUST be enclosed by braces, and makes no exception for one with no body. A
 `;` straight after a condition is also easy to add by accident, and to miss when reading.
 
-For an empty body, the spec has no rule in section 5. `{}` is how it writes every other empty body, and it says SHOULD
-for a class's (4) and a function's (4.4), so the same severity is used here.
+For an empty body, the spec has no rule in section 5, and braces on separate lines meet both of its rules: the body
+on the next line after the `{`, and the `}` on the next line after the body. The SHOULD for `{}` covers a class (4) and
+a function (4.4) only.
 
 ---
 

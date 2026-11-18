@@ -62,7 +62,8 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
   `PERCS31.ControlStructures.SwitchDeclaration`'s `BodyOnNextLineCASE` and `BodyOnNextLineDEFAULT` codes, which report
   that and code on the label's line, and turns off `StatementOnLabelLine`, which reports the second alone.
 - `PERCS31.Formatting.EmptyBody` requires every empty body as `{}`, as an error (`strict` set to `true`). PERCS31 only
-  warns for a class, a function or a control structure, where PER says SHOULD, or nothing.
+  warns for a class or a function, where PER says SHOULD, and doesn't check a control structure, where PER says
+  nothing.
 - `PERCS31.ControlStructures.ControlStructureSpacing` gives a `foreach` or `match` header that's split over lines the
   layout the other control structures have: the first expression on the line after `(`, and `) {` on a line of their
   own. A `foreach`'s `as` starts a line too, with its variables after it. PER has no rule for either, so PERCS31 leaves
