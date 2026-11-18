@@ -795,6 +795,8 @@ are allowed. There are no blank lines between `declare` statements.
 no space either side, where 6.2 requires one around every other `=`. So its comma has none after it either, where every
 other comma has one.
 
+The `declare` statements are one block of the file header, and section 3 says a block "MUST NOT contain a blank line".
+
 ---
 
 ### Blank Lines in a Block `declare`
@@ -1052,6 +1054,8 @@ A blank line is only reported where the text rules it out:
   array's opening bracket, as the first item goes "on the next line" (4.5, 4.7, 7, 11).
 - Straight before an array's closing bracket, which "MUST be placed on the next line after the last value" (11).
 - After an attribute, as "There MUST NOT be any blank lines between... the attributes and the structure" (12.2).
+- Straight after a `match`'s `{`, or before its `}`, as for any control structure (5).
+- Between the last interface after `implements` and the class's `{` (4.1).
 
 So a blank line straight before the closing parenthesis of a parameter list, a `use` list or an argument list is
 allowed. 4.5 and 7 only put the `)` and the `{` "together on their own line", and 4.7 says nothing about a call's `)`.
@@ -1983,7 +1987,7 @@ $example = new
 ```
 
 **Why:** A comment belongs with the code after it, so the attributes still start the class's own lines. A blank line
-puts the attributes further from `new` for no purpose.
+doesn't, as section 8 says the attributes start "on the next line after the `new` keyword".
 
 ---
 
