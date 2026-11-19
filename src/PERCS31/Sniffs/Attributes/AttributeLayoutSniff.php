@@ -237,8 +237,7 @@ class AttributeLayoutSniff implements Sniff
         }
 
         if (
-            $targetPtr === false
-            || $this->isClosure($phpcsFile, $targetPtr)
+            $targetPtr === false || $this->isClosure($phpcsFile, $targetPtr)
             || $this->isHookWithoutBlock($phpcsFile, $targetPtr)
             || AttributeHelper::findParameterListOpener($phpcsFile, $stackPtr) !== null
         ) {
@@ -354,9 +353,7 @@ class AttributeLayoutSniff implements Sniff
         }
 
         if (
-            $isSameLine
-            || $isParameter
-            || $tokens[$targetPtr]['code'] === T_ATTRIBUTE
+            $isSameLine || $isParameter || $tokens[$targetPtr]['code'] === T_ATTRIBUTE
             || LayoutHelper::countBlankLinesBetween($phpcsFile, $closerPtr, $targetPtr) === 0
         ) {
             return;

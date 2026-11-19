@@ -59,8 +59,7 @@ class CatchVariableSpacingSniff implements Sniff
         // Anything but whitespace before the variable is the type, or a comment, which is left alone.
         $type = $phpcsFile->findPrevious(T_WHITESPACE, ($variable - 1), $opener, true);
         if (
-            $type === false
-            || $tokens[$type]['line'] !== $tokens[$variable]['line']
+            $type === false || $tokens[$type]['line'] !== $tokens[$variable]['line']
             || isset(Tokens::COMMENT_TOKENS[$tokens[$type]['code']])
         ) {
             return;

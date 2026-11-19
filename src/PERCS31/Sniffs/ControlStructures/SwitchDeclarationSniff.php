@@ -554,9 +554,7 @@ class SwitchDeclarationSniff implements Sniff
         // The tokenizer ends a case's scope at a `break`, `return` or similar at its own level.
         $caseCloser = $tokens[$case]['scope_closer'] ?? null;
         if (
-            is_int($caseCloser)
-            && $caseCloser < $end
-            && in_array($tokens[$caseCloser]['code'], self::TERMINATORS, true)
+            is_int($caseCloser) && $caseCloser < $end && in_array($tokens[$caseCloser]['code'], self::TERMINATORS, true)
         ) {
             return true;
         }

@@ -129,9 +129,7 @@ class EmptyBodySniff implements Sniff
         // An arrow function always returns a value, so it can't be void or never. One that returns by reference is
         // left alone.
         if (
-            !is_int($parenthesisCloser)
-            || $next === false
-            || $tokens[$next]['code'] === T_BITWISE_AND
+            !is_int($parenthesisCloser) || $next === false || $tokens[$next]['code'] === T_BITWISE_AND
             || in_array($returnType, ['void', 'never'], true)
         ) {
             return false;

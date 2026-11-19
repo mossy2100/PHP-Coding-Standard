@@ -184,8 +184,7 @@ class FunctionCallLayoutSniff extends Psr2Sniff
     {
         $tokens = $phpcsFile->getTokens();
         if (
-            $tokens[$stackPtr]['code'] === T_ANON_CLASS
-            || $tokens[$opener]['code'] !== T_OPEN_PARENTHESIS
+            $tokens[$stackPtr]['code'] === T_ANON_CLASS || $tokens[$opener]['code'] !== T_OPEN_PARENTHESIS
             || $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($stackPtr + 1), $opener) === false
         ) {
             return false;
@@ -215,8 +214,7 @@ class FunctionCallLayoutSniff extends Psr2Sniff
         $tokens = $phpcsFile->getTokens();
         $closer = $tokens[$opener]['parenthesis_closer'] ?? null;
 
-        return is_int($closer)
-            && $tokens[$opener]['line'] !== $tokens[$closer]['line']
+        return is_int($closer) && $tokens[$opener]['line'] !== $tokens[$closer]['line']
             && TokenHelper::findCallableEllipsis($phpcsFile, $opener) !== null;
     }
 }

@@ -366,9 +366,7 @@ class PropertyHookHelper
             if ($code === T_OPEN_PARENTHESIS || $code === T_OPEN_SQUARE_BRACKET || $code === T_OPEN_SHORT_ARRAY) {
                 $depth++;
             } elseif (
-                $code === T_CLOSE_PARENTHESIS
-                || $code === T_CLOSE_SQUARE_BRACKET
-                || $code === T_CLOSE_SHORT_ARRAY
+                $code === T_CLOSE_PARENTHESIS || $code === T_CLOSE_SQUARE_BRACKET || $code === T_CLOSE_SHORT_ARRAY
             ) {
                 $depth--;
             }

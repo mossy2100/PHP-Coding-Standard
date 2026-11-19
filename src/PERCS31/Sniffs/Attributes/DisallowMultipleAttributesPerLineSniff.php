@@ -43,8 +43,7 @@ class DisallowMultipleAttributesPerLineSniff extends SlevomatSniff
         $tokens = $phpcsFile->getTokens();
         $closerPtr = $tokens[$attributeOpenerPointer]['attribute_closer'];
         $nextPtr = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($closerPtr + 1), null, true);
-        $isNextOnLine = $nextPtr !== false
-            && $tokens[$nextPtr]['code'] === T_ATTRIBUTE
+        $isNextOnLine = $nextPtr !== false && $tokens[$nextPtr]['code'] === T_ATTRIBUTE
             && $tokens[$nextPtr]['line'] === $tokens[$closerPtr]['line'];
         $firstOnLine = $phpcsFile->findFirstOnLine(T_WHITESPACE, $attributeOpenerPointer, true);
         assert(is_int($firstOnLine));

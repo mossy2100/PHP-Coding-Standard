@@ -87,8 +87,7 @@ class BlockCommentSniff implements Sniff
         // Each line of a comment over several lines is a token of its own.
         $last = $stackPtr;
         while (
-            isset($tokens[($last + 1)])
-            && $tokens[($last + 1)]['code'] === T_COMMENT
+            isset($tokens[($last + 1)]) && $tokens[($last + 1)]['code'] === T_COMMENT
             && !str_contains($tokens[$last]['content'], '*/')
         ) {
             $last++;
@@ -199,11 +198,8 @@ class BlockCommentSniff implements Sniff
             return false;
         }
 
-        return $code === T_OPEN_TAG
-            || in_array($code, self::PUNCTUATION, true)
-            || isset(Tokens::OPERATORS[$code])
-            || isset(Tokens::ASSIGNMENT_TOKENS[$code])
-            || isset(Tokens::COMPARISON_TOKENS[$code])
+        return $code === T_OPEN_TAG || in_array($code, self::PUNCTUATION, true) || isset(Tokens::OPERATORS[$code])
+            || isset(Tokens::ASSIGNMENT_TOKENS[$code]) || isset(Tokens::COMPARISON_TOKENS[$code])
             || isset(Tokens::BOOLEAN_OPERATORS[$code]);
     }
 

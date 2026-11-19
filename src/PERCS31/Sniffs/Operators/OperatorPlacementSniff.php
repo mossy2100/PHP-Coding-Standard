@@ -177,8 +177,7 @@ class OperatorPlacementSniff implements Sniff
 
         $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($lastPtr + 1), null, true);
         if (
-            $next !== false
-            && in_array($tokens[$next]['code'], [T_START_HEREDOC, T_START_NOWDOC], true)
+            $next !== false && in_array($tokens[$next]['code'], [T_START_HEREDOC, T_START_NOWDOC], true)
             && (isset(Tokens::ASSIGNMENT_TOKENS[$code]) || $code === T_FN_ARROW)
         ) {
             return;
@@ -193,9 +192,7 @@ class OperatorPlacementSniff implements Sniff
         // PERCS31.Arrays.MultiLineArrayLayout, giving `$a = [`. Moving the operator down too would give `= [`.
         $closer = $tokens[$next]['bracket_closer'] ?? null;
         if (
-            isset(Tokens::ASSIGNMENT_TOKENS[$code])
-            && $tokens[$next]['code'] === T_OPEN_SHORT_ARRAY
-            && is_int($closer)
+            isset(Tokens::ASSIGNMENT_TOKENS[$code]) && $tokens[$next]['code'] === T_OPEN_SHORT_ARRAY && is_int($closer)
             && $tokens[$closer]['line'] !== $tokens[$next]['line']
         ) {
             return;

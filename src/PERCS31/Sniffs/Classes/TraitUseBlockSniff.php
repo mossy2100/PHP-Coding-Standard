@@ -195,8 +195,7 @@ class TraitUseBlockSniff implements Sniff
         $lineEnd = $end;
         $next = $phpcsFile->findNext(T_WHITESPACE, ($end + 1), null, true);
         while (
-            $next !== false
-            && isset(Tokens::COMMENT_TOKENS[$tokens[$next]['code']])
+            $next !== false && isset(Tokens::COMMENT_TOKENS[$tokens[$next]['code']])
             && $tokens[$next]['line'] === $tokens[$end]['line']
         ) {
             $lineEnd = $next;

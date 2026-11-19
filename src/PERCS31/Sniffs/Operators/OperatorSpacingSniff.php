@@ -157,8 +157,7 @@ class OperatorSpacingSniff extends SquizSniff
 
         $tokens = $phpcsFile->getTokens();
         $before = $phpcsFile->findPrevious(T_WHITESPACE, ($thenPtr - 1), null, true);
-        $endsLine = $before !== false
-            && $tokens[$before]['line'] === $tokens[$thenPtr]['line']
+        $endsLine = $before !== false && $tokens[$before]['line'] === $tokens[$thenPtr]['line']
             && $tokens[$elsePtr]['line'] !== $tokens[$thenPtr]['line'];
 
         $phpcsFile->fixer->beginChangeset();

@@ -164,8 +164,7 @@ class TrailingCommaSniff implements Sniff
 
         $last = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($closer - 1), $opener, true);
         if (
-            $last === false
-            || $tokens[$last]['code'] !== T_COMMA
+            $last === false || $tokens[$last]['code'] !== T_COMMA
             || $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($last + 1), $closer) === false
         ) {
             return;

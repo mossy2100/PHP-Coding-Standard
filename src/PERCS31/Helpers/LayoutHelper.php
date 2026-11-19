@@ -108,9 +108,7 @@ class LayoutHelper
     {
         $tokens = $phpcsFile->getTokens();
 
-        return $tokens[$ptr]['code'] === T_WHITESPACE
-            && $tokens[$ptr]['column'] === 1
-            && isset($tokens[($ptr + 1)])
+        return $tokens[$ptr]['code'] === T_WHITESPACE && $tokens[$ptr]['column'] === 1 && isset($tokens[($ptr + 1)])
             && $tokens[$ptr]['line'] !== $tokens[($ptr + 1)]['line'];
     }
 

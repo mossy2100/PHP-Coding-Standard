@@ -58,8 +58,7 @@ class ArrowFunctionSpacingSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
         $closer = $tokens[$stackPtr]['scope_closer'] ?? null;
         if (
-            !is_int($closer)
-            || $tokens[$closer]['code'] !== T_SEMICOLON
+            !is_int($closer) || $tokens[$closer]['code'] !== T_SEMICOLON
             || $tokens[($closer - 1)]['code'] !== T_WHITESPACE
         ) {
             return;

@@ -67,8 +67,7 @@ class CompoundTypeHelper
      */
     public static function isTypeToken(int|string $code, bool $isHook): bool
     {
-        return in_array($code, self::TYPE_TOKENS, true)
-            || isset(Tokens::EMPTY_TOKENS[$code])
+        return in_array($code, self::TYPE_TOKENS, true) || isset(Tokens::EMPTY_TOKENS[$code])
             || ($isHook && in_array($code, self::HOOK_TYPE_TOKENS, true));
     }
 
@@ -113,8 +112,7 @@ class CompoundTypeHelper
     {
         $code = $phpcsFile->getTokens()[$stackPtr]['code'];
 
-        return $code === T_TYPE_UNION
-            || $code === T_TYPE_INTERSECTION
+        return $code === T_TYPE_UNION || $code === T_TYPE_INTERSECTION
             || PropertyHookHelper::isHookParameterType($phpcsFile, $stackPtr)
             || self::isCatchSeparator($phpcsFile, $stackPtr);
     }
@@ -189,8 +187,7 @@ class CompoundTypeHelper
         }
 
         return self::findParameterTypeBounds($phpcsFile, $stackPtr)
-            ?? self::findDeclarationTypeBounds($phpcsFile, $stackPtr)
-            ?? [$stackPtr, $stackPtr];
+            ?? self::findDeclarationTypeBounds($phpcsFile, $stackPtr) ?? [$stackPtr, $stackPtr];
     }
 
     /**

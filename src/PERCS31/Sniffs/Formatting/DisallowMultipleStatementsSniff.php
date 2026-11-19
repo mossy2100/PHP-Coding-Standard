@@ -41,8 +41,7 @@ class DisallowMultipleStatementsSniff extends GenericSniff
 
         $prev = $phpcsFile->findPrevious(T_SEMICOLON, ($stackPtr - 1));
         if (
-            $prev !== false
-            && $this->endsHookOperation($phpcsFile, $stackPtr)
+            $prev !== false && $this->endsHookOperation($phpcsFile, $stackPtr)
             && $this->endsHookOperation($phpcsFile, $prev)
         ) {
             return;
@@ -66,9 +65,7 @@ class DisallowMultipleStatementsSniff extends GenericSniff
         $line = $tokens[$semicolonPtr]['line'];
         $next = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($semicolonPtr + 1), null, true);
         if (
-            $next === false
-            || $tokens[$next]['line'] !== $line
-            || $tokens[$next]['code'] === T_CLOSE_CURLY_BRACKET
+            $next === false || $tokens[$next]['line'] !== $line || $tokens[$next]['code'] === T_CLOSE_CURLY_BRACKET
             || $tokens[$next]['code'] === T_CLOSE_TAG
         ) {
             return;

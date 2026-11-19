@@ -47,8 +47,7 @@ class TrailingCommentSniff implements Sniff
 
         $previous = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
         if (
-            $previous === false
-            || $tokens[$previous]['line'] !== $tokens[$stackPtr]['line']
+            $previous === false || $tokens[$previous]['line'] !== $tokens[$stackPtr]['line']
             || $tokens[$previous]['code'] === T_OPEN_TAG
         ) {
             return;

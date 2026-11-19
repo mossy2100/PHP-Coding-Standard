@@ -116,12 +116,9 @@ class OperatorHelper
 
         $isPlusMinus = in_array($tokens[$stackPtr]['code'], [T_PLUS, T_MINUS], true);
 
-        return in_array($previousCode, self::BEFORE_UNARY, true)
-            || isset(Tokens::ASSIGNMENT_TOKENS[$previousCode])
-            || isset(Tokens::COMPARISON_TOKENS[$previousCode])
-            || isset(Tokens::OPERATORS[$previousCode])
-            || isset(Tokens::BOOLEAN_OPERATORS[$previousCode])
-            || isset(Tokens::CAST_TOKENS[$previousCode])
+        return in_array($previousCode, self::BEFORE_UNARY, true) || isset(Tokens::ASSIGNMENT_TOKENS[$previousCode])
+            || isset(Tokens::COMPARISON_TOKENS[$previousCode]) || isset(Tokens::OPERATORS[$previousCode])
+            || isset(Tokens::BOOLEAN_OPERATORS[$previousCode]) || isset(Tokens::CAST_TOKENS[$previousCode])
             || ($isPlusMinus && Operators::isUnaryPlusMinus($phpcsFile, $stackPtr));
     }
 

@@ -209,9 +209,7 @@ class FileHeaderSniff extends Psr12Sniff
         // Code on the first line's opening tag is reported by PSR12.Files.OpenTag, so the tag's blank line isn't.
         $next = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
         if (
-            $stackPtr === 0
-            && $next !== false
-            && $tokens[$next]['line'] === $tokens[$stackPtr]['line']
+            $stackPtr === 0 && $next !== false && $tokens[$next]['line'] === $tokens[$stackPtr]['line']
             && ($lines[0]['type'] ?? null) === 'tag'
         ) {
             array_shift($lines);
@@ -302,8 +300,7 @@ class FileHeaderSniff extends Psr12Sniff
 
             $next = $phpcsFile->findNext(T_WHITESPACE, ($end + 1), null, true);
             while (
-                $next !== false
-                && isset(Tokens::COMMENT_TOKENS[$tokens[$next]['code']])
+                $next !== false && isset(Tokens::COMMENT_TOKENS[$tokens[$next]['code']])
                 && $tokens[$next]['line'] === $tokens[$end]['line']
             ) {
                 $lines[$index]['end'] = $next;
@@ -398,8 +395,7 @@ class FileHeaderSniff extends Psr12Sniff
         $tokens = $phpcsFile->getTokens();
         $declare = FileHeaderHelper::findStrictTypesDeclare($phpcsFile);
         if (
-            $declare === null
-            || $stackPtr !== FileHeaderHelper::findFirstLineTag($phpcsFile)
+            $declare === null || $stackPtr !== FileHeaderHelper::findFirstLineTag($phpcsFile)
             || !FileHeaderHelper::hasMarkup($phpcsFile)
         ) {
             return false;

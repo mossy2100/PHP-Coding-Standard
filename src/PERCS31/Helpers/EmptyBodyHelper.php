@@ -95,8 +95,7 @@ class EmptyBodyHelper
         $closer = $tokens[$ownerPtr]['scope_closer'];
         $previous = $phpcsFile->findPrevious(T_WHITESPACE, ($opener - 1), null, true);
 
-        return $previous !== false
-            && $tokens[$previous]['line'] === $tokens[$opener]['line']
+        return $previous !== false && $tokens[$previous]['line'] === $tokens[$opener]['line']
             && $tokens[$opener]['line'] === $tokens[$closer]['line'];
     }
 }

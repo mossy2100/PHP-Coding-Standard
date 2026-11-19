@@ -176,8 +176,7 @@ class MultiLineArrayLayoutSniff implements Sniff
         // start a line.
         $owner = $tokens[$container]['parenthesis_owner'] ?? null;
         if (
-            $previous === $container
-            && is_int($owner)
+            $previous === $container && is_int($owner)
             && in_array($tokens[$owner]['code'], $this->getSplitConditionOwners(), true)
         ) {
             return true;

@@ -78,9 +78,7 @@ class ControlStructureSpacingSniff extends Psr12Sniff
         $closer = $tokens[$stackPtr]['parenthesis_closer'] ?? null;
 
         if (
-            !in_array($tokens[$stackPtr]['code'], [T_FOREACH, T_MATCH], true)
-            || !is_int($opener)
-            || !is_int($closer)
+            !in_array($tokens[$stackPtr]['code'], [T_FOREACH, T_MATCH], true) || !is_int($opener) || !is_int($closer)
             || $tokens[$opener]['line'] === $tokens[$closer]['line']
         ) {
             $this->processSplitLayout($phpcsFile, $stackPtr);
@@ -183,8 +181,7 @@ class ControlStructureSpacingSniff extends Psr12Sniff
     {
         $tokens = $phpcsFile->getTokens();
         if (
-            $tokens[$space]['code'] !== T_WHITESPACE
-            || $tokens[$space]['column'] === 1
+            $tokens[$space]['code'] !== T_WHITESPACE || $tokens[$space]['column'] === 1
             || str_contains($tokens[$space]['content'], $phpcsFile->eolChar)
         ) {
             return;

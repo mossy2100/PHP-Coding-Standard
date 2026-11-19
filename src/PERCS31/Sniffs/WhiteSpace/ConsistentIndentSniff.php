@@ -160,10 +160,8 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
 
         // Anything the parent can't judge safely.
         if (
-            $this->isInsideClosure($phpcsFile, $next, $tokens)
-            || $this->isInsideArray($phpcsFile, $next, $tokens)
-            || $this->isInsideSwitchCase($phpcsFile, $next, $tokens)
-            || $this->isInsideAnonClass($tokens, $next)
+            $this->isInsideClosure($phpcsFile, $next, $tokens) || $this->isInsideArray($phpcsFile, $next, $tokens)
+            || $this->isInsideSwitchCase($phpcsFile, $next, $tokens) || $this->isInsideAnonClass($tokens, $next)
             || isset(Tokens::COMMENT_TOKENS[$tokens[$next]['code']])
             || $this->startsWithContinuationOperator($next, $tokens)
         ) {
@@ -206,8 +204,7 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
         $tokens = $phpcsFile->getTokens();
         $next = $stackPtr + 1;
         if (
-            $tokens[$stackPtr]['column'] !== 1
-            || !isset($tokens[$next])
+            $tokens[$stackPtr]['column'] !== 1 || !isset($tokens[$next])
             || $tokens[$next]['line'] !== $tokens[$stackPtr]['line']
             || !isset(Tokens::COMMENT_TOKENS[$tokens[$next]['code']])
         ) {
@@ -274,8 +271,7 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
         $tokens = $phpcsFile->getTokens();
         $next = $stackPtr + 1;
         if (
-            $tokens[$stackPtr]['column'] !== 1
-            || isset(Tokens::EMPTY_TOKENS[$tokens[$next]['code']])
+            $tokens[$stackPtr]['column'] !== 1 || isset(Tokens::EMPTY_TOKENS[$tokens[$next]['code']])
             || $tokens[$next]['code'] === T_CLOSE_CURLY_BRACKET
         ) {
             return;
@@ -378,8 +374,7 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
 
         // A `case` isn't among the conditions of the `break` that closes it, though it's in its body.
         $condition = $tokens[$ptr]['scope_condition'] ?? null;
-        $isCaseCloser = is_int($condition)
-            && $tokens[$ptr]['scope_closer'] === $ptr
+        $isCaseCloser = is_int($condition) && $tokens[$ptr]['scope_closer'] === $ptr
             && in_array($tokens[$condition]['code'], [T_CASE, T_DEFAULT], true);
         if ($isCaseCloser) {
             $levels++;
@@ -490,11 +485,9 @@ class ConsistentIndentSniff extends PhpCollectiveSniff
         $tokens = $phpcsFile->getTokens();
         $value = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($arrowPtr + 1), null, true);
         if (
-            $value === false
-            || $tokens[$value]['line'] === $tokens[$arrowPtr]['line']
+            $value === false || $tokens[$value]['line'] === $tokens[$arrowPtr]['line']
             || in_array($tokens[$value]['code'], [T_START_HEREDOC, T_START_NOWDOC], true)
-            || !LayoutHelper::startsLine($phpcsFile, $value)
-            || !$this->isInArray($phpcsFile, $arrowPtr)
+            || !LayoutHelper::startsLine($phpcsFile, $value) || !$this->isInArray($phpcsFile, $arrowPtr)
         ) {
             return;
         }

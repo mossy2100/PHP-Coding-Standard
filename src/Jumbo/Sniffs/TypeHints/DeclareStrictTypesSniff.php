@@ -46,8 +46,7 @@ class DeclareStrictTypesSniff extends SlevomatSniff
     {
         if (
             $openTagPointer === FileHeaderHelper::findFirstLineTag($phpcsFile)
-            && FileHeaderHelper::hasInlineDeclare($phpcsFile)
-            && $this->declaresStrictTypes($phpcsFile)
+            && FileHeaderHelper::hasInlineDeclare($phpcsFile) && $this->declaresStrictTypes($phpcsFile)
         ) {
             return;
         }

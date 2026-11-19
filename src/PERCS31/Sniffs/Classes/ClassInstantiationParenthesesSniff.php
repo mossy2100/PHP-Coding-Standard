@@ -101,8 +101,7 @@ class ClassInstantiationParenthesesSniff implements Sniff
         $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
         $previousCode = $previous === false ? null : $tokens[$previous]['code'];
         $isCall = !isset(Tokens::INCLUDE_TOKENS[$previousCode])
-            && (TokenHelper::isArgumentListOpener($phpcsFile, $stackPtr)
-                || $previousCode === T_NEW
+            && (TokenHelper::isArgumentListOpener($phpcsFile, $stackPtr) || $previousCode === T_NEW
                 || isset(Tokens::FUNCTION_NAME_TOKENS[$previousCode]));
         if ($isCall) {
             return;

@@ -43,8 +43,7 @@ class DisallowTrailingCommaInCallSniff extends SlevomatSniff
         $tokens = $phpcsFile->getTokens();
         $comma = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($closer - 1), null, true);
         if (
-            $comma === false
-            || $tokens[$comma]['code'] !== T_COMMA
+            $comma === false || $tokens[$comma]['code'] !== T_COMMA
             || $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($comma + 1), $closer) === false
         ) {
             parent::process($phpcsFile, $parenthesisOpenerPointer);
