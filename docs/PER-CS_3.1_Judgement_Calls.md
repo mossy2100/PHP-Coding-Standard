@@ -1009,6 +1009,37 @@ trait `use` is the usual way to give a generic trait its types. PHP_CodeSniffer 
 
 ---
 
+### A Comment After the Last `use`
+
+**Issue:** 4.2 says that when the class has nothing after the last trait `use`, the closing brace MUST be on the next
+line, and otherwise a blank line MUST follow the `use`. It doesn't say whether a comment counts as something after it.
+
+**Decision:**
+
+- A comment at the end of the `use` statement's line belongs to the statement, so the closing brace may follow on the
+  next line.
+- A comment on a line of its own after the last `use` counts as something after it, so a blank line goes before it.
+
+```php
+class Foo
+{
+    use First; // The first.
+}
+
+class Bar
+{
+    use First;
+
+    // Nothing else yet.
+}
+```
+
+**Why:** A comment on a line of its own belongs with the code after it, as in
+[A Comment Before the First `use`](#a-comment-before-the-first-use), and here there's none, so it stands on its own.
+PHP_CodeSniffer reads the same PSR-12 wording this way.
+
+---
+
 ## 4.3 Properties and Constants
 
 ### A Double Underscore Prefix
