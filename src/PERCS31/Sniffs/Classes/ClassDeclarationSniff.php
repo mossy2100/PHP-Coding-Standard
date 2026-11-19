@@ -106,7 +106,11 @@ class ClassDeclarationSniff extends Psr2Sniff
         }
 
         $indent = str_repeat(' ', (LayoutHelper::lineIndent($phpcsFile, $stackPtr) + LayoutHelper::INDENT));
-        for ($comma = $keyword; ($comma = $phpcsFile->findNext(T_COMMA, ($comma + 1), $opener)) !== false;) {
+        for (
+            $comma = $phpcsFile->findNext(T_COMMA, ($keyword + 1), $opener);
+            $comma !== false;
+            $comma = $phpcsFile->findNext(T_COMMA, ($comma + 1), $opener)
+        ) {
             $name = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($comma + 1), $opener, true);
             if ($name === false || $phpcsFile->findFirstOnLine(T_WHITESPACE, $name, true) === $name) {
                 continue;
