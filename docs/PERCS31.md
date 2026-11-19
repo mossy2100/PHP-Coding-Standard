@@ -132,21 +132,24 @@ Custom sniffs fill the gaps in the inherited sniffs, or replace ones that confli
 
 ## Not Checked
 
-- **Whitespace after a unary `+`, `-`, `!`, `~` or `@` (6).** Section 6 leaves these operators undefined. Each has a
-  property on [`PERCS31.Operators.UnaryOperatorSpacing`](PERCS31_Custom_Sniffs.md#percs31operatorsunaryoperatorspacing) to check it, as the [Jumbo standard](Jumbo.md) does.
-- **A trailing comma in a split attribute block holding one attribute (2.6).** No sniff requires one. Splitting such a
-  block already breaks section 12.1, as nothing may come between `#[` and the attribute's name.
-- **Whether a fall-through comment is clear (5.2).** Any comment just before the next `case` or `default` passes, as the
-  spec doesn't set any wording.
-- **Avoiding abbreviations (2.7).** Whether a name could avoid an abbreviation can't be judged by a sniff.
-- **Short open tags, with `short_open_tag` off (PSR-1, 2.1).** PHP then reads `<?` as text, so it's only reported as a
-  possible short tag, with a warning. With the setting on, it's an error.
-- **Autoloading (PSR-1, 3).** Whether a class's namespace matches its file's path depends on the project's autoload
-  roots, which a standard doesn't know. One class per file, in a namespace, is checked.
-- **Consistent property names (PSR-1, 4.2).** Which naming convention a scope uses can't be judged by a sniff.
-- **A comment after an anonymous class's, closure's, `match`'s or control structure's closing brace (4).** Section 4
-  says "any closing brace", but each of these is part of a larger expression or statement, so a comment is allowed
-  there. A statement is reported after any closing brace.
+- **Whitespace after a unary `+`, `-`, `!`, `~` or `@`.** The spec leaves these operators undefined, as
+  [Operators Not Listed](PER-CS_3.1_Judgement_Calls.md#operators-not-listed) explains. Each has a property on [`PERCS31.Operators.UnaryOperatorSpacing`](PERCS31_Custom_Sniffs.md#percs31operatorsunaryoperatorspacing) to check it, as the
+  [Jumbo standard](Jumbo.md) does.
+- **Whether a fall-through comment is clear.** Any comment just before the next `case` or `default` passes, as the spec
+  doesn't set any wording.
+- **Avoiding abbreviations.** Whether a name could avoid an abbreviation can't be judged by a sniff.
+- **Short open tags, with `short_open_tag` off.** PHP then reads `<?` as text, so it's only reported as a possible short
+  tag, with a warning. With the setting on, it's an error.
+- **Autoloading.** Whether a class's namespace matches its file's path depends on the project's autoload roots, which a
+  standard doesn't know. One class per file, in a namespace, is checked.
+- **Consistent property names.** Which naming convention a scope uses can't be judged by a sniff.
+- **A comment after an anonymous class's, closure's, `match`'s or control structure's closing brace.** The spec says
+  "Any closing brace MUST NOT be followed by any comment or statement on the same line", but each of these is part of a
+  larger expression or statement, so a comment is allowed there. A statement is reported after any closing brace. See
+  ["Any Closing Brace"](PER-CS_3.1_Judgement_Calls.md#any-closing-brace).
+- **The case of a magic constant.** The spec says "All PHP reserved keywords and types MUST be in lower case", and PHP's
+  reserved keywords include the magic constants, such as `__DIR__`. They're conventionally upper case, so their case
+  isn't checked. See [Magic Constants](PER-CS_3.1_Judgement_Calls.md#magic-constants).
 - **The pipe operator `|>` on PHP 8.4.** It's only checked when PHP_CodeSniffer runs on PHP 8.5. On PHP 8.4, where `|>`
   is a parse error, PHP_CodeSniffer reads it as `|` and `>`, and reports them.
 
