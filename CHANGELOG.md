@@ -738,6 +738,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Problems reported twice in PERCS31.** The space after `function` and before a declaration's `(`, and the layout
   of an anonymous class's argument list, each got a second message, from `Squiz.Functions.FunctionDeclaration` and
   `PSR12.Classes.AnonClassDeclaration`. Those codes are now excluded, as PERCS31's own sniffs report the same problems.
+  So are these, each of which another sniff reports. Update any `phpcs:ignore` comments or `<exclude>` rules that name
+  them:
+  - The space after a modifier: `SlevomatCodingStandard.Classes.PropertyDeclaration`'s `MultipleSpacesBeforeTypeHint`,
+    `NoSpaceBeforeNullabilitySymbol` and `MultipleSpacesBeforeNullabilitySymbol`,
+    `Squiz.Functions.FunctionDeclarationArgumentSpacing`'s `SpacingAfterVisibility`, `SpacingAfterSetVisibility` and
+    `SpacingAfterReadonly`, and `PERCS31.Classes.ClassDeclaration`'s `SpaceBeforeKeyword` and `NewlineBeforeKeyword`.
+    `Squiz.WhiteSpace.ScopeKeywordSpacing` reports each.
+  - The space between a property's type and its name: Slevomat's `NoSpaceBetweenTypeHintAndProperty` and
+    `MultipleSpacesBetweenTypeHintAndProperty`. `PERCS31.Classes.PropertyDeclaration.SpacingAfterType` reports it now.
+  - A closing brace indented wrongly: `PERCS31.WhiteSpace.ScopeClosingBrace.Indent` and
+    `PERCS31.Files.DeclareStatement.CloseBracketNotAligned`. `PERCS31.WhiteSpace.ScopeIndent` reports each.
+  - Two trait conflict statements on a line: `PSR12.Traits.UseDeclaration.ConflictSameLine`.
+  - Code before the closing brace of a class or a trait's conflict block, a type written as a keyword, such as `SELF`,
+    and code after the first line's opening tag are each reported once, with no code renamed.
 - **The `)` that ends a multi-line `case` condition (breaking).** On a line of its own, it passed with any indent.
   `PERCS31.ControlStructures.SwitchDeclaration` now reports it indented further than the `case`, as
   `MultiLineConditionCloserIndent`, as section 5.2's example has it level. Too little was already reported, by

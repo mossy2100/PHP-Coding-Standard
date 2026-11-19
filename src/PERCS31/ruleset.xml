@@ -62,6 +62,14 @@
         <!-- Replaced by SlevomatCodingStandard.Classes.TraitUseDeclaration, which also reports several traits in a use
              statement with a { } block (4.2) -->
         <exclude name="PSR12.Traits.UseDeclaration.MultipleImport"/>
+        <!-- Covered by PERCS31.Formatting.DisallowMultipleStatements, which reports the same two statements on a line
+             (4.2) -->
+        <exclude name="PSR12.Traits.UseDeclaration.ConflictSameLine"/>
+        <!-- Covered by Squiz.WhiteSpace.ScopeKeywordSpacing, which reports the same space after a promoted parameter's
+             visibility, set-visibility or readonly (4.6) -->
+        <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterVisibility"/>
+        <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterSetVisibility"/>
+        <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterReadonly"/>
         <!-- A default value's = is a binary operator, so it needs at least one space, not exactly one (6.2). Checked by
              PERCS31.Operators.OperatorSpacing -->
         <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpaceBeforeEquals"/>
@@ -152,6 +160,10 @@
              line (2.3, 4.1) -->
         <exclude name="PERCS31.Classes.ClassDeclaration.InterfaceSameLine"/>
         <exclude name="PERCS31.Classes.ClassDeclaration.ExtendsInterfaceSameLine"/>
+        <!-- Covered by Squiz.WhiteSpace.ScopeKeywordSpacing, which reports the space after every modifier of a class,
+             not only the last one before class (4.6) -->
+        <exclude name="PERCS31.Classes.ClassDeclaration.SpaceBeforeKeyword"/>
+        <exclude name="PERCS31.Classes.ClassDeclaration.NewlineBeforeKeyword"/>
     </rule>
     <rule ref="PERCS31.Functions.MultiLineFunctionDeclaration">
         <!-- A blank line before a parameter list's or a use list's closing parenthesis isn't forbidden (2.3, 4.5,
@@ -163,7 +175,11 @@
              the sniffs for 6.4 -->
         <exclude name="PERCS31.Functions.MultiLineFunctionDeclaration.Indent"/>
     </rule>
-    <rule ref="PERCS31.WhiteSpace.ScopeClosingBrace"/>
+    <rule ref="PERCS31.WhiteSpace.ScopeClosingBrace">
+        <!-- Covered by PERCS31.WhiteSpace.ScopeIndent, which reports the same closing brace indented wrongly, without
+             reading a brace inside a PHP block in markup as indented (2.4) -->
+        <exclude name="PERCS31.WhiteSpace.ScopeClosingBrace.Indent"/>
+    </rule>
 
     <!-- An empty body as {}: a warning for a class or function (4, 4.4), an error for a closure or anonymous class
          (7, 8). A control structure's isn't checked, as section 5 has no rule for it. -->
@@ -281,7 +297,11 @@
     <rule ref="PERCS31.Namespaces.GroupUseLayout"/>
 
     <!-- No spaces inside a declare statement's parentheses, including one with several directives (3) -->
-    <rule ref="PERCS31.Files.DeclareStatement"/>
+    <rule ref="PERCS31.Files.DeclareStatement">
+        <!-- Covered by PERCS31.WhiteSpace.ScopeIndent, which reports the same block declare's closing brace indented
+             wrongly (2.4) -->
+        <exclude name="PERCS31.Files.DeclareStatement.CloseBracketNotAligned"/>
+    </rule>
 
     <!-- ====== CLASSES, PROPERTIES AND CONSTANTS (4) ====== -->
 
@@ -327,24 +347,32 @@
     <!-- One property per statement (4.3) -->
     <rule ref="SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition"/>
 
-    <!-- Property modifier order, and the spacing around them and the type (4.3, 4.6) -->
+    <!-- Property modifier order, including a promoted parameter's (4.6) -->
     <rule ref="SlevomatCodingStandard.Classes.PropertyDeclaration">
         <!-- A space after the ? of a nullable type is reported by PERCS31.Functions.NullableTypeDeclaration -->
         <exclude name="SlevomatCodingStandard.Classes.PropertyDeclaration.WhitespaceAfterNullabilitySymbol"/>
+        <!-- The space after the last modifier is reported by Squiz.WhiteSpace.ScopeKeywordSpacing, after any modifier
+             (4.6) -->
+        <exclude name="SlevomatCodingStandard.Classes.PropertyDeclaration.MultipleSpacesBeforeTypeHint"/>
+        <exclude name="SlevomatCodingStandard.Classes.PropertyDeclaration.NoSpaceBeforeNullabilitySymbol"/>
+        <exclude name="SlevomatCodingStandard.Classes.PropertyDeclaration.MultipleSpacesBeforeNullabilitySymbol"/>
+        <!-- The space between the type and the name is reported by PERCS31.Classes.PropertyDeclaration.SpacingAfterType
+             for a property, and Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterHint for a promoted
+             parameter, as for any parameter (4.3) -->
+        <exclude name="SlevomatCodingStandard.Classes.PropertyDeclaration.NoSpaceBetweenTypeHintAndProperty"/>
+        <exclude name="SlevomatCodingStandard.Classes.PropertyDeclaration.MultipleSpacesBetweenTypeHintAndProperty"/>
         <properties>
             <property name="checkPromoted" value="true"/>
         </properties>
     </rule>
 
-    <!-- Properties: no leading underscore, no var, and a visibility (4.3) -->
+    <!-- Properties: no leading underscore, no var, a visibility, and one space between the type and the name (4.3) -->
     <rule ref="PERCS31.Classes.PropertyDeclaration">
         <!-- Several properties in one statement are checked by
              SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition. The parent's check also reports every
              property with hooks, as it reads the hook list as a second property, so this code must stay excluded. -->
         <exclude name="PERCS31.Classes.PropertyDeclaration.Multiple"/>
-        <!-- Modifier order and the spacing after the type are checked by
-             SlevomatCodingStandard.Classes.PropertyDeclaration -->
-        <exclude name="PERCS31.Classes.PropertyDeclaration.SpacingAfterType"/>
+        <!-- Modifier order is checked by SlevomatCodingStandard.Classes.PropertyDeclaration -->
         <exclude name="PERCS31.Classes.PropertyDeclaration.StaticBeforeVisibility"/>
         <exclude name="PERCS31.Classes.PropertyDeclaration.ReadonlyBeforeVisibility"/>
         <exclude name="PERCS31.Classes.PropertyDeclaration.FinalAfterVisibility"/>

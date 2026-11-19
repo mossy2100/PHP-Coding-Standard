@@ -22,6 +22,8 @@ use PHP_CodeSniffer\Util\Tokens;
  *   the parent reads the parameter as a property, and reports its type as PropertyTypeFound.
  * - It checks a backed enum's type, as in `enum Suit: STRING`, which the parent doesn't. That's reported as
  *   BackingTypeFound, in the parent's style.
+ * - It skips a type that PHP_CodeSniffer reads as a keyword, such as `SELF`, `STATIC` or `CALLABLE`, anywhere, not
+ *   only in a hook's parameter. PERCS31.PHP.LowerCaseKeyword reports it, so the parent reported it a second time.
  */
 class LowerCaseTypeSniff extends GenericSniff
 {
@@ -49,6 +51,13 @@ class LowerCaseTypeSniff extends GenericSniff
         'null' => true,
         'never' => true,
     ];
+
+    /**
+     * The types PHP_CodeSniffer reads as keywords, which PERCS31.PHP.LowerCaseKeyword reports.
+     *
+     * @var array<int|string, true>
+     */
+    private const array KEYWORD_TYPES = [T_SELF => true, T_PARENT => true, T_STATIC => true, T_CALLABLE => true];
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -140,6 +149,11 @@ class LowerCaseTypeSniff extends GenericSniff
      */
     protected function processType(File $phpcsFile, int $stackPtr, string $type, string $error, string $errorCode): void
     {
+        // A type read as a keyword, such as `SELF`, is reported by PERCS31.PHP.LowerCaseKeyword, wherever it is.
+        if (isset(self::KEYWORD_TYPES[$phpcsFile->getTokens()[$stackPtr]['code']])) {
+            return;
+        }
+
         $isMisread = $errorCode === 'PropertyTypeFound'
             && PropertyHookHelper::isInHookParameterList($phpcsFile, $stackPtr);
         if (!$isMisread) {

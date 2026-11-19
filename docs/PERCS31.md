@@ -81,7 +81,8 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
   [`PERCS31.Classes.ClassDeclaration`](#percs31classesclassdeclaration) reports the same blank line before the class's closing brace. Its `MultipleImport`
   code is replaced by `SlevomatCodingStandard.Classes.TraitUseDeclaration`, which also reports several traits in a `use`
   statement with a `{ }` block. Its `SpaceAfterOpeningBrace` and `SpaceBeforeClosingBrace` codes are replaced by
-  [`PERCS31.Classes.TraitUseBlock`](#percs31classestraituseblock), as they also report a blank line in the block.
+  [`PERCS31.Classes.TraitUseBlock`](#percs31classestraituseblock), as they also report a blank line in the block. Its `ConflictSameLine` code is excluded, as
+  [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements) reports the same two statements on a line.
 - **PSR12.Classes.AnonClassDeclaration** is kept, but its three comma spacing codes are replaced by
   `Universal.WhiteSpace.CommaSpacing`, which reports the same. Its six codes for the layout of the argument list are
   excluded, as [`PERCS31.Functions.FunctionCallLayout`](#percs31functionsfunctioncalllayout) reports the same problems.
@@ -112,6 +113,9 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 `Squiz.Functions.FunctionDeclarationArgumentSpacing`'s `SpaceBeforeEquals` and `SpaceAfterEquals` are excluded, as a
 default value's `=` is a binary operator, which section 6.2 allows more than one space around.
 [`PERCS31.Operators.OperatorSpacing`](#percs31operatorsoperatorspacing) checks it instead.
+
+Its `SpacingAfterVisibility`, `SpacingAfterSetVisibility` and `SpacingAfterReadonly` are excluded, as
+`Squiz.WhiteSpace.ScopeKeywordSpacing` reports the same space after a promoted parameter's modifier.
 
 Its `SpacingAfterReference` and `SpacingAfterVariadic` are excluded too. [`PERCS31.Operators.UnaryOperatorSpacing`](#percs31operatorsunaryoperatorspacing)
 reports a space after every reference `&`, and `Generic.WhiteSpace.SpreadOperatorSpacingAfter` after every spread `...`,
@@ -680,6 +684,9 @@ Section 4.1 also forbids a blank line after the opening brace, which this sniff 
 That replaces `PSR12.Classes.OpeningBraceSpace`, which also reports an anonymous class. Section 8 gives an anonymous
 class the closure rules, which allow a blank line there. See [PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md#blank-lines-in-an-anonymous-classs-body).
 
+The ruleset excludes the parent's `SpaceBeforeKeyword` and `NewlineBeforeKeyword`, for the space before `class`, as
+`Squiz.WhiteSpace.ScopeKeywordSpacing` reports the space after every modifier, as in `final  readonly class`.
+
 **Auto-fixable:** yes.
 
 ---
@@ -854,9 +861,12 @@ It reports:
   parameters. Section 4.3 says "a single underscore", so a double one, as in `$__a`, passes, as it does on a method.
 - The `var` keyword (`VarUsed`).
 - A property with no visibility (`ScopeMissing`).
+- Anything but one space between a property's type and its name (`SpacingAfterType`), the parent's check.
 
-`SlevomatCodingStandard.Classes.PropertyDeclaration` checks modifier order and the spacing after the type, and
-`SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition` checks for several properties in one statement.
+`SlevomatCodingStandard.Classes.PropertyDeclaration` checks modifier order, and
+`SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition` checks for several properties in one statement. The
+space after a modifier is checked by `Squiz.WhiteSpace.ScopeKeywordSpacing`. Slevomat's own codes for these spaces are
+excluded, as each repeated another sniff's report.
 
 **Good:**
 
@@ -1450,7 +1460,9 @@ The original's check that a block declare's closing brace is on a new line is re
 `PERCS31.WhiteSpace.ScopeClosingBrace` makes it. With both fixes, the result had a blank line before the brace.
 
 With that check gone, the original's fix for the closing brace's alignment could delete the `;` before it, as in
-`declare(ticks=1) {echo 1;}`. So the fork only checks the alignment of a brace that's first on its line.
+`declare(ticks=1) {echo 1;}`. So the fork only checks the alignment of a brace that's first on its line. The ruleset
+excludes that code, `CloseBracketNotAligned`, as [`PERCS31.WhiteSpace.ScopeIndent`](#percs31whitespacescopeindent)
+reports the same brace.
 
 **Auto-fixable:** yes.
 
@@ -1518,6 +1530,10 @@ Section 3 doesn't forbid several imports in one statement, so this sniff reads t
 The parent also takes a comment at the end of a block's last line, as in `use A; // Why.`, for the start of the next
 block. So it reports a missing blank line, and its fix moves the comment onto a line of its own, where a
 `// phpcs:ignore` no longer applies to the `use`. This sniff counts the comment as part of the line it ends.
+
+Code after the opening tag on the first line, as in `<?php echo 1;`, is reported by `PSR12.Files.OpenTag`, as
+`NotAlone`. The parent reported it again, as a missing blank line after the tag, so this sniff leaves the tag's line
+out of the header then. Once the code moves, the blank line after the tag is checked as usual.
 
 Section 3 says a header block MUST NOT contain a blank line, and the file docblock is one of them. So a line inside it
 that's empty, or only spaces, is reported, as `SpacingInsideDocblockBlock`, and fixed to a `*` line, lined up with the
@@ -2777,6 +2793,9 @@ parameters, return types, properties, typed constants and casts, with three gaps
 - It doesn't check a backed enum's type, as in `enum Suit: STRING`. This sniff does, as `BackingTypeFound`, in the
   parent's style.
 
+A type PHP_CodeSniffer reads as a keyword, such as `SELF`, `STATIC` or `CALLABLE`, is skipped everywhere, as
+[`PERCS31.PHP.LowerCaseKeyword`](#percs31phplowercasekeyword) reports it. The parent reported it a second time.
+
 **Auto-fixable:** yes, as the parent.
 
 **Good:**
@@ -3241,8 +3260,8 @@ $limit = self
 
 ### PERCS31.WhiteSpace.ScopeClosingBrace
 
-Checks that a scope's closing brace is on a line by itself, and indented to match, except in an empty body written as
-`{}` on one line, e.g. `class Foo {}` or `function () {}`. This replaces `Squiz.WhiteSpace.ScopeClosingBrace`.
+Checks that a scope's closing brace is on a line by itself, except in an empty body written as `{}` on one line, e.g.
+`class Foo {}` or `function () {}`. This replaces `Squiz.WhiteSpace.ScopeClosingBrace`.
 
 **Why:** `Squiz.WhiteSpace.ScopeClosingBrace` rejects an empty body written as `{}` on one line, which
 [PER Coding Style 3.1, Sections 4, 4.4 and 7](https://www.php-fig.org/per/coding-style/#7-closures) requires for a closure and recommends for a class or function. This sniff
@@ -3253,6 +3272,12 @@ It also skips `case` and `default`, which have no braces. The parent treats a ca
 `break`, as its closing brace, and reported it as a "closing brace" that isn't on its own line. Where that statement
 goes is checked by [`PERCS31.ControlStructures.SwitchDeclaration`](#percs31controlstructuresswitchdeclaration), [`PERCS31.Formatting.DisallowMultipleStatements`](#percs31formattingdisallowmultiplestatements) and
 [`PERCS31.Formatting.AfterClosingBrace`](#percs31formattingafterclosingbrace).
+
+It skips the closing brace of a class, interface, trait, enum or anonymous class, and of a trait's conflict block, as
+code before one of those is already reported, by [`PERCS31.Classes.ClassDeclaration`](#percs31classesclassdeclaration),
+`PSR12.Classes.AnonClassDeclaration` or [`PERCS31.Classes.TraitUseBlock`](#percs31classestraituseblock). The parent's
+`Indent` code is excluded in the ruleset, as [`PERCS31.WhiteSpace.ScopeIndent`](#percs31whitespacescopeindent) reports
+the same brace, and doesn't take a brace inside a PHP block in markup for an indented one.
 
 **Auto-fixable:** yes, as the parent.
 

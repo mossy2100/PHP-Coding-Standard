@@ -370,7 +370,8 @@ class RulesetUnitTest extends TestCase
 
         $this->assertSame(0, $result['exitCode'], $result['output']);
         $this->assertSame($template, $fixed);
-        $this->assertStringContainsString('PERCS31.Files.FileHeader.SpacingAfterTagBlock', $phpOnlyResult['output']);
+        $this->assertStringContainsString('PSR12.Files.OpenTag.NotAlone', $phpOnlyResult['output']);
+        $this->assertSame(1, substr_count($phpOnlyResult['output'], ' error - '), $phpOnlyResult['output']);
     }
 
     /**
@@ -476,9 +477,30 @@ class RulesetUnitTest extends TestCase
      */
     public function testCommentAfterLastTraitUsePasses(): void
     {
-        $source = "<?php\n\nnamespace Vendor\\Package;\n\nclass Single\n{\n    use First; // The first.\n}\n\n"
-            . "class Pair\n{\n    use First;\n    use Second; /* The second. */\n}\n\n"
-            . "class Block\n{\n    use First {\n        First::a as b;\n    } // The block.\n}\n";
+        $source = <<<'PHP'
+            <?php
+
+            namespace Vendor\Package;
+
+            class Single
+            {
+                use First; // The first.
+            }
+
+            class Pair
+            {
+                use First;
+                use Second; /* The second. */
+            }
+
+            class Block
+            {
+                use First {
+                    First::a as b;
+                } // The block.
+            }
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
         $args = ['--standard=PERCS31', '--exclude=PSR1.Classes.ClassDeclaration'];
 
@@ -689,6 +711,88 @@ class RulesetUnitTest extends TestCase
         $this->assertStringNotContainsString('Squiz.Functions.FunctionDeclaration', $result['output']);
         $this->assertStringNotContainsString('AnonClassDeclaration', $result['output']);
         $this->assertStringNotContainsString(' error - ', $after['output']);
+    }
+
+    /**
+     * Test that each problem that two sniffs used to report is reported once, and that phpcbf fixes them all: the space
+     * after a class's or a promoted parameter's modifier, between a type and a property or a promoted parameter, a
+     * trait's conflict statements on one line, a closing brace after code, or indented wrongly, a type written as a
+     * keyword, and code on the opening tag's line.
+     */
+    public function testProblemsOnceReportedTwiceAreReportedOnce(): void
+    {
+        $class = <<<'PHP'
+            <?php
+
+            namespace Vendor\Package;
+
+            final  class Holder
+            {
+                use First {
+                    First::a as b; First::c as d;
+                }
+                use Second {
+                    Second::e as f; }
+
+                public array  $items = [];
+
+                public function __construct(private int  $count, public  readonly int $size)
+                {
+                    run();
+                  }
+
+                public function next(): SELF
+                {
+                    return $this;
+                }
+
+                public int $last = 1; }
+
+            PHP;
+        $declare = <<<'PHP'
+            <?php
+
+            declare(ticks=1) {
+                run();
+              }
+
+            PHP;
+        $sources = [$class, "<?php echo 1;\n", $declare];
+        $files = array_map(fn(string $source): string => $this->copyToTempFile(null, $source), $sources);
+        $reports = [];
+        $remaining = '';
+
+        try {
+            foreach ($files as $file) {
+                $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
+                preg_match_all('/:(\d+):\d+: error - .*\(([\w.]+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
+                $reports[] = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
+            }
+
+            $this->runTool('phpcbf', ['--standard=PERCS31', ...$files]);
+            $remaining = $this->runTool('phpcs', ['--standard=PERCS31', '--report=emacs', ...$files])['output'];
+        } finally {
+            array_map(unlink(...), $files);
+        }
+
+        $expected = [
+            [
+                '5 Squiz.WhiteSpace.ScopeKeywordSpacing.Incorrect',
+                '8 PERCS31.Formatting.DisallowMultipleStatements.SameLine',
+                '11 PERCS31.Classes.TraitUseBlock.CloseBraceNotOnOwnLine',
+                '13 PERCS31.Classes.PropertyDeclaration.SpacingAfterType',
+                '15 Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterHint',
+                '15 Squiz.WhiteSpace.ScopeKeywordSpacing.Incorrect',
+                '18 PERCS31.WhiteSpace.ScopeIndent.IncorrectExact',
+                '20 PERCS31.PHP.LowerCaseKeyword.Found',
+                '25 PERCS31.Classes.ClassDeclaration.CloseBraceAfterBody',
+            ],
+            ['1 PSR12.Files.OpenTag.NotAlone'],
+            ['5 PERCS31.WhiteSpace.ScopeIndent.IncorrectExact'],
+        ];
+
+        $this->assertSame($expected, $reports);
+        $this->assertStringNotContainsString(' error - ', $remaining);
     }
 
     /**

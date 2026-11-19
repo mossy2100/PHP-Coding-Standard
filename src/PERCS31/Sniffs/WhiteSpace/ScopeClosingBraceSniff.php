@@ -20,9 +20,20 @@ use PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\ScopeClosingBraceSniff as 
  * It also skips `case` and `default`, which have no braces. The parent treats a case's terminating statement, such as
  * `break`, as its closing brace. PERCS31.ControlStructures.SwitchDeclaration and
  * PERCS31.Formatting.DisallowMultipleStatements check where that statement goes.
+ *
+ * It skips the closing brace of a class, interface, trait, enum or anonymous class, and of a trait's conflict block,
+ * as in `use A { ... }`. Code before one of those on its line is already reported, by
+ * PERCS31.Classes.ClassDeclaration, PSR12.Classes.AnonClassDeclaration or PERCS31.Classes.TraitUseBlock, so the
+ * parent's ContentBefore would report it a second time. The parent's Indent code, for any closing brace, is excluded
+ * in the ruleset, as PERCS31.WhiteSpace.ScopeIndent reports the same.
  */
 class ScopeClosingBraceSniff extends SquizSniff
 {
+    /**
+     * The scope openers whose closing brace is checked by another sniff.
+     */
+    private const array CHECKED_ELSEWHERE = [T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM, T_ANON_CLASS, T_USE];
+
     /**
      * Processes this test, when one of its tokens is encountered.
      *
@@ -37,7 +48,7 @@ class ScopeClosingBraceSniff extends SquizSniff
         }
 
         $tokens = $phpcsFile->getTokens();
-        if (in_array($tokens[$stackPtr]['code'], [T_CASE, T_DEFAULT], true)) {
+        if (in_array($tokens[$stackPtr]['code'], [T_CASE, T_DEFAULT, ...self::CHECKED_ELSEWHERE], true)) {
             return;
         }
 

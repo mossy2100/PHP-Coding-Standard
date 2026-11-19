@@ -52,6 +52,10 @@ use PHPCSUtils\Utils\UseStatements;
  * block, so it reports a missing blank line, and its fix moves the comment onto a line of its own. This sniff counts
  * such a comment as part of the line it ends.
  *
+ * When code follows the opening tag on the first line, as in `<?php echo 1;`, PSR12.Files.OpenTag reports it as
+ * NotAlone. The parent reported it too, as a missing blank line after the tag, so this sniff leaves the tag's line out
+ * of the header then. Once the code is moved, the blank line after the tag is checked as usual.
+ *
  * The parent only looks at the header, so an import after the rest of the code passed. Section 3 puts the imports
  * before "The remainder of the code in the file", and says that in a file with markup they "MUST be present at the top
  * of the file". This sniff reports one as ImportAfterCode, but not in a file with more than one namespace, where each
@@ -201,6 +205,18 @@ class FileHeaderSniff extends Psr12Sniff
         $tokens = $phpcsFile->getTokens();
         $lines = $this->completeUseLines($phpcsFile, parent::getHeaderLines($phpcsFile, $stackPtr));
         $lines = $this->includeTrailingComments($phpcsFile, $lines);
+
+        // Code on the first line's opening tag is reported by PSR12.Files.OpenTag, so the tag's blank line isn't.
+        $next = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
+        if (
+            $stackPtr === 0
+            && $next !== false
+            && $tokens[$next]['line'] === $tokens[$stackPtr]['line']
+            && ($lines[0]['type'] ?? null) === 'tag'
+        ) {
+            array_shift($lines);
+        }
+
         $last = end($lines);
         if ($last === false || !in_array($last['type'], ['tag', 'docblock', 'declare'], true)) {
             return $lines;
