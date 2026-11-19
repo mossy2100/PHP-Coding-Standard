@@ -1,6 +1,6 @@
-# Jumbo Coding Standard
+# PERCS31 and Jumbo Coding Standards for PHP
 
-A PHP_CodeSniffer coding standard for PHP 8.4, developed by Shaun Moss.
+Two PHP_CodeSniffer coding standards for PHP 8.4, developed by Shaun Moss.
 
 **[License](LICENSE)** | **[Changelog](CHANGELOG.md)**
 
@@ -10,13 +10,13 @@ A PHP_CodeSniffer coding standard for PHP 8.4, developed by Shaun Moss.
 
 ## Description
 
-The Jumbo Coding Standard has two rulesets, each usable as a PHP_CodeSniffer standard:
+Two rulesets are provided, each usable as a PHP_CodeSniffer standard:
 
 - **PERCS31**: [PER Coding Style 3.1](https://www.php-fig.org/per/coding-style/), and nothing more, built on PSR-12. No complete PHP_CodeSniffer standard for PER
   Coding Style existed. See [PERCS31](docs/PERCS31.md).
-- **Jumbo**: PERCS31 plus extra rules for consistent naming and modern PHP 8.4+ code. See [Jumbo](docs/Jumbo.md).
+- **Jumbo**: PERCS31 plus extra rules to improve consistency and support modern PHP 8.4+ code. See [Jumbo](docs/Jumbo.md).
 
-Use PERCS31 to follow PER Coding Style 3.1 exactly, or Jumbo to add the extra rules. [Usage](#usage) shows how to set either.
+Use PERCS31 to follow PER Coding Style 3.1 exactly, or Jumbo to include the extra rules. [Usage](#usage) shows how to set either.
 
 ### Key features of Jumbo
 
@@ -66,7 +66,7 @@ The code is checked with:
 ## Installation
 
 ```bash
-composer require --dev mossy2100/coding-standard
+composer require --dev mossy2100/phpcs-jumbo
 ```
 
 The standard is automatically registered with PHP_CodeSniffer via the `dealerdirect/phpcodesniffer-composer-installer`
@@ -155,7 +155,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## Support
 
-- **Issues**: https://github.com/mossy2100/PHP-Coding-Standard/issues
+- **Issues**: https://github.com/mossy2100/PHP-Coding-Standard-Jumbo/issues
 - **Examples**: The [`phpcs.xml` in Mossy2100 Core](https://github.com/mossy2100/PHP-Core/blob/main/phpcs.xml), and in the other Mossy2100 packages
 
 ---

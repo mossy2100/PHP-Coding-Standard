@@ -1,5 +1,5 @@
 {
-    "name": "mossy2100/coding-standard",
+    "name": "mossy2100/phpcs-jumbo",
     "description": "The Jumbo Coding Standard for PHP_CodeSniffer: a PERCS31 ruleset for PER Coding Style 3.1, and a Jumbo ruleset that adds lowerCamelCase naming and modern PHP 8.4+ rules.",
     "type": "phpcodesniffer-standard",
     "license": "MIT",
@@ -19,10 +19,10 @@
             "email": "mossy2100@gmail.com"
         }
     ],
-    "homepage": "https://github.com/mossy2100/PHP-Coding-Standard",
+    "homepage": "https://github.com/mossy2100/PHP-Coding-Standard-Jumbo",
     "support": {
-        "issues": "https://github.com/mossy2100/PHP-Coding-Standard/issues",
-        "source": "https://github.com/mossy2100/PHP-Coding-Standard"
+        "issues": "https://github.com/mossy2100/PHP-Coding-Standard-Jumbo/issues",
+        "source": "https://github.com/mossy2100/PHP-Coding-Standard-Jumbo"
     },
     "require": {
         "php": "^8.4",

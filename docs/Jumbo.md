@@ -19,7 +19,7 @@ adds. For the PER rules, see [PERCS31](PERCS31.md).
 
 ## Usage
 
-Jumbo is installed with the `mossy2100/coding-standard` package, and registered with PHP_CodeSniffer the same way. See
+Jumbo is installed with the `mossy2100/phpcs-jumbo` package, and registered with PHP_CodeSniffer the same way. See
 [Installation](../README.md#installation). Then reference it in your `phpcs.xml`:
 
 ```xml

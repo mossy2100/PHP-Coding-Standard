@@ -32,7 +32,7 @@ Use PERCS31 on its own to follow PER Coding Style without them.
 
 ## Usage
 
-PERCS31 is installed with the `mossy2100/coding-standard` package, and registered with PHP_CodeSniffer the same way. See
+PERCS31 is installed with the `mossy2100/phpcs-jumbo` package, and registered with PHP_CodeSniffer the same way. See
 [Installation](../README.md#installation). Then reference it in your `phpcs.xml`:
 
 ```xml
