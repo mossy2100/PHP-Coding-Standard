@@ -49,6 +49,25 @@ switch ($a) {
 }
 #[D]
 const E = 1;
+// Left to Jumbo.Formatting.ExpressionFormat: a line break at a binary operator.
+$a = $b
+    + $c;
+$a = $b
+    ?? $c;
+$a = $b
+    && $c;
+$a = $b ? $c
+    . $d : 2;
+function f()
+{
+    return $a
+        + $b;
+}
+class H
+{
+    public const I = 1
+        + 2;
+}
 
 // Invalid: all of these fit.
 $a
@@ -62,34 +81,18 @@ $a = $b ? (
     $c
 ) : 2;
 $a = $b
-    + $c;
-$a = $b
-    ?? $c;
-$a = $b
-    && $c;
-$a = $b
     ? 1
     : 2;
-$a = $b ? $c
-    . $d : 2;
 $a = $b
     ->c;
 $a = new
     Foo();
 echo $a,
     $b;
-function f()
-{
-    return $a
-        + $b;
-}
 class G
 {
     public int $h
         = 1;
-
-    public const I = 1
-        + 2;
 
     public A
         |B $j;

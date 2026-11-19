@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jumbo\Sniffs\Formatting;
 
+use Jumbo\Helpers\ExpressionHelper;
 use Jumbo\Helpers\SingleLineHelper;
 use PERCS31\Helpers\TokenHelper;
 use PHP_CodeSniffer\Files\File;
@@ -14,8 +15,10 @@ use PHP_CodeSniffer\Util\Tokens;
  * Requires a statement or `case` label split across lines to be written on one line if it fits.
  *
  * PER Coding Style 3.1, section 6.4, says a statement MAY be split at an operator, so this is an extra rule. Other
- * sniffs do the same for a call, an array, a method signature, a condition and a loop header, but nothing covers the
- * rest of a statement, such as `$a = $b` then `+ $c;`, or grouping parentheses.
+ * sniffs do the same for a call, an array, a method signature, a condition and a loop header, and
+ * Jumbo.Formatting.ExpressionFormat lays out an expression's binary operators and grouping parentheses. This sniff
+ * covers the rest of a statement, such as `$a` then `= $b;`, and an expression that sniff leaves alone, such as one
+ * with a multi-line closure.
  *
  * It only reports a line break outside those constructs, so they keep their own messages. Once it does, the fix
  * collapses the whole statement. If it can't, as it holds a closure, or a call or array too long for one line, the fix
@@ -96,11 +99,9 @@ class RequireSingleLineStatementSniff implements Sniff
         $start = $isCase ? $stackPtr : $this->findStart($phpcsFile, $stackPtr);
         $end = $isCase ? ($tokens[$stackPtr]['scope_opener'] ?? null) : $stackPtr;
         if (
-            !is_int($end)
-            || $tokens[$start]['line'] === $tokens[$end]['line']
+            !is_int($end) || $tokens[$start]['line'] === $tokens[$end]['line']
             || in_array($tokens[$start]['code'], [T_USE, T_NAMESPACE, T_DECLARE], true)
-            || $phpcsFile->findNext(T_FUNCTION, $start, $end) !== false
-            || $this->isChain($phpcsFile, $start, $end)
+            || $phpcsFile->findNext(T_FUNCTION, $start, $end) !== false || $this->isChain($phpcsFile, $start, $end)
             || !$this->hasOwnLineBreak($phpcsFile, $start, $end)
         ) {
             return;
@@ -165,8 +166,9 @@ class RequireSingleLineStatementSniff implements Sniff
                 }
             }
 
+            // Grouping parentheses are part of an expression, laid out by Jumbo.Formatting.ExpressionFormat.
             $closer = TokenHelper::findCloser($tokens[$i]);
-            if (!is_int($closer) || $closer <= $i) {
+            if (!is_int($closer) || $closer <= $i || ExpressionHelper::isGrouping($phpcsFile, $i)) {
                 continue;
             }
 
@@ -339,7 +341,8 @@ class RequireSingleLineStatementSniff implements Sniff
     }
 
     /**
-     * Check whether a statement has a line break outside a call or an array, whose own sniffs report those.
+     * Check whether a statement has a line break outside a call or an array, whose own sniffs report those, and outside
+     * an expression's layout, which Jumbo.Formatting.ExpressionFormat reports.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $start The position of the statement's first token.
@@ -356,7 +359,12 @@ class RequireSingleLineStatementSniff implements Sniff
             }
 
             if ($tokens[$i]['line'] !== $line) {
-                return true;
+                $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($i - 1), null, true);
+                if ($previous === false || !ExpressionHelper::isExpressionBreak($phpcsFile, $previous, $i)) {
+                    return true;
+                }
+
+                $line = $tokens[$i]['line'];
             }
 
             $closer = $this->findOwnSniffCloser($phpcsFile, $i);
@@ -390,11 +398,10 @@ class RequireSingleLineStatementSniff implements Sniff
         }
 
         $previous = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($stackPtr - 1), null, true);
-        $isCall = $previous !== false && (
-            isset(Tokens::FUNCTION_NAME_TOKENS[$tokens[$previous]['code']])
-            || in_array($tokens[$previous]['code'], self::CALLABLE_ENDS, true)
-            || isset($tokens[$stackPtr]['parenthesis_owner'])
-        );
+        $isCall = $previous !== false
+            && (isset(Tokens::FUNCTION_NAME_TOKENS[$tokens[$previous]['code']])
+                || in_array($tokens[$previous]['code'], self::CALLABLE_ENDS, true)
+                || isset($tokens[$stackPtr]['parenthesis_owner']));
         $closer = $tokens[$stackPtr]['parenthesis_closer'] ?? null;
 
         return $isCall && is_int($closer) ? $closer : null;

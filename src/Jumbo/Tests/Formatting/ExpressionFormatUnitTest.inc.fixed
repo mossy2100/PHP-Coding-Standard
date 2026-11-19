@@ -1,0 +1,74 @@
+<?php
+
+// Valid: on one line, or split only at the loosest operators, with as many operands on each line as fit.
+$a = $b + $c * $d;
+$total = $someLongVariableName * $anotherLongVariableName + $yetAnotherLongVariableName * $finalLongVariableName
+    + $andOneMoreLongVariableName;
+$text = 'Some long text that goes on for quite a while, then some more ' . $this->describeTheThing($argument)
+    . ' and then even more text.';
+if (
+    ($bestValue < 1.0 && $prefixedValue > $bestValueSoFarInTheLoop && $somethingElseEntirely)
+    || ($prefixedValue >= 1.0 && $prefixedValue < $bestValueSoFarInTheLoop)
+) {
+    $b = 1;
+}
+$isValid = $someLongConditionName
+    && ($anotherLongConditionName || $yetAnotherLongConditionName || $theLastOfTheLongConditionNames
+        || $oneMoreConditionToMakeItLong);
+$ok = $someLongConditionNameNumberOne
+    || $someLongConditionNameNumberTwoIsLonger && $someLongConditionNameNumberThreeIsLonger
+    && $someLongConditionNameNumberFourIsLonger;
+// Skipped: next to a ternary, a comment, a line break inside an operand, a heredoc, or an arrow function.
+$a = $someLongConditionNameNumberOne && $someLongConditionNameNumberTwo && $someLongConditionNameNumberThree
+    ? 1
+    : 2;
+$a = $b // Why.
+    + $c;
+$a = $b
+    + foo(
+        $c,
+    );
+$a = <<<'X'
+    b
+    X
+    . 'c';
+$a = $b
+    && fn($x) => $x;
+switch ($a) {
+    case $b
+        || $c:
+        break;
+}
+// Skipped: an argument on one line, which can't be split without splitting the call.
+$a = foo($someLongArgumentNameNumberOne + $someLongArgumentNameNumberTwo + $someLongArgumentNameNumberThree, 1);
+
+// Invalid: fits on one line.
+$a = $b + $c;
+$text = 'Some text' . ' and more';
+$a = ($b || $c) && $d;
+if (
+    $a && $b
+) {
+    $c = 1;
+}
+// Invalid: split at a tighter operator, or not split at all.
+if (
+    ($bestValue < 1.0 && $prefixedValue > $bestValueSoFarInTheLoop && $somethingElseEntirely)
+    || ($prefixedValue >= 1.0 && $prefixedValue < $bestValueSoFarInTheLoop)
+) {
+    $b = 1;
+}
+$total = $someLongVariableName * $anotherLongVariableName + $yetAnotherLongVariableName * $finalLongVariableName
+    + $andOneMore;
+$text = 'Some long text that goes on for quite a while, then some more ' . $this->describeTheThing($argument)
+    . ' and then even more.';
+// Invalid: a line broken before an operand that fits on it.
+$ok = $someLongConditionNameNumberOne || $someLongConditionNameNumberTwo || $someLongConditionNameNumberThree
+    || $someLongConditionNameNumberFour;
+// Invalid: an operand split while the level around it isn't.
+$isValid = $someLongConditionName
+    && ($anotherLongConditionName || $yetAnotherLongConditionName || $theLastOfTheLongConditionNames
+        || $oneMoreConditionToMakeItLong);
+$ok = $someLongConditionNameNumberOne
+    || $someLongConditionNameNumberTwoIsLonger && $someLongConditionNameNumberThreeIsLonger
+    && $someLongConditionNameNumberFourIsLonger;
