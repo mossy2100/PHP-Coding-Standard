@@ -105,13 +105,16 @@ The default maximum line length is 120. To change it, see [Line Length](docs/Lin
 
 ## Included Sniffs
 
-Each standard has its own page, listing the sniffs it uses, inherited and custom, with the reason for each. PSR-12's own
-sniffs are listed only where PERCS31 changes or replaces them.
+Each standard has its own pages, listing the sniffs it uses, inherited and custom, with the reason for each. PSR-12's
+own sniffs are listed only where PERCS31 changes or replaces them.
 
-- [PERCS31](docs/PERCS31.md): PSR-12, sniffs from Generic, Squiz, Slevomat and PHPCSExtra (`Universal`), and custom sniffs, three of which
-  extend PhpCollective's, for PER Coding Style 3.1.
-- [Jumbo](docs/Jumbo.md): what Jumbo changes in PERCS31, and the Generic, Squiz, PHPCSExtra, Slevomat and Zend sniffs and custom sniffs
-  it adds as extra rules.
+- [PERCS31](docs/PERCS31.md): how PERCS31 uses PSR-12, and what it doesn't check.
+- [PERCS31 Inherited Sniffs](docs/PERCS31_Inherited_Sniffs.md): the sniffs PERCS31 takes from Generic, Squiz, Slevomat and PHPCSExtra (`Universal`).
+- [PERCS31 Custom Sniffs](docs/PERCS31_Custom_Sniffs.md): the sniffs written for PERCS31, three of which extend php-collective's.
+- [Jumbo](docs/Jumbo.md): what Jumbo changes in PERCS31.
+- [Jumbo Inherited Sniffs](docs/Jumbo_Inherited_Sniffs.md): the Generic, Squiz, Zend, Slevomat, PHPCSExtra and php-collective sniffs Jumbo adds as extra
+  rules.
+- [Jumbo Custom Sniffs](docs/Jumbo_Custom_Sniffs.md): the sniffs written for Jumbo.
 - [PER-CS 3.1 Judgement Calls](docs/PER-CS_3.1_Judgement_Calls.md): how PERCS31 reads the points PER Coding Style 3.1 leaves unclear, contradicts or leaves
   out, and why.
 
