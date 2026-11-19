@@ -29,7 +29,16 @@ class RulesetUnitTest extends TestCase
      */
     public function testConstantVisibilityIsAnError(): void
     {
-        $file = $this->copyToTempFile(null, "<?php\n\nclass Holder\n{\n    const LIMIT = 1;\n}\n");
+        $source = <<<'PHP'
+            <?php
+
+            class Holder
+            {
+                const LIMIT = 1;
+            }
+
+            PHP;
+        $file = $this->copyToTempFile(null, $source);
 
         try {
             $result = $this->runTool(
@@ -49,8 +58,19 @@ class RulesetUnitTest extends TestCase
      */
     public function testSplitMultiCatchPasses(): void
     {
-        $source = "<?php\n\ntry {\n    run();\n} catch (\n    FirstException\n    |SecondException \$e\n) {\n"
-            . "    report(\$e);\n}\n";
+        $source = <<<'PHP'
+            <?php
+
+            try {
+                run();
+            } catch (
+                FirstException
+                |SecondException $e
+            ) {
+                report($e);
+            }
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -68,7 +88,17 @@ class RulesetUnitTest extends TestCase
      */
     public function testSeveralTraitsInUseWithBlockAreReported(): void
     {
-        $source = "<?php\n\nclass Example\n{\n    use A, B {\n        A::a insteadof B;\n    }\n}\n";
+        $source = <<<'PHP'
+            <?php
+
+            class Example
+            {
+                use A, B {
+                    A::a insteadof B;
+                }
+            }
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -89,7 +119,15 @@ class RulesetUnitTest extends TestCase
      */
     public function testPhpcbfSplitsTwoShortHooksOnOneLine(): void
     {
-        $source = "<?php\n\nclass Example\n{\n    public string \$name { get => 'a'; set => trim(\$value); }\n}\n";
+        $source = <<<'PHP'
+            <?php
+
+            class Example
+            {
+                public string $name { get => 'a'; set => trim($value); }
+            }
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -99,8 +137,18 @@ class RulesetUnitTest extends TestCase
             unlink($file);
         }
 
-        $expected = "<?php\n\nclass Example\n{\n    public string \$name {\n        get => 'a';\n"
-            . "        set => trim(\$value);\n    }\n}\n";
+        $expected = <<<'PHP'
+            <?php
+
+            class Example
+            {
+                public string $name {
+                    get => 'a';
+                    set => trim($value);
+                }
+            }
+
+            PHP;
         $this->assertSame($expected, $fixed);
     }
 
@@ -110,9 +158,21 @@ class RulesetUnitTest extends TestCase
      */
     public function testPhpcbfDoesNotLoopOnTooComplexPromotedHook(): void
     {
-        $source = "<?php\n\nclass Example\n{\n    public function __construct(\n        public string \$name {\n"
-            . "            set {\n                \$this->name = ucfirst(\$value);\n            }\n        },\n"
-            . "    ) {}\n}\n";
+        $source = <<<'PHP'
+            <?php
+
+            class Example
+            {
+                public function __construct(
+                    public string $name {
+                        set {
+                            $this->name = ucfirst($value);
+                        }
+                    },
+                ) {}
+            }
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -133,8 +193,17 @@ class RulesetUnitTest extends TestCase
      */
     public function testPhpcbfLeavesTwoHooksOnPromotedParameter(): void
     {
-        $source = "<?php\n\nclass Example\n{\n    public function __construct(\n"
-            . "        public string \$name { get => 'a'; set => ucfirst(\$value); },\n    ) {}\n}\n";
+        $source = <<<'PHP'
+            <?php
+
+            class Example
+            {
+                public function __construct(
+                    public string $name { get => 'a'; set => ucfirst($value); },
+                ) {}
+            }
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -157,9 +226,26 @@ class RulesetUnitTest extends TestCase
      */
     public function testReferenceOperatorHasNoSpaceAfterIt(): void
     {
-        $source = "<?php\n\n\$b = & \$a;\n\$c =& \$a;\n\$d =&\$a;\n\$e=&\$a;\n\$f=& \$a;\n\$g = & /* Why. */ \$a;\n"
-            . "foreach (\$a as & \$item) {\n    \$item++;\n}\n\$h = [& \$b, 'c' => & \$c];\n"
-            . "\$i = function & (int & \$j) use (& \$b): int {\n    return \$b;\n};\n\$k = \$b & \$c;\n\$l = ! \$b;\n";
+        $source = <<<'PHP'
+            <?php
+
+            $b = & $a;
+            $c =& $a;
+            $d =&$a;
+            $e=&$a;
+            $f=& $a;
+            $g = & /* Why. */ $a;
+            foreach ($a as & $item) {
+                $item++;
+            }
+            $h = [& $b, 'c' => & $c];
+            $i = function & (int & $j) use (& $b): int {
+                return $b;
+            };
+            $k = $b & $c;
+            $l = ! $b;
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -170,9 +256,26 @@ class RulesetUnitTest extends TestCase
             unlink($file);
         }
 
-        $expected = "<?php\n\n\$b = &\$a;\n\$c = &\$a;\n\$d = &\$a;\n\$e = &\$a;\n\$f = &\$a;\n"
-            . "\$g = & /* Why. */ \$a;\nforeach (\$a as &\$item) {\n    \$item++;\n}\n\$h = [&\$b, 'c' => &\$c];\n"
-            . "\$i = function &(int &\$j) use (&\$b): int {\n    return \$b;\n};\n\$k = \$b & \$c;\n\$l = ! \$b;\n";
+        $expected = <<<'PHP'
+            <?php
+
+            $b = &$a;
+            $c = &$a;
+            $d = &$a;
+            $e = &$a;
+            $f = &$a;
+            $g = & /* Why. */ $a;
+            foreach ($a as &$item) {
+                $item++;
+            }
+            $h = [&$b, 'c' => &$c];
+            $i = function &(int &$j) use (&$b): int {
+                return $b;
+            };
+            $k = $b & $c;
+            $l = ! $b;
+
+            PHP;
 
         $reported = substr_count($result['output'], 'UnaryOperatorSpacing.WhitespaceAfter');
 
@@ -188,8 +291,36 @@ class RulesetUnitTest extends TestCase
      */
     public function testBlankLineBetweenInterfacesIsAllowed(): void
     {
-        $header = "<?php\n\nnamespace Vendor\\Package;\n\nclass Foo implements\n    Countable,\n\n";
-        $file = $this->copyToTempFile(null, $header . "    Stringable, Traversable\n{\n    // ...\n}\n");
+        $source = <<<'PHP'
+            <?php
+
+            namespace Vendor\Package;
+
+            class Foo implements
+                Countable,
+
+                Stringable, Traversable
+            {
+                // ...
+            }
+
+            PHP;
+        $expected = <<<'PHP'
+            <?php
+
+            namespace Vendor\Package;
+
+            class Foo implements
+                Countable,
+
+                Stringable,
+                Traversable
+            {
+                // ...
+            }
+
+            PHP;
+        $file = $this->copyToTempFile(null, $source);
 
         try {
             $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
@@ -203,7 +334,7 @@ class RulesetUnitTest extends TestCase
 
         $this->assertSame(1, $reported, $result['output']);
         $this->assertStringNotContainsString('InterfaceSameLine', $result['output']);
-        $this->assertSame($header . "    Stringable,\n    Traversable\n{\n    // ...\n}\n", $fixed);
+        $this->assertSame($expected, $fixed);
     }
 
     /**
@@ -212,8 +343,17 @@ class RulesetUnitTest extends TestCase
      */
     public function testObjectOperatorAtEndOfLineIsMovedToNextLine(): void
     {
-        $source = "<?php\n\n\$someInstance->\n    create()\n    ->prepare();\n\n"
-            . "\$user = \$repository->\n    find(\$id);\n";
+        $source = <<<'PHP'
+            <?php
+
+            $someInstance->
+                create()
+                ->prepare();
+
+            $user = $repository->
+                find($id);
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -224,8 +364,17 @@ class RulesetUnitTest extends TestCase
             unlink($file);
         }
 
-        $expected = "<?php\n\n\$someInstance\n    ->create()\n    ->prepare();\n\n"
-            . "\$user = \$repository\n    ->find(\$id);\n";
+        $expected = <<<'PHP'
+            <?php
+
+            $someInstance
+                ->create()
+                ->prepare();
+
+            $user = $repository
+                ->find($id);
+
+            PHP;
 
         $this->assertSame(2, substr_count($result['output'], 'MethodChaining.OperatorAtEndOfLine'), $result['output']);
         $this->assertSame(2, substr_count($result['output'], ' error - '), $result['output']);
@@ -239,8 +388,18 @@ class RulesetUnitTest extends TestCase
      */
     public function testConstantsPerStatement(): void
     {
-        $source = "<?php\n\nconst I = new Complex(0, 1);\nconst J = 1, K = 2;\n\n"
-            . "class Holder\n{\n    final public const int A = 1, B = 2;\n}\n";
+        $source = <<<'PHP'
+            <?php
+
+            const I = new Complex(0, 1);
+            const J = 1, K = 2;
+
+            class Holder
+            {
+                final public const int A = 1, B = 2;
+            }
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
         $args = ['-s', '--standard=PERCS31', '--sniffs=PERCS31.Classes.ConstantDeclaration'];
 
@@ -264,9 +423,25 @@ class RulesetUnitTest extends TestCase
      */
     public function testStaticOrNullReturnTypeIsFixedToShortNullable(): void
     {
-        $source = "<?php\n\nnamespace Vendor\\Package;\n\nclass Fluent\n{\n"
-            . "    public function next(): static|null\n    {\n        return null;\n    }\n\n"
-            . "    public function back(): null|static\n    {\n        return null;\n    }\n}\n";
+        $source = <<<'PHP'
+            <?php
+
+            namespace Vendor\Package;
+
+            class Fluent
+            {
+                public function next(): static|null
+                {
+                    return null;
+                }
+
+                public function back(): null|static
+                {
+                    return null;
+                }
+            }
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -292,17 +467,49 @@ class RulesetUnitTest extends TestCase
      */
     public function testWrappedDefaultValueIsIndentedOncePastItsParameter(): void
     {
-        $source = "<?php\n\nnamespace Vendor\\Package;\n\nclass Flags\n{\n    public function set(\n"
-            . "        string \$name = 'a'\n            . 'b',\n        int \$mode = self::READ\n"
-            . "            | self::WRITE,\n        int \$size = PHP_INT_SIZE === 8\n            ? 1\n"
-            . "            : 2,\n    ): void {\n        \$closure = function (\n            string \$name = 'a'\n"
-            . "                . 'b',\n        ) {\n            return \$name;\n        };\n"
-            . "        \$arrow = fn(\n            int \$mode = 1\n                + 2,\n        ): int => \$mode;\n"
-            . "    }\n}\n";
+        $source = <<<'PHP'
+            <?php
+
+            namespace Vendor\Package;
+
+            class Flags
+            {
+                public function set(
+                    string $name = 'a'
+                        . 'b',
+                    int $mode = self::READ
+                        | self::WRITE,
+                    int $size = PHP_INT_SIZE === 8
+                        ? 1
+                        : 2,
+                ): void {
+                    $closure = function (
+                        string $name = 'a'
+                            . 'b',
+                    ) {
+                        return $name;
+                    };
+                    $arrow = fn(
+                        int $mode = 1
+                            + 2,
+                    ): int => $mode;
+                }
+            }
+
+            PHP;
         $level = str_replace("\n            . 'b'", "\n        . 'b'", $source);
         $file = $this->copyToTempFile(null, $source);
         $levelFile = $this->copyToTempFile(null, $level);
-        $indented = $this->copyToTempFile(null, "<?php\n\nfunction a(\n        int \$b,\n  int \$c,\n  ): void {}\n");
+        $wrongIndent = <<<'PHP'
+            <?php
+
+            function a(
+                    int $b,
+              int $c,
+              ): void {}
+
+            PHP;
+        $indented = $this->copyToTempFile(null, $wrongIndent);
 
         try {
             $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
@@ -329,8 +536,28 @@ class RulesetUnitTest extends TestCase
      */
     public function testSplitFirstClassCallableIsJoinedWithNoComma(): void
     {
-        $commented = "\$b = strlen(\n    // Why.\n    ...\n);\n";
-        $file = $this->copyToTempFile(null, "<?php\n\n\$a = strlen(\n    ...\n);\n$commented");
+        $source = <<<'PHP'
+            <?php
+
+            $a = strlen(
+                ...
+            );
+            $b = strlen(
+                // Why.
+                ...
+            );
+
+            PHP;
+        $expected = <<<'PHP'
+            <?php
+
+            $a = strlen(...);
+            $b = strlen(
+                // Why.
+                ...);
+
+            PHP;
+        $file = $this->copyToTempFile(null, $source);
 
         try {
             $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
@@ -344,7 +571,7 @@ class RulesetUnitTest extends TestCase
         $this->assertSame(2, substr_count($result['output'], 'FirstClassCallableSpacing.SpacingAfter'));
         $this->assertStringNotContainsString('MissingTrailingComma', $result['output']);
         $this->assertStringNotContainsString('FunctionCallLayout', $result['output']);
-        $this->assertSame("<?php\n\n\$a = strlen(...);\n\$b = strlen(\n    // Why.\n    ...);\n", $fixed);
+        $this->assertSame($expected, $fixed);
     }
 
     /**
@@ -353,7 +580,13 @@ class RulesetUnitTest extends TestCase
      */
     public function testTemplateFirstLineTagMayShareItsLine(): void
     {
-        $template = "<?php require 'header.php'; ?>\n<main>\n    <p>Hello</p>\n</main>\n";
+        $template = <<<'PHP'
+            <?php require 'header.php'; ?>
+            <main>
+                <p>Hello</p>
+            </main>
+
+            PHP;
         $file = $this->copyToTempFile(null, $template);
         $phpOnly = $this->copyToTempFile(null, "<?php require 'header.php';\n");
         $args = ['-s', '--standard=PERCS31', '--report=emacs'];
@@ -380,7 +613,15 @@ class RulesetUnitTest extends TestCase
      */
     public function testAttributeOnReadonlyAnonClassIsFixedToSectionEightLayout(): void
     {
-        $file = $this->copyToTempFile(null, "<?php\n\n\$a = new #[A] readonly class {\n    public int \$b;\n};\n");
+        $source = <<<'PHP'
+            <?php
+
+            $a = new #[A] readonly class {
+                public int $b;
+            };
+
+            PHP;
+        $file = $this->copyToTempFile(null, $source);
 
         try {
             $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
@@ -390,7 +631,16 @@ class RulesetUnitTest extends TestCase
             unlink($file);
         }
 
-        $expected = "<?php\n\n\$a = new\n    #[A]\n    readonly class {\n        public int \$b;\n    };\n";
+        $expected = <<<'PHP'
+            <?php
+
+            $a = new
+                #[A]
+                readonly class {
+                    public int $b;
+                };
+
+            PHP;
         $this->assertSame($expected, $fixed);
         $this->assertSame(0, $result['exitCode'], $result['output']);
     }
@@ -401,7 +651,28 @@ class RulesetUnitTest extends TestCase
      */
     public function testClosureUseOnItsOwnLineIsJoined(): void
     {
-        $file = $this->copyToTempFile(null, "<?php\n\n\$a = function (\n    \$b,\n)\nuse (\$c) {\n    return 1;\n};\n");
+        $source = <<<'PHP'
+            <?php
+
+            $a = function (
+                $b,
+            )
+            use ($c) {
+                return 1;
+            };
+
+            PHP;
+        $expected = <<<'PHP'
+            <?php
+
+            $a = function (
+                $b,
+            ) use ($c) {
+                return 1;
+            };
+
+            PHP;
+        $file = $this->copyToTempFile(null, $source);
 
         try {
             $fixer = $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
@@ -411,7 +682,7 @@ class RulesetUnitTest extends TestCase
         }
 
         $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
-        $this->assertSame("<?php\n\n\$a = function (\n    \$b,\n) use (\$c) {\n    return 1;\n};\n", $fixed);
+        $this->assertSame($expected, $fixed);
     }
 
     /**
@@ -421,9 +692,52 @@ class RulesetUnitTest extends TestCase
      */
     public function testArrayStartingSplitConditionGoesOnNextLine(): void
     {
-        $body = "    [\n        \$first,\n        \$second,\n    ] === \$expected\n) {\n    run();\n}\n";
-        $valid = "<?php\n\nif (\n$body\nwhile (\n$body";
-        $joined = "<?php\n\nif ([\n    \$first,\n    \$second,\n] === \$expected) {\n    run();\n}\n";
+        $valid = <<<'PHP'
+            <?php
+
+            if (
+                [
+                    $first,
+                    $second,
+                ] === $expected
+            ) {
+                run();
+            }
+
+            while (
+                [
+                    $first,
+                    $second,
+                ] === $expected
+            ) {
+                run();
+            }
+
+            PHP;
+        $expected = <<<'PHP'
+            <?php
+
+            if (
+                [
+                    $first,
+                    $second,
+                ] === $expected
+            ) {
+                run();
+            }
+
+            PHP;
+        $joined = <<<'PHP'
+            <?php
+
+            if ([
+                $first,
+                $second,
+            ] === $expected) {
+                run();
+            }
+
+            PHP;
         $validFile = $this->copyToTempFile(null, $valid);
         $joinedFile = $this->copyToTempFile(null, $joined);
 
@@ -438,7 +752,7 @@ class RulesetUnitTest extends TestCase
 
         $this->assertSame(0, $result['exitCode'], $result['output']);
         $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
-        $this->assertSame("<?php\n\nif (\n$body", $fixed);
+        $this->assertSame($expected, $fixed);
     }
 
     /**
@@ -448,10 +762,49 @@ class RulesetUnitTest extends TestCase
      */
     public function testBlankLinesAroundTraitUse(): void
     {
-        $header = "<?php\n\nnamespace Vendor\\Package;\n\n";
-        $source = $header . "class Between\n{\n    use First;\n\n    use Second;\n\n\n    public int \$a = 1;\n}\n";
+        $source = <<<'PHP'
+            <?php
+
+            namespace Vendor\Package;
+
+            class Between
+            {
+                use First;
+
+                use Second;
+
+
+                public int $a = 1;
+            }
+
+            PHP;
+        $lastSource = <<<'PHP'
+            <?php
+
+            namespace Vendor\Package;
+
+            class Last
+            {
+                use First;
+                public int $a = 1;
+            }
+
+            PHP;
+        $expected = <<<'PHP'
+            <?php
+
+            namespace Vendor\Package;
+
+            class Last
+            {
+                use First;
+
+                public int $a = 1;
+            }
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
-        $last = $this->copyToTempFile(null, $header . "class Last\n{\n    use First;\n    public int \$a = 1;\n}\n");
+        $last = $this->copyToTempFile(null, $lastSource);
         $args = ['-s', '--standard=PERCS31', '--report=emacs'];
 
         try {
@@ -467,7 +820,7 @@ class RulesetUnitTest extends TestCase
         $this->assertSame(0, $result['exitCode'], $result['output']);
         $this->assertSame(1, substr_count($lastResult['output'], 'error - '), $lastResult['output']);
         $this->assertStringContainsString('TraitUseBlock.NoBlankLineAfterUse', $lastResult['output']);
-        $this->assertSame($header . "class Last\n{\n    use First;\n\n    public int \$a = 1;\n}\n", $fixed);
+        $this->assertSame($expected, $fixed);
     }
 
     /**
@@ -523,9 +876,27 @@ class RulesetUnitTest extends TestCase
      */
     public function testEmptyControlStructureBodyMayBeAbbreviated(): void
     {
-        $valid = "<?php\n\ntry {\n    run();\n} catch (Exception \$e) {} finally {}\n\nwhile (next(\$items)) {}\n";
+        $valid = <<<'PHP'
+            <?php
+
+            try {
+                run();
+            } catch (Exception $e) {} finally {}
+
+            while (next($items)) {}
+
+            PHP;
         $file = $this->copyToTempFile(null, $valid);
-        $invalid = $this->copyToTempFile(null, "<?php\n\nwhile (next(\$items)) { }\n\nif (\$first) { run();\n}\n");
+        $invalidSource = <<<'PHP'
+            <?php
+
+            while (next($items)) { }
+
+            if ($first) { run();
+            }
+
+            PHP;
+        $invalid = $this->copyToTempFile(null, $invalidSource);
         $args = ['-s', '--standard=PERCS31', '--report=emacs'];
 
         try {
@@ -547,8 +918,33 @@ class RulesetUnitTest extends TestCase
      */
     public function testNoTrailingCommaAfterSingleArgumentSplitOverLines(): void
     {
-        $split = "\$b = sum(\n    [1, 2],\n    \$precision,\n);\n";
-        $file = $this->copyToTempFile(null, "<?php\n\n\$a = sum([\n    1,\n    2,\n],);\n$split");
+        $source = <<<'PHP'
+            <?php
+
+            $a = sum([
+                1,
+                2,
+            ],);
+            $b = sum(
+                [1, 2],
+                $precision,
+            );
+
+            PHP;
+        $expected = <<<'PHP'
+            <?php
+
+            $a = sum([
+                1,
+                2,
+            ]);
+            $b = sum(
+                [1, 2],
+                $precision,
+            );
+
+            PHP;
+        $file = $this->copyToTempFile(null, $source);
 
         try {
             $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
@@ -560,7 +956,7 @@ class RulesetUnitTest extends TestCase
 
         $this->assertSame(1, substr_count($result['output'], 'DisallowTrailingCommaInCall.DisallowedTrailingComma'));
         $this->assertSame(1, substr_count($result['output'], 'error - '), $result['output']);
-        $this->assertSame("<?php\n\n\$a = sum([\n    1,\n    2,\n]);\n$split", $fixed);
+        $this->assertSame($expected, $fixed);
     }
 
     /**
@@ -568,6 +964,14 @@ class RulesetUnitTest extends TestCase
      */
     public function testOneLineBlockDeclareIsFixedWithNoBlankLine(): void
     {
+        $expected = <<<'PHP'
+            <?php
+
+            declare(ticks=1) {
+                echo 1;
+            }
+
+            PHP;
         $file = $this->copyToTempFile(null, "<?php\n\ndeclare(ticks=1) { echo 1; }\n");
 
         try {
@@ -577,7 +981,7 @@ class RulesetUnitTest extends TestCase
             unlink($file);
         }
 
-        $this->assertSame("<?php\n\ndeclare(ticks=1) {\n    echo 1;\n}\n", $fixed);
+        $this->assertSame($expected, $fixed);
     }
 
     /**
@@ -586,6 +990,14 @@ class RulesetUnitTest extends TestCase
      */
     public function testOneLineBlockDeclareWithNoSpacesKeepsItsSemicolon(): void
     {
+        $expected = <<<'PHP'
+            <?php
+
+            declare(ticks=1) {
+                echo 1;
+            }
+
+            PHP;
         $file = $this->copyToTempFile(null, "<?php\n\ndeclare(ticks=1) {echo 1;}\n");
 
         try {
@@ -595,7 +1007,7 @@ class RulesetUnitTest extends TestCase
             unlink($file);
         }
 
-        $this->assertSame("<?php\n\ndeclare(ticks=1) {\n    echo 1;\n}\n", $fixed);
+        $this->assertSame($expected, $fixed);
     }
 
     /**
@@ -604,8 +1016,33 @@ class RulesetUnitTest extends TestCase
      */
     public function testHeredocAfterAssignmentIsJoinedToItsVariable(): void
     {
-        $body = "<<<'EOT'\n    Hello\n    EOT;\n";
-        $file = $this->copyToTempFile(null, "<?php\n\n\$a =\n$body\n\$b\n    = $body");
+        $source = <<<'PHP'
+            <?php
+
+            $a =
+            <<<'EOT'
+                Hello
+                EOT;
+
+            $b
+                = <<<'EOT'
+                Hello
+                EOT;
+
+            PHP;
+        $expected = <<<'PHP'
+            <?php
+
+            $a = <<<'EOT'
+                Hello
+                EOT;
+
+            $b = <<<'EOT'
+                Hello
+                EOT;
+
+            PHP;
+        $file = $this->copyToTempFile(null, $source);
 
         try {
             $this->runTool('phpcbf', ['--standard=PERCS31', $file]);
@@ -615,7 +1052,7 @@ class RulesetUnitTest extends TestCase
             unlink($file);
         }
 
-        $this->assertSame("<?php\n\n\$a = $body\n\$b = $body", $fixed);
+        $this->assertSame($expected, $fixed);
         $this->assertStringNotContainsString('HeredocLayout', $result['output']);
         $this->assertStringNotContainsString('OperatorPlacement', $result['output']);
     }
@@ -626,7 +1063,15 @@ class RulesetUnitTest extends TestCase
      */
     public function testNonCanonicalCastIsReportedOnce(): void
     {
-        $source = "<?php\n\n\$a = (double) \$x;\n\$b = (integer) \$x;\n\$c = (boolean) \$x;\n\$d = (binary) \$x;\n";
+        $source = <<<'PHP'
+            <?php
+
+            $a = (double) $x;
+            $b = (integer) $x;
+            $c = (boolean) $x;
+            $d = (binary) $x;
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -639,7 +1084,15 @@ class RulesetUnitTest extends TestCase
 
         preg_match_all('/:(\d+):\d+: error - .*\.(\w+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
         $reports = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
-        $expected = "<?php\n\n\$a = (float) \$x;\n\$b = (int) \$x;\n\$c = (bool) \$x;\n\$d = (string) \$x;\n";
+        $expected = <<<'PHP'
+            <?php
+
+            $a = (float) $x;
+            $b = (int) $x;
+            $c = (bool) $x;
+            $d = (string) $x;
+
+            PHP;
 
         $reported = ['3 InvalidCastUsed', '4 InvalidCastUsed', '5 InvalidCastUsed', '6 InvalidCastUsed'];
 
@@ -654,8 +1107,20 @@ class RulesetUnitTest extends TestCase
      */
     public function testUpperCaseKeywordIsReportedOnce(): void
     {
-        $source = "<?php\n\nIF (\$a) {\n    run();\n} ELSE {\n    stop();\n}\n\n"
-            . "FUNCTION a(): void {}\n\n\$b = STATIC FN() => 1;\n";
+        $source = <<<'PHP'
+            <?php
+
+            IF ($a) {
+                run();
+            } ELSE {
+                stop();
+            }
+
+            FUNCTION a(): void {}
+
+            $b = STATIC FN() => 1;
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -682,8 +1147,24 @@ class RulesetUnitTest extends TestCase
      */
     public function testDeclarationAndAnonClassArgumentSpacingIsReportedOnce(): void
     {
-        $source = "<?php\n\nfunction  a (): void\n{\n    run();\n}\n\n\$b = new class ( \$c ) {\n"
-            . "    public int \$d = 1;\n};\n\n\$e = new class (\$c,\n  \$f, \$g) {\n    public int \$d = 1;\n};\n";
+        $source = <<<'PHP'
+            <?php
+
+            function  a (): void
+            {
+                run();
+            }
+
+            $b = new class ( $c ) {
+                public int $d = 1;
+            };
+
+            $e = new class ($c,
+              $f, $g) {
+                public int $d = 1;
+            };
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -801,8 +1282,18 @@ class RulesetUnitTest extends TestCase
      */
     public function testUpperCaseCaseAndDefaultAreReportedOnce(): void
     {
-        $source = "<?php\n\nswitch (\$a) {\n    CASE 1:\n        run();\n        break;\n"
-            . "    DEFAULT:\n        break;\n}\n";
+        $source = <<<'PHP'
+            <?php
+
+            switch ($a) {
+                CASE 1:
+                    run();
+                    break;
+                DEFAULT:
+                    break;
+            }
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -827,8 +1318,22 @@ class RulesetUnitTest extends TestCase
      */
     public function testStructureWithNoBodyNeedsBraces(): void
     {
-        $source = "<?php\n\ndeclare(strict_types=1);\n\nwhile (next(\$items));\n\ndo {\n    run();\n} while (\$a);\n"
-            . "\nif (\$a) {\n    run();\n} else;\n";
+        $source = <<<'PHP'
+            <?php
+
+            declare(strict_types=1);
+
+            while (next($items));
+
+            do {
+                run();
+            } while ($a);
+
+            if ($a) {
+                run();
+            } else;
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -851,7 +1356,16 @@ class RulesetUnitTest extends TestCase
      */
     public function testDoLoopWithNoBracesKeepsItsWhile(): void
     {
-        $source = "<?php\n\ndo\n    \$i++;\nwhile (\$i < 10);\n\ndo run(); while (\$ready);\n";
+        $source = <<<'PHP'
+            <?php
+
+            do
+                $i++;
+            while ($i < 10);
+
+            do run(); while ($ready);
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -862,7 +1376,18 @@ class RulesetUnitTest extends TestCase
             unlink($file);
         }
 
-        $expected = "<?php\n\ndo {\n    \$i++;\n} while (\$i < 10);\n\ndo {\n    run();\n} while (\$ready);\n";
+        $expected = <<<'PHP'
+            <?php
+
+            do {
+                $i++;
+            } while ($i < 10);
+
+            do {
+                run();
+            } while ($ready);
+
+            PHP;
 
         $this->assertStringNotContainsString('ControlStructureEmptyStatement', $result['output']);
         $this->assertSame($expected, $fixed);
@@ -873,8 +1398,24 @@ class RulesetUnitTest extends TestCase
      */
     public function testCommentsAreNotChecked(): void
     {
-        $source = "<?php\n\ndeclare(strict_types=1);\n\nfunction foo(): int\n{\n// At column 1.\n"
-            . "    /*\n  Too little.\n    */\n    \$a = 1;// No space.\n    //No space.\n\n    return \$a;\n}\n";
+        $source = <<<'PHP'
+            <?php
+
+            declare(strict_types=1);
+
+            function foo(): int
+            {
+            // At column 1.
+                /*
+              Too little.
+                */
+                $a = 1;// No space.
+                //No space.
+
+                return $a;
+            }
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -891,8 +1432,16 @@ class RulesetUnitTest extends TestCase
      */
     public function testSpaceInEmptyArrayIsReportedOnce(): void
     {
-        $source = "<?php\n\ndeclare(strict_types=1);\n\necho count([ ]), count([   ]), count(foo([ ]));\n"
-            . "echo count([\n]);\n";
+        $source = <<<'PHP'
+            <?php
+
+            declare(strict_types=1);
+
+            echo count([ ]), count([   ]), count(foo([ ]));
+            echo count([
+            ]);
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -913,12 +1462,43 @@ class RulesetUnitTest extends TestCase
      */
     public function testTerminatingStatementInCaseIsReportedOnce(): void
     {
-        $source = "<?php\n\nswitch (\$a) {\n    case 1:\n        \$b = foo() ?? throw new \\Exception();\n"
-            . "        break;\n    case 2: break;\n    case 3:\n        run(); break;\n    case 4:\n"
-            . "        if (\$b) {\n            run();\n        } return;\n}\n";
-        $expected = "<?php\n\nswitch (\$a) {\n    case 1:\n        \$b = foo() ?? throw new \\Exception();\n"
-            . "        break;\n    case 2:\n        break;\n    case 3:\n        run();\n        break;\n"
-            . "    case 4:\n        if (\$b) {\n            run();\n        }\n        return;\n}\n";
+        $source = <<<'PHP'
+            <?php
+
+            switch ($a) {
+                case 1:
+                    $b = foo() ?? throw new \Exception();
+                    break;
+                case 2: break;
+                case 3:
+                    run(); break;
+                case 4:
+                    if ($b) {
+                        run();
+                    } return;
+            }
+
+            PHP;
+        $expected = <<<'PHP'
+            <?php
+
+            switch ($a) {
+                case 1:
+                    $b = foo() ?? throw new \Exception();
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    run();
+                    break;
+                case 4:
+                    if ($b) {
+                        run();
+                    }
+                    return;
+            }
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -951,7 +1531,27 @@ class RulesetUnitTest extends TestCase
      */
     public function testOverIndentedFirstStatementIsFixed(): void
     {
-        $file = $this->copyToTempFile(null, "<?php\n\n \$a = [\n     1,\n ];\n\n\$b = 2;\n");
+        $source = <<<'PHP'
+            <?php
+
+             $a = [
+                 1,
+             ];
+
+            $b = 2;
+
+            PHP;
+        $expected = <<<'PHP'
+            <?php
+
+            $a = [
+                1,
+            ];
+
+            $b = 2;
+
+            PHP;
+        $file = $this->copyToTempFile(null, $source);
         $single = $this->copyToTempFile(null, "<?php\n\n    \$a = 1;\n");
 
         try {
@@ -966,7 +1566,7 @@ class RulesetUnitTest extends TestCase
 
         $this->assertMatchesRegularExpression('/:3:\\d+: error - .*ConsistentIndent\\.Incorrect/', $result['output']);
         $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
-        $this->assertSame("<?php\n\n\$a = [\n    1,\n];\n\n\$b = 2;\n", $fixed);
+        $this->assertSame($expected, $fixed);
         $this->assertSame("<?php\n\n\$a = 1;\n", $fixedSingle);
     }
 
@@ -976,8 +1576,19 @@ class RulesetUnitTest extends TestCase
      */
     public function testPhpcbfLeavesBlockInCaseAlone(): void
     {
-        $source = "<?php\n\nswitch (\$a) {\n    case 1:\n        {\n            echo 'a';\n        }\n"
-            . "        echo 'b';\n        break;\n}\n";
+        $source = <<<'PHP'
+            <?php
+
+            switch ($a) {
+                case 1:
+                    {
+                        echo 'a';
+                    }
+                    echo 'b';
+                    break;
+            }
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -998,10 +1609,44 @@ class RulesetUnitTest extends TestCase
      */
     public function testCaseConditionCloserIsReportedOnceAndFixed(): void
     {
-        $condition = "    case (\n        \$a === 10\n        && \$b === 20\n";
-        $body = "        break;\n}\n";
-        $file = $this->copyToTempFile(null, "<?php\n\nswitch (true) {\n$condition        ):\n$body");
-        $little = $this->copyToTempFile(null, "<?php\n\nswitch (true) {\n$condition  ):\n$body");
+        $tooFarSource = <<<'PHP'
+            <?php
+
+            switch (true) {
+                case (
+                    $a === 10
+                    && $b === 20
+                    ):
+                    break;
+            }
+
+            PHP;
+        $tooLittleSource = <<<'PHP'
+            <?php
+
+            switch (true) {
+                case (
+                    $a === 10
+                    && $b === 20
+              ):
+                    break;
+            }
+
+            PHP;
+        $expected = <<<'PHP'
+            <?php
+
+            switch (true) {
+                case (
+                    $a === 10
+                    && $b === 20
+                ):
+                    break;
+            }
+
+            PHP;
+        $file = $this->copyToTempFile(null, $tooFarSource);
+        $little = $this->copyToTempFile(null, $tooLittleSource);
         $args = ['-s', '--standard=PERCS31', '--report=emacs'];
 
         try {
@@ -1015,7 +1660,6 @@ class RulesetUnitTest extends TestCase
             unlink($little);
         }
 
-        $expected = "<?php\n\nswitch (true) {\n$condition    ):\n$body";
         $this->assertSame(1, substr_count($tooFar['output'], ' error - '), $tooFar['output']);
         $this->assertStringContainsString('MultiLineConditionCloserIndent', $tooFar['output']);
         $this->assertSame(1, substr_count($tooLittle['output'], ' error - '), $tooLittle['output']);
@@ -1030,10 +1674,34 @@ class RulesetUnitTest extends TestCase
      */
     public function testUnderIndentedHeredocArgumentIsFixedToValidCode(): void
     {
-        $source = "<?php\n\nfunction a(string \$name): void\n{\n  foo(\n    \$name,\n    <<<EOT\n        Hello \$name\n"
-            . "        EOT,\n  );\n}\n";
-        $expected = "<?php\n\nfunction a(string \$name): void\n{\n    foo(\n        \$name,\n        <<<EOT\n"
-            . "            Hello \$name\n            EOT,\n    );\n}\n";
+        $source = <<<'PHP'
+            <?php
+
+            function a(string $name): void
+            {
+              foo(
+                $name,
+                <<<EOT
+                    Hello $name
+                    EOT,
+              );
+            }
+
+            PHP;
+        $expected = <<<'PHP'
+            <?php
+
+            function a(string $name): void
+            {
+                foo(
+                    $name,
+                    <<<EOT
+                        Hello $name
+                        EOT,
+                );
+            }
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -1055,9 +1723,36 @@ class RulesetUnitTest extends TestCase
      */
     public function testCommaSpacingInCallIsReportedOnceAndFixed(): void
     {
-        $heredoc = "    <<<'EOT'\n        x\n        EOT";
-        $arrays = "    [1 , 2],\n    [3,4],\n    [5,  6],\n";
-        $source = "<?php\n\nfoo(\n$heredoc\n    ,\n    \$a\n    ,\n$arrays);\n";
+        $source = <<<'PHP'
+            <?php
+
+            foo(
+                <<<'EOT'
+                    x
+                    EOT
+                ,
+                $a
+                ,
+                [1 , 2],
+                [3,4],
+                [5,  6],
+            );
+
+            PHP;
+        $fixedSource = <<<'PHP'
+            <?php
+
+            foo(
+                <<<'EOT'
+                    x
+                    EOT,
+                $a,
+                [1, 2],
+                [3, 4],
+                [5, 6],
+            );
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -1077,10 +1772,9 @@ class RulesetUnitTest extends TestCase
             '11 NoSpaceAfterInFunctionCall',
             '12 TooMuchSpaceAfterInFunctionCall',
         ];
-        $fixedArrays = "    [1, 2],\n    [3, 4],\n    [5, 6],\n";
 
         $this->assertSame($expected, $reports, $result['output']);
-        $this->assertSame("<?php\n\nfoo(\n$heredoc,\n    \$a,\n$fixedArrays);\n", $fixed);
+        $this->assertSame($fixedSource, $fixed);
     }
 
     /**
@@ -1090,9 +1784,50 @@ class RulesetUnitTest extends TestCase
      */
     public function testAttributeTrailingComma(): void
     {
-        $split = "#[Foo(\n    1,\n)";
-        $source = "<?php\n\n#[Foo, Bar,]\nfunction a(): void {}\n\n$split,]\nfunction b(): void {}\n\n"
-            . "$split]\nfunction c(): void {}\n\n$split, Bar]\nfunction d(): void {}\n";
+        $source = <<<'PHP'
+            <?php
+
+            #[Foo, Bar,]
+            function a(): void {}
+
+            #[Foo(
+                1,
+            ),]
+            function b(): void {}
+
+            #[Foo(
+                1,
+            )]
+            function c(): void {}
+
+            #[Foo(
+                1,
+            ), Bar]
+            function d(): void {}
+
+            PHP;
+        $expected = <<<'PHP'
+            <?php
+
+            #[Foo, Bar]
+            function a(): void {}
+
+            #[Foo(
+                1,
+            )]
+            function b(): void {}
+
+            #[Foo(
+                1,
+            )]
+            function c(): void {}
+
+            #[Foo(
+                1,
+            ), Bar]
+            function d(): void {}
+
+            PHP;
         $file = $this->copyToTempFile(null, $source);
         $args = ['-s', '--standard=PERCS31', '--sniffs=Universal.Attributes.TrailingComma'];
 
@@ -1106,9 +1841,6 @@ class RulesetUnitTest extends TestCase
 
         preg_match_all('/:(\d+):\d+: error - .*\.(\w+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
         $reports = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
-        $expected = "<?php\n\n#[Foo, Bar]\nfunction a(): void {}\n\n$split]\nfunction b(): void {}\n\n"
-            . "$split]\nfunction c(): void {}\n\n$split, Bar]\nfunction d(): void {}\n";
-
         $reported = ['3 ForbiddenSingleLine', '8 ForbiddenSingleAttributeMultiLine'];
 
         $this->assertSame($reported, $reports, $result['output']);
