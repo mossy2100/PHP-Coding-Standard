@@ -89,6 +89,9 @@ The complete [PERCS31](PERCS31.md) standard is included, which is built on PSR-1
   the `SpaceBeforeEquals` and `SpaceAfterEquals` codes PERCS31 excludes (`PERCS31.Operators.OperatorSpacing` has
   `checkDefaultValues` set to `false`).
 - `PSR2.Files.ClosingTag` is excluded, as [`Zend.Files.ClosingTag`](Jumbo_Inherited_Sniffs.md#zendfilesclosingtag) reports the same closing tags, and more.
+- `Universal.Operators.ConcatPosition` is excluded, as
+  [`ExpressionFormat`](Jumbo_Custom_Sniffs.md#jumboformattingexpressionformat) puts a split `.` at the start of its line,
+  along with every other binary operator. See [Not Checked](#not-checked) for the one case it leaves.
 - `PERCS31.Operators.UnaryOperatorSpacing` also disallows whitespace after a prefix unary `+`, `-`, `!`, `~` and `@`,
   as in `- $a` and `! $a`. PERCS31 only checks the reference `&` with it, as PER leaves the others
   undefined. Each has its own property, such as `checkNotOperator`, and Jumbo sets them all to `true`.
@@ -122,4 +125,9 @@ Custom sniffs fill the gaps in the inherited sniffs, or replace ones that misrea
 
 ## Not Checked
 
-Jumbo adds no gaps of its own. Everything listed under [Not Checked in PERCS31](PERCS31.md#not-checked) applies here too.
+Everything listed under [Not Checked in PERCS31](PERCS31.md#not-checked) applies here too. Jumbo adds one gap:
+
+- **A `.` at the end of a line, in an expression `ExpressionFormat` leaves alone.** That's one with a comment, a heredoc
+  or nowdoc, a multi-line string or an arrow function, or a line break inside an operand, such as a multi-line call or
+  closure, and a ternary's condition or value too long for one line. PERCS31 reports it, with
+  `Universal.Operators.ConcatPosition`, which Jumbo excludes.

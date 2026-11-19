@@ -522,6 +522,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`Universal.Constants.ModifierKeywordOrder` (breaking).** `final` must come before the visibility on a constant, as
   in `final public const A`, the order PER Coding Style 3.1, section 4.6, sets for modifier keywords. Auto-fixable, in
   PERCS31 and Jumbo.
+- **`Jumbo.Formatting.ExpressionFormat` (breaking).** Lays out each expression: on one line if it fits, otherwise
+  split only before its loosest operators, outside any grouping parentheses, with as many operands on each line as fit.
+  An operand too long for a line of its own is split the same way. So `($a` then `&& $b)` then `|| ($c` then `&& $d)`,
+  as `PSR12.ControlStructures.BooleanOperatorPlacement`'s fix leaves it, becomes `($a && $b)` then `|| ($c && $d)`. It
+  covers every binary operator, including `.`. A split expression that fits is reported as `ShouldBeSingleLine`, and
+  any other wrong layout as `IncorrectSplit`. Auto-fixable. PERCS31 is unchanged, as PER Coding Style 3.1 allows a
+  split before any operator.
 
 ### Changed
 
@@ -668,6 +675,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   `SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification` on `#[Override]` methods
   that inherit their array shape from the parent's docblock, and 8.25.0 also misreports hooked properties as multiple
   property definitions.
+- **`Jumbo.Formatting.RequireSingleLineStatement` leaves expressions to `ExpressionFormat`.** A line break before or
+  after a binary operator, or just inside grouping parentheses, is no longer reported by it, when
+  `Jumbo.Formatting.ExpressionFormat` lays out that expression. So `$a = $b` then `+ $c;` is now reported as
+  `Jumbo.Formatting.ExpressionFormat.ShouldBeSingleLine`. It also no longer joins `$a = $b && (` onto one line before a
+  multi-line group.
 
 ### Removed
 
@@ -714,6 +726,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`SlevomatCodingStandard.Functions.RequireArrowFunction` from Jumbo.** Its fix rewrote a closure in a constant
   expression, such as `const A = static function () { return 1; };`, as an arrow function, which PHP 8.5 doesn't allow
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
+- **`Universal.Operators.ConcatPosition`, from Jumbo.** `Jumbo.Formatting.ExpressionFormat` puts a split `.` at the
+  start of its line, with every other binary operator. A `.` at the end of a line in an expression it leaves alone,
+  such as one with a comment, is no longer reported in Jumbo. PERCS31 still includes it.
+
 ### Fixed
 
 - **A comment at the end of a file header line.** `PERCS31.Files.FileHeader` reported `use A; // Why.`, or a comment

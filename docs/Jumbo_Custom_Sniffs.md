@@ -20,6 +20,7 @@ that misreads modern PHP. Each section gives the reason. The custom sniffs for P
 | `Jumbo.ControlStructures.MatchArmWrapIndent`               | One line if it fits, else a wrapped `match` arm indented once   | Yes     |
 | `Jumbo.ControlStructures.RequireShortTernaryOperator`      | `$a ?: $b`, skipping a nullable type in a `set` hook            | Yes     |
 | `Jumbo.ControlStructures.RequireSingleLineHeader`          | A multi-line loop, `switch` or `match` header fits on a line    | Yes     |
+| `Jumbo.Formatting.ExpressionFormat`                        | An expression on one line, or split at its loosest operators    | Yes     |
 | `Jumbo.Formatting.RequireSingleLineStatement`              | A split statement or `case` label fits on a line                | Yes     |
 | `Jumbo.Functions.RequireSingleLineCall`                    | A call that fits is on one line, skipping a class or `match`    | Yes     |
 | `Jumbo.Functions.RequireSingleLineSignature`               | A split function or closure signature fits on a line            | Yes     |
@@ -357,6 +358,88 @@ To use a different limit, set every line-length property, as described in [Line 
 
 ---
 
+## Jumbo.Formatting.ExpressionFormat
+
+Lays out each expression: on one line if it fits, otherwise split only before its loosest operators.
+
+**Why:** PER allows a split before any operator, so this is an extra rule, in Jumbo only. Without it, an expression can
+be split anywhere, even inside a group while the operators around the group stay on one line. The fix of
+`PSR12.ControlStructures.BooleanOperatorPlacement` makes this worse: it puts every `&&` and `||` in a condition at the
+start of a line, however deeply nested.
+
+**The layout:**
+
+1. If the expression fits on one line within `maxLineLength`, it goes on one line.
+2. Otherwise, it's split only before the operators that bind most loosely, outside any grouping parentheses, such as
+   the `||` in `$a && $b || $c`. Each line holds as many operands as fit.
+3. An operand too long for a line of its own is split the same way, at its own loosest operators. Without parentheses,
+   its new lines keep the same indent. In grouping parentheses, the parentheses stay with its contents, and its new
+   lines are indented once past the line with the `(`.
+
+Each new line starts with its operator, and is indented once past the line the expression starts on. In a control
+structure's condition that starts its own line, the new lines line up with the condition's first line instead.
+
+It covers every binary operator, including `.`, `instanceof` and, on PHP 8.5, `|>`. An assignment operator, or `and`,
+`or` or `xor`, ends an expression, so `$total = $price` then `+ $tax` is checked as `$price + $tax`. So does a `,`,
+`=>`, ternary `?` or `:`, or the brackets of a call, array or control structure. Each argument of a call is its own
+expression.
+
+These are left alone, and `RequireSingleLineStatement` still checks the first:
+
+- An expression with a comment, a heredoc or nowdoc, a multi-line string or an arrow function, or a line break inside
+  an operand, such as a multi-line call or closure.
+- A `case` condition.
+- An expression written on one line that's too long, unless it's a whole statement, a value after an assignment,
+  `return` or `=>`, or a condition on its own line. Anywhere else, such as in an argument, a split would clash with the
+  layout around it.
+- A ternary's condition or value that's too long. One that's split but fits on one line is still joined.
+
+| Code                 | Reported for                                       |
+| -------------------- | -------------------------------------------------- |
+| `ShouldBeSingleLine` | A split expression that fits on one line           |
+| `IncorrectSplit`     | A longer expression that isn't laid out as above   |
+
+**Auto-fixable:** yes. Only the whitespace around its operators and inside its grouping parentheses changes.
+
+**Good:**
+
+```php
+$isMatch = ($bestValue < 1.0 && $prefixedValue > $bestValue)
+    || ($prefixedValue >= 1.0 && $prefixedValue < $bestValue && $prefixedValue !== $previousValue);
+
+$message = 'Cannot convert ' . $quantity->format() . ' to ' . $targetUnit->format() . ' as their dimensions differ: '
+    . $quantity->dimensions() . ' and ' . $targetUnit->dimensions() . '.';
+
+$isValid = !empty($type)
+    && (self::isBasicType($type) || self::isPseudoType($type) || self::isResourceType($type)
+        || self::isClassType($type));
+```
+
+**Bad:**
+
+```php
+$isMatch = ($bestValue < 1.0
+    && $prefixedValue > $bestValue)
+    || ($prefixedValue >= 1.0
+    && $prefixedValue < $bestValue && $prefixedValue !== $previousValue);
+
+$total = $price
+    + $tax;
+
+$message = 'Cannot convert ' .
+    $quantity->format();
+```
+
+**Configuration:**
+
+| Property        | Type | Default | Description          |
+| --------------- | ---- | ------- | -------------------- |
+| `maxLineLength` | int  | 120     | Maximum line length. |
+
+To use a different limit, set every line-length property, as described in [Line Length](LineLength.md).
+
+---
+
 ## Jumbo.Formatting.RequireSingleLineStatement, and the signature and class header sniffs
 
 Require code split across lines to be written on one line, if the whole resulting line fits within `maxLineLength`.
@@ -375,6 +458,8 @@ These are left alone:
 - A chain of two or more methods, each on its own line. A single wrapped `->` is collapsed.
 - A comment, a heredoc or nowdoc, or a multi-line string.
 - A line break only inside a call or array, whose own sniffs report it.
+- A line break before or after a binary operator, or just inside grouping parentheses, in an expression that
+  [`ExpressionFormat`](#jumboformattingexpressionformat) lays out.
 
 A statement with a closure, `match` or anonymous class body, or a call or array too long for one line, can't be
 collapsed. So the lines around it are joined instead, and it moves left to match:

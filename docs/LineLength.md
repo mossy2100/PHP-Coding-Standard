@@ -26,9 +26,9 @@ In the [PERCS31](PERCS31.md) standard, only `Generic.Files.LineLength` uses the 
 That property holds the soft limit, as the sniff's `lineLimit` holds the recommended 80. The rest of this section is
 about the Jumbo standard.
 
-Fourteen sniffs check or wrap long lines, and each has its own line-length property. The Jumbo ruleset sets all fourteen
+Fifteen sniffs check or wrap long lines, and each has its own line-length property. The Jumbo ruleset sets all fifteen
 from two XML entities, `lineLength` and `lineLengthPlusOne`, at the top of its `ruleset.xml`. An entity only applies
-within the file that defines it, so you can't override it from `phpcs.xml`. Set all fourteen properties instead:
+within the file that defines it, so you can't override it from `phpcs.xml`. Set all fifteen properties instead:
 
 | Sniff                                                                      | Property            | Value      |
 | -------------------------------------------------------------------------- | ------------------- | ---------- |
@@ -43,6 +43,7 @@ within the file that defines it, so you can't override it from `phpcs.xml`. Set 
 | `Jumbo.Arrays.ArrayDeclaration`                                            | `maxLineLength`     | length     |
 | `Jumbo.ControlStructures.RequireSingleLineHeader`                          | `maxLineLength`     | length     |
 | `Jumbo.ControlStructures.MatchArmWrapIndent`                               | `maxLineLength`     | length     |
+| `Jumbo.Formatting.ExpressionFormat`                                        | `maxLineLength`     | length     |
 | `Jumbo.Formatting.RequireSingleLineStatement`                              | `maxLineLength`     | length     |
 | `Jumbo.Functions.RequireSingleLineSignature`                               | `maxLineLength`     | length     |
 | `Jumbo.Classes.RequireSingleLineClassHeader`                               | `maxLineLength`     | length     |
@@ -117,6 +118,11 @@ set separately:
         </properties>
     </rule>
     <rule ref="Jumbo.ControlStructures.MatchArmWrapIndent">
+        <properties>
+            <property name="maxLineLength" value="&lineLength;"/>
+        </properties>
+    </rule>
+    <rule ref="Jumbo.Formatting.ExpressionFormat">
         <properties>
             <property name="maxLineLength" value="&lineLength;"/>
         </properties>

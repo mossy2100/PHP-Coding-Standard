@@ -310,6 +310,14 @@
         </properties>
     </rule>
 
+    <!-- An expression on one line if it fits, otherwise split only before its loosest operators. PER allows a split
+         before any operator. -->
+    <rule ref="Jumbo.Formatting.ExpressionFormat">
+        <properties>
+            <property name="maxLineLength" value="&lineLength;"/>
+        </properties>
+    </rule>
+
     <!-- A split statement, function signature or class header on one line if it fits. PER allows the split. -->
     <rule ref="Jumbo.Formatting.RequireSingleLineStatement">
         <properties>
