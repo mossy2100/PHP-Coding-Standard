@@ -33,7 +33,7 @@ final class Inventory implements Countable, Stringable
     private array $items = [];
 
     public string $label {
-        get => $this->name . ' (' . count($this) . ')';
+        get => "{$this->name} (" . count($this) . ')';
     }
 
     public private(set) int $version = 0;
@@ -156,7 +156,7 @@ final class Inventory implements Countable, Stringable
      */
     public function __toString(): string
     {
-        return $this->name . ': ' . implode(', ', $this->items);
+        return "{$this->name}: " . implode(', ', $this->items);
     }
 
     /**

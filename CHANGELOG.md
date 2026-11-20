@@ -523,6 +523,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   becomes `($a && $b)` then `|| ($c && $d)`. It covers every binary operator, including `.`. A split expression that
   fits is reported as `ShouldBeSingleLine`, and any other wrong layout as `IncorrectSplit`. Auto-fixable. PERCS31 is
   unchanged, as PER Coding Style 3.1 allows a split before any operator.
+- **String expressions, in Jumbo (breaking).** `Jumbo.Formatting.ExpressionFormat` has a new
+  `reflowStringExpressions` property, on in Jumbo. It rewrites a chain of `.` operations as the fewest strings it can
+  be, interpolating variables, property reads and method calls, so `'Hello, ' . $name . '!'` becomes `"Hello, $name!"`.
+  It drops `(string)` and `->__toString()` where they're redundant, and grouping parentheses around what becomes one
+  string. A string too long for its line is split, after the last space that fits where it can. Reported as
+  `IncorrectStringFormat`, and a redundant conversion in `echo`, `print` or `<?=` as `UnnecessaryStringConversion`.
+  Auto-fixable.
+- **`Jumbo.Strings.RequireBracedVariables` (breaking).** Requires braces around every variable interpolated in a
+  double-quoted string or a heredoc, so `"Hi $name"` becomes `"Hi {$name}"`, and `"$row[id]"` becomes `"{$row['id']}"`.
+  Reported as `MissingBraces`. Auto-fixable. PERCS31 is unchanged, as PER Coding Style 3.1 has no rule for it.
 
 ### Changed
 

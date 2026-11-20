@@ -247,8 +247,8 @@ class ExpressionHelper
             }
         }
 
-        $start = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($before + 1), $stackPtr, true);
-        $end = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($after - 1), $stackPtr, true);
+        $start = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($before + 1), ($stackPtr + 1), true);
+        $end = $phpcsFile->findPrevious(Tokens::EMPTY_TOKENS, ($after - 1), ($stackPtr - 1), true);
         if ($start === false || $end === false) {
             return null;
         }

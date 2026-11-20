@@ -14,10 +14,18 @@ class ExpressionFormatUnitTest extends AbstractSniffTestCase
     /**
      * Returns the lines where errors should occur.
      *
+     * @param string $testFile The name of the file being tested.
      * @return array<int, int> Line number => error count.
      */
-    protected function getErrorList(): array
+    protected function getErrorList(string $testFile = ''): array
     {
+        if ($testFile === 'ExpressionFormatUnitTest.2.inc') {
+            // String expressions, from line 20 to line 46, then too long from line 49, then string conversions.
+            $lines = [...range(20, 46), 49, 50, 51, 52, 57, 60, 63, 65, 67];
+
+            return array_fill_keys($lines, 1) + [64 => 2];
+        }
+
         return [
             // Fits on one line.
             46 => 1,

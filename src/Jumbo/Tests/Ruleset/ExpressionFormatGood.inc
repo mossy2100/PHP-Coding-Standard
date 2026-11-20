@@ -49,13 +49,13 @@ class Example
         // A match arm's value split where it fits.
         $label = match ($bestValue) {
             0 => 'none',
-            default => 'Some text, ' . $bestValue,
+            default => "Some text, {$bestValue}",
         };
 
         // A concatenation in a ternary's value, with its operator at the end of a line.
         $message = $isMatch
-            ? 'Some long text that goes on for a while, then some more, ' . $this->describe($bestValue)
-                . ' and then even more text.'
+            ? "Some long text that goes on for a while, then some more, {$this->describe($bestValue)} and then even "
+                . 'more text.'
             : 'none';
 
         return $someLongVariableName !== null && $anotherLongVariableName > 10

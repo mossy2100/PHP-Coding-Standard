@@ -27,6 +27,7 @@ that misreads modern PHP. Each section gives the reason. The custom sniffs for P
 | `Jumbo.Namespaces.UnusedUses`                              | No unused `use` statements, safe with a miscased `use Function` | Yes     |
 | `Jumbo.NamingConventions.ValidVariableName`                | No leading underscore on a variable or parameter in a class     | No      |
 | `Jumbo.PHP.EmbeddedPhp`                                    | A block's tags on their own lines, level with its code          | Mostly  |
+| `Jumbo.Strings.RequireBracedVariables`                     | Braces around every variable in a string, as in `"{$name}"`     | Yes     |
 | `Jumbo.TypeHints.DeclareStrictTypes`                       | `strict_types=1` required, allowing `<?php declare(...) ?>`     | Yes     |
 | `Jumbo.TypeHints.ParameterTypeHint`                        | Parameter type hints, skipping a promoted hook                  | Yes     |
 | `Jumbo.TypeHints.ParameterTypeHintSpacing`                 | Parameter type hint spacing, skipping a promoted hook           | Yes     |
@@ -414,12 +415,44 @@ These are left alone, and `RequireSingleLineStatement` still checks the first:
   layout around it.
 - A ternary's condition or value that's too long. One that's split but fits on one line is still joined.
 
-| Code                 | Reported for                                       |
-| -------------------- | -------------------------------------------------- |
-| `ShouldBeSingleLine` | A split expression that fits on one line           |
-| `IncorrectSplit`     | A longer expression that isn't laid out as above   |
+**String expressions:** with `reflowStringExpressions` on, as it is in Jumbo, a string expression is rewritten as the
+fewest strings it can be, then laid out. A string expression is a chain of `.` operations, a string literal, or an
+argument of `echo`, `print` or `<?=`.
 
-**Auto-fixable:** yes. Only the whitespace around its operators and inside its grouping parentheses changes.
+- Text is merged: `'cat ' . 'dog'` becomes `'cat dog'`.
+- A variable, with any property reads, nullsafe property reads, method calls or array accesses, is interpolated:
+  `'Age: ' . $user->age` becomes `"Age: $user->age"`. It gets braces where it needs them, as in `"{$d}km"`.
+- `(string)` and `->__toString()` are dropped where the value is converted to a string anyway: in a concatenation,
+  and around a whole argument of `echo`, `print` or `<?=`.
+- A decimal integer is merged as text. Anything else stays an operand of `.`: a call, a constant, a static property,
+  arithmetic, a float, a ternary and the like.
+- Grouping parentheses are dropped around a concatenation inside a concatenation, and around anything that becomes one
+  string, as in `(' ' . $type->name)`.
+- Text from a single-quoted string is escaped when it goes into a double-quoted one, including every `$`.
+- A string that's exactly one literal as written keeps its quotes, for `Squiz.Strings.DoubleQuoteUsage` to decide. Any
+  other is single-quoted if it can be.
+- Braces already around a variable are kept. [`RequireBracedVariables`](#jumbostringsrequirebracedvariables) adds the
+  rest, in Jumbo.
+
+If the result doesn't fit, each line breaks before the last `.` that fits on it. A string too long for a line of its
+own is split after the last space that fits, or, if there's none, after the last variable, or, if there's none, after
+the last character. The new lines start with `.`, indented as above.
+
+A string expression is laid out like this where an expression on one line can be split, as above, where it starts its
+own line, and where it's a whole ternary branch whose `?` or `:` starts a line. One that ExpressionFormat puts on its
+own line, after a split before an outer operator, is laid out from there too. Anywhere else, it's only rewritten, and
+only if the result fits on its line. A string with a comment, a heredoc or nowdoc, a line break inside it, or `${` is
+left alone, as is one in `declare()`.
+
+| Code                          | Reported for                                                                    |
+| ----------------------------- | ------------------------------------------------------------------------------- |
+| `ShouldBeSingleLine`          | A split expression that fits on one line                                        |
+| `IncorrectSplit`              | A longer expression that isn't laid out as above                                |
+| `IncorrectStringFormat`       | A string expression that isn't written or laid out as above                     |
+| `UnnecessaryStringConversion` | A `(string)` or `->__toString()` around an argument of `echo`, `print` or `<?=` |
+
+**Auto-fixable:** yes. Without `reflowStringExpressions`, only the whitespace around its operators and inside its
+grouping parentheses changes.
 
 **Good:**
 
@@ -427,8 +460,14 @@ These are left alone, and `RequireSingleLineStatement` still checks the first:
 $isMatch = ($bestValue < 1.0 && $prefixedValue > $bestValue)
     || ($prefixedValue >= 1.0 && $prefixedValue < $bestValue && $prefixedValue !== $previousValue);
 
-$message = 'Cannot convert ' . $quantity->format() . ' to ' . $targetUnit->format() . ' as their dimensions differ: '
-    . $quantity->dimensions() . ' and ' . $targetUnit->dimensions() . '.';
+$message = 'Cannot convert ' . Units::format($quantity) . ' to ' . Units::format($targetUnit)
+    . ' as their dimensions differ: ' . Units::dimensions($quantity) . ' and ' . Units::dimensions($targetUnit) . '.';
+
+$message = "The distance from here to the Sun is {$earth->distSun}km, which takes light about {$minutes} minutes to "
+    . 'cross.';
+
+$result = $cachedValue
+    ?? "Some long message about the {$thing} that goes on and on, well past the limit of the line, to the end.";
 
 $isValid = !empty($type)
     && (self::isBasicType($type) || self::isPseudoType($type) || self::isResourceType($type)
@@ -447,14 +486,19 @@ $total = $price
     + $tax;
 
 $message = 'Cannot convert ' .
-    $quantity->format();
+    Units::format($quantity);
+
+$message = 'Hello, ' . $name . '!';
+
+echo (string) $total;
 ```
 
 **Configuration:**
 
-| Property        | Type | Default | Description          |
-| --------------- | ---- | ------- | -------------------- |
-| `maxLineLength` | int  | 120     | Maximum line length. |
+| Property                  | Type | Default | Description                                            |
+| ------------------------- | ---- | ------- | ------------------------------------------------------ |
+| `maxLineLength`           | int  | 120     | Maximum line length.                                   |
+| `reflowStringExpressions` | bool | false   | Rewrite and lay out string expressions. True in Jumbo. |
 
 To use a different limit, set every line-length property, as described in [Line Length](LineLength.md).
 
@@ -695,6 +739,42 @@ HTML's whitespace.
     ) ?></p>
 </div>
 ```
+
+---
+
+## Jumbo.Strings.RequireBracedVariables
+
+Requires braces around every variable interpolated in a double-quoted string or a heredoc, as in `"Hi {$name}"`.
+
+**Why:** braces show exactly what's interpolated. Without them, `"$className::create()"` takes the class name and
+leaves `::create()` as text, while `"$user->name"` takes the property read too. PER has no rule for it, so this is an
+extra rule, in Jumbo only. It's the same rule as PHP-CS-Fixer's `explicit_string_variable`. MO4's
+`Strings.VariableInDoubleQuotedString` makes the same check with a regular expression, whose fix wraps an escaped
+`\$price` and turns `"$row[id]"` into `"{$row[id]}"`, where `id` is a constant. This sniff uses PHP's own tokenizer.
+
+A variable takes any property read or array access written after it. An unquoted array key is a string there, so it's
+quoted. `${name}` is left alone, as `SlevomatCodingStandard.Strings.DisallowVariableParsing` reports it.
+
+| Code            | Reported for                          |
+| --------------- | ------------------------------------- |
+| `MissingBraces` | A variable in a string without braces |
+
+**Auto-fixable:** yes.
+
+**Good:**
+
+```php
+$a = "Hi {$name}, you're {$user->age}, ID {$row['id']}.";
+$a = "Escaped \$price, and {$total}.";
+```
+
+**Bad:**
+
+```php
+$a = "Hi $name, you're $user->age, ID $row[id].";
+```
+
+**Configuration:** none.
 
 ---
 

@@ -1,0 +1,73 @@
+<?php
+
+// phpcs:set Jumbo.Formatting.ExpressionFormat reflowStringExpressions true
+
+// Valid: already as few strings as they can be, or left alone.
+$a = 'cat dog';
+$a = "Hi $name, welcome";
+$a = 'Len: ' . strlen($s);
+$a = 'Sum: ' . $x + 1;
+$a = 'a' . PHP_EOL . 'b';
+$a = 'Pi is ' . 3.14;
+$a = "Old ${name}" . ' syntax';
+echo $x, $y;
+$a = 'Some long text that goes on for quite a while, then some more, and then even more text, ' . strlen($text)
+    . ' and the rest.';
+$a = 'A long literal that fits.';
+$k = 'a' . ($x ?: 'y');
+
+// Invalid: text, variables and string conversions that can be written as one string.
+$a = 'cat dog';
+$a = "I love $animals";
+$a = "Your age is $user->age";
+$a = "The distance from here to the Sun is {$earth->distSun}km";
+$a = "Your age is {$user->computeAge()}";
+$a = "$a $b";
+$a = "Result: $z";
+$a = '$a';
+$a = "\$$a";
+$a = "C:\\dir\\$f";
+$a = "Line\n$x";
+$a = 'Len: ' . strlen($s);
+$a = 'Page 5';
+$a = "City: {$u->addr->city}";
+$a = "Key: {$arr['k']}";
+$a = "Idx: $arr[0]";
+$a = "{{$a}}";
+$a = "Hi $name, welcome";
+$a = $b ?? "x$c";
+$a = "ab$c";
+$a = $isMatch ? "Yes, $name" : 'no';
+$name = $quantityType === null ? '' : " $quantityType->name";
+$ok = "a$b" === $c;
+$name = $quantityType === null ? '' : " $quantityType->name";
+$ok = 'a' === $c;
+$b = "y$c";
+foo('z');
+
+// Invalid: too long, so split before the last `.`, word or character that fits.
+$message = "The distance from here to the Sun is {$earth->distSun}km, which takes light about $minutes minutes to "
+    . 'cross.';
+$message = 'This is a really long literal on its own that goes on and on past the line length limit of one hundred '
+    . 'twenty chars.';
+$message = 'Supercalifragilisticexpialidocious-supercalifragilisticexpialidocious-supercalifragilisticexpialidocious-ab'
+    . 'cdefghijk';
+$message = 'Some long text that goes on for quite a while, then some more, and then even more text, and the rest.';
+
+// Invalid: too long, as a ternary branch on its own line, or an operand on its own line.
+$result = $n < 0
+    ? "Looks like $n is negative! Although it's difficult to say for sure. What even is '\$n'? Is it " . M_PI . " or "
+        . M_E . " or " . sqrt(2)
+    : $monkeys->monkeyNames();
+$result = $cachedValueFromSomewhere
+    ?? "Some long message about the $thing that goes on and on past the limit of the line";
+
+// Invalid: a string conversion that echo, print or <?= does already.
+echo $x;
+echo $x, $y;
+print foo();
+?>
+<?= $total ?>
+<?php
+
+// phpcs:set Jumbo.Formatting.ExpressionFormat reflowStringExpressions false

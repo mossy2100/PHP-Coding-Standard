@@ -302,6 +302,7 @@
     <rule ref="Jumbo.Formatting.ExpressionFormat">
         <properties>
             <property name="maxLineLength" value="&lineLength;"/>
+            <property name="reflowStringExpressions" value="true"/>
         </properties>
     </rule>
 
@@ -470,6 +471,9 @@
     <rule ref="Squiz.Strings.DoubleQuoteUsage.NotRequired"/>
 
     <rule ref="SlevomatCodingStandard.Strings.DisallowVariableParsing"/>
+
+    <!-- Braces around every variable in a string, as in "Hi {$name}". -->
+    <rule ref="Jumbo.Strings.RequireBracedVariables"/>
 
     <!-- ====== VARIABLES (NOT IN PER) ====== -->
 
