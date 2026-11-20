@@ -34,13 +34,11 @@ sections link to it.
 | `SlevomatCodingStandard.Commenting.UselessInheritDocComment`                             | No useless `@inheritDoc` comments                              | Yes     |
 | `SlevomatCodingStandard.ControlStructures.DisallowContinueWithoutIntegerOperandInSwitch` | No `continue` without an operand in a `switch`                 | Yes     |
 | `SlevomatCodingStandard.ControlStructures.LanguageConstructWithParentheses`              | No `echo(...)`, through a Jumbo sniff                          | Yes     |
-| `SlevomatCodingStandard.ControlStructures.RequireMultiLineCondition`                     | A long condition split at its boolean operators                | Yes     |
 | `SlevomatCodingStandard.ControlStructures.RequireMultiLineTernaryOperator`               | A long ternary split over lines                                | Yes     |
 | `SlevomatCodingStandard.ControlStructures.RequireNullCoalesceEqualOperator`              | `??=` where possible                                           | Yes     |
 | `SlevomatCodingStandard.ControlStructures.RequireNullCoalesceOperator`                   | `??` where possible                                            | Yes     |
 | `SlevomatCodingStandard.ControlStructures.RequireNullSafeObjectOperator`                 | `?->` where possible                                           | Yes     |
 | `SlevomatCodingStandard.ControlStructures.RequireShortTernaryOperator`                   | `?:` where possible, through a Jumbo sniff                     | Yes     |
-| `SlevomatCodingStandard.ControlStructures.RequireSingleLineCondition`                    | A short condition on one line                                  | Yes     |
 | `SlevomatCodingStandard.ControlStructures.RequireTernaryOperator`                        | A ternary where possible                                       | Partly  |
 | `SlevomatCodingStandard.ControlStructures.UselessIfConditionWithReturn`                  | No `if` that only returns `true` or `false`                    | Partly  |
 | `SlevomatCodingStandard.Exceptions.DeadCatch`                                            | No unreachable `catch` blocks                                  | No      |
@@ -288,14 +286,6 @@ Disallows parentheses around a language construct's argument. Used through
 
 ---
 
-## SlevomatCodingStandard.ControlStructures.RequireMultiLineCondition
-
-Requires multi-line format for long conditions with boolean operators.
-
-**Auto-fixable:** yes.
-
----
-
 ## SlevomatCodingStandard.ControlStructures.RequireMultiLineTernaryOperator
 
 Requires multi-line format for long ternary operators.
@@ -332,14 +322,6 @@ Requires `?->` when possible.
 
 Requires the short ternary `?:` when possible. Used through [`Jumbo.ControlStructures.RequireShortTernaryOperator`](Jumbo_Custom_Sniffs.md#jumbocontrolstructuresrequireshortternaryoperator), which
 skips a nullable type in a `set` hook's parameter.
-
-**Auto-fixable:** yes.
-
----
-
-## SlevomatCodingStandard.ControlStructures.RequireSingleLineCondition
-
-Requires single-line format for short conditions.
 
 **Auto-fixable:** yes.
 

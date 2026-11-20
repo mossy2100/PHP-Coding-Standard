@@ -56,8 +56,9 @@ The complete [PSR-12](https://www.php-fig.org/psr/psr-12/) standard is included.
 - **PSR12.Classes.ClosingBrace**, by [`PERCS31.Formatting.AfterClosingBrace`](PERCS31_Custom_Sniffs.md#percs31formattingafterclosingbrace), which checks every closing brace.
 - **PSR12.Classes.OpeningBraceSpace**, by [`PERCS31.Classes.ClassDeclaration`](PERCS31_Custom_Sniffs.md#percs31classesclassdeclaration), which doesn't report a blank line after an
   anonymous class's opening brace.
-- **PSR12.ControlStructures.BooleanOperatorPlacement** is kept, with `allowOnly` set to `first`, so a wrapped `&&` or
-  `||` in a condition starts the line (5.1, 6.4). PSR-12 only requires consistency.
+- **PSR12.ControlStructures.BooleanOperatorPlacement**, by [`PERCS31.Operators.OperatorPlacement`](PERCS31_Custom_Sniffs.md#percs31operatorsoperatorplacement), which puts a
+  wrapped `&&` or `||` in a condition at the start of the line, like every other operator (5.1, 6.4). The PSR12 sniff's
+  fix also split every `&&` and `||` in the condition, however deeply nested.
 - **PSR12.ControlStructures.ControlStructureSpacing**, by [`PERCS31.ControlStructures.ControlStructureSpacing`](PERCS31_Custom_Sniffs.md#percs31controlstructurescontrolstructurespacing), which
   drops its rules for a multi-line `foreach` or `match`.
 - **PSR12.Files.DeclareStatement**, by [`PERCS31.Files.DeclareStatement`](PERCS31_Custom_Sniffs.md#percs31filesdeclarestatement), which accepts a declare statement with several

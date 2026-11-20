@@ -277,25 +277,13 @@
 
     <!-- Replaced by Jumbo.ControlStructures.LanguageConstructWithParentheses, which leaves exit() and die() alone -->
     <rule ref="Jumbo.ControlStructures.LanguageConstructWithParentheses"/>
-    <rule ref="SlevomatCodingStandard.ControlStructures.RequireMultiLineCondition">
-        <properties>
-            <property name="minLineLength" value="&lineLengthPlusOne;"/>
-        </properties>
-    </rule>
-    <!-- alwaysForSimpleConditions is off, as it joins a condition with no && or || however long the line gets -->
-    <rule ref="SlevomatCodingStandard.ControlStructures.RequireSingleLineCondition">
-        <properties>
-            <property name="maxLineLength" value="&lineLength;"/>
-            <property name="alwaysForSimpleConditions" value="false"/>
-        </properties>
-    </rule>
     <rule ref="SlevomatCodingStandard.ControlStructures.UselessIfConditionWithReturn"/>
     <rule ref="SlevomatCodingStandard.Exceptions.DeadCatch"/>
     <rule ref="SlevomatCodingStandard.Exceptions.RequireNonCapturingCatch"/>
 
-    <!-- Multi-line foreach, for, switch and match headers that fit must be written on one line; Slevomat's
-         RequireSingleLineCondition covers if, elseif, while and do-while -->
-    <rule ref="Jumbo.ControlStructures.RequireSingleLineHeader">
+    <!-- A control structure's header on one line if it fits, and split with its condition on its own line if it
+         doesn't. Jumbo.Formatting.ExpressionFormat splits the condition itself. -->
+    <rule ref="Jumbo.ControlStructures.HeaderLayout">
         <properties>
             <property name="maxLineLength" value="&lineLength;"/>
         </properties>

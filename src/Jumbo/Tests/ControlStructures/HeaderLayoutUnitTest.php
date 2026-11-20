@@ -7,9 +7,9 @@ namespace Jumbo\Tests\ControlStructures;
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffTestCase;
 
 /**
- * Unit tests for Jumbo.ControlStructures.RequireSingleLineHeader sniff.
+ * Unit tests for Jumbo.ControlStructures.HeaderLayout sniff.
  */
-class RequireSingleLineHeaderUnitTest extends AbstractSniffTestCase
+class HeaderLayoutUnitTest extends AbstractSniffTestCase
 {
     /**
      * Returns the lines where errors should occur.
@@ -19,9 +19,9 @@ class RequireSingleLineHeaderUnitTest extends AbstractSniffTestCase
      */
     protected function getErrorList(string $testFile = ''): array
     {
-        // RequireSingleLineHeaderUnitTest.1.inc is a live-coding case with an unclosed header, which must produce no
+        // HeaderLayoutUnitTest.1.inc is a live-coding case with an unclosed header, which must produce no
         // errors.
-        if ($testFile !== 'RequireSingleLineHeaderUnitTest.inc') {
+        if ($testFile !== 'HeaderLayoutUnitTest.inc') {
             return [];
         }
 
@@ -38,6 +38,19 @@ class RequireSingleLineHeaderUnitTest extends AbstractSniffTestCase
             43 => 1,
             // Wrapped method chain.
             50 => 1,
+            // if, elseif, while and do-while.
+            81 => 1,
+            85 => 1,
+            92 => 1,
+            100 => 1,
+            // Too long for one line, so split.
+            105 => 1,
+            107 => 1,
+            111 => 1,
+            115 => 1,
+            119 => 1,
+            123 => 1,
+            128 => 1,
         ];
     }
 

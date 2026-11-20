@@ -459,13 +459,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   Auto-fixable.
 - **A wrapped operator must start the next line (breaking).** As PER Coding Style 3.1 requires, a statement that wraps
   at an operator has the operator at the start of the new line, not the end of the previous one, e.g. `$total = $a` then
-  `+ $b` on the next line. Three sniffs check this:
-  - `PERCS31.Operators.OperatorPlacement`, a new sniff, for assignment, arithmetic, comparison, bitwise and logical
-    operators, `??`, `instanceof`, `?:` and an arrow function's `=>`.
-  - `Universal.Operators.ConcatPosition`, for `.`.
-  - `PSR12.ControlStructures.BooleanOperatorPlacement`, now with `allowOnly` set to `first`, for `&&` and `||` in a
-    condition.
-
+  `+ $b` on the next line. `PERCS31.Operators.OperatorPlacement`, a new sniff, checks this for every binary operator,
+  including `.`, and `&&` and `||` in a condition, as well as `??`, `instanceof`, `?:` and an arrow function's `=>`.
   Auto-fixable.
 - **`Jumbo.Namespaces.UnusedUses`.** Replaces `SlevomatCodingStandard.Namespaces.UnusedUses`, which reads
   `use Function Vendor\helper;` as a class import, and deletes it as unused. This sniff skips a file while its `use`
@@ -506,9 +501,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`Jumbo.NamingConventions.ValidVariableName` (breaking).** Warns about a variable or parameter that starts with an
   underscore, inside a class, enum, trait or interface. `Squiz.NamingConventions.ValidVariableName` reports these
   outside a class, but allows them inside one. Superglobals such as `$_GET` are exempt. Not auto-fixable.
-- **`Jumbo.ControlStructures.RequireSingleLineHeader` (breaking).** Requires a multi-line `foreach`, `for`, `switch` or
-  `match` header to be written on one line if it fits, as Slevomat's `RequireSingleLineCondition` does for `if` and
-  `while`. Auto-fixable.
+- **`Jumbo.ControlStructures.HeaderLayout` (breaking).** Requires a control structure's header on one line if it fits,
+  and split over lines if it doesn't, with its condition on its own line after the `(`, and a `for` header's
+  expressions on a line each. It covers `if`, `elseif`, `while`, `foreach`, `for`, `switch` and `match`. Auto-fixable.
 - **`PERCS31.WhiteSpace.ArrowSpacing` (breaking).** Requires one space before and after `=>` in a `match` arm, so arms
   aren't aligned, and at least one in an array. No stock sniff checks these. Jumbo requires exactly one in an array too,
   so array arrows are never aligned, and in a `yield`, which PER Coding Style 3.1 leaves undefined. Auto-fixable.
@@ -522,13 +517,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`Universal.Constants.ModifierKeywordOrder` (breaking).** `final` must come before the visibility on a constant, as
   in `final public const A`, the order PER Coding Style 3.1, section 4.6, sets for modifier keywords. Auto-fixable, in
   PERCS31 and Jumbo.
-- **`Jumbo.Formatting.ExpressionFormat` (breaking).** Lays out each expression: on one line if it fits, otherwise
-  split only before its loosest operators, outside any grouping parentheses, with as many operands on each line as fit.
-  An operand too long for a line of its own is split the same way. So `($a` then `&& $b)` then `|| ($c` then `&& $d)`,
-  as `PSR12.ControlStructures.BooleanOperatorPlacement`'s fix leaves it, becomes `($a && $b)` then `|| ($c && $d)`. It
-  covers every binary operator, including `.`. A split expression that fits is reported as `ShouldBeSingleLine`, and
-  any other wrong layout as `IncorrectSplit`. Auto-fixable. PERCS31 is unchanged, as PER Coding Style 3.1 allows a
-  split before any operator.
+- **`Jumbo.Formatting.ExpressionFormat` (breaking).** Lays out each expression: on one line if it fits, otherwise split
+  only before its loosest operators, outside any grouping parentheses, with as many operands on each line as fit. An
+  operand too long for a line of its own is split the same way. So `($a` then `&& $b)` then `|| ($c` then `&& $d)`
+  becomes `($a && $b)` then `|| ($c && $d)`. It covers every binary operator, including `.`. A split expression that
+  fits is reported as `ShouldBeSingleLine`, and any other wrong layout as `IncorrectSplit`. Auto-fixable. PERCS31 is
+  unchanged, as PER Coding Style 3.1 allows a split before any operator.
 
 ### Changed
 
@@ -726,9 +720,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`SlevomatCodingStandard.Functions.RequireArrowFunction` from Jumbo.** Its fix rewrote a closure in a constant
   expression, such as `const A = static function () { return 1; };`, as an arrow function, which PHP 8.5 doesn't allow
   there, so the result was a fatal error. A simple closure is no longer required to be an arrow function.
-- **`Universal.Operators.ConcatPosition`, from Jumbo.** `Jumbo.Formatting.ExpressionFormat` puts a split `.` at the
-  start of its line, with every other binary operator. A `.` at the end of a line in an expression it leaves alone,
-  such as one with a comment, is no longer reported in Jumbo. PERCS31 still includes it.
+- **`Universal.Operators.ConcatPosition` and `PSR12.ControlStructures.BooleanOperatorPlacement`, from PERCS31.**
+  `PERCS31.Operators.OperatorPlacement` now reports a `.`, and an `&&` or `||` in a condition, at the end of a line, as
+  it does every other operator, as `AtEndOfLine`. The PSR12 sniff's fix also split at every `&&` and `||` in a
+  condition, however deeply nested.
+- **`SlevomatCodingStandard.ControlStructures.RequireSingleLineCondition` and `RequireMultiLineCondition`, from Jumbo.**
+  `Jumbo.ControlStructures.HeaderLayout` joins and splits every control structure's header, and
+  `Jumbo.Formatting.ExpressionFormat` splits a condition that's still too long. The Slevomat sniffs put each part of a
+  long condition on its own line, which `ExpressionFormat` then joined again, and the first joined a condition with no
+  `&&` or `||` however long the line.
 
 ### Fixed
 

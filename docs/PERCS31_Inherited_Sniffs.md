@@ -39,7 +39,6 @@ extend sniffs from [php-collective/code-sniffer](https://github.com/php-collecti
 | `Universal.Constants.LowercaseClassResolutionKeyword`                 | `::class` in lower case                                         | Yes     |
 | `Universal.Constants.ModifierKeywordOrder`                            | `final` before the visibility on a constant                     | Yes     |
 | `Universal.ControlStructures.DisallowAlternativeSyntax`               | Braces, not the alternative syntax, e.g. `if (): endif;`        | Yes     |
-| `Universal.Operators.ConcatPosition`                                  | A wrapped `.` starts its line                                   | Yes     |
 | `Universal.PHP.LowercasePHPTag`                                       | The `<?php` tag in lower case                                   | Yes     |
 | `Universal.PHP.RequireExitDieParentheses`                             | A warning for `exit` or `die` without parentheses               | Yes     |
 | `Universal.UseStatements.KeywordSpacing`                              | One space after `use`, `function` and `const`, and around `as`  | Yes     |
@@ -363,16 +362,6 @@ Requires `final` before the visibility on a constant, as in `final public const 
 Disallows the alternative syntax, e.g. `if ($a): ... endif;`, as a structure's body must be in braces.
 
 **PER Coding Style 3.1:** [Section 5](https://www.php-fig.org/per/coding-style/#5-control-structures).
-
-**Auto-fixable:** yes.
-
----
-
-## Universal.Operators.ConcatPosition
-
-Requires a wrapped `.` at the start of the line, not the end.
-
-**PER Coding Style 3.1:** [Section 6.4](https://www.php-fig.org/per/coding-style/#64-operators-placement).
 
 **Auto-fixable:** yes.
 

@@ -16,10 +16,10 @@ that misreads modern PHP. Each section gives the reason. The custom sniffs for P
 | `Jumbo.Classes.RequireSingleLineMethodSignature`           | A short signature on one line, skipping a promoted hook         | Yes     |
 | `Jumbo.Commenting.BlockComment`                            | A block comment's indents, and the spaces around one on a line  | Yes     |
 | `Jumbo.Commenting.TrailingComment`                         | One space between code and a `//` comment after it              | Yes     |
+| `Jumbo.ControlStructures.HeaderLayout`                     | A header on one line if it fits, else split with its condition  | Yes     |
 | `Jumbo.ControlStructures.LanguageConstructWithParentheses` | No `echo('x')`, allowing `exit()` and `die()`                   | Yes     |
 | `Jumbo.ControlStructures.MatchArmWrapIndent`               | One line if it fits, else a wrapped `match` arm indented once   | Yes     |
 | `Jumbo.ControlStructures.RequireShortTernaryOperator`      | `$a ?: $b`, skipping a nullable type in a `set` hook            | Yes     |
-| `Jumbo.ControlStructures.RequireSingleLineHeader`          | A multi-line loop, `switch` or `match` header fits on a line    | Yes     |
 | `Jumbo.Formatting.ExpressionFormat`                        | An expression on one line, or split at its loosest operators    | Yes     |
 | `Jumbo.Formatting.RequireSingleLineStatement`              | A split statement or `case` label fits on a line                | Yes     |
 | `Jumbo.Functions.RequireSingleLineCall`                    | A call that fits is on one line, skipping a class or `match`    | Yes     |
@@ -234,6 +234,66 @@ $count = 10;    // Lined up.
 
 ---
 
+## Jumbo.ControlStructures.HeaderLayout
+
+Requires a control structure's header on one line if it fits, and split over lines if it doesn't. It covers `if`,
+`elseif`, `while`, including a `do`-`while`'s, `foreach`, `for`, `switch` and `match`.
+
+**Why:** PER allows either layout for a header that fits on one line, so joining one is an extra rule, in Jumbo only.
+For one that doesn't fit, PER shows the layout but no sniff produces it. A header split over lines is also often left
+over after `Jumbo.Arrays.ArrayDeclaration` collapses the array inside it.
+
+- **A header split over lines** is joined if the whole resulting line, up to and including ` {`, fits within
+  `maxLineLength`. A header with a comment, heredoc, multi-line string or brace body is left alone, as for
+  [Jumbo.Arrays.ArrayDeclaration](#jumboarraysarraydeclaration). Reported as `ShouldBeSingleLine`.
+- **A header on one line that's too long** is split. Its condition goes on its own line after the `(`, indented once,
+  and `) {` goes on the next line, level with the keyword's line. A `for` header's expressions go on a line each.
+  Reported as `ShouldBeMultiLine`.
+
+The condition itself isn't changed. If it's still too long on its own line,
+[`ExpressionFormat`](#jumboformattingexpressionformat) splits it, and `PERCS31.ControlStructures.ControlStructureSpacing`
+puts a `foreach`'s `as` on its own line.
+
+**Auto-fixable:** yes.
+
+**Good:**
+
+```php
+foreach ([$m->inv(), $m->pow(-1)] as $inverse) {
+    // ...
+}
+
+if (
+    is_int($caseCloser) && $caseCloser < $endOfScope && in_array($tokens[$caseCloser]['code'], self::TERMINATORS, true)
+) {
+    return true;
+}
+```
+
+**Bad:**
+
+```php
+foreach (
+    [$m->inv(), $m->pow(-1)] as $inverse
+) {
+    // ...
+}
+
+if (is_int($caseCloser) && $caseCloser < $endOfScope && in_array($tokens[$caseCloser]['code'], self::TERMINATORS, true)) {
+    return true;
+}
+```
+
+**Configuration:**
+
+| Property        | Type | Default | Description          |
+| --------------- | ---- | ------- | -------------------- |
+| `maxLineLength` | int  | 120     | Maximum line length. |
+
+To use a different limit, set every line-length property, as described in [Line Length](LineLength.md).
+
+---
+
 ## Jumbo.ControlStructures.LanguageConstructWithParentheses
 
 Disallows parentheses around the argument of a language construct, such as `echo('x')`, except `exit` and `die`. This
@@ -316,56 +376,12 @@ Slevomat sniff then looks for a `:` that isn't there, and the error stops the fi
 
 ---
 
-## Jumbo.ControlStructures.RequireSingleLineHeader
-
-Requires a multi-line `foreach`, `for`, `switch` or `match` header to be written on one line if it fits.
-
-**Why:** `SlevomatCodingStandard.ControlStructures.RequireSingleLineCondition` does this for `if`, `elseif`, `while` and
-`do-while`, but not for `foreach`, `for`, `switch` or `match`. A multi-line header is often left over after
-`Jumbo.Arrays.ArrayDeclaration` collapses the array inside it.
-
-**Auto-fixable:** yes.
-
-**Fits** and **skipped** mean the same as for [Jumbo.Arrays.ArrayDeclaration](#jumboarraysarraydeclaration): the whole resulting line, up to and
-including ` {`, must be within `maxLineLength`, and a header containing a comment, heredoc, multi-line string or brace
-body is left alone.
-
-**Good:**
-
-```php
-foreach ([$m->inv(), $m->pow(-1)] as $inverse) {
-    // ...
-}
-```
-
-**Bad:**
-
-```php
-foreach (
-    [$m->inv(), $m->pow(-1)] as $inverse
-) {
-    // ...
-}
-```
-
-**Configuration:**
-
-| Property        | Type | Default | Description                                 |
-| --------------- | ---- | ------- | ------------------------------------------- |
-| `maxLineLength` | int  | 120     | Maximum line length for a collapsed header. |
-
-To use a different limit, set every line-length property, as described in [Line Length](LineLength.md).
-
----
-
 ## Jumbo.Formatting.ExpressionFormat
 
 Lays out each expression: on one line if it fits, otherwise split only before its loosest operators.
 
 **Why:** PER allows a split before any operator, so this is an extra rule, in Jumbo only. Without it, an expression can
-be split anywhere, even inside a group while the operators around the group stay on one line. The fix of
-`PSR12.ControlStructures.BooleanOperatorPlacement` makes this worse: it puts every `&&` and `||` in a condition at the
-start of a line, however deeply nested.
+be split anywhere, even inside a group while the operators around the group stay on one line.
 
 **The layout:**
 
@@ -377,7 +393,11 @@ start of a line, however deeply nested.
    lines are indented once past the line with the `(`.
 
 Each new line starts with its operator, and is indented once past the line the expression starts on. In a control
-structure's condition that starts its own line, the new lines line up with the condition's first line instead.
+structure's condition or a loop header, the lines split at `&&` or `||` are indented once past the line with the `(`,
+and a line split at any other operator once past the line its operand starts on. These are the indents
+[`PERCS31.Operators.OperatorPlacement`](PERCS31_Custom_Sniffs.md#percs31operatorsoperatorplacement) checks, with Jumbo's
+`requireExactConditionIndent`. This sniff only reports where the lines break. A wrong indent, or an operator at the end
+of a line, is that sniff's to report.
 
 It covers every binary operator, including `.`, `instanceof` and, on PHP 8.5, `|>`. An assignment operator, or `and`,
 `or` or `xor`, ends an expression, so `$total = $price` then `+ $tax` is checked as `$price + $tax`. So does a `,`,

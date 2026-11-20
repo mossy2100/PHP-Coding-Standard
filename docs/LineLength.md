@@ -26,22 +26,20 @@ In the [PERCS31](PERCS31.md) standard, only `Generic.Files.LineLength` uses the 
 That property holds the soft limit, as the sniff's `lineLimit` holds the recommended 80. The rest of this section is
 about the Jumbo standard.
 
-Fifteen sniffs check or wrap long lines, and each has its own line-length property. The Jumbo ruleset sets all fifteen
+Thirteen sniffs check or wrap long lines, and each has its own line-length property. The Jumbo ruleset sets all thirteen
 from two XML entities, `lineLength` and `lineLengthPlusOne`, at the top of its `ruleset.xml`. An entity only applies
-within the file that defines it, so you can't override it from `phpcs.xml`. Set all fifteen properties instead:
+within the file that defines it, so you can't override it from `phpcs.xml`. Set all thirteen properties instead:
 
 | Sniff                                                                      | Property            | Value      |
 | -------------------------------------------------------------------------- | ------------------- | ---------- |
 | `Generic.Files.LineLength`                                                 | `absoluteLineLimit` | length     |
 | `Jumbo.Classes.RequireSingleLineMethodSignature`                           | `maxLineLength`     | length     |
 | `SlevomatCodingStandard.Classes.RequireMultiLineMethodSignature`           | `minLineLength`     | length + 1 |
-| `SlevomatCodingStandard.ControlStructures.RequireSingleLineCondition`      | `maxLineLength`     | length     |
-| `SlevomatCodingStandard.ControlStructures.RequireMultiLineCondition`       | `minLineLength`     | length + 1 |
 | `SlevomatCodingStandard.ControlStructures.RequireMultiLineTernaryOperator` | `lineLengthLimit`   | length     |
 | `Jumbo.Functions.RequireSingleLineCall`                                    | `maxLineLength`     | length     |
 | `SlevomatCodingStandard.Functions.RequireMultiLineCall`                    | `minLineLength`     | length + 1 |
 | `Jumbo.Arrays.ArrayDeclaration`                                            | `maxLineLength`     | length     |
-| `Jumbo.ControlStructures.RequireSingleLineHeader`                          | `maxLineLength`     | length     |
+| `Jumbo.ControlStructures.HeaderLayout`                                     | `maxLineLength`     | length     |
 | `Jumbo.ControlStructures.MatchArmWrapIndent`                               | `maxLineLength`     | length     |
 | `Jumbo.Formatting.ExpressionFormat`                                        | `maxLineLength`     | length     |
 | `Jumbo.Formatting.RequireSingleLineStatement`                              | `maxLineLength`     | length     |
@@ -82,16 +80,6 @@ set separately:
             <property name="minLineLength" value="&lineLengthPlusOne;"/>
         </properties>
     </rule>
-    <rule ref="SlevomatCodingStandard.ControlStructures.RequireSingleLineCondition">
-        <properties>
-            <property name="maxLineLength" value="&lineLength;"/>
-        </properties>
-    </rule>
-    <rule ref="SlevomatCodingStandard.ControlStructures.RequireMultiLineCondition">
-        <properties>
-            <property name="minLineLength" value="&lineLengthPlusOne;"/>
-        </properties>
-    </rule>
     <rule ref="SlevomatCodingStandard.ControlStructures.RequireMultiLineTernaryOperator">
         <properties>
             <property name="lineLengthLimit" value="&lineLength;"/>
@@ -112,7 +100,7 @@ set separately:
             <property name="maxLineLength" value="&lineLength;"/>
         </properties>
     </rule>
-    <rule ref="Jumbo.ControlStructures.RequireSingleLineHeader">
+    <rule ref="Jumbo.ControlStructures.HeaderLayout">
         <properties>
             <property name="maxLineLength" value="&lineLength;"/>
         </properties>

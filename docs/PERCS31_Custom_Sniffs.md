@@ -2244,13 +2244,14 @@ In grouping parentheses, each line is indented once past the line with the `(`, 
 condition's parentheses. The lines in a group then read as one level, and the group's own line shows that it continues
 the statement.
 
-Two inherited sniffs check the placement here, each for one case: `Universal.Operators.ConcatPosition` for `.`, and
-`PSR12.ControlStructures.BooleanOperatorPlacement` for `&&` and `||` in a condition. Two more check part of it, but
-aren't used. `PhpCollective.Operators.OperatorPosition` misses `=`, the comparison operators, `|`, `instanceof`, an
-arrow function's `=>` and `|>`, and doesn't check the indent. `PEAR.Formatting.MultiLineAssignment` only checks `=`, and
-can't fix it. This sniff covers every other binary operator: assignment, arithmetic, comparison, bitwise and logical
-operators, `??`, `instanceof`, the short ternary `?:`, the arrow function's `=>`, and the pipe operator `|>` (PHP 8.5).
-It checks the indent of all of them, including `.`. Section 6.2 doesn't list `=>`, so one in an array or `match` arm
+This sniff covers every binary operator: assignment, arithmetic, comparison, bitwise and logical operators, including
+`&&` and `||` in a condition, `??`, `.`, `instanceof`, the short ternary `?:`, the arrow function's `=>`, and the pipe
+operator `|>` (PHP 8.5). It replaces `Universal.Operators.ConcatPosition`, which only checks `.`, and
+`PSR12.ControlStructures.BooleanOperatorPlacement`, which only checks `&&` and `||` in a condition, and whose fix splits
+at every one of them in the condition, however deeply nested. Two more check part of it, but aren't used.
+`PhpCollective.Operators.OperatorPosition` misses `=`, the comparison operators, `|`, `instanceof`, an arrow function's
+`=>` and `|>`, and doesn't check the indent. `PEAR.Formatting.MultiLineAssignment` only checks `=`, and can't fix it.
+Section 6.2 doesn't list `=>`, so one in an array or `match` arm
 isn't checked. An assignment operator before a multi-line array's `[` on the next line is left to
 [`PERCS31.Arrays.MultiLineArrayLayout`](#percs31arraysmultilinearraylayout), whose fix gives `$a = [`.
 
