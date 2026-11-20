@@ -174,7 +174,7 @@ class GroupUseLayoutSniff implements Sniff
             return;
         }
 
-        $error = "There must be no space $where brace of a group use on one line";
+        $error = "There must be no space {$where} brace of a group use on one line";
         if ($phpcsFile->addFixableError($error, $space, $code)) {
             $phpcsFile->fixer->replaceToken($space, '');
         }
@@ -206,7 +206,7 @@ class GroupUseLayoutSniff implements Sniff
 
         $isFixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($previous + 1), $ptr) === false;
         if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $ptr, $code)) {
-            FixerHelper::replaceBetween($phpcsFile, $previous, $ptr, $phpcsFile->eolChar . $indent);
+            FixerHelper::replaceBetween($phpcsFile, $previous, $ptr, "{$phpcsFile->eolChar}{$indent}");
         }
     }
 }

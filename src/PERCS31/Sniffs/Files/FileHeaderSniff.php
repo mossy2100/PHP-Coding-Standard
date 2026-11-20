@@ -184,7 +184,7 @@ class FileHeaderSniff extends Psr12Sniff
                         $phpcsFile->fixer->replaceToken($j, '');
                     }
 
-                    $phpcsFile->fixer->replaceToken($last, $prefix . $phpcsFile->eolChar);
+                    $phpcsFile->fixer->replaceToken($last, "{$prefix}{$phpcsFile->eolChar}");
                     $phpcsFile->fixer->endChangeset();
                 }
             }
@@ -268,7 +268,7 @@ class FileHeaderSniff extends Psr12Sniff
             $useType = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($next + 1), null, true);
             $content = $useType === false ? '' : strtolower($tokens[$useType]['content']);
             if ($content === 'function' || $content === 'const') {
-                $type .= ' ' . $content;
+                $type .= " {$content}";
             }
 
             $lines[] = ['type' => $type, 'start' => $next, 'end' => $semicolon];
@@ -436,12 +436,12 @@ class FileHeaderSniff extends Psr12Sniff
         $phpcsFile->fixer->beginChangeset();
         if ($isOnlyStatement) {
             // The declare is all that's in the block, so the block becomes the first-line form.
-            $phpcsFile->fixer->replaceToken($stackPtr, '<?php ' . $statement . ' ');
+            $phpcsFile->fixer->replaceToken($stackPtr, "<?php {$statement} ");
             for ($i = ($stackPtr + 1); $i < $next; $i++) {
                 $phpcsFile->fixer->replaceToken($i, '');
             }
         } else {
-            $phpcsFile->fixer->addContentBefore($stackPtr, '<?php ' . $statement . ' ?>' . $phpcsFile->eolChar);
+            $phpcsFile->fixer->addContentBefore($stackPtr, "<?php {$statement} ?>{$phpcsFile->eolChar}");
             $last = $next === false ? $phpcsFile->numTokens : $next;
             for ($i = $declare; $i < $last; $i++) {
                 $phpcsFile->fixer->replaceToken($i, '');

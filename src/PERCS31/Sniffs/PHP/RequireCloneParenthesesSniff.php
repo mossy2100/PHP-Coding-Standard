@@ -105,8 +105,8 @@ class RequireCloneParenthesesSniff implements Sniff
      */
     private function processGrouping(File $phpcsFile, int $stackPtr, int $opener, int $closer): void
     {
-        $error = 'The parentheses after clone must hold everything that is cloned, e.g. "clone($a->b)", '
-            . 'not "clone($a)->b"';
+        $error = 'The parentheses after clone must hold everything that is cloned, e.g. "clone($a->b)", not '
+            . '"clone($a)->b"';
         // Only a comment between clone and the parentheses would be lost. One further on stays where it is.
         $end = $this->findChainEnd($phpcsFile, $closer);
         $hasComment = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($stackPtr + 1), $opener) !== false;

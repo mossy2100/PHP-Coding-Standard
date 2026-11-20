@@ -142,12 +142,12 @@ class RulesetUnitTest extends TestCase
      */
     public function testUnaryOperatorSpacingChecksOnlyReferenceAndSpreadInPercs31(): void
     {
-        $source = "<?php\n\n\$a = & \$b;\n\$c = + \$b;\n\$d = - \$b;\n\$e = ! \$b;\n\$f = ~ \$b;\n\$g = @ foo();\n"
-            . "\$h = foo(... \$b);\n\$i = fn(int ... \$j): array => \$j;\n\$k = foo(...);\n";
+        $source = "<?php\n\n\$a = & \$b;\n\$c = + \$b;\n\$d = - \$b;\n\$e = ! \$b;\n\$f = ~ \$b;\n\$g = @ foo();\n\$h "
+            . "= foo(... \$b);\n\$i = fn(int ... \$j): array => \$j;\n\$k = foo(...);\n";
         $file = $this->copyToTempFile(null, $source);
-        $sniffs = 'PERCS31.Operators.UnaryOperatorSpacing,Generic.WhiteSpace.SpreadOperatorSpacingAfter,'
-            . 'Squiz.Functions.FunctionDeclarationArgumentSpacing';
-        $args = ['-s', '--sniffs=' . $sniffs, '--report=emacs', $file];
+        $sniffs = 'PERCS31.Operators.UnaryOperatorSpacing,Generic.WhiteSpace.SpreadOperatorSpacingAfter,Squiz.Functions'
+            . '.FunctionDeclarationArgumentSpacing';
+        $args = ['-s', "--sniffs={$sniffs}", '--report=emacs', $file];
 
         try {
             $percs31 = $this->runTool('phpcs', ['--standard=PERCS31', ...$args]);
@@ -179,12 +179,12 @@ class RulesetUnitTest extends TestCase
     public function testSplitForeachAndMatchHeadersTakeTheSplitLayoutInJumboOnly(): void
     {
         $item = "'" . str_repeat('alpha ', 9) . "alpha'";
-        $source = "<?php\n\ndeclare(strict_types=1);\n\nforeach ([\n    $item,\n    $item,\n] as \$key => \$item) {\n"
-            . "    run();\n}\n\n\$result = match (\$this->lookup([\n    $item,\n    $item,\n])) {\n"
-            . "    1 => 'one',\n    default => 'other',\n};\n";
-        $expected = "<?php\n\ndeclare(strict_types=1);\n\nforeach (\n    [\n        $item,\n        $item,\n    ]\n"
-            . "    as \$key => \$item\n) {\n    run();\n}\n\n\$result = match (\n    \$this->lookup([\n        $item,\n"
-            . "        $item,\n    ])\n) {\n    1 => 'one',\n    default => 'other',\n};\n";
+        $source = "<?php\n\ndeclare(strict_types=1);\n\nforeach ([\n    {$item},\n    {$item},\n] as \$key => \$item) "
+            . "{\n    run();\n}\n\n\$result = match (\$this->lookup([\n    {$item},\n    {$item},\n])) {\n    1 => "
+            . "'one',\n    default => 'other',\n};\n";
+        $expected = "<?php\n\ndeclare(strict_types=1);\n\nforeach (\n    [\n        {$item},\n        {$item},\n    "
+            . "]\n    as \$key => \$item\n) {\n    run();\n}\n\n\$result = match (\n    \$this->lookup([\n        "
+            . "{$item},\n        {$item},\n    ])\n) {\n    1 => 'one',\n    default => 'other',\n};\n";
         $file = $this->copyToTempFile(null, $source);
         $ignored = '--exclude=PSR1.Files.SideEffects';
 
@@ -210,14 +210,14 @@ class RulesetUnitTest extends TestCase
     public function testBlankLinesAtTheEndsOfABlockAreReportedInJumboOnly(): void
     {
         $header = "<?php\n\ndeclare(strict_types=1);\n\nnamespace Vendor\\Package;\n\n";
-        $source = $header . "class Example\n{\n    public string \$name {\n\n        get {\n\n"
-            . "            return \$this->name;\n\n        }\n\n    }\n\n    public function run(): int\n    {\n\n"
-            . "        \$double = static function (int \$x): int {\n\n            return \$x * 2;\n        };\n\n"
-            . "        return \$double(1);\n    }\n}\n";
-        $expected = $header . "class Example\n{\n    public string \$name {\n        get {\n"
-            . "            return \$this->name;\n        }\n    }\n\n    public function run(): int\n    {\n"
-            . "        \$double = static function (int \$x): int {\n            return \$x * 2;\n        };\n\n"
-            . "        return \$double(1);\n    }\n}\n";
+        $source = "{$header}class Example\n{\n    public string \$name {\n\n        get {\n\n            return "
+            . "\$this->name;\n\n        }\n\n    }\n\n    public function run(): int\n    {\n\n        \$double = "
+            . "static function (int \$x): int {\n\n            return \$x * 2;\n        };\n\n        return "
+            . "\$double(1);\n    }\n}\n";
+        $expected = "{$header}class Example\n{\n    public string \$name {\n        get {\n            return "
+            . "\$this->name;\n        }\n    }\n\n    public function run(): int\n    {\n        \$double = static "
+            . "function (int \$x): int {\n            return \$x * 2;\n        };\n\n        return \$double(1);\n    "
+            . "}\n}\n";
         $declare = "<?php\n\ndeclare(strict_types=1);\ndeclare(ticks=1) {\n\n    run();\n\n}\n";
         $file = $this->copyToTempFile(null, $source);
         $declareFile = $this->copyToTempFile(null, $declare);
@@ -251,8 +251,8 @@ class RulesetUnitTest extends TestCase
         $header = "<?php\n\ndeclare(strict_types=1);\n\nnamespace Vendor\\Package;\n\n";
         $kept = "\$text = <<<'EOT'\n    one\n\n\n    two\n    EOT;\n\n/*\n * One.\n\n\n * Two.\n */\n";
         $argument = "    'an argument long enough that the call cannot be joined onto a single line by Jumbo',\n";
-        $call = "send(\n    \$text,\n%s" . $argument . $argument . ");\n";
-        $file = $this->copyToTempFile(null, $header . $kept . "\n\n" . sprintf($call, "\n\n\n"));
+        $call = "send(\n    \$text,\n%s{$argument}{$argument});\n";
+        $file = $this->copyToTempFile(null, "{$header}{$kept}\n\n" . sprintf($call, "\n\n\n"));
         $ignored = '--exclude=PSR1.Files.SideEffects';
 
         try {
@@ -268,7 +268,7 @@ class RulesetUnitTest extends TestCase
 
         $this->assertSame(0, $percs31['exitCode'], $percs31['output']);
         $this->assertSame(3, $reported, $jumbo['output']);
-        $this->assertSame($header . $kept . "\n" . sprintf($call, "\n"), $fixed);
+        $this->assertSame("{$header}{$kept}\n" . sprintf($call, "\n"), $fixed);
     }
 
     /**
@@ -321,7 +321,7 @@ class RulesetUnitTest extends TestCase
     public function testEmptyControlStructureBodyMustBeAbbreviatedInJumbo(): void
     {
         $header = "<?php\n\ndeclare(strict_types=1);\n\nnamespace Vendor\\Package;\n\n";
-        $file = $this->copyToTempFile(null, $header . "while (next(\$items)) {\n}\n");
+        $file = $this->copyToTempFile(null, "{$header}while (next(\$items)) {\n}\n");
         $sniff = '--sniffs=PERCS31.Formatting.EmptyBody';
 
         try {
@@ -335,7 +335,7 @@ class RulesetUnitTest extends TestCase
 
         $this->assertStringNotContainsString('EmptyBody', $per);
         $this->assertStringContainsString('error - An empty while body must be written as {}', $jumbo);
-        $this->assertSame($header . "while (next(\$items)) {}\n", $fixed);
+        $this->assertSame("{$header}while (next(\$items)) {}\n", $fixed);
     }
 
     /**
@@ -347,7 +347,7 @@ class RulesetUnitTest extends TestCase
         $header = "<?php\n\ndeclare(strict_types=1);\n\nnamespace Vendor\\Package;\n\n";
         $anon = "\$a = new class {\n\n    public int \$b = 1;\n};\n";
         $named = "final class Named\n{\n\n    public int \$b = 1;\n}\n";
-        $file = $this->copyToTempFile(null, $header . $anon . "\n" . $named);
+        $file = $this->copyToTempFile(null, "{$header}{$anon}\n{$named}");
 
         try {
             $per = $this->runTool('phpcs', ['--standard=PERCS31', '-s', '--report=emacs', $file])['output'];
@@ -415,10 +415,10 @@ class RulesetUnitTest extends TestCase
     public function testBlankLinesAroundTraitUseAreExactInJumbo(): void
     {
         $header = "<?php\n\ndeclare(strict_types=1);\n\nnamespace Vendor\\Package;\n\n";
-        $source = $header . "class Between\n{\n    use First;\n\n    use Second;\n\n\n    public int \$a = 1;\n}\n";
+        $source = "{$header}class Between\n{\n    use First;\n\n    use Second;\n\n\n    public int \$a = 1;\n}\n";
         $file = $this->copyToTempFile(null, $source);
-        $last = $this->copyToTempFile(null, $header . "class Last\n{\n    use First;\n    public int \$a = 1;\n}\n");
-        $commented = $header . "class Commented\n{\n    use First; // The first.\n}\n";
+        $last = $this->copyToTempFile(null, "{$header}class Last\n{\n    use First;\n    public int \$a = 1;\n}\n");
+        $commented = "{$header}class Commented\n{\n    use First; // The first.\n}\n";
         $commentedFile = $this->copyToTempFile(null, $commented);
         $args = ['-s', '--standard=Jumbo', '--report=emacs'];
 
@@ -441,7 +441,7 @@ class RulesetUnitTest extends TestCase
         $this->assertStringContainsString('TraitUseBlock.NoBlankLineAfterUse', $lastResult['output']);
         $this->assertStringNotContainsString('PSR12.Traits.UseDeclaration', $lastResult['output']);
         $this->assertSame(0, $commentedResult['exitCode'], $commentedResult['output']);
-        $expected = $header . "class Between\n{\n    use First;\n    use Second;\n\n    public int \$a = 1;\n}\n";
+        $expected = "{$header}class Between\n{\n    use First;\n    use Second;\n\n    public int \$a = 1;\n}\n";
         $this->assertSame($expected, $fixed);
         $this->assertSame($commented, $fixedCommented);
     }
@@ -452,8 +452,8 @@ class RulesetUnitTest extends TestCase
      */
     public function testGlobalConstantsPerStatementInJumboOnly(): void
     {
-        $source = "<?php\n\ndeclare(strict_types=1);\n\nnamespace Vendor\\Package;\n\n"
-            . "const A = 1, B = 2;\nconst  C = 3;\n";
+        $source = "<?php\n\ndeclare(strict_types=1);\n\nnamespace Vendor\\Package;\n\nconst A = 1, B = 2;\nconst  C = "
+            . "3;\n";
         $file = $this->copyToTempFile(null, $source);
         $args = ['-s', '--sniffs=PERCS31.Classes.ConstantDeclaration', '--report=emacs'];
 
@@ -541,7 +541,7 @@ class RulesetUnitTest extends TestCase
         $header = "<?php\n\ndeclare(strict_types=1);\n\nnamespace A;\n\n";
         $multiLine = "\$d = foo(match (\$x) {\n    1 => 2,\n    default => 3,\n});\n";
         foreach ([$multiLine, "\$d = foo(match (\$x) { 1 => 2, default => 3 });\n"] as $code) {
-            $file = $this->copyToTempFile(null, $header . $code);
+            $file = $this->copyToTempFile(null, "{$header}{$code}");
 
             try {
                 $fixer = $this->runTool('phpcbf', ['--standard=Jumbo', $file]);
@@ -552,7 +552,7 @@ class RulesetUnitTest extends TestCase
 
             $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
             if ($code === $multiLine) {
-                $this->assertSame($header . $multiLine, $fixed);
+                $this->assertSame("{$header}{$multiLine}", $fixed);
             }
         }
     }
@@ -567,17 +567,17 @@ class RulesetUnitTest extends TestCase
         $footer = "    default => 9,\n};\n";
         $expectations = ['Jumbo' => "    1, 2 => 3,\n", 'PERCS31' => "    1,\n    2,\n    => 3,\n"];
         foreach ($expectations as $standard => $expected) {
-            $file = $this->copyToTempFile(null, $header . "    1,\n    2\n    => 3,\n" . $footer);
+            $file = $this->copyToTempFile(null, "{$header}    1,\n    2\n    => 3,\n{$footer}");
 
             try {
-                $fixer = $this->runTool('phpcbf', ["--standard=$standard", $file]);
+                $fixer = $this->runTool('phpcbf', ["--standard={$standard}", $file]);
                 $fixed = (string) file_get_contents($file);
             } finally {
                 unlink($file);
             }
 
             $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
-            $this->assertSame($header . $expected . $footer, $fixed);
+            $this->assertSame("{$header}{$expected}{$footer}", $fixed);
         }
     }
 
@@ -590,11 +590,11 @@ class RulesetUnitTest extends TestCase
         $footer = "    default => 9,\n};\n";
         $arms = "    1,2 => 3,\n    4 , 5 => 6,\n";
         foreach (['PERCS31', 'Jumbo'] as $standard) {
-            $file = $this->copyToTempFile(null, $header . $arms . $footer);
+            $file = $this->copyToTempFile(null, "{$header}{$arms}{$footer}");
 
             try {
-                $result = $this->runTool('phpcs', ['-s', "--standard=$standard", '--report=emacs', $file]);
-                $fixer = $this->runTool('phpcbf', ["--standard=$standard", $file]);
+                $result = $this->runTool('phpcs', ['-s', "--standard={$standard}", '--report=emacs', $file]);
+                $fixer = $this->runTool('phpcbf', ["--standard={$standard}", $file]);
                 $fixed = (string) file_get_contents($file);
             } finally {
                 unlink($file);
@@ -602,10 +602,10 @@ class RulesetUnitTest extends TestCase
 
             $pattern = '/:(\\d+):\\d+: error - .*Universal\\.WhiteSpace\\.CommaSpacing\\.(\\w+)\\)/';
             preg_match_all($pattern, $result['output'], $matches, PREG_SET_ORDER);
-            $found = array_map(static fn(array $match): string => $match[1] . ':' . $match[2], $matches);
+            $found = array_map(static fn(array $match): string => "{$match[1]}:{$match[2]}", $matches);
             $this->assertSame(['8:NoSpaceAfter', '9:SpaceBefore'], $found, $result['output']);
             $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
-            $this->assertSame($header . "    1, 2 => 3,\n    4, 5 => 6,\n" . $footer, $fixed);
+            $this->assertSame("{$header}    1, 2 => 3,\n    4, 5 => 6,\n{$footer}", $fixed);
         }
     }
 
@@ -619,11 +619,11 @@ class RulesetUnitTest extends TestCase
         $code = "    public final const int C = 1;\n";
         $expected = "    final public const int C = 1;\n";
         foreach (['Jumbo', 'PERCS31'] as $standard) {
-            $file = $this->copyToTempFile(null, $header . $code . $footer);
+            $file = $this->copyToTempFile(null, "{$header}{$code}{$footer}");
 
             try {
-                $result = $this->runTool('phpcs', ['-s', "--standard=$standard", '--report=emacs', $file]);
-                $fixer = $this->runTool('phpcbf', ["--standard=$standard", $file]);
+                $result = $this->runTool('phpcs', ['-s', "--standard={$standard}", '--report=emacs', $file]);
+                $fixer = $this->runTool('phpcbf', ["--standard={$standard}", $file]);
                 $fixed = (string) file_get_contents($file);
             } finally {
                 unlink($file);
@@ -632,7 +632,7 @@ class RulesetUnitTest extends TestCase
             $errorCode = 'Universal.Constants.ModifierKeywordOrder.Incorrect';
             $this->assertStringContainsString($errorCode, $result['output']);
             $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
-            $this->assertSame($header . $expected . $footer, $fixed);
+            $this->assertSame("{$header}{$expected}{$footer}", $fixed);
         }
     }
 
@@ -653,11 +653,11 @@ class RulesetUnitTest extends TestCase
             ],
         ];
         foreach ($expected as $standard => $codes) {
-            $result = $this->runTool('phpcs', ['-s', "--standard=$standard", '--report=emacs', $fixture]);
+            $result = $this->runTool('phpcs', ['-s', "--standard={$standard}", '--report=emacs', $fixture]);
 
             $pattern = '/:(\\d+):\\d+: error - .*\\.(NoSpace(?:Before|After)|Space(?:Before|After)Equals)\\)/';
             preg_match_all($pattern, $result['output'], $matches, PREG_SET_ORDER);
-            $found = array_map(static fn(array $match): string => $match[1] . ':' . $match[2], $matches);
+            $found = array_map(static fn(array $match): string => "{$match[1]}:{$match[2]}", $matches);
             $this->assertSame($codes, $found, $result['output']);
         }
     }
@@ -670,17 +670,17 @@ class RulesetUnitTest extends TestCase
         $header = "<?php\n\ndeclare(strict_types=1);\n\nnamespace A;\n\nfinal class B\n{\n    public int \$c {\n";
         $body = "            return 1;\n        }\n    }\n}\n";
         foreach (['Jumbo' => "        get {\n", 'PERCS31' => "        get {\n"] as $standard => $expected) {
-            $file = $this->copyToTempFile(null, $header . "        get\n        {\n" . $body);
+            $file = $this->copyToTempFile(null, "{$header}        get\n        {\n{$body}");
 
             try {
-                $fixer = $this->runTool('phpcbf', ["--standard=$standard", $file]);
+                $fixer = $this->runTool('phpcbf', ["--standard={$standard}", $file]);
                 $fixed = (string) file_get_contents($file);
             } finally {
                 unlink($file);
             }
 
             $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
-            $this->assertSame($header . $expected . $body, $fixed);
+            $this->assertSame("{$header}{$expected}{$body}", $fixed);
         }
     }
 
@@ -696,7 +696,7 @@ class RulesetUnitTest extends TestCase
             'enum A { case B;',
         ];
         foreach ($members as $code) {
-            $file = $this->copyToTempFile(null, "<?php\n\n$code }\n");
+            $file = $this->copyToTempFile(null, "<?php\n\n{$code} }\n");
 
             try {
                 $result = $this->runTool('phpcs', ['--standard=Jumbo', '--report=emacs', $file]);
@@ -722,7 +722,7 @@ class RulesetUnitTest extends TestCase
         $fixture = dirname(__DIR__, 2) . '/Jumbo/Tests/Ruleset/BlankLinesInDeclaration.inc';
         $sniff = '--sniffs=PERCS31.Functions.MultiLineFunctionDeclaration';
         foreach (['PERCS31', 'Jumbo'] as $standard) {
-            $result = $this->runTool('phpcs', ['-s', "--standard=$standard", $sniff, '--report=emacs', $fixture]);
+            $result = $this->runTool('phpcs', ['-s', "--standard={$standard}", $sniff, '--report=emacs', $fixture]);
 
             preg_match_all('/:(\\d+):\\d+: error - .*\\.BlankLine\\)/', $result['output'], $matches);
             preg_match_all('/:(\\d+):\\d+: error - .*\\.BlankLineBeforeCloseBracket\\)/', $result['output'], $atEnd);
@@ -742,7 +742,7 @@ class RulesetUnitTest extends TestCase
         $fixture = dirname(__DIR__, 2) . '/Jumbo/Tests/Ruleset/BlankLinesInCall.inc';
         $sniff = '--sniffs=PERCS31.Functions.FunctionCallLayout';
         foreach (['PERCS31', 'Jumbo'] as $standard) {
-            $result = $this->runTool('phpcs', ['-s', "--standard=$standard", $sniff, '--report=emacs', $fixture]);
+            $result = $this->runTool('phpcs', ['-s', "--standard={$standard}", $sniff, '--report=emacs', $fixture]);
 
             preg_match_all('/:(\\d+):\\d+: error - .*\\.BlankLine\\)/', $result['output'], $matches);
             preg_match_all('/:(\\d+):\\d+: error - .*\\.BlankLineBeforeCloseBracket\\)/', $result['output'], $atEnd);
@@ -823,7 +823,7 @@ class RulesetUnitTest extends TestCase
         $file = $this->copyToTempFile(null, $source);
 
         try {
-            $args = ['-s', "--standard=$standard", '--warning-severity=4', '--report=emacs', $file];
+            $args = ['-s', "--standard={$standard}", '--warning-severity=4', '--report=emacs', $file];
             $result = $this->runTool('phpcs', $args);
         } finally {
             unlink($file);
@@ -831,7 +831,7 @@ class RulesetUnitTest extends TestCase
 
         $pattern = '/:(\d+):\d+: (\w+) - .*\.(NotPascalCase|AcronymNotLikeWord|EnumConstant\w+)\)$/m';
         preg_match_all($pattern, $result['output'], $matches, PREG_SET_ORDER);
-        $reports = array_map(static fn(array $match): string => "$match[1] $match[2] $match[3]", $matches);
+        $reports = array_map(static fn(array $match): string => "{$match[1]} {$match[2]} {$match[3]}", $matches);
         $expected = [
             '6 error NotPascalCase',
             '8 warning AcronymNotLikeWord',
@@ -853,18 +853,18 @@ class RulesetUnitTest extends TestCase
      */
     public function testGlobalConstantCaseIsCheckedInJumboOnly(): void
     {
-        $source = "<?php\n\nconst userId = 1;\n\ndefine('userId', 2);\n\nconst HTTP_OK = 3;\n\n"
-            . "const userID = 4;\n\nuse const Foo\\BAR as userId;\n";
+        $source = "<?php\n\nconst userId = 1;\n\ndefine('userId', 2);\n\nconst HTTP_OK = 3;\n\nconst userID = "
+            . "4;\n\nuse const Foo\\BAR as userId;\n";
         $file = $this->copyToTempFile(null, $source);
         $reports = [];
 
         try {
             foreach (['PERCS31', 'Jumbo'] as $standard) {
-                $args = ['-s', "--standard=$standard", '--report=emacs', $file];
+                $args = ['-s', "--standard={$standard}", '--report=emacs', $file];
                 $output = $this->runTool('phpcs', $args)['output'];
                 $pattern = '/:(\\d+):\\d+: \\w+ - .*\\.(ConstantNotUpperCase|AcronymNotLikeWord)\\)$/m';
                 preg_match_all($pattern, $output, $matches, PREG_SET_ORDER);
-                $reports[$standard] = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
+                $reports[$standard] = array_map(static fn(array $match): string => "{$match[1]} {$match[2]}", $matches);
             }
         } finally {
             unlink($file);
@@ -887,15 +887,15 @@ class RulesetUnitTest extends TestCase
      */
     public function testStrictUpperSnakeCaseIsRequiredInJumboOnly(): void
     {
-        $source = "<?php\n\nconst TWO__WORDS = 1;\n\ndefine('_LEADING', 2);\n\nclass Holder\n{\n"
-            . "    public const __HIDDEN = 3;\n    public const VALID_NAME = 4;\n}\n";
+        $source = "<?php\n\nconst TWO__WORDS = 1;\n\ndefine('_LEADING', 2);\n\nclass Holder\n{\n    public const "
+            . "__HIDDEN = 3;\n    public const VALID_NAME = 4;\n}\n";
         $file = $this->copyToTempFile(null, $source);
         $sniff = '--sniffs=PERCS31.NamingConventions.UpperCaseConstantName';
         $reports = [];
 
         try {
             foreach (['PERCS31', 'Jumbo'] as $standard) {
-                $args = ["--standard=$standard", $sniff, '-s', '--report=emacs', $file];
+                $args = ["--standard={$standard}", $sniff, '-s', '--report=emacs', $file];
                 $output = $this->runTool('phpcs', $args)['output'];
                 preg_match_all('/:(\\d+):\\d+: error - .*ConstantNotUpperSnakeCase\\)$/m', $output, $matches);
                 $reports[$standard] = $matches[1];
@@ -981,7 +981,7 @@ class RulesetUnitTest extends TestCase
         $file = $this->copyToTempFile(null, $source);
 
         try {
-            $this->runTool('phpcbf', ["--standard=$standard", $file]);
+            $this->runTool('phpcbf', ["--standard={$standard}", $file]);
             $this->assertSame($expected, file_get_contents($file));
         } finally {
             unlink($file);
@@ -996,12 +996,12 @@ class RulesetUnitTest extends TestCase
     #[DataProvider('standardProvider')]
     public function testPropertyUnderscoreIsAnError(string $standard): void
     {
-        $source = "<?php\n\nnamespace App;\n\nclass A\n{\n    public string \$_a = 'x';\n\n"
-            . "    static public int \$b = 1;\n}\n";
+        $source = "<?php\n\nnamespace App;\n\nclass A\n{\n    public string \$_a = 'x';\n\n    static public int \$b = "
+            . "1;\n}\n";
         $file = $this->copyToTempFile(null, $source);
 
         try {
-            $args = ['-s', "--standard=$standard", '--report=emacs', $file];
+            $args = ['-s', "--standard={$standard}", '--report=emacs', $file];
             $output = $this->runTool('phpcs', $args)['output'];
         } finally {
             unlink($file);
@@ -1047,7 +1047,7 @@ class RulesetUnitTest extends TestCase
             XML, '.xml');
 
         try {
-            $twoSpaces = $this->runTool('phpcs', ["--standard=$ruleset", $fixture]);
+            $twoSpaces = $this->runTool('phpcs', ["--standard={$ruleset}", $fixture]);
             $default = $this->runTool(
                 'phpcs',
                 ['--standard=Jumbo', '--sniffs=PERCS31.WhiteSpace.ScopeIndent', $fixture],
@@ -1070,8 +1070,8 @@ class RulesetUnitTest extends TestCase
      */
     public function testStructureWithNoBodyNeedsBraces(): void
     {
-        $source = "<?php\n\ndeclare(strict_types=1);\n\nwhile (next(\$items));\n\ndo {\n    run();\n} while (\$a);\n"
-            . "\nif (\$a) {\n    run();\n} else;\n";
+        $source = "<?php\n\ndeclare(strict_types=1);\n\nwhile (next(\$items));\n\ndo {\n    run();\n} while "
+            . "(\$a);\n\nif (\$a) {\n    run();\n} else;\n";
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -1093,8 +1093,8 @@ class RulesetUnitTest extends TestCase
      */
     public function testCommentsAreCheckedInJumbo(): void
     {
-        $source = "<?php\n\ndeclare(strict_types=1);\n\nfunction foo(): int\n{\n// At column 1.\n"
-            . "    /*\n  Too little.\n    */\n    \$a = 1;// No space.\n    //No space.\n\n    return \$a;\n}\n";
+        $source = "<?php\n\ndeclare(strict_types=1);\n\nfunction foo(): int\n{\n// At column 1.\n    /*\n  Too "
+            . "little.\n    */\n    \$a = 1;// No space.\n    //No space.\n\n    return \$a;\n}\n";
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -1110,7 +1110,7 @@ class RulesetUnitTest extends TestCase
             ':12:' => 'Squiz.Commenting.InlineComment.NoSpaceBefore',
         ];
         foreach ($expected as $line => $code) {
-            $pattern = '/' . $line . '\d+: error - .*' . preg_quote($code, '/') . '/';
+            $pattern = "/{$line}\\d+: error - .*" . preg_quote($code, '/') . '/';
             $this->assertMatchesRegularExpression($pattern, $result['output']);
         }
     }
@@ -1120,8 +1120,8 @@ class RulesetUnitTest extends TestCase
      */
     public function testSpaceInEmptyArrayIsReportedOnce(): void
     {
-        $source = "<?php\n\ndeclare(strict_types=1);\n\necho count([ ]), count([   ]), count(foo([ ]));\n"
-            . "echo count([\n]);\n";
+        $source = "<?php\n\ndeclare(strict_types=1);\n\necho count([ ]), count([   ]), count(foo([ ]));\necho "
+            . "count([\n]);\n";
         $file = $this->copyToTempFile(null, $source);
 
         try {
@@ -1148,7 +1148,7 @@ class RulesetUnitTest extends TestCase
         $this->assertStringNotContainsString(' error - ', $default['output']);
         $this->assertStringNotContainsString('LineLength.TooLong', $default['output']);
         foreach ([9, 10, 11] as $line) {
-            $pattern = "/:$line:\\d+: warning - .*LineLength\\.TooLong/";
+            $pattern = "/:{$line}:\\d+: warning - .*LineLength\\.TooLong/";
             $this->assertMatchesRegularExpression($pattern, $severity4['output']);
         }
 

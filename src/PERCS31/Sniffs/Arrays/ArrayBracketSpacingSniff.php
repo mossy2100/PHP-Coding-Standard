@@ -70,7 +70,7 @@ class ArrayBracketSpacingSniff extends PhpCollectiveSniff
         );
         if ($fix) {
             $indent = str_repeat(' ', ($tokens[$first]['column'] - 1));
-            FixerHelper::replaceBetween($phpcsFile, $opener, $first, $phpcsFile->eolChar . $indent);
+            FixerHelper::replaceBetween($phpcsFile, $opener, $first, "{$phpcsFile->eolChar}{$indent}");
         }
     }
 }

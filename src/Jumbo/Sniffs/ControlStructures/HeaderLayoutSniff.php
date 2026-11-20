@@ -144,7 +144,7 @@ class HeaderLayoutSniff implements Sniff
         $line = $tokens[$ptr]['line'];
         $text = '';
         for ($i = $ptr; $i >= 0 && $tokens[$i]['line'] === $line; $i--) {
-            $text = $tokens[$i]['content'] . $text;
+            $text = "{$tokens[$i]['content']}{$text}";
         }
 
         for ($i = ($ptr + 1); isset($tokens[$i]) && $tokens[$i]['line'] === $line; $i++) {

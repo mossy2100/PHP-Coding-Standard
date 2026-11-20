@@ -210,7 +210,7 @@ class TraitUseBlockSniff implements Sniff
         $error = 'There must be a blank line after the last trait use statement';
         if ($phpcsFile->addFixableError($error, $end, self::CODE_NO_BLANK_LINE_AFTER_USE)) {
             if ($tokens[$next]['line'] === $tokens[$end]['line']) {
-                $break = $phpcsFile->eolChar . $phpcsFile->eolChar
+                $break = "{$phpcsFile->eolChar}{$phpcsFile->eolChar}"
                     . str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $use));
                 if ($tokens[($next - 1)]['code'] === T_WHITESPACE) {
                     $phpcsFile->fixer->replaceToken(($next - 1), $break);

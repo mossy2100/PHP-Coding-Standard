@@ -121,7 +121,7 @@ class ClassDeclarationSniff extends Psr2Sniff
             $before = $phpcsFile->findPrevious(T_WHITESPACE, ($name - 1), $keyword, true);
             $code = self::CODE_INTERFACE_NOT_ON_OWN_LINE;
             if ($before !== false && $phpcsFile->addFixableError($error, $name, $code, $data)) {
-                FixerHelper::replaceBetween($phpcsFile, $before, $name, $phpcsFile->eolChar . $indent);
+                FixerHelper::replaceBetween($phpcsFile, $before, $name, "{$phpcsFile->eolChar}{$indent}");
             }
         }
     }

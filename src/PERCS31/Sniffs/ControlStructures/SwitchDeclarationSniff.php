@@ -202,7 +202,7 @@ class SwitchDeclarationSniff implements Sniff
 
         $error = '%3$s keyword must be lowercase; expected "%1$s" but found "%2$s"';
         $data = [$expected, $content, strtoupper($type)];
-        if ($phpcsFile->addFixableError($error, $case, $type . 'NotLower', $data)) {
+        if ($phpcsFile->addFixableError($error, $case, "{$type}NotLower", $data)) {
             $phpcsFile->fixer->replaceToken($case, $expected);
         }
     }
@@ -283,7 +283,7 @@ class SwitchDeclarationSniff implements Sniff
         $upperType = strtoupper($type);
         if ($tokens[($colon - 1)]['code'] === T_WHITESPACE) {
             $error = 'There must be no space before the colon in a %s statement';
-            if ($phpcsFile->addFixableError($error, $case, 'SpaceBeforeColon' . $upperType, [$upperType])) {
+            if ($phpcsFile->addFixableError($error, $case, "SpaceBeforeColon{$upperType}", [$upperType])) {
                 $phpcsFile->fixer->replaceToken(($colon - 1), '');
             }
         }
@@ -302,13 +302,13 @@ class SwitchDeclarationSniff implements Sniff
         }
 
         $error = 'The %s body must start on the line following the statement';
-        if (!$phpcsFile->addFixableError($error, $case, 'BodyOnNextLine' . $upperType, [$upperType])) {
+        if (!$phpcsFile->addFixableError($error, $case, "BodyOnNextLine{$upperType}", [$upperType])) {
             return;
         }
 
         if ($tokens[$next]['line'] === $tokens[$colon]['line']) {
             $padding = str_repeat(' ', ($tokens[$case]['column'] - 1 + $this->indent));
-            $phpcsFile->fixer->addContentBefore($next, $phpcsFile->eolChar . $padding);
+            $phpcsFile->fixer->addContentBefore($next, "{$phpcsFile->eolChar}{$padding}");
             return;
         }
 
@@ -506,7 +506,7 @@ class SwitchDeclarationSniff implements Sniff
         $data = [strtoupper((string) $tokens[$case]['content'])];
         if ($phpcsFile->addFixableError($error, $case, self::CODE_STATEMENT_ON_LABEL_LINE, $data)) {
             $padding = str_repeat(' ', ($tokens[$case]['column'] - 1 + $this->indent));
-            $phpcsFile->fixer->addContentBefore($next, $phpcsFile->eolChar . $padding);
+            $phpcsFile->fixer->addContentBefore($next, "{$phpcsFile->eolChar}{$padding}");
         }
     }
 
@@ -595,7 +595,7 @@ class SwitchDeclarationSniff implements Sniff
         }
 
         $indent = str_repeat(' ', ($tokens[$case]['column'] - 1 + $this->indent));
-        $phpcsFile->fixer->addContentBefore($lineStart, $indent . 'break;' . $phpcsFile->eolChar);
+        $phpcsFile->fixer->addContentBefore($lineStart, "{$indent}break;{$phpcsFile->eolChar}");
     }
 
     /**
@@ -632,7 +632,7 @@ class SwitchDeclarationSniff implements Sniff
 
             $phpcsFile->fixer->beginChangeset();
             $phpcsFile->fixer->addContentBefore($first, '(');
-            $phpcsFile->fixer->addContent($last, $phpcsFile->eolChar . $indent . ')');
+            $phpcsFile->fixer->addContent($last, "{$phpcsFile->eolChar}{$indent})");
             $phpcsFile->fixer->endChangeset();
             return;
         }
@@ -650,8 +650,8 @@ class SwitchDeclarationSniff implements Sniff
                     $phpcsFile,
                     $last,
                     strlen($indent),
-                    'The closing parenthesis of a multi-line case condition must line up with the case; expected %s'
-                        . ' spaces, found %s',
+                    'The closing parenthesis of a multi-line case condition must line up with the case; expected %s '
+                        . 'spaces, found %s',
                     self::CODE_MULTI_LINE_CONDITION_CLOSER_INDENT,
                     [strlen($indent), $found],
                 );
@@ -670,7 +670,7 @@ class SwitchDeclarationSniff implements Sniff
         $phpcsFile->fixer->beginChangeset();
         FixerHelper::blankBetween($phpcsFile, $beforeCloser, $last);
 
-        $phpcsFile->fixer->addContentBefore($last, $phpcsFile->eolChar . $indent);
+        $phpcsFile->fixer->addContentBefore($last, "{$phpcsFile->eolChar}{$indent}");
         $phpcsFile->fixer->endChangeset();
     }
 
@@ -701,7 +701,7 @@ class SwitchDeclarationSniff implements Sniff
         $phpcsFile->fixer->beginChangeset();
         FixerHelper::blankBetween($phpcsFile, $opener, $condition);
 
-        $phpcsFile->fixer->addContent($opener, $phpcsFile->eolChar . $indent . str_repeat(' ', $this->indent));
+        $phpcsFile->fixer->addContent($opener, "{$phpcsFile->eolChar}{$indent}" . str_repeat(' ', $this->indent));
         $phpcsFile->fixer->endChangeset();
     }
 

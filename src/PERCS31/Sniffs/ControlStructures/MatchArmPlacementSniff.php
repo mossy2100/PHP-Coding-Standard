@@ -87,7 +87,7 @@ class MatchArmPlacementSniff implements Sniff
         }
 
         $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $comma));
-        FixerHelper::replaceBetween($phpcsFile, $comma, $next, $phpcsFile->eolChar . $indent);
+        FixerHelper::replaceBetween($phpcsFile, $comma, $next, "{$phpcsFile->eolChar}{$indent}");
     }
 
     /**
@@ -116,7 +116,7 @@ class MatchArmPlacementSniff implements Sniff
 
             $error = 'Each condition of a match arm split over lines must start a line';
             if ($phpcsFile->addFixableError($error, $condition, self::CODE_CONDITION_NOT_ON_OWN_LINE)) {
-                FixerHelper::replaceBetween($phpcsFile, $before, $condition, $phpcsFile->eolChar . $indent);
+                FixerHelper::replaceBetween($phpcsFile, $before, $condition, "{$phpcsFile->eolChar}{$indent}");
             }
         }
     }

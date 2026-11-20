@@ -224,7 +224,7 @@ class AfterClosingBraceSniff implements Sniff
         FixerHelper::blankBetween($phpcsFile, $closer, $next);
 
         $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1));
-        $phpcsFile->fixer->addContent($closer, $phpcsFile->eolChar . $indent);
+        $phpcsFile->fixer->addContent($closer, "{$phpcsFile->eolChar}{$indent}");
         $phpcsFile->fixer->endChangeset();
     }
 

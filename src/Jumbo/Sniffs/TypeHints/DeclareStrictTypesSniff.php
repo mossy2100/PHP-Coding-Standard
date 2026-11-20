@@ -67,7 +67,7 @@ class DeclareStrictTypesSniff extends SlevomatSniff
                 );
                 if ($fix) {
                     // PHP skips a shebang line, so the line after one is the first line it reads.
-                    $line = '<?php declare(strict_types=1) ?>' . $phpcsFile->eolChar;
+                    $line = "<?php declare(strict_types=1) ?>{$phpcsFile->eolChar}";
                     if ($hasShebang) {
                         $phpcsFile->fixer->addContent(0, $line);
                     } else {
@@ -96,7 +96,7 @@ class DeclareStrictTypesSniff extends SlevomatSniff
                 if ($fix) {
                     $block = $phpcsFile->findNext(Tokens::EMPTY_TOKENS, ($openTagPointer + 1), null, true);
                     assert(is_int($block));
-                    $phpcsFile->fixer->addContentBefore($block, 'declare(strict_types=1);' . $phpcsFile->eolChar);
+                    $phpcsFile->fixer->addContentBefore($block, "declare(strict_types=1);{$phpcsFile->eolChar}");
                 }
 
                 return;

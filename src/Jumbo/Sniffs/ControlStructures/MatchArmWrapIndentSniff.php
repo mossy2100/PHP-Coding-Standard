@@ -206,7 +206,7 @@ class MatchArmWrapIndentSniff implements Sniff
             $phpcsFile->fixer->replaceToken($i, '');
         }
 
-        $phpcsFile->fixer->addContentBefore($arrow, $phpcsFile->eolChar . $indent);
+        $phpcsFile->fixer->addContentBefore($arrow, "{$phpcsFile->eolChar}{$indent}");
         $phpcsFile->fixer->endChangeset();
     }
 

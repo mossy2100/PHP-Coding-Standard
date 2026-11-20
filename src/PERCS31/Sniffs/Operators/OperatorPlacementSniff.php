@@ -211,7 +211,7 @@ class OperatorPlacementSniff implements Sniff
             $phpcsFile->fixer->replaceToken($i, '');
         }
 
-        $phpcsFile->fixer->addContentBefore($next, $operator . ' ');
+        $phpcsFile->fixer->addContentBefore($next, "{$operator} ");
         $phpcsFile->fixer->endChangeset();
     }
 
@@ -557,7 +557,7 @@ class OperatorPlacementSniff implements Sniff
 
             FixerHelper::blankBetween($phpcsFile, $operator, $after);
 
-            $phpcsFile->fixer->addContentBefore($operator, $phpcsFile->eolChar . $indentation);
+            $phpcsFile->fixer->addContentBefore($operator, "{$phpcsFile->eolChar}{$indentation}");
             $phpcsFile->fixer->addContent($operator, ' ');
         }
 

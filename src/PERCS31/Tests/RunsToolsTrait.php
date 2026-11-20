@@ -20,13 +20,13 @@ trait RunsToolsTrait
      */
     private function runTool(string $tool, array $args): array
     {
-        $command = [PHP_BINARY, dirname(__DIR__, 3) . "/vendor/bin/$tool", '-q', ...$args];
+        $command = [PHP_BINARY, dirname(__DIR__, 3) . "/vendor/bin/{$tool}", '-q', ...$args];
         $process = proc_open($command, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
         if ($process === false) {
-            throw new RuntimeException("Couldn't run $tool.");
+            throw new RuntimeException("Couldn't run {$tool}.");
         }
 
-        $output = (string) stream_get_contents($pipes[1]) . (string) stream_get_contents($pipes[2]);
+        $output = stream_get_contents($pipes[1]) . stream_get_contents($pipes[2]);
         fclose($pipes[1]);
         fclose($pipes[2]);
 

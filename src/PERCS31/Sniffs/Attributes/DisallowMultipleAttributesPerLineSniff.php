@@ -72,7 +72,7 @@ class DisallowMultipleAttributesPerLineSniff extends SlevomatSniff
         FixerHelper::blankBetween($phpcsFile, $closerPtr, $nextPtr);
 
         $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1 + ($isContinued ? LayoutHelper::INDENT : 0)));
-        $phpcsFile->fixer->addContent($closerPtr, $phpcsFile->eolChar . $indent);
+        $phpcsFile->fixer->addContent($closerPtr, "{$phpcsFile->eolChar}{$indent}");
         $phpcsFile->fixer->endChangeset();
     }
 }

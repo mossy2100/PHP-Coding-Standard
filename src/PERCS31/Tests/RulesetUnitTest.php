@@ -1083,7 +1083,7 @@ class RulesetUnitTest extends TestCase
         }
 
         preg_match_all('/:(\d+):\d+: error - .*\.(\w+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
-        $reports = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
+        $reports = array_map(static fn(array $match): string => "{$match[1]} {$match[2]}", $matches);
         $expected = <<<'PHP'
             <?php
 
@@ -1132,9 +1132,9 @@ class RulesetUnitTest extends TestCase
         }
 
         preg_match_all('/:(\d+):\d+: error - .*\(([\w.]+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
-        $reports = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
+        $reports = array_map(static fn(array $match): string => "{$match[1]} {$match[2]}", $matches);
         $code = 'PERCS31.PHP.LowerCaseKeyword.Found';
-        $expected = ["3 $code", "5 $code", "9 $code", "11 $code", "11 $code"];
+        $expected = ["3 {$code}", "5 {$code}", "9 {$code}", "11 {$code}", "11 {$code}"];
 
         $this->assertSame($expected, $reports, $result['output']);
         $this->assertSame(strtolower($source), $fixed);
@@ -1176,7 +1176,7 @@ class RulesetUnitTest extends TestCase
         }
 
         preg_match_all('/:(\d+):\d+: error - .*\.(\w+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
-        $reports = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
+        $reports = array_map(static fn(array $match): string => "{$match[1]} {$match[2]}", $matches);
         $expected = [
             '3 SpaceAfterFunction',
             '3 SpaceBeforeOpenParen',
@@ -1247,7 +1247,7 @@ class RulesetUnitTest extends TestCase
             foreach ($files as $file) {
                 $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--report=emacs', $file]);
                 preg_match_all('/:(\d+):\d+: error - .*\(([\w.]+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
-                $reports[] = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
+                $reports[] = array_map(static fn(array $match): string => "{$match[1]} {$match[2]}", $matches);
             }
 
             $this->runTool('phpcbf', ['--standard=PERCS31', ...$files]);
@@ -1305,10 +1305,10 @@ class RulesetUnitTest extends TestCase
         }
 
         preg_match_all('/:(\d+):\d+: error - .*\(([\w.]+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
-        $reports = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
+        $reports = array_map(static fn(array $match): string => "{$match[1]} {$match[2]}", $matches);
         $code = 'PERCS31.PHP.LowerCaseKeyword.Found';
 
-        $this->assertSame(["4 $code", "7 $code"], $reports, $result['output']);
+        $this->assertSame(["4 {$code}", "7 {$code}"], $reports, $result['output']);
         $this->assertSame(strtolower($source), $fixed);
     }
 
@@ -1510,7 +1510,7 @@ class RulesetUnitTest extends TestCase
         }
 
         preg_match_all('/:(\d+):\d+: error - .*\(([\w.]+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
-        $reports = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
+        $reports = array_map(static fn(array $match): string => "{$match[1]} {$match[2]}", $matches);
 
         $this->assertSame(
             [
@@ -1764,7 +1764,7 @@ class RulesetUnitTest extends TestCase
         }
 
         preg_match_all('/:(\d+):\d+: error - .*\.(\w+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
-        $reports = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
+        $reports = array_map(static fn(array $match): string => "{$match[1]} {$match[2]}", $matches);
         $expected = [
             '7 SpaceBeforeInFunctionCall',
             '9 SpaceBeforeInFunctionCall',
@@ -1840,7 +1840,7 @@ class RulesetUnitTest extends TestCase
         }
 
         preg_match_all('/:(\d+):\d+: error - .*\.(\w+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
-        $reports = array_map(static fn(array $match): string => "$match[1] $match[2]", $matches);
+        $reports = array_map(static fn(array $match): string => "{$match[1]} {$match[2]}", $matches);
         $reported = ['3 ForbiddenSingleLine', '8 ForbiddenSingleAttributeMultiLine'];
 
         $this->assertSame($reported, $reports, $result['output']);
@@ -1877,10 +1877,10 @@ class RulesetUnitTest extends TestCase
         }
 
         preg_match_all('/:(\d+):\d+: (\w+) - .*\(([\w.]+)\)$/m', $result['output'], $matches, PREG_SET_ORDER);
-        $reports = array_map(static fn(array $match): string => "$match[1] $match[2] $match[3]", $matches);
+        $reports = array_map(static fn(array $match): string => "{$match[1]} {$match[2]} {$match[3]}", $matches);
         $code = 'PERCS31.Files.LineEndings.InvalidEOLChar';
 
-        $this->assertSame(["3 error $code", "6 error $code"], $reports, $result['output']);
+        $this->assertSame(["3 error {$code}", "6 error {$code}"], $reports, $result['output']);
         $this->assertSame(str_replace("\r\n", "\n", $source), $fixed);
     }
 
@@ -1899,7 +1899,7 @@ class RulesetUnitTest extends TestCase
         $this->assertStringNotContainsString(' error - ', $default['output']);
         $this->assertStringNotContainsString('LineLength.TooLong', $default['output']);
         foreach ([9, 10, 11] as $line) {
-            $pattern = "/:$line:\\d+: warning - .*LineLength\\.TooLong/";
+            $pattern = "/:{$line}:\\d+: warning - .*LineLength\\.TooLong/";
             $this->assertMatchesRegularExpression($pattern, $severity4['output']);
         }
 

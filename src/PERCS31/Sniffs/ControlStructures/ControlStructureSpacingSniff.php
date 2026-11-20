@@ -187,7 +187,7 @@ class ControlStructureSpacingSniff extends Psr12Sniff
             return;
         }
 
-        $error = "There must be no space $where parenthesis of a %s";
+        $error = "There must be no space {$where} parenthesis of a %s";
         if ($phpcsFile->addFixableError($error, $space, $code, [strtolower($tokens[$stackPtr]['content'])])) {
             $phpcsFile->fixer->replaceToken($space, '');
         }
@@ -218,7 +218,7 @@ class ControlStructureSpacingSniff extends Psr12Sniff
         if ($tokens[$before]['line'] === $tokens[$as]['line']) {
             $error = 'In a multi-line foreach, "as" must start a line';
             if ($phpcsFile->addFixableError($error, $as, self::CODE_AS_NOT_ON_OWN_LINE)) {
-                FixerHelper::replaceBetween($phpcsFile, $before, $as, $phpcsFile->eolChar . $indent);
+                FixerHelper::replaceBetween($phpcsFile, $before, $as, "{$phpcsFile->eolChar}{$indent}");
             }
         } elseif (($tokens[$as]['column'] - 1) !== strlen($indent)) {
             $error = 'In a multi-line foreach, "as" must be indented once; expected %s spaces but found %s';

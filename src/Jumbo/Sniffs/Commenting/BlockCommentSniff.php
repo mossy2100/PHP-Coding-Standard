@@ -163,11 +163,11 @@ class BlockCommentSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
         $content = rtrim($tokens[$stackPtr]['content']);
         $text = trim(substr($content, 2, -2));
-        if ($text !== '' && $content !== "/* $text */") {
+        if ($text !== '' && $content !== "/* {$text} */") {
             $error = 'A block comment on one line must have one space after /* and one before */';
             if ($phpcsFile->addFixableError($error, $stackPtr, self::CODE_SPACING_INSIDE)) {
                 $rest = substr($tokens[$stackPtr]['content'], strlen($content));
-                $phpcsFile->fixer->replaceToken($stackPtr, "/* $text */" . $rest);
+                $phpcsFile->fixer->replaceToken($stackPtr, "/* {$text} */{$rest}");
             }
         }
 

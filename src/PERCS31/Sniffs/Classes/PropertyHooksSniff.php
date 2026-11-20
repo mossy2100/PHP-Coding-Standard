@@ -181,8 +181,8 @@ class PropertyHooksSniff implements Sniff
         }
 
         $phpcsFile->addError(
-            'A hook on a promoted constructor parameter must be a single hook with a short body, on one line; '
-                . 'declare the property "%s" in the class body instead.',
+            'A hook on a promoted constructor parameter must be a single hook with a short body, on one line; declare '
+                . 'the property "%s" in the class body instead.',
             $stackPtr,
             self::CODE_TOO_COMPLEX,
             [$tokens[$stackPtr]['content']],
@@ -291,7 +291,7 @@ class PropertyHooksSniff implements Sniff
             $code = self::CODE_CLOSER_NOT_ON_OWN_LINE;
             if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $closer, $code)) {
                 $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $opener));
-                FixerHelper::replaceBetween($phpcsFile, $previous, $closer, $phpcsFile->eolChar . $indent);
+                FixerHelper::replaceBetween($phpcsFile, $previous, $closer, "{$phpcsFile->eolChar}{$indent}");
             }
         }
     }
@@ -425,7 +425,7 @@ class PropertyHooksSniff implements Sniff
         if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $start, $code)) {
             $indent = str_repeat(' ', ($phpcsFile->getTokens()[$start]['column'] - 1));
             $eol = $phpcsFile->eolChar;
-            FixerHelper::replaceBetween($phpcsFile, $previousEnd, $start, $eol . $eol . $indent);
+            FixerHelper::replaceBetween($phpcsFile, $previousEnd, $start, "{$eol}{$eol}{$indent}");
         }
     }
 
@@ -488,8 +488,8 @@ class PropertyHooksSniff implements Sniff
             return;
         }
 
-        $error = 'A property hook list with no bodies must be written on one line, with single spaces, e.g. '
-            . '"{ get; set; }"';
+        $error = 'A property hook list with no bodies must be written on one line, with single spaces, e.g. "{ get; '
+            . 'set; }"';
         $isFixable = $phpcsFile->findNext(Tokens::COMMENT_TOKENS, ($opener + 1), $closer) === false;
         if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $opener, self::CODE_BODILESS_LAYOUT)) {
             FixerHelper::replaceBetween($phpcsFile, $opener, $closer, $expected);
@@ -672,7 +672,7 @@ class PropertyHooksSniff implements Sniff
             $code = self::CODE_HOOK_BODY_NOT_ON_NEW_LINE;
             if (FixerHelper::addFixableErrorIf($phpcsFile, $isFixable, $error, $first, $code)) {
                 $indent = str_repeat(' ', ($hookIndent + LayoutHelper::INDENT));
-                FixerHelper::replaceBetween($phpcsFile, $bodyOpener, $first, $phpcsFile->eolChar . $indent);
+                FixerHelper::replaceBetween($phpcsFile, $bodyOpener, $first, "{$phpcsFile->eolChar}{$indent}");
             }
         }
 

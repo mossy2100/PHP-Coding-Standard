@@ -203,7 +203,7 @@ class AttributeLayoutSniff implements Sniff
         // Indent the target as the first token on the attribute's line is indented. There may be no space between
         // them to replace, as in `#[A]class Foo`.
         $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $stackPtr));
-        FixerHelper::replaceBetween($phpcsFile, $closerPtr, $targetPtr, $phpcsFile->eolChar . $indent);
+        FixerHelper::replaceBetween($phpcsFile, $closerPtr, $targetPtr, "{$phpcsFile->eolChar}{$indent}");
     }
 
     /**
@@ -276,7 +276,7 @@ class AttributeLayoutSniff implements Sniff
             assert(is_int($firstOnLine));
             $extra = $tokens[$firstOnLine]['code'] === T_ATTRIBUTE ? 0 : LayoutHelper::INDENT;
             $indent = str_repeat(' ', ($tokens[$firstOnLine]['column'] - 1 + $extra));
-            FixerHelper::replaceBetween($phpcsFile, $closerPtr, $targetPtr, $phpcsFile->eolChar . $indent);
+            FixerHelper::replaceBetween($phpcsFile, $closerPtr, $targetPtr, "{$phpcsFile->eolChar}{$indent}");
         }
     }
 
@@ -409,7 +409,7 @@ class AttributeLayoutSniff implements Sniff
         }
 
         $indent = str_repeat(' ', ($tokens[$stackPtr]['column'] - 1));
-        FixerHelper::replaceBetween($phpcsFile, $previous, $stackPtr, $phpcsFile->eolChar . $indent);
+        FixerHelper::replaceBetween($phpcsFile, $previous, $stackPtr, "{$phpcsFile->eolChar}{$indent}");
     }
 
     /**
@@ -479,10 +479,10 @@ class AttributeLayoutSniff implements Sniff
 
         $layout = '';
         foreach ($blocks as $block) {
-            $layout .= $phpcsFile->eolChar . $indent . $block;
+            $layout .= "{$phpcsFile->eolChar}{$indent}{$block}";
         }
 
-        $phpcsFile->fixer->addContent($newPtr, $layout . $phpcsFile->eolChar . $indent);
+        $phpcsFile->fixer->addContent($newPtr, "{$layout}{$phpcsFile->eolChar}{$indent}");
         $phpcsFile->fixer->endChangeset();
     }
 
@@ -572,8 +572,8 @@ class AttributeLayoutSniff implements Sniff
         }
 
         $fix = $phpcsFile->addFixableError(
-            'In a multi-line argument list, a closure\'s attribute must be indented the same as the closure; '
-                . 'expected %s spaces, found %s',
+            'In a multi-line argument list, a closure\'s attribute must be indented the same as the closure; expected '
+                . '%s spaces, found %s',
             $stackPtr,
             self::CODE_CLOSURE_INDENT,
             [$expected, $indent],
@@ -736,10 +736,10 @@ class AttributeLayoutSniff implements Sniff
         }
 
         $indent = str_repeat(' ', LayoutHelper::lineIndent($phpcsFile, $stackPtr));
-        $blocks = array_map(static fn(string $attribute): string => '#[' . $attribute . ']', $attributes);
+        $blocks = array_map(static fn(string $attribute): string => "#[{$attribute}]", $attributes);
 
         $phpcsFile->fixer->beginChangeset();
-        $phpcsFile->fixer->replaceToken($stackPtr, implode($phpcsFile->eolChar . $indent, $blocks));
+        $phpcsFile->fixer->replaceToken($stackPtr, implode("{$phpcsFile->eolChar}{$indent}", $blocks));
         for ($i = ($stackPtr + 1); $i <= $closer; $i++) {
             $phpcsFile->fixer->replaceToken($i, '');
         }

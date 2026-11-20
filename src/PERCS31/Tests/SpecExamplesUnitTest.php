@@ -100,7 +100,7 @@ class SpecExamplesUnitTest extends TestCase
             '--extensions=inc',
             '--no-cache',
             '--report=json',
-            self::FIXTURES . '/' . $name,
+            self::FIXTURES . "/{$name}",
         ]);
 
         $this->assertSame(self::EXPECTED[$name] ?? [], $this->messages($result['output']));
@@ -126,7 +126,7 @@ class SpecExamplesUnitTest extends TestCase
                 $this->assertIsArray($message);
                 $this->assertIsInt($message['line']);
                 $this->assertIsString($message['source']);
-                $messages[] = $message['line'] . ' ' . $message['source'];
+                $messages[] = "{$message['line']} {$message['source']}";
             }
         }
 

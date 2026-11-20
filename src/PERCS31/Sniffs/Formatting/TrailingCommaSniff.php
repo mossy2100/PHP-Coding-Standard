@@ -99,7 +99,7 @@ class TrailingCommaSniff implements Sniff
 
         if ($code === T_ANON_CLASS || $code === T_CLONE || $code === T_EXIT) {
             $kind = $code === T_ANON_CLASS ? 'anonymous class' : strtolower($tokens[$stackPtr]['content']) . '()';
-            $this->processArguments($phpcsFile, $stackPtr, $kind . ' argument list');
+            $this->processArguments($phpcsFile, $stackPtr, "{$kind} argument list");
             return;
         }
 

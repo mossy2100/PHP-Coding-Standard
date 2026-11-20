@@ -392,7 +392,7 @@ class InheritedRulesUnitTest extends TestCase
         [, $code, $type] = self::RULES[$name];
         $reports = $this->findReports()[$name] ?? [];
 
-        $this->assertContains("$type $code", $reports, 'Reported: ' . implode(', ', $reports));
+        $this->assertContains("{$type} {$code}", $reports, 'Reported: ' . implode(', ', $reports));
     }
 
     /**
@@ -411,7 +411,7 @@ class InheritedRulesUnitTest extends TestCase
             $files[basename($this->copyToTempFile(null, $source))] = $name;
         }
 
-        $paths = array_map(static fn(string $file): string => sys_get_temp_dir() . '/' . $file, array_keys($files));
+        $paths = array_map(static fn(string $file): string => sys_get_temp_dir() . "/{$file}", array_keys($files));
 
         try {
             $result = $this->runTool('phpcs', ['-s', '--standard=PERCS31', '--no-cache', '--report=emacs', ...$paths]);
@@ -426,7 +426,7 @@ class InheritedRulesUnitTest extends TestCase
         foreach ($matches as [, $path, $type, $code]) {
             $name = $files[basename($path)] ?? null;
             if ($name !== null) {
-                $reports[$name][] = "$type $code";
+                $reports[$name][] = "{$type} {$code}";
             }
         }
 

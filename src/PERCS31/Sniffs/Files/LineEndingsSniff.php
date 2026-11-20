@@ -72,7 +72,7 @@ class LineEndingsSniff extends GenericSniff
             }
 
             if ($carrier === null) {
-                $phpcsFile->fixer->replaceToken($i, $trimmed . $expected);
+                $phpcsFile->fixer->replaceToken($i, "{$trimmed}{$expected}");
             } else {
                 $before = $tokens[$carrier]['orig_content'] ?? $tokens[$carrier]['content'];
                 $phpcsFile->fixer->replaceToken($carrier, rtrim($before, "\r"));

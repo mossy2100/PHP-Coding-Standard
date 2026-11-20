@@ -217,8 +217,8 @@ class CompoundTypeSniff implements Sniff
      */
     private function reportIndent(File $phpcsFile, int $symbol, int $indent): void
     {
-        $error = 'A line of a compound type split across lines is indented incorrectly; '
-            . 'expected %s spaces but found %s';
+        $error = 'A line of a compound type split across lines is indented incorrectly; expected %s spaces but found '
+            . '%s';
         $found = $phpcsFile->getTokens()[$symbol]['column'] - 1;
         FixerHelper::reportIndent($phpcsFile, $symbol, $indent, $error, self::CODE_INDENT, [$indent, $found]);
     }
@@ -522,7 +522,7 @@ class CompoundTypeSniff implements Sniff
             $phpcsFile->fixer->replaceToken($nullPtr, '');
         }
 
-        $phpcsFile->fixer->addContent($lastEnd, '|' . $content);
+        $phpcsFile->fixer->addContent($lastEnd, "|{$content}");
         $phpcsFile->fixer->endChangeset();
     }
 
@@ -544,7 +544,7 @@ class CompoundTypeSniff implements Sniff
         string $type,
         bool $fixable,
     ): void {
-        $shortForm = '?' . $phpcsFile->getTokens()[$otherPtr]['content'];
+        $shortForm = "?{$phpcsFile->getTokens()[$otherPtr]['content']}";
         $warning = 'A union of one type and null should be written as ?T; found "%s", use "%s"';
         $data = [$type, $shortForm];
         if (!$fixable) {
