@@ -36,8 +36,9 @@ use PHP_CodeSniffer\Util\Tokens;
  * clash with the layout of the code around it.
  *
  * It covers every binary operator except the assignment operators and `and`, `or` and `xor`, which bind more loosely
- * than assignment. Like PERCS31.Operators.OperatorPlacement, it puts each operator at the start of its line, and it
- * reports a `.` at the end of a line, which that sniff leaves to Universal.Operators.ConcatPosition.
+ * than assignment. It only decides where the lines break. An operator at the end of a line counts as a break at it,
+ * and PERCS31.Operators.OperatorPlacement reports it there, and checks each line's indent. The fix puts each operator
+ * at the start of its line, as that sniff does.
  */
 class ExpressionFormatSniff implements Sniff
 {
@@ -67,11 +68,18 @@ class ExpressionFormatSniff implements Sniff
     ];
 
     /**
-     * Control structures whose condition's lines line up with its first line.
+     * Control structures whose header is indented as a condition, as PERCS31.Operators.OperatorPlacement does it.
      *
      * @var list<int|string>
      */
-    private const array CONDITION_OWNERS = [T_IF, T_ELSEIF, T_WHILE, T_SWITCH, T_MATCH];
+    private const array CONDITION_OWNERS = [T_IF, T_ELSEIF, T_WHILE, T_SWITCH, T_MATCH, T_FOR, T_FOREACH];
+
+    /**
+     * Operators that join a condition's parts, which line up with each other in a condition.
+     *
+     * @var list<int|string>
+     */
+    private const array BOOLEAN_OPERATORS = [T_BOOLEAN_AND, T_BOOLEAN_OR];
 
     /**
      * Maximum line length.
@@ -134,11 +142,17 @@ class ExpressionFormatSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
         $column = $tokens[$start]['column'] - 1;
         $lineIndent = LayoutHelper::lineIndent($phpcsFile, $start);
-        $isCondition = $this->isConditionOnOwnLine($phpcsFile, $start, $before);
-        $continuationIndent = $isCondition ? $column : ($lineIndent + LayoutHelper::INDENT);
+        $conditionOpener = $this->findConditionOpener($phpcsFile, $start);
+        $isCondition = $conditionOpener !== null && LayoutHelper::startsLine($phpcsFile, $start);
+        $continuationIndent = $lineIndent + LayoutHelper::INDENT;
+        if ($conditionOpener !== null) {
+            $continuationIndent = LayoutHelper::lineIndent($phpcsFile, $conditionOpener) + LayoutHelper::INDENT;
+        }
+
         $breaks = [];
         $trailing = $this->trailingLength($phpcsFile, $end);
-        $this->layout($phpcsFile, $root, $column, $lineIndent, $continuationIndent, $trailing, $breaks);
+        $inCondition = $conditionOpener !== null;
+        $this->layout($phpcsFile, $root, $column, $lineIndent, $continuationIndent, $trailing, $inCondition, $breaks);
 
         $current = [];
         $misplaced = false;
@@ -180,21 +194,22 @@ class ExpressionFormatSniff implements Sniff
     }
 
     /**
-     * Check whether an expression is a control structure's condition, starting its own line.
+     * Find the parentheses of the control structure whose condition, or header, an expression is directly in.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $start The position of the expression's first token.
-     * @param int $before The position of the token before it, or -1.
-     * @return bool True if it is.
+     * @return int|null The position of the opening parenthesis, or null if it isn't in one.
      */
-    private function isConditionOnOwnLine(File $phpcsFile, int $start, int $before): bool
+    private function findConditionOpener(File $phpcsFile, int $start): ?int
     {
         $tokens = $phpcsFile->getTokens();
-        $owner = $before >= 0 ? ($tokens[$before]['parenthesis_owner'] ?? null) : null;
+        $openers = array_keys($tokens[$start]['nested_parenthesis'] ?? []);
+        $opener = end($openers);
+        $owner = is_int($opener) ? ($tokens[$opener]['parenthesis_owner'] ?? null) : null;
 
-        return is_int($owner) && $tokens[$before]['code'] === T_OPEN_PARENTHESIS
-            && in_array($tokens[$owner]['code'], self::CONDITION_OWNERS, true)
-            && LayoutHelper::startsLine($phpcsFile, $start);
+        return is_int($opener) && is_int($owner) && in_array($tokens[$owner]['code'], self::CONDITION_OWNERS, true)
+            ? $opener
+            : null;
     }
 
     /**
@@ -231,6 +246,8 @@ class ExpressionFormatSniff implements Sniff
      * @param int $lineIndent The indent of the node's first line.
      * @param int $indent The indent for a level's new lines.
      * @param int $trailing The number of characters after the node on its last line.
+     * @param bool $inCondition Whether the node is directly in a control structure's condition, outside any group or
+     * operator other than `&&` and `||`.
      * @param array<int, int> $breaks The operators to break the line before, with each one's indent.
      * @return int The number of characters before the node's end, on its last line.
      */
@@ -241,6 +258,7 @@ class ExpressionFormatSniff implements Sniff
         int $lineIndent,
         int $indent,
         int $trailing,
+        bool $inCondition,
         array &$breaks,
     ): int {
         $flatEnd = $column + $node->flatLength;
@@ -262,14 +280,22 @@ class ExpressionFormatSniff implements Sniff
                 $lineIndent,
                 $innerIndent,
                 ($trailing + 1),
+                false,
                 $breaks,
             ) + 1;
         }
 
-        // Each operand joins the line it follows if it fits, and starts a new line, with its operator, if it doesn't.
+        // In a condition, the parts joined by `&&` and `||` line up, but any other operator's new lines are indented
+        // once past the line its operand starts on, as PERCS31.Operators.OperatorPlacement requires.
         $tokens = $phpcsFile->getTokens();
+        if ($inCondition && !in_array($tokens[$node->operators[0]]['code'], self::BOOLEAN_OPERATORS, true)) {
+            $indent = $lineIndent + LayoutHelper::INDENT;
+            $inCondition = false;
+        }
+
+        // Each operand joins the line it follows if it fits, and starts a new line, with its operator, if it doesn't.
         $lastIndex = count($node->operators);
-        $end = $this->layout($phpcsFile, $node->children[0], $column, $lineIndent, $indent, 0, $breaks);
+        $end = $this->layout($phpcsFile, $node->children[0], $column, $lineIndent, $indent, 0, $inCondition, $breaks);
         foreach ($node->operators as $index => $operator) {
             $child = $node->children[($index + 1)];
             $childTrailing = ($index + 1) === $lastIndex ? $trailing : 0;
@@ -282,19 +308,29 @@ class ExpressionFormatSniff implements Sniff
 
             $breaks[$operator] = $indent;
             $childColumn = $indent + $operatorLength + 1;
-            $end = $this->layout($phpcsFile, $child, $childColumn, $indent, $indent, $childTrailing, $breaks);
+            $end = $this->layout(
+                $phpcsFile,
+                $child,
+                $childColumn,
+                $indent,
+                $indent,
+                $childTrailing,
+                $inCondition,
+                $breaks,
+            );
         }
 
         return $end;
     }
 
     /**
-     * Find the operators a node's lines break at now, and whether any line break is somewhere else.
+     * Find the operators a node's lines break at now, before or after them, and whether a group's parentheses have a
+     * line break inside them.
      *
      * @param File $phpcsFile The file being scanned.
      * @param ExpressionNode $node The node.
      * @param array<int, true> $current The operators with a line break before or after them.
-     * @param bool $misplaced Set if a `.` ends a line, or a group's parentheses don't hug its contents.
+     * @param bool $misplaced Set if a group's parentheses don't hug its contents.
      */
     private function findCurrentBreaks(File $phpcsFile, ExpressionNode $node, array &$current, bool &$misplaced): void
     {
@@ -308,7 +344,6 @@ class ExpressionFormatSniff implements Sniff
 
             if ($next !== false && $tokens[$next]['line'] !== $tokens[$operator]['line']) {
                 $current[$operator] = true;
-                $misplaced = $misplaced || $tokens[$operator]['code'] === T_STRING_CONCAT;
             }
         }
 

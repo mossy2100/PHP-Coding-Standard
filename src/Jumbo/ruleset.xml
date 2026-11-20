@@ -282,9 +282,11 @@
             <property name="minLineLength" value="&lineLengthPlusOne;"/>
         </properties>
     </rule>
+    <!-- alwaysForSimpleConditions is off, as it joins a condition with no && or || however long the line gets -->
     <rule ref="SlevomatCodingStandard.ControlStructures.RequireSingleLineCondition">
         <properties>
             <property name="maxLineLength" value="&lineLength;"/>
+            <property name="alwaysForSimpleConditions" value="false"/>
         </properties>
     </rule>
     <rule ref="SlevomatCodingStandard.ControlStructures.UselessIfConditionWithReturn"/>

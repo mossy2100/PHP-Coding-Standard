@@ -62,6 +62,32 @@ class RulesetUnitTest extends TestCase
         }
     }
 
+    /**
+     * Test that Jumbo.Formatting.ExpressionFormat and the sniffs that check the same lines agree: phpcbf fixes the bad
+     * fixture to exactly the good one, without failing to finish, and the good one has no violations.
+     *
+     * ExpressionFormat works out each new line's indent for the layout it writes, and
+     * PERCS31.Operators.OperatorPlacement checks the indent of the layout as it's written. A difference between their
+     * rules would leave them undoing each other's fixes. The fixture covers the places where those rules differ:
+     * conditions, a foreach header, groups, an argument, an arrow function, a match arm and a ternary.
+     */
+    public function testExpressionFormatAgreesWithTheOtherSniffs(): void
+    {
+        $good = self::FIXTURES . '/ExpressionFormatGood.inc';
+        $file = $this->copyToTempFile(self::FIXTURES . '/ExpressionFormatBad.inc');
+
+        try {
+            $fixer = $this->runTool('phpcbf', ['--standard=Jumbo', $file]);
+            $this->assertStringNotContainsString('FAILED TO FIX', $fixer['output']);
+            $this->assertSame(file_get_contents($good), file_get_contents($file));
+        } finally {
+            unlink($file);
+        }
+
+        $result = $this->runTool('phpcs', ['--standard=Jumbo', '--report=emacs', $good]);
+        $this->assertSame(0, $result['exitCode'], $result['output']);
+    }
+
     #endregion
 
     #region Tests comparing PERCS31 and Jumbo.
