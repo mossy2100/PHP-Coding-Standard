@@ -14,9 +14,6 @@
     <rule ref="PERCS31">
         <!-- Zend.Files.ClosingTag, below, reports the same closing tags, and more -->
         <exclude name="PSR2.Files.ClosingTag"/>
-        <!-- Jumbo.Formatting.ExpressionFormat puts a split . at the start of its line, along with every other
-             binary operator -->
-        <exclude name="Universal.Operators.ConcatPosition"/>
     </rule>
 
     <!-- ====== GENERAL (2) ====== -->

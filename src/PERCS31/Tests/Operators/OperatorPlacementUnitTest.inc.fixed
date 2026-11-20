@@ -23,16 +23,16 @@ $reference = static function (
 ): void {
 };
 
-$concat = $s .
-    $t;
+// === INVALID ===
+
+$concat = $s
+    . $t;
 
 if (
-    $p &&
-    $q
+    $p
+    && $q
 ) {
 }
-
-// === INVALID ===
 
 $arithmetic = $a * $b
     + $c;

@@ -23,6 +23,8 @@ $reference = static function (
 ): void {
 };
 
+// === INVALID ===
+
 $concat = $s .
     $t;
 
@@ -31,8 +33,6 @@ if (
     $q
 ) {
 }
-
-// === INVALID ===
 
 $arithmetic = $a * $b +
     $c;

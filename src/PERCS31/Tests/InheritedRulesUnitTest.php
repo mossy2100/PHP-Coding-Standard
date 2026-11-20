@@ -32,11 +32,6 @@ class InheritedRulesUnitTest extends TestCase
      * @var array<string, array{string, string, string}>
      */
     private const array RULES = [
-        'a split condition with && at the end of a line' => [
-            "<?php\n\nif (\n    \$a &&\n    \$b\n) {\n    run();\n}\n",
-            'PSR12.ControlStructures.BooleanOperatorPlacement.FoundMixed',
-            'error',
-        ],
         '::CLASS in upper case' => [
             "<?php\n\n\$a = Foo::CLASS;\n",
             'Universal.Constants.LowercaseClassResolutionKeyword.Uppercase',
@@ -179,11 +174,6 @@ class InheritedRulesUnitTest extends TestCase
             'error',
         ],
         'no space after a cast' => ["<?php\n\n\$a = (int)\$b;\n", 'Generic.Formatting.SpaceAfterCast.NoSpace', 'error'],
-        'a concatenation operator at the end of a line' => [
-            "<?php\n\n\$a = 'b' .\n    'c';\n",
-            'Universal.Operators.ConcatPosition.Incorrect',
-            'error',
-        ],
         'a space after fn' => [
             "<?php\n\n\$a = fn (\$b) => \$b;\n",
             'SlevomatCodingStandard.Functions.ArrowFunctionDeclaration.IncorrectSpacesAfterKeyword',

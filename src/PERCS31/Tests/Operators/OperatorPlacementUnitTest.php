@@ -151,6 +151,10 @@ class OperatorPlacementUnitTest extends AbstractSniffTestCase
         }
 
         return [
+            // Concatenation.
+            28 => 1,
+            // Boolean, in a control structure's condition.
+            32 => 1,
             // Arithmetic, after another operator on the same line.
             37 => 1,
             // Null coalescing.

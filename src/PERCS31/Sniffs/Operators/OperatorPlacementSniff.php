@@ -45,15 +45,13 @@ use SlevomatCodingStandard\Helpers\TernaryOperatorHelper;
  * An expression nested in the condition, such as a call's argument, follows the general rule. A multi-line `case`
  * condition isn't checked, as section 5.2's example lines its operators up with the first condition.
  *
- * It covers assignment, arithmetic, comparison, bitwise and logical operators, `??`, `instanceof`, the short ternary
- * `?:`, the arrow function's `=>`, the pipe operator `|>` (PHP 8.5, PER Coding Style 3.1), and `.` for the indent only.
- * Two cases are left to inherited sniffs: the placement of `.`, checked by Universal.Operators.ConcatPosition, and of
- * `&&` or `||` in a control structure's condition, checked by PSR12.ControlStructures.BooleanOperatorPlacement. The
- * full ternary has its own check, described below, and section 6.2 doesn't list `=>`, so
- * one in an array or `match` arm isn't checked. An assignment operator or arrow function's `=>` before a heredoc or
- * nowdoc is left to PERCS31.Strings.HeredocLayout, as section 10 says it must begin on the same line as the
- * variable it's set against. An assignment operator before a multi-line array's `[` on the next line is left to
- * PERCS31.Arrays.MultiLineArrayLayout, which joins the `[` to the operator's line.
+ * It covers assignment, arithmetic, comparison, bitwise and logical operators, `??`, `.`, `instanceof`, the short
+ * ternary `?:`, the arrow function's `=>` and the pipe operator `|>` (PHP 8.5, PER Coding Style 3.1), including `&&`
+ * and `||` in a control structure's condition. The full ternary has its own check, described below, and section 6.2
+ * doesn't list `=>`, so one in an array or `match` arm isn't checked. An assignment operator or arrow function's `=>`
+ * before a heredoc or nowdoc is left to PERCS31.Strings.HeredocLayout, as section 10 says it must begin on the same
+ * line as the variable it's set against. An assignment operator before a multi-line array's `[` on the next line is
+ * left to PERCS31.Arrays.MultiLineArrayLayout, which joins the `[` to the operator's line.
  *
  * PhpCollective.Operators.OperatorPosition covers some of this, but only about 14 operators, and doesn't check the
  * indent. This sniff doesn't extend it, as only the report and fix for an operator at the end of a line could be left
@@ -97,13 +95,6 @@ class OperatorPlacementSniff implements Sniff
      * once past the line with the opening parenthesis. Section 5 only says "at least once", so it's off by default.
      */
     public bool $requireExactConditionIndent = false;
-
-    /**
-     * Control structures whose condition PSR12.ControlStructures.BooleanOperatorPlacement checks.
-     *
-     * @var list<int|string>
-     */
-    private const array CONDITION_OWNERS = [T_IF, T_ELSEIF, T_WHILE, T_SWITCH, T_MATCH];
 
     /**
      * Control structures whose condition can be indented more than once, so its indent isn't checked.
@@ -195,10 +186,6 @@ class OperatorPlacementSniff implements Sniff
             isset(Tokens::ASSIGNMENT_TOKENS[$code]) && $tokens[$next]['code'] === T_OPEN_SHORT_ARRAY && is_int($closer)
             && $tokens[$closer]['line'] !== $tokens[$next]['line']
         ) {
-            return;
-        }
-
-        if ($code === T_STRING_CONCAT || $this->isLeftToOtherSniffs($phpcsFile, $stackPtr)) {
             return;
         }
 
@@ -475,23 +462,6 @@ class OperatorPlacementSniff implements Sniff
         }
 
         return max($i, -1);
-    }
-
-    /**
-     * Check whether an operator is checked by another sniff in the standard.
-     *
-     * @param File $phpcsFile The file being scanned.
-     * @param int $stackPtr The position of the operator.
-     * @return bool True for `&&` or `||` in a control structure's condition.
-     */
-    private function isLeftToOtherSniffs(File $phpcsFile, int $stackPtr): bool
-    {
-        $tokens = $phpcsFile->getTokens();
-        if ($tokens[$stackPtr]['code'] !== T_BOOLEAN_AND && $tokens[$stackPtr]['code'] !== T_BOOLEAN_OR) {
-            return false;
-        }
-
-        return Parentheses::getFirstOwner($phpcsFile, $stackPtr, self::CONDITION_OWNERS) !== false;
     }
 
     /**

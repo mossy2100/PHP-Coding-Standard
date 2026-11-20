@@ -24,6 +24,10 @@
         <exclude name="PSR12.Classes.ClosingBrace"/>
         <!-- Replaced by a PERCS31 version that also covers the pipe operator |> (6.2) -->
         <exclude name="PSR12.Operators.OperatorSpacing"/>
+        <!-- Replaced by PERCS31.Operators.OperatorPlacement, which puts a wrapped && or || in a condition at the start of
+             its line, like every other operator. This one's fix splits at every && and || in the condition, however
+             deeply nested, and puts a mid-line one on its own line too (5.1, 6.4) -->
+        <exclude name="PSR12.ControlStructures.BooleanOperatorPlacement"/>
         <!-- Replaced by a PERCS31 version that allows PascalCase for an enum constant, and recommends it (9) -->
         <exclude name="Generic.NamingConventions.UpperCaseConstantName"/>
         <!-- Replaced, as a name with no lower-case letter isn't PascalCase (2.1) -->
@@ -107,13 +111,6 @@
     <!-- Visibility on every constant is a MUST (4.3), but PSR12.Properties.ConstantVisibility only gives a warning -->
     <rule ref="PSR12.Properties.ConstantVisibility.NotFound">
         <type>error</type>
-    </rule>
-
-    <!-- Wrapped && and || at the start of the line in a condition, not the end (5.1, 6.4) -->
-    <rule ref="PSR12.ControlStructures.BooleanOperatorPlacement">
-        <properties>
-            <property name="allowOnly" value="first"/>
-        </properties>
     </rule>
 
     <!-- ====== GENERAL (2) ====== -->
@@ -501,10 +498,7 @@
          example writes them (4.2, 4.7, 9) -->
     <rule ref="PERCS31.WhiteSpace.ObjectOperatorSpacing"/>
 
-    <!-- A wrapped . at the start of the line, not the end (6.4) -->
-    <rule ref="Universal.Operators.ConcatPosition"/>
-
-    <!-- Any other wrapped binary operator, and an arrow function's =>, at the start of the line (6.4, 7.1). A ternary
+    <!-- A wrapped binary operator, and an arrow function's =>, at the start of the line (5.1, 6.4, 7.1). A ternary
          split at ? or : takes three lines, with ? and : leading, indented once (6.4). -->
     <rule ref="PERCS31.Operators.OperatorPlacement"/>
 
