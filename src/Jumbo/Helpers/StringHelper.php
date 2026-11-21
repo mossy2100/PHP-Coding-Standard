@@ -507,58 +507,87 @@ class StringHelper
             }
 
             if ($id === T_CURLY_OPEN) {
-                $depth = 0;
-                $variable = '';
-                for (; $i < $count; $i++) {
-                    $piece = is_array($parts[$i]) ? $parts[$i][1] : $parts[$i];
-                    $variable .= $piece;
-                    $isOpener = is_array($parts[$i]) ? $parts[$i][0] === T_CURLY_OPEN : in_array(
-                        $piece,
-                        ['{', '['],
-                        true,
-                    );
-                    $depth += $isOpener ? 1 : 0;
-                    $depth -= !is_array($parts[$i]) && in_array($piece, ['}', ']'], true) ? 1 : 0;
-                    if ($depth === 0) {
-                        break;
-                    }
-                }
-
+                [$variable, $i] = $this->readBracedInterpolation($parts, $i);
                 $atoms[] = new StringAtom(StringAtom::VARIABLE, null, $variable, $source);
                 continue;
             }
 
             if ($id === T_VARIABLE) {
-                $variable = $text;
-                while (isset($parts[($i + 1)])) {
-                    $next = $parts[($i + 1)];
-                    $nextId = is_array($next) ? $next[0] : null;
-                    if (in_array($nextId, [T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR], true)) {
-                        $variable .= "{$next[1]}{$parts[($i + 2)][1]}";
-                        $i += 2;
-                        continue;
-                    }
-
-                    if ($next === '[') {
-                        $i++;
-                        for (; $i < $count; $i++) {
-                            $variable .= is_array($parts[$i]) ? $parts[$i][1] : $parts[$i];
-                            if ($parts[$i] === ']') {
-                                break;
-                            }
-                        }
-
-                        continue;
-                    }
-
-                    break;
-                }
-
+                [$variable, $i] = $this->readSimpleInterpolation($parts, $i);
                 $atoms[] = new StringAtom(StringAtom::VARIABLE, null, $variable, $source, true);
             }
         }
 
         return $atoms;
+    }
+
+    /**
+     * Read a variable in braces in a double-quoted string, as in "{$a['b']}", from its { to the matching }.
+     *
+     * @param array<int, array{int, string, int}|string> $parts The string's tokens, from token_get_all().
+     * @param int $index The position of its {.
+     * @return array{string, int} The variable with its braces, and the position of its }.
+     */
+    private function readBracedInterpolation(array $parts, int $index): array
+    {
+        $count = count($parts);
+        $depth = 0;
+        $variable = '';
+        for (; $index < $count; $index++) {
+            $piece = is_array($parts[$index]) ? $parts[$index][1] : $parts[$index];
+            $variable .= $piece;
+            $isOpener = is_array($parts[$index]) ? $parts[$index][0] === T_CURLY_OPEN : in_array(
+                $piece,
+                ['{', '['],
+                true,
+            );
+            $depth += $isOpener ? 1 : 0;
+            $depth -= !is_array($parts[$index]) && in_array($piece, ['}', ']'], true) ? 1 : 0;
+            if ($depth === 0) {
+                break;
+            }
+        }
+
+        return [$variable, $index];
+    }
+
+    /**
+     * Read a variable without braces in a double-quoted string, as in "$a->b" or "$a[0]", with any property reads,
+     * nullsafe property reads and array accesses after it.
+     *
+     * @param array<int, array{int, string, int}|string> $parts The string's tokens, from token_get_all().
+     * @param int $index The position of its variable.
+     * @return array{string, int} The variable as written, and the position of its last token.
+     */
+    private function readSimpleInterpolation(array $parts, int $index): array
+    {
+        $count = count($parts);
+        $variable = is_array($parts[$index]) ? $parts[$index][1] : $parts[$index];
+        while (isset($parts[($index + 1)])) {
+            $next = $parts[($index + 1)];
+            $nextId = is_array($next) ? $next[0] : null;
+            if (in_array($nextId, [T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR], true)) {
+                $variable .= "{$next[1]}{$parts[($index + 2)][1]}";
+                $index += 2;
+                continue;
+            }
+
+            if ($next === '[') {
+                $index++;
+                for (; $index < $count; $index++) {
+                    $variable .= is_array($parts[$index]) ? $parts[$index][1] : $parts[$index];
+                    if ($parts[$index] === ']') {
+                        break;
+                    }
+                }
+
+                continue;
+            }
+
+            break;
+        }
+
+        return [$variable, $index];
     }
 
     /**
