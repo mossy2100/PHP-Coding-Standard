@@ -534,6 +534,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`Jumbo.Strings.RequireBracedVariables` (breaking).** Requires braces around every variable interpolated in a
   double-quoted string or a heredoc, so `"Hi $name"` becomes `"Hi {$name}"`, and `"$row[id]"` becomes `"{$row['id']}"`.
   Reported as `MissingBraces`. Auto-fixable. PERCS31 is unchanged, as PER Coding Style 3.1 has no rule for it.
+- **More extra rules in Jumbo (breaking).** Jumbo now includes 13 more sniffs from PHP_CodeSniffer, Slevomat and
+  PHPCSExtra:
+  - `Generic.CodeAnalysis.UnusedFunctionParameter`: a warning for an unused parameter.
+  - `Generic.Metrics.NestingLevel`: blocks nested no more than 5 deep.
+  - `Generic.WhiteSpace.ArbitraryParenthesesSpacing`: no space inside grouping parentheses. Auto-fixable.
+  - `SlevomatCodingStandard.Classes.ClassLength`: a class of no more than 1000 lines of code.
+  - `SlevomatCodingStandard.Classes.ReadonlyClass`: `readonly class` when every property is readonly. Auto-fixable.
+  - `SlevomatCodingStandard.Classes.RequireConstructorPropertyPromotion`: a promoted constructor parameter where
+    possible. Auto-fixable.
+  - `SlevomatCodingStandard.TypeHints.DisallowArrayTypeHintSyntax`: `array<int>`, not `int[]`, in a doc comment.
+    Auto-fixable.
+  - `SlevomatCodingStandard.TypeHints.NullTypeHintOnLastPosition`: `null` last in a doc comment's union type.
+    Auto-fixable.
+  - `SlevomatCodingStandard.Whitespaces.DuplicateSpaces`: no run of spaces in code. Auto-fixable.
+  - `Squiz.Classes.ClassFileName`: a file named after its class.
+  - `Squiz.Operators.ValidLogicalOperators`: `&&` and `||`, not `and` and `or`.
+  - `Squiz.WhiteSpace.SemicolonSpacing`: no white space before a semicolon. Auto-fixable.
+  - `Universal.CodeAnalysis.StaticInFinalClass`: `self`, not `static`, in a final class. Auto-fixable.
 
 ### Changed
 

@@ -101,6 +101,27 @@
         </properties>
     </rule>
 
+    <!-- No run of spaces in code, as a safety net for the sniffs that check each construct's spacing. Aligned text in a
+         comment or docblock is allowed. -->
+    <rule ref="SlevomatCodingStandard.Whitespaces.DuplicateSpaces">
+        <properties>
+            <property name="ignoreSpacesInComment" value="true"/>
+            <property name="ignoreSpacesInAnnotation" value="true"/>
+        </properties>
+    </rule>
+
+    <!-- No white space before a semicolon, including a line break. In a for header,
+         Squiz.ControlStructures.ForLoopDeclaration reports the same space, and both fixes agree. -->
+    <rule ref="Squiz.WhiteSpace.SemicolonSpacing"/>
+
+    <!-- No space inside grouping parentheses, as in ($a + $b) * 2. A line break is left to
+         Jumbo.Formatting.ExpressionFormat and PERCS31.Operators.OperatorPlacement. -->
+    <rule ref="Generic.WhiteSpace.ArbitraryParenthesesSpacing">
+        <properties>
+            <property name="ignoreNewlines" value="true"/>
+        </properties>
+    </rule>
+
     <!-- ====== TYPES (2.5) ====== -->
 
     <!-- Magic constants in upper case, as in __DIR__. PHP ignores their case, and PERCS31 doesn't check it, as 2.5's
@@ -129,6 +150,11 @@
     <rule ref="SlevomatCodingStandard.TypeHints.ClassConstantTypeHint">
         <exclude name="SlevomatCodingStandard.TypeHints.ClassConstantTypeHint.UselessVarAnnotation"/>
     </rule>
+
+    <!-- Docblock types: array<int>, not int[], and null last in a union, as PERCS31.TypeHints.CompoundType requires
+         for a native type -->
+    <rule ref="SlevomatCodingStandard.TypeHints.DisallowArrayTypeHintSyntax"/>
+    <rule ref="SlevomatCodingStandard.TypeHints.NullTypeHintOnLastPosition"/>
 
     <!-- ====== FILES AND NAMESPACES (3) ====== -->
 
@@ -159,6 +185,9 @@
     </rule>
     <rule ref="SlevomatCodingStandard.Namespaces.UseFromSameNamespace"/>
     <rule ref="SlevomatCodingStandard.Namespaces.UselessAlias"/>
+
+    <!-- A file named after the class, interface, trait or enum it declares, so the autoloader can find it -->
+    <rule ref="Squiz.Classes.ClassFileName"/>
 
     <!-- ====== CLASSES, PROPERTIES AND CONSTANTS (4) ====== -->
 
@@ -192,6 +221,20 @@
     <rule ref="SlevomatCodingStandard.Classes.MethodSpacing"/>
     <rule ref="SlevomatCodingStandard.Classes.ModernClassNameReference"/>
     <rule ref="SlevomatCodingStandard.Classes.RequireSelfReference"/>
+    <rule ref="SlevomatCodingStandard.Classes.ReadonlyClass"/>
+    <rule ref="SlevomatCodingStandard.Classes.RequireConstructorPropertyPromotion"/>
+
+    <rule ref="SlevomatCodingStandard.Classes.ClassLength">
+        <properties>
+            <property name="maxLinesLength" value="1000"/>
+        </properties>
+    </rule>
+
+    <!-- self, not static, in a final class. Not for a return type: on PHP 8.4, self can't replace a static return
+         type that a parent declares, so the fix would cause a fatal error. -->
+    <rule ref="Universal.CodeAnalysis.StaticInFinalClass">
+        <exclude name="Universal.CodeAnalysis.StaticInFinalClass.ReturnType"/>
+    </rule>
 
     <!-- Global constants in UPPER_CASE too, and every constant in upper case in strict UPPER_SNAKE_CASE, neither of
          which PER requires -->
@@ -248,6 +291,20 @@
     <rule ref="SlevomatCodingStandard.Functions.StrictCall"/>
     <rule ref="SlevomatCodingStandard.Functions.UselessParameterDefaultValue"/>
     <rule ref="SlevomatCodingStandard.PHP.DisallowDirectMagicInvokeCall"/>
+
+    <!-- A warning for an unused parameter, except in a class that extends a class or implements an interface, where a
+         parent or the interface may fix the signature -->
+    <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter">
+        <exclude name="Generic.CodeAnalysis.UnusedFunctionParameter.FoundInExtendedClass"/>
+        <exclude name="Generic.CodeAnalysis.UnusedFunctionParameter.FoundInExtendedClassBeforeLastUsed"/>
+        <exclude name="Generic.CodeAnalysis.UnusedFunctionParameter.FoundInExtendedClassAfterLastUsed"/>
+        <exclude name="Generic.CodeAnalysis.UnusedFunctionParameter.FoundInImplementedInterface"/>
+        <exclude name="Generic.CodeAnalysis.UnusedFunctionParameter.FoundInImplementedInterfaceBeforeLastUsed"/>
+        <exclude name="Generic.CodeAnalysis.UnusedFunctionParameter.FoundInImplementedInterfaceAfterLastUsed"/>
+    </rule>
+
+    <!-- A warning for blocks nested more than 5 deep in a function, and an error for more than 10 -->
+    <rule ref="Generic.Metrics.NestingLevel"/>
 
     <!-- ====== CONTROL STRUCTURES (5) ====== -->
 
@@ -339,6 +396,9 @@
          it -->
     <rule ref="Jumbo.ControlStructures.RequireShortTernaryOperator"/>
     <rule ref="SlevomatCodingStandard.ControlStructures.RequireTernaryOperator"/>
+
+    <!-- && and ||, not and and or, which bind more loosely than = -->
+    <rule ref="Squiz.Operators.ValidLogicalOperators"/>
 
     <!-- No whitespace after a prefix unary +, -, !, ~ or @, as well as the reference & that PERCS31 checks -->
     <rule ref="PERCS31.Operators.UnaryOperatorSpacing">

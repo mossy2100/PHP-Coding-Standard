@@ -25,6 +25,12 @@ class RulesetUnitTest extends TestCase
      */
     private const string FIXTURES = __DIR__ . '/Ruleset';
 
+    /**
+     * The option that turns off Squiz.Classes.ClassFileName, for a test that runs Jumbo on a fixture or a temporary
+     * file, whose name never matches the class in it.
+     */
+    private const string EXCLUDE_CLASS_FILE_NAME = '--exclude=Squiz.Classes.ClassFileName';
+
     #region Full ruleset tests.
 
     /**
@@ -32,7 +38,8 @@ class RulesetUnitTest extends TestCase
      */
     public function testGoodFixtureHasNoViolations(): void
     {
-        $result = $this->runTool('phpcs', ['--standard=Jumbo', '--report=json', self::FIXTURES . '/Good.inc']);
+        $good = self::FIXTURES . '/Good.inc';
+        $result = $this->runTool('phpcs', ['--standard=Jumbo', '--report=json', self::EXCLUDE_CLASS_FILE_NAME, $good]);
 
         $this->assertSame(0, $result['exitCode'], $result['output']);
     }
@@ -84,7 +91,7 @@ class RulesetUnitTest extends TestCase
             unlink($file);
         }
 
-        $result = $this->runTool('phpcs', ['--standard=Jumbo', '--report=emacs', $good]);
+        $result = $this->runTool('phpcs', ['--standard=Jumbo', '--report=emacs', self::EXCLUDE_CLASS_FILE_NAME, $good]);
         $this->assertSame(0, $result['exitCode'], $result['output']);
     }
 
@@ -420,7 +427,7 @@ class RulesetUnitTest extends TestCase
         $last = $this->copyToTempFile(null, "{$header}class Last\n{\n    use First;\n    public int \$a = 1;\n}\n");
         $commented = "{$header}class Commented\n{\n    use First; // The first.\n}\n";
         $commentedFile = $this->copyToTempFile(null, $commented);
-        $args = ['-s', '--standard=Jumbo', '--report=emacs'];
+        $args = ['-s', '--standard=Jumbo', '--report=emacs', self::EXCLUDE_CLASS_FILE_NAME];
 
         try {
             $result = $this->runTool('phpcs', [...$args, $file]);
@@ -1058,6 +1065,164 @@ class RulesetUnitTest extends TestCase
 
         $this->assertSame(0, $twoSpaces['exitCode'], $twoSpaces['output']);
         $this->assertNotSame(0, $default['exitCode']);
+    }
+
+    /**
+     * Test that Jumbo reports an unused parameter, but not in a class that extends a class or implements an interface,
+     * where a parent or the interface may fix the signature.
+     */
+    public function testUnusedParameterIsSkippedInExtendingClass(): void
+    {
+        $plain = $this->copyToTempFile(null, <<<'PHP'
+            <?php
+
+            final class Plain
+            {
+                public function handle(int $used, int $unused): int
+                {
+                    return $used;
+                }
+            }
+            PHP);
+        $extending = $this->copyToTempFile(null, <<<'PHP'
+            <?php
+
+            final class Extending extends Base
+            {
+                public function handle(int $used, int $unused): int
+                {
+                    return $used;
+                }
+            }
+            PHP);
+        $args = ['-s', '--standard=Jumbo', '--sniffs=Generic.CodeAnalysis.UnusedFunctionParameter', '--report=emacs'];
+
+        try {
+            $plainResult = $this->runTool('phpcs', [...$args, $plain]);
+            $extendingResult = $this->runTool('phpcs', [...$args, $extending]);
+        } finally {
+            unlink($plain);
+            unlink($extending);
+        }
+
+        $this->assertStringContainsString('UnusedFunctionParameter.FoundAfterLastUsed', $plainResult['output']);
+        $this->assertSame(0, $extendingResult['exitCode'], $extendingResult['output']);
+    }
+
+    /**
+     * Test that Jumbo requires self, not static, in a final class, except as a return type. On PHP 8.4, self can't
+     * replace a static return type that a parent declares.
+     */
+    public function testStaticReturnTypeInFinalClassIsAllowed(): void
+    {
+        $file = $this->copyToTempFile(null, <<<'PHP'
+            <?php
+
+            abstract class Base
+            {
+                abstract public function make(): static;
+            }
+
+            final class Child extends Base
+            {
+                public function make(): static
+                {
+                    return new static();
+                }
+            }
+            PHP);
+        $sniffs = '--sniffs=Universal.CodeAnalysis.StaticInFinalClass';
+
+        try {
+            $result = $this->runTool('phpcs', ['-s', '--standard=Jumbo', $sniffs, '--report=emacs', $file]);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertStringContainsString('StaticInFinalClass.NewInstance', $result['output']);
+        $this->assertStringNotContainsString('StaticInFinalClass.ReturnType', $result['output']);
+    }
+
+    /**
+     * Test that Jumbo reports a space inside grouping parentheses on one line, but not a line break inside them, which
+     * Jumbo.Formatting.ExpressionFormat and PERCS31.Operators.OperatorPlacement check.
+     */
+    public function testLineBreakInGroupingParenthesesIsAllowed(): void
+    {
+        $file = $this->copyToTempFile(null, <<<'PHP'
+            <?php
+
+            $total = ( $a + $b ) * 2;
+            $split = (
+                $a
+                + $b
+            ) * 2;
+            PHP);
+        $sniffs = '--sniffs=Generic.WhiteSpace.ArbitraryParenthesesSpacing';
+
+        try {
+            $result = $this->runTool('phpcs', ['--standard=Jumbo', $sniffs, '--report=emacs', $file]);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame(2, substr_count($result['output'], "{$file}:3:"), $result['output']);
+        $this->assertStringNotContainsString("{$file}:4:", $result['output']);
+        $this->assertStringNotContainsString("{$file}:7:", $result['output']);
+    }
+
+    /**
+     * Test that Jumbo reports a run of spaces in code, but not aligned text in a comment or a doc comment.
+     */
+    public function testDuplicateSpacesInCommentsAreAllowed(): void
+    {
+        $file = $this->copyToTempFile(null, <<<'PHP'
+            <?php
+
+            // Aligned  text  in  a  comment.
+            /**
+             * @param int    $a  The value.
+             */
+            function double(int $a): int
+            {
+                return  $a * 2;
+            }
+            PHP);
+        $sniffs = '--sniffs=SlevomatCodingStandard.Whitespaces.DuplicateSpaces';
+
+        try {
+            $result = $this->runTool('phpcs', ['--standard=Jumbo', $sniffs, '--report=emacs', $file]);
+        } finally {
+            unlink($file);
+        }
+
+        $this->assertSame(1, substr_count($result['output'], 'Duplicate spaces'), $result['output']);
+        $this->assertStringContainsString("{$file}:9:", $result['output']);
+    }
+
+    /**
+     * Test that Jumbo allows a class of up to 1000 lines of code, where SlevomatCodingStandard.Classes.ClassLength's
+     * default is 250.
+     */
+    public function testClassLengthLimitIs1000Lines(): void
+    {
+        $class = static fn(int $lines): string => "<?php\n\nfinal class Long\n{\n"
+            . implode('', array_map(static fn(int $i): string => "    public int \$p{$i} = 0;\n", range(1, $lines)))
+            . "}\n";
+        $under = $this->copyToTempFile(null, $class(990));
+        $over = $this->copyToTempFile(null, $class(1001));
+        $args = ['-s', '--standard=Jumbo', '--sniffs=SlevomatCodingStandard.Classes.ClassLength', '--report=emacs'];
+
+        try {
+            $underResult = $this->runTool('phpcs', [...$args, $under]);
+            $overResult = $this->runTool('phpcs', [...$args, $over]);
+        } finally {
+            unlink($under);
+            unlink($over);
+        }
+
+        $this->assertSame(0, $underResult['exitCode'], $underResult['output']);
+        $this->assertStringContainsString('ClassLength.ClassTooLong', $overResult['output']);
     }
 
     #endregion

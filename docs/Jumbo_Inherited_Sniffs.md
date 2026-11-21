@@ -11,11 +11,15 @@ sections link to it.
 | Sniff                                                                                    | Checks                                                         | Fixable |
 |------------------------------------------------------------------------------------------|----------------------------------------------------------------|---------|
 | `Generic.CodeAnalysis.AssignmentInCondition`                                             | A warning for an assignment in a condition                     | No      |
+| `Generic.CodeAnalysis.UnusedFunctionParameter`                                           | A warning for an unused parameter                              | No      |
+| `Generic.Metrics.NestingLevel`                                                           | Blocks nested no more than 5 deep                              | No      |
+| `Generic.WhiteSpace.ArbitraryParenthesesSpacing`                                         | No space inside grouping parentheses                           | Yes     |
 | `PhpCollective.WhiteSpace.EmptyLines`                                                    | No more than one blank line in a row                           | Yes     |
 | `SlevomatCodingStandard.Arrays.ArrayAccess`                                              | No white space around an array access's brackets               | Partly  |
 | `SlevomatCodingStandard.Arrays.DisallowImplicitArrayCreation`                            | No array created by assigning to an undefined variable         | No      |
 | `SlevomatCodingStandard.Arrays.DisallowPartiallyKeyed`                                   | Keys on all of an array's values, or none                      | No      |
 | `SlevomatCodingStandard.Attributes.AttributesOrder`                                      | Attributes in alphabetical order                               | Yes     |
+| `SlevomatCodingStandard.Classes.ClassLength`                                             | A class of no more than 1000 lines of code                     | No      |
 | `SlevomatCodingStandard.Classes.ClassMemberSpacing`                                      | The spacing between class members                              | Partly  |
 | `SlevomatCodingStandard.Classes.ConstantSpacing`                                         | The blank lines after a constant, through a Jumbo sniff        | Yes     |
 | `SlevomatCodingStandard.Classes.DisallowStringExpressionPropertyFetch`                   | No `$a->{'b'}` where `$a->b` works                             | Yes     |
@@ -24,6 +28,8 @@ sections link to it.
 | `SlevomatCodingStandard.Classes.MethodSpacing`                                           | The spacing between methods                                    | Yes     |
 | `SlevomatCodingStandard.Classes.ModernClassNameReference`                                | `::class`, not `get_class()` and similar                       | Yes     |
 | `SlevomatCodingStandard.Classes.PropertySpacing`                                         | The blank lines after a property, through a Jumbo sniff        | Yes     |
+| `SlevomatCodingStandard.Classes.ReadonlyClass`                                           | `readonly class` when every property is readonly               | Yes     |
+| `SlevomatCodingStandard.Classes.RequireConstructorPropertyPromotion`                     | A promoted constructor parameter where possible                | Yes     |
 | `SlevomatCodingStandard.Classes.RequireMultiLineMethodSignature`                         | A long method signature split over lines                       | Yes     |
 | `SlevomatCodingStandard.Classes.RequireSelfReference`                                    | `self::`, not the class's own name                             | Yes     |
 | `SlevomatCodingStandard.Classes.RequireSingleLineMethodSignature`                        | A short method signature on one line, through a Jumbo sniff    | Yes     |
@@ -66,8 +72,10 @@ sections link to it.
 | `SlevomatCodingStandard.Strings.DisallowVariableParsing`                                 | No variables parsed in strings                                 | No      |
 | `SlevomatCodingStandard.TypeHints.ClassConstantTypeHint`                                 | Type hints on class constants                                  | Partly  |
 | `SlevomatCodingStandard.TypeHints.DeclareStrictTypes`                                    | `declare(strict_types=1)`, through a Jumbo sniff               | Yes     |
+| `SlevomatCodingStandard.TypeHints.DisallowArrayTypeHintSyntax`                           | `array<int>`, not `int[]`, in a doc comment                    | Yes     |
 | `SlevomatCodingStandard.TypeHints.LongTypeHints`                                         | `int` and `bool`, not `integer` and `boolean`                  | Yes     |
 | `SlevomatCodingStandard.TypeHints.NullableTypeForNullDefaultValue`                       | A nullable type on a parameter that defaults to `null`         | Yes     |
+| `SlevomatCodingStandard.TypeHints.NullTypeHintOnLastPosition`                            | `null` last in a doc comment's union type                      | Yes     |
 | `SlevomatCodingStandard.TypeHints.ParameterTypeHint`                                     | Parameter type hints, through a Jumbo sniff                    | Partly  |
 | `SlevomatCodingStandard.TypeHints.ParameterTypeHintSpacing`                              | The spacing around parameter type hints, through a Jumbo sniff | Yes     |
 | `SlevomatCodingStandard.TypeHints.PropertyTypeHint`                                      | Property type hints                                            | Partly  |
@@ -75,12 +83,17 @@ sections link to it.
 | `SlevomatCodingStandard.TypeHints.ReturnTypeHintSpacing`                                 | The spacing around return type hints                           | Yes     |
 | `SlevomatCodingStandard.Variables.DisallowVariableVariable`                              | No variable variables, e.g. `$$var`                            | No      |
 | `SlevomatCodingStandard.Variables.DuplicateAssignmentToVariable`                         | No duplicate assignments to a variable                         | No      |
+| `SlevomatCodingStandard.Whitespaces.DuplicateSpaces`                                     | No run of spaces in code                                       | Yes     |
 | `Squiz.Arrays.ArrayDeclaration`                                                          | No mix of keyed and unkeyed values in an array                 | No      |
+| `Squiz.Classes.ClassFileName`                                                            | A file named after its class                                   | No      |
 | `Squiz.Commenting.InlineComment`                                                         | One space after `//`                                           | Yes     |
 | `Squiz.NamingConventions.ValidVariableName`                                              | `$camelCase` variable, parameter and property names            | No      |
+| `Squiz.Operators.ValidLogicalOperators`                                                  | `&&` and `\|\|`, not `and` and `or`                            | No      |
 | `Squiz.Strings.DoubleQuoteUsage.NotRequired`                                             | Single quotes, unless double quotes are needed                 | Yes     |
 | `Squiz.WhiteSpace.FunctionOpeningBraceSpace.SpacingAfter`                                | No blank line after a function's opening brace                 | Yes     |
 | `Squiz.WhiteSpace.OperatorSpacing`                                                       | Exactly one space around operators                             | Yes     |
+| `Squiz.WhiteSpace.SemicolonSpacing`                                                      | No white space before a semicolon                              | Yes     |
+| `Universal.CodeAnalysis.StaticInFinalClass`                                              | `self`, not `static`, in a final class                         | Yes     |
 | `Universal.Constants.UppercaseMagicConstants`                                            | Magic constants in upper case, e.g. `__DIR__`                  | Yes     |
 | `Zend.Files.ClosingTag`                                                                  | No closing tag at the end of a file                            | Yes     |
 
@@ -91,6 +104,35 @@ sections link to it.
 Warns about assignments in conditions. See [Yoda-style Comparisons](../README.md#yoda-style-comparisons).
 
 **Auto-fixable:** no.
+
+---
+
+## Generic.CodeAnalysis.UnusedFunctionParameter
+
+A warning for a function or method parameter that the body never uses. A class that extends a class or implements an
+interface is skipped, as a parent or the interface may fix the signature: Jumbo excludes the six `FoundInExtendedClass`
+and `FoundInImplementedInterface` codes.
+
+**Auto-fixable:** no.
+
+---
+
+## Generic.Metrics.NestingLevel
+
+A warning for a function with blocks nested more than 5 deep, and an error for more than 10.
+
+**Auto-fixable:** no.
+
+---
+
+## Generic.WhiteSpace.ArbitraryParenthesesSpacing
+
+Disallows a space just inside grouping parentheses, as in `( $a + $b ) * 2`. A line break inside them is allowed
+(`ignoreNewlines`), as the layout of a split expression is left to
+[`Jumbo.Formatting.ExpressionFormat`](Jumbo_Custom_Sniffs.md#jumboformattingexpressionformat) and
+`PERCS31.Operators.OperatorPlacement`.
+
+**Auto-fixable:** yes.
 
 ---
 
@@ -133,6 +175,15 @@ Requires arrays to have keys for all or none of the values.
 Requires attributes to be ordered alphabetically.
 
 **Auto-fixable:** yes.
+
+---
+
+## SlevomatCodingStandard.Classes.ClassLength
+
+A class, interface, trait or enum of no more than 1000 lines of code (`maxLinesLength`), not counting comments and blank
+lines.
+
+**Auto-fixable:** no.
 
 ---
 
@@ -199,6 +250,25 @@ Requires `::class` instead of `get_class()`, `get_parent_class()` and `get_calle
 
 Enforces the blank lines after a property. Used through [`Jumbo.Classes.PropertySpacing`](Jumbo_Custom_Sniffs.md#jumboclassesconstantspacing-enumcasespacing-and-propertyspacing), which skips a property on the
 file's last line, as the parent crashes on one.
+
+**Auto-fixable:** yes.
+
+---
+
+## SlevomatCodingStandard.Classes.ReadonlyClass
+
+Requires `readonly class` when every property of a final class is readonly, and reports `readonly` on a property of a
+readonly class, where it's redundant. A class that isn't final is skipped, as a readonly class makes every subclass
+readonly too.
+
+**Auto-fixable:** yes.
+
+---
+
+## SlevomatCodingStandard.Classes.RequireConstructorPropertyPromotion
+
+Requires a promoted constructor parameter where the constructor only assigns a parameter to a property of the same name
+and type. A property with hooks, an attribute or a doc comment that says more than its type is skipped.
 
 **Auto-fixable:** yes.
 
@@ -546,6 +616,14 @@ Requires `declare(strict_types=1)`. Used through [`Jumbo.TypeHints.DeclareStrict
 
 ---
 
+## SlevomatCodingStandard.TypeHints.DisallowArrayTypeHintSyntax
+
+Requires generic syntax for an array type in a doc comment, as in `array<int>`, not `int[]`.
+
+**Auto-fixable:** yes. The fix writes `array<T>`. Narrow it to `list<T>` by hand where the keys are sequential.
+
+---
+
 ## SlevomatCodingStandard.TypeHints.LongTypeHints
 
 Requires long type hints (`int` instead of `integer`).
@@ -557,6 +635,15 @@ Requires long type hints (`int` instead of `integer`).
 ## SlevomatCodingStandard.TypeHints.NullableTypeForNullDefaultValue
 
 Requires nullable type for parameters with null default.
+
+**Auto-fixable:** yes.
+
+---
+
+## SlevomatCodingStandard.TypeHints.NullTypeHintOnLastPosition
+
+Requires `null` last in a doc comment's union type, as in `string|null`, as `PERCS31.TypeHints.CompoundType` requires
+for a native type.
 
 **Auto-fixable:** yes.
 
@@ -620,6 +707,16 @@ Disallows duplicate assignments to the same variable.
 
 ---
 
+## SlevomatCodingStandard.Whitespaces.DuplicateSpaces
+
+Disallows two or more spaces in a row in code, other than indentation. It's a safety net for the sniffs that check each
+construct's spacing, so a run of spaces can be reported twice; both fixes agree. Aligned text in a comment or a doc
+comment is allowed (`ignoreSpacesInComment`, `ignoreSpacesInAnnotation`).
+
+**Auto-fixable:** yes.
+
+---
+
 ## Squiz.Arrays.ArrayDeclaration
 
 The check PERCS31 leaves out: no mix of keyed and unkeyed values. Which line a comma goes on is left to
@@ -627,6 +724,15 @@ The check PERCS31 leaves out: no mix of keyed and unkeyed values. Which line a c
 it in a single-line array. Its alignment checks and `SingleLineNotAllowed` stay excluded, so keys, values and arrows are
 not aligned, and a single-line array with several values is allowed. `Jumbo.Arrays.ArrayDeclaration` requires
 single-line where it fits.
+
+**Auto-fixable:** no.
+
+---
+
+## Squiz.Classes.ClassFileName
+
+Requires a file to be named after the class, interface, trait or enum it declares, so the autoloader can find it. It
+checks the file name only, not the directory or the namespace.
 
 **Auto-fixable:** no.
 
@@ -647,6 +753,14 @@ Enforces `$camelCase` for variables, parameters, and properties. Its checks for 
 excluded, as one requires it on private properties. See [Variable and Property Names](VariableAndPropertyNames.md).
 
 **Auto-fixable:** no.
+
+---
+
+## Squiz.Operators.ValidLogicalOperators
+
+Requires `&&` and `||` instead of `and` and `or`, which bind more loosely than `=`, so `$ok = $a and $b;` assigns `$a`.
+
+**Auto-fixable:** no, as the fix would change precedence.
 
 ---
 
@@ -672,6 +786,25 @@ closing brace, so PERCS31 allows it. See [A Blank Line at the Start of a Body](P
 Requires exactly one space around operators, including before `=`, so assignments are not aligned. Used through
 [`PERCS31.Operators.OperatorSpacing`](PERCS31_Custom_Sniffs.md#percs31operatorsoperatorspacing), which extends it to `&&`, `||`, `and`, `or`, `xor`, `.` and `|>`. PERCS31 excludes
 its codes for more than one space, and Jumbo turns them back on. `=>` is covered by [`PERCS31.WhiteSpace.ArrowSpacing`](PERCS31_Custom_Sniffs.md#percs31whitespacearrowspacing).
+
+**Auto-fixable:** yes.
+
+---
+
+## Squiz.WhiteSpace.SemicolonSpacing
+
+Disallows white space before a semicolon, including a line break. In a `for` header,
+`Squiz.ControlStructures.ForLoopDeclaration` reports the same space, and both fixes agree.
+
+**Auto-fixable:** yes.
+
+---
+
+## Universal.CodeAnalysis.StaticInFinalClass
+
+Requires `self` instead of `static` in a final class, where they mean the same: in `self::`, `new self` and `instanceof
+self`. Not for a return type: Jumbo excludes the `ReturnType` code, as on PHP 8.4 `self` can't replace a `static` return
+type that a parent declares.
 
 **Auto-fixable:** yes.
 
