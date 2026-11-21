@@ -9,7 +9,7 @@ Some Slevomat sniffs here are used through a Jumbo sniff that extends them, to f
 sections link to it.
 
 | Sniff                                                                                    | Checks                                                         | Fixable |
-| ---------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ------- |
+|------------------------------------------------------------------------------------------|----------------------------------------------------------------|---------|
 | `Generic.CodeAnalysis.AssignmentInCondition`                                             | A warning for an assignment in a condition                     | No      |
 | `PhpCollective.WhiteSpace.EmptyLines`                                                    | No more than one blank line in a row                           | Yes     |
 | `SlevomatCodingStandard.Arrays.ArrayAccess`                                              | No white space around an array access's brackets               | Partly  |
@@ -50,7 +50,7 @@ sections link to it.
 | `SlevomatCodingStandard.Functions.StrictCall`                                            | The strict argument in `in_array()` and similar                | No      |
 | `SlevomatCodingStandard.Functions.UselessParameterDefaultValue`                          | No useless parameter default values                            | Yes     |
 | `SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses`                             | `use` statements in alphabetical order                         | Partly  |
-| `SlevomatCodingStandard.Namespaces.DisallowGroupUse`                                     | No group `use` declarations                                    | No      |
+| `SlevomatCodingStandard.Namespaces.DisallowGroupUse`                                     | No compound namespace declarations                             | No      |
 | `SlevomatCodingStandard.Namespaces.MultipleUsesPerLine`                                  | One `use` statement per line                                   | No      |
 | `SlevomatCodingStandard.Namespaces.NamespaceDeclaration`                                 | A namespace declaration's format                               | Partly  |
 | `SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly`                               | A `use` statement for every referenced name                    | Partly  |
@@ -418,7 +418,7 @@ Requires use statements to be alphabetically sorted.
 
 ## SlevomatCodingStandard.Namespaces.DisallowGroupUse
 
-Disallows group use declarations.
+Disallows compound namespaces.
 
 **Auto-fixable:** no.
 

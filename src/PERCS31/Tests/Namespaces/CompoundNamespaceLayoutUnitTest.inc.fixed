@@ -45,7 +45,7 @@ use Vendor\Commented\{ /* Why. */ ClassA,
     ClassB,
 };
 
-// A space just inside the braces of a group use on one line.
+// A space just inside the braces of a compound namespace on one line.
 use Vendor\Spaced\{ClassA as A, ClassB};
 use function Vendor\Spaced\{functionA, functionB};
 use const Vendor\Spaced\{CONSTANT_A};

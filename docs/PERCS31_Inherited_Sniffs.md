@@ -411,11 +411,12 @@ Requires `function` and `const` in lower case in a `use` statement.
 ## Universal.WhiteSpace.CommaSpacing
 
 Requires no space before a comma and one after, in an attribute block, e.g. `#[Foo, Bar]`, and in any other list, such
-as an array, group `use`, `match` conditions or `clone()`, as the examples show. Its codes ending in `InFunctionCall`
-check a comma inside a call's parentheses. They replace `Generic.Functions.FunctionCallArgumentSpacing`, which misses a
-comma on the line after a heredoc's closing marker, and one in an array or a `match` inside the call, as in
-`foo([1,2])`. Its codes for parameter, closure `use` and `declare` lists aren't used, as other sniffs check those. It
-also covers lists with no example, such as `echo 1, 2;` and `global $a, $b;`.
+as an array, compound namespace, `match` conditions or `clone()`, as the examples show. Its codes ending in
+`InFunctionCall` check a comma inside a call's parentheses. They replace
+`Generic.Functions.FunctionCallArgumentSpacing`, which misses a comma on the line after a heredoc's closing marker, and
+one in an array or a `match` inside the call, as in `foo([1,2])`. Its codes for parameter, closure `use` and `declare`
+lists aren't used, as other sniffs check those. It also covers lists with no example, such as `echo 1, 2;` and
+`global $a, $b;`.
 
 **PER Coding Style 3.1:** [Section 3](https://www.php-fig.org/per/coding-style/#3-declare-statements-namespace-and-import-statements), [Section 4.7](https://www.php-fig.org/per/coding-style/#47-method-and-function-calls), [Section 5.2](https://www.php-fig.org/per/coding-style/#52-switch-case-match), [Section 11](https://www.php-fig.org/per/coding-style/#11-arrays), [Section 12.3](https://www.php-fig.org/per/coding-style/#123-compound-attributes).
 

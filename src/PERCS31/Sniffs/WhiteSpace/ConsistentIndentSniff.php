@@ -49,7 +49,8 @@ use PHPCSUtils\Utils\Conditions;
  *
  * Two more lines are checked, each indented exactly as section 2.4 sets: a value wrapped after `=>` in an array, once
  * past the key's line, and dead code after a `break` or other statement that ends a switch case, with no case to
- * measure from, level with that statement. A group use's names are checked by PERCS31.Namespaces.GroupUseLayout.
+ * measure from, level with that statement. A compound namespace's names are checked by
+ * PERCS31.Namespaces.CompoundNamespaceLayout.
  */
 class ConsistentIndentSniff extends PhpCollectiveSniff
 {

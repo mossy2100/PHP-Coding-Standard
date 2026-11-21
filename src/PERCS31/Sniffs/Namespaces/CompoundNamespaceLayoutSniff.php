@@ -11,18 +11,18 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Requires a group `use` split across lines to have one name per line, with the first on the line after the `{`, and
- * the `}` on a line of its own, each name indented once past the `use` line, with no blank line in it, and disallows a
- * space just inside the braces of a group `use` on one line.
+ * Requires a compound namespace split across lines to have one name per line, with the first on the line after the
+ * `{`, and the `}` on a line of its own, each name indented once past the `use` line, with no blank line in it, and
+ * disallows a space just inside the braces of a compound namespace on one line.
  *
- * PER Coding Style 3.1, section 3, shows a group `use` on one line, as in `use Vendor\Package\{ClassA, ClassB};`, and
- * one split across lines with a name on each line. Its text sets no layout, so the examples are read as the two
- * allowed forms, as for a single-line and a multi-line array (section 11). A group that mixes them, as in
- * `use A\{B,` then `C,` then `};`, is reported.
+ * PER Coding Style 3.1, section 3, shows a compound namespace on one line, as in
+ * `use Vendor\Package\{ClassA, ClassB};`, and one split across lines with a name on each line. Its text sets no layout,
+ * so the examples are read as the two allowed forms, as for a single-line and a multi-line array (section 11). A group
+ * that mixes them, as in `use A\{B,` then `C,` then `};`, is reported.
  *
- * Section 3 also says a block of the file header MUST NOT contain a blank line, and a group `use` is part of the block
- * of imports. So a blank line anywhere in one, after the `{`, between two names or before the `}`, is reported as
- * BlankLine.
+ * Section 3 also says a block of the file header MUST NOT contain a blank line, and a compound namespace is part of
+ * the block of imports. So a blank line anywhere in one, after the `{`, between two names or before the `}`, is
+ * reported as BlankLine.
  *
  * Every single-line example, in section 3 and in the overview, has no space after the `{` or before the `}`, as in
  * `{ClassA as A, ClassB}`. That's read as setting the spacing, as it's how the spec writes every bracketed list.
@@ -33,7 +33,7 @@ use PHP_CodeSniffer\Util\Tokens;
  * commas, and Universal.UseStatements.KeywordSpacing the space around `as`. No sniff in PHP_CodeSniffer, PHPCSExtra,
  * Slevomat or PhpCollective checks which line a name is on, its indent, or the space inside the braces.
  */
-class GroupUseLayoutSniff implements Sniff
+class CompoundNamespaceLayoutSniff implements Sniff
 {
     public const string CODE_FIRST_NAME_LINE = 'FirstNameLine';
 
@@ -84,8 +84,9 @@ class GroupUseLayoutSniff implements Sniff
         $nameIndent = str_repeat(' ', ($indent + LayoutHelper::INDENT));
 
         // Each name follows the `{` or a comma.
-        $first = 'The first name in a group use split across lines must be on the line after the opening brace';
-        $other = 'Each name in a group use split across lines must be on a line of its own';
+        $first = 'The first name in a compound namespace split across lines must be on the line after the opening '
+            . 'brace';
+        $other = 'Each name in a compound namespace split across lines must be on a line of its own';
         for ($i = $stackPtr; $i < $closer; $i++) {
             if ($i !== $stackPtr && $tokens[$i]['code'] !== T_COMMA) {
                 continue;
@@ -103,7 +104,7 @@ class GroupUseLayoutSniff implements Sniff
 
         $last = $phpcsFile->findPrevious(T_WHITESPACE, ($closer - 1), $stackPtr, true);
         if ($last !== false) {
-            $error = 'The closing brace of a group use split across lines must be on a line of its own';
+            $error = 'The closing brace of a compound namespace split across lines must be on a line of its own';
             $closerIndent = str_repeat(' ', $indent);
             $this->checkStartsLine($phpcsFile, $last, $closer, $closerIndent, $error, self::CODE_CLOSER_LINE);
         }
@@ -113,8 +114,8 @@ class GroupUseLayoutSniff implements Sniff
     }
 
     /**
-     * Report each blank line in a group use split across lines, and fix it by removing it, as section 3 says a block
-     * of the file header MUST NOT contain one.
+     * Report each blank line in a compound namespace split across lines, and fix it by removing it, as section 3 says
+     * a block of the file header MUST NOT contain one.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $opener The position of the group's `{`.
@@ -127,7 +128,7 @@ class GroupUseLayoutSniff implements Sniff
                 continue;
             }
 
-            $error = 'There must be no blank line in a group use';
+            $error = 'There must be no blank line in a compound namespace';
             if ($phpcsFile->addFixableError($error, $i, self::CODE_BLANK_LINE)) {
                 $phpcsFile->fixer->replaceToken($i, '');
             }
@@ -135,7 +136,8 @@ class GroupUseLayoutSniff implements Sniff
     }
 
     /**
-     * Check that each line of a group use's names is indented once past the `use` line, as section 3's example shows.
+     * Check that each line of a compound namespace's names is indented once past the `use` line, as section 3's
+     * example shows.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $opener The position of the group's `{`.
@@ -155,13 +157,14 @@ class GroupUseLayoutSniff implements Sniff
                 continue;
             }
 
-            $error = 'A name in a group use split across lines must be indented once; expected %s spaces, found %s';
+            $error = 'A name in a compound namespace split across lines must be indented once; expected %s spaces, '
+                . 'found %s';
             FixerHelper::reportIndent($phpcsFile, $i, $expected, $error, self::CODE_NAME_INDENT, [$expected, $found]);
         }
     }
 
     /**
-     * Report a space just inside a brace of a group use on one line, and fix it by removing it.
+     * Report a space just inside a brace of a compound namespace on one line, and fix it by removing it.
      *
      * @param File $phpcsFile The file being scanned.
      * @param int $space The position of the token next to the brace.
@@ -174,7 +177,7 @@ class GroupUseLayoutSniff implements Sniff
             return;
         }
 
-        $error = "There must be no space {$where} brace of a group use on one line";
+        $error = "There must be no space {$where} brace of a compound namespace on one line";
         if ($phpcsFile->addFixableError($error, $space, $code)) {
             $phpcsFile->fixer->replaceToken($space, '');
         }

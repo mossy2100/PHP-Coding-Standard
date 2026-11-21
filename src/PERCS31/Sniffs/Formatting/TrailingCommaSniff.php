@@ -13,21 +13,21 @@ use PHP_CodeSniffer\Util\Tokens;
 use PHPCSUtils\Utils\UseStatements;
 
 /**
- * Requires a trailing comma in a multi-line `match`, group `use`, `list()`, or the arguments of an anonymous class,
- * `clone()`, `exit()`, `die()` or a call through an expression, as in `$handlers[$name](`, and disallows one on a
- * single line, including in a `match` arm's conditions.
+ * Requires a trailing comma in a multi-line `match`, compound namespace, `list()`, or the arguments of an anonymous
+ * class, `clone()`, `exit()`, `die()` or a call through an expression, as in `$handlers[$name](`, and disallows one on
+ * a single line, including in a `match` arm's conditions.
  *
- * PER Coding Style 3.1, section 2.6, says that for any comma-separated list, including `match` arms and group use
- * statements, the last item MUST have a trailing comma if the list is split across lines, and MUST NOT if it's on one.
- * Slevomat's trailing comma sniffs cover function calls, declarations and closure `use` lists, but skip `new class (`,
- * and `clone`, `exit` and `die`, which PHP 8.4 and 8.5 made function-like. They also skip a call unless a name, a
- * variable or a `)` comes before its `(`, so they miss `$handlers[$name](`, `[$object, 'method'](`,
- * `$object->{$method}(` and `'strlen'(`.
- * Slevomat's array sniff covers arrays and short lists, as in `[$a, $b] = $c;`, but not `list()`, and
- * Universal.Attributes.TrailingComma covers attribute blocks. PhpCollective.PHP.DisallowTrailingCommaInSingleLine
- * reports a comma in some of these on one line, but it goes by the comma's line, not the list's, so it also reports a
- * comma PER requires in a split list. Nothing else covers these. A trailing comma in `list()` is an empty slot at the
- * end, which PHP ignores, so adding or removing one doesn't change the code.
+ * PER Coding Style 3.1, section 2.6, says that for any comma-separated list, including `match` arms and compound
+ * namespace statements, the last item MUST have a trailing comma if the list is split across lines, and MUST NOT if
+ * it's on one. Slevomat's trailing comma sniffs cover function calls, declarations and closure `use` lists, but skip
+ * `new class (`, and `clone`, `exit` and `die`, which PHP 8.4 and 8.5 made function-like. They also skip a call unless
+ * a name, a variable or a `)` comes before its `(`, so they miss `$handlers[$name](`, `[$object, 'method'](`,
+ * `$object->{$method}(` and `'strlen'(`. Slevomat's array sniff covers arrays and short lists, as in `[$a, $b] = $c;`,
+ * but not `list()`, and Universal.Attributes.TrailingComma covers attribute blocks.
+ * PhpCollective.PHP.DisallowTrailingCommaInSingleLine reports a comma in some of these on one line, but it goes by the
+ * comma's line, not the list's, so it also reports a comma PER requires in a split list. Nothing else covers these. A
+ * trailing comma in `list()` is an empty slot at the end, which PHP ignores, so adding or removing one doesn't change
+ * the code.
  *
  * Like Slevomat's call sniffs, this doesn't require a comma in an anonymous class's arguments, or `clone()`'s,
  * `exit()`'s, `die()`'s or such a call's, when the closing parenthesis follows the last one on its line, as in
@@ -115,7 +115,7 @@ class TrailingCommaSniff implements Sniff
             $opener = $stackPtr;
             $found = $phpcsFile->findNext(T_CLOSE_USE_GROUP, ($stackPtr + 1));
             $closer = $found === false ? null : $found;
-            $kind = 'group use';
+            $kind = 'compound namespace';
         }
 
         if (!is_int($opener) || !is_int($closer)) {

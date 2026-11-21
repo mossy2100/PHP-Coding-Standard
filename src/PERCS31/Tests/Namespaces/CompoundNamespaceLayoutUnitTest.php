@@ -7,9 +7,9 @@ namespace PERCS31\Tests\Namespaces;
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffTestCase;
 
 /**
- * Unit tests for PERCS31.Namespaces.GroupUseLayout sniff.
+ * Unit tests for PERCS31.Namespaces.CompoundNamespaceLayout sniff.
  */
-class GroupUseLayoutUnitTest extends AbstractSniffTestCase
+class CompoundNamespaceLayoutUnitTest extends AbstractSniffTestCase
 {
     /**
      * Returns the lines where errors should occur.
@@ -30,7 +30,8 @@ class GroupUseLayoutUnitTest extends AbstractSniffTestCase
             35 => 1,
             // A comment before the first name, which isn't fixed.
             38 => 1,
-            // A space inside both braces of a group use on one line, before the closing one, and after the opening one.
+            // A space inside both braces of a compound namespace on one line, before the closing one, and after the
+            // opening one.
             43 => 2,
             44 => 1,
             45 => 1,

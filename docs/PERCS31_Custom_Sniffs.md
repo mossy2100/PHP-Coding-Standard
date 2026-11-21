@@ -3,62 +3,62 @@
 The sniffs written for the [PERCS31](PERCS31.md) standard. Each one fills a gap in the [inherited sniffs](PERCS31_Inherited_Sniffs.md), or replaces an inherited
 sniff that conflicts with PER Coding Style. Each section gives the reason.
 
-| Sniff                                                      | Checks                                                              | Fixable |
-| ---------------------------------------------------------- | ------------------------------------------------------------------- | ------- |
-| `PERCS31.Arrays.ArrayBracketSpacing`                       | No blank line after a multi-line array's `[`, or before its `]`     | Yes     |
-| `PERCS31.Arrays.MultiLineArrayLayout`                      | A multi-line array's `[` not on its own line, and a value per line  | Yes     |
-| `PERCS31.Attributes.AttributeLayout`                       | An attribute on its own line, and one per block in a split block    | Yes     |
-| `PERCS31.Attributes.DisallowMultipleAttributesPerLine`     | Separate attribute blocks on separate lines                         | Yes     |
-| `PERCS31.Classes.AnonClassLayout`                          | The space before an anonymous class's `{` and `extends`             | Yes     |
-| `PERCS31.Classes.ClassDeclaration`                         | Class declarations, allowing an empty body as `{}`                  | Yes     |
-| `PERCS31.Classes.ClassInstantiationParentheses`            | No `(new Foo())->bar()`, and an argument list after `new (...)`     | Yes     |
-| `PERCS31.Classes.ConstantDeclaration`                      | One constant per statement, and one space after `const` and `case`  | Yes     |
-| `PERCS31.Classes.EnumMemberVisibility`                     | `private`, not `protected`, for a method or constant in an enum     | Yes     |
-| `PERCS31.Classes.PropertyDeclaration`                      | No leading `_`, no `var`, and a visibility on a property            | No      |
-| `PERCS31.Classes.PropertyHooks`                            | A hook list's layout, `get` first, and a promoted parameter's hooks | Partly  |
-| `PERCS31.Classes.TraitUseBlock`                            | A trait's `as` clause spacing, and its conflict block's lines       | Yes     |
-| `PERCS31.ControlStructures.BodyOnNextLine`                 | A structure's body on the line after its `{`, allowing `{}`         | Yes     |
-| `PERCS31.ControlStructures.CatchVariableSpacing`           | One space between a `catch`'s type and its variable                 | Yes     |
-| `PERCS31.ControlStructures.ControlStructureEmptyStatement` | Braces on a structure with no body, `else` included                 | Yes     |
-| `PERCS31.ControlStructures.ControlStructureSpacing`        | The parentheses, with no split rule for `foreach` or `match`        | Yes     |
-| `PERCS31.ControlStructures.ForEachSpacing`                 | A space or line break each side of a `foreach`'s `as` and `=>`      | Yes     |
-| `PERCS31.ControlStructures.MatchArmPlacement`              | Each `match` arm, and each split condition, starts a line           | Yes     |
-| `PERCS31.ControlStructures.SwitchDeclaration`              | `switch` rules, with a `break` in the last case                     | Yes     |
-| `PERCS31.Files.DeclareStatement`                           | No spaces in `declare(...)`, with one directive or several          | Yes     |
-| `PERCS31.Files.Encoding`                                   | A file is encoded in UTF-8                                          | No      |
-| `PERCS31.Files.FileHeader`                                 | The file header, allowing `<?php declare(...) ?>` above markup      | Yes     |
-| `PERCS31.Files.LineEndings`                                | Every line ends in LF, in strings and markup too                    | Yes     |
-| `PERCS31.Formatting.AfterClosingBrace`                     | No statement after a `}`, or comment after a class's or function's  | Partly  |
-| `PERCS31.Formatting.DisallowMultipleStatements`            | One statement per line, allowing `{ get; set; }`                    | Yes     |
-| `PERCS31.Formatting.EmptyBody`                             | An empty class, function, closure or anonymous class body is `{}`   | Yes     |
-| `PERCS31.Formatting.MethodChaining`                        | A split chain's first method, its `->` and their indent             | Yes     |
-| `PERCS31.Formatting.TrailingComma`                         | Trailing commas in `match`, group `use`, `list()` and some calls    | Yes     |
-| `PERCS31.Functions.ArrowFunctionSpacing`                   | An arrow function's `;`, the line after `fn`, and a wrapped `=>`    | Yes     |
-| `PERCS31.Functions.DisallowTrailingCommaInCall`            | No trailing comma in a call, unless the argument list is split      | Yes     |
-| `PERCS31.Functions.FunctionCallLayout`                     | A call's argument list, including `clone()`'s                       | Yes     |
-| `PERCS31.Functions.MultiLineFunctionDeclaration`           | Function, closure and `fn` declarations, allowing `{}` bodies       | Yes     |
-| `PERCS31.Functions.NullableTypeDeclaration`                | No space after the `?` of a nullable type, in any position          | Yes     |
-| `PERCS31.Functions.RequireTrailingCommaInCall`             | A trailing comma in a split call, but not after `foo(...)`'s `...`  | Yes     |
-| `PERCS31.Namespaces.GroupUseLayout`                        | A group `use`'s layout: on one line, or one name per line           | Yes     |
-| `PERCS31.NamingConventions.AcronymCasing`                  | A warning for an acronym in capitals in a name                      | No      |
-| `PERCS31.NamingConventions.UpperCaseConstantName`          | Constants in UPPER_CASE, or PascalCase in an enum                   | No      |
-| `PERCS31.NamingConventions.ValidClassName`                 | Classes, interfaces, traits and enums in PascalCase                 | No      |
-| `PERCS31.NamingConventions.ValidConstantName`              | No leading underscore on a constant                                 | No      |
-| `PERCS31.NamingConventions.ValidEnumCaseName`              | Enum cases in PascalCase                                            | No      |
-| `PERCS31.Operators.OperatorPlacement`                      | A wrapped operator starts its line, and a split ternary takes three | Yes     |
-| `PERCS31.Operators.OperatorSpacing`                        | At least one space around binary operators, including `\|>`         | Yes     |
-| `PERCS31.Operators.UnaryOperatorSpacing`                   | No whitespace after a reference `&`                                 | Yes     |
-| `PERCS31.PHP.LowerCaseKeyword`                             | Keywords in lower case, including a property hook's `get` or `set`  | Yes     |
-| `PERCS31.PHP.LowerCaseType`                                | Types in lower case, including a `set` hook's and an enum's type    | Yes     |
-| `PERCS31.PHP.RequireCloneParentheses`                      | A warning for `clone $a`, or `clone($a)->b`, not `clone($a)`        | Yes     |
-| `PERCS31.PHP.TypeCast`                                     | `(bool)`, `(int)`, `(float)` and `(string)` in a cast               | Yes     |
-| `PERCS31.Strings.HeredocLayout`                            | Where a heredoc or nowdoc begins, and its indentation               | Yes     |
-| `PERCS31.TypeHints.CompoundType`                           | A compound type's spacing and split lines, and `null` last          | Yes     |
-| `PERCS31.WhiteSpace.ArrowSpacing`                          | The space around `=>` in `match` arms and arrays                    | Yes     |
-| `PERCS31.WhiteSpace.ConsistentIndent`                      | No line indented further than its scope, after a statement          | Yes     |
-| `PERCS31.WhiteSpace.ObjectOperatorSpacing`                 | No white space around `->`, `?->` and `::`                          | Yes     |
-| `PERCS31.WhiteSpace.ScopeClosingBrace`                     | A closing brace on its own line, allowing `{}`                      | Yes     |
-| `PERCS31.WhiteSpace.ScopeIndent`                           | Indentation, including property hooks and anonymous classes         | Yes     |
+| Sniff                                                      | Checks                                                                  | Fixable |
+|------------------------------------------------------------|-------------------------------------------------------------------------|---------|
+| `PERCS31.Arrays.ArrayBracketSpacing`                       | No blank line after a multi-line array's `[`, or before its `]`         | Yes     |
+| `PERCS31.Arrays.MultiLineArrayLayout`                      | A multi-line array's `[` not on its own line, and a value per line      | Yes     |
+| `PERCS31.Attributes.AttributeLayout`                       | An attribute on its own line, and one per block in a split block        | Yes     |
+| `PERCS31.Attributes.DisallowMultipleAttributesPerLine`     | Separate attribute blocks on separate lines                             | Yes     |
+| `PERCS31.Classes.AnonClassLayout`                          | The space before an anonymous class's `{` and `extends`                 | Yes     |
+| `PERCS31.Classes.ClassDeclaration`                         | Class declarations, allowing an empty body as `{}`                      | Yes     |
+| `PERCS31.Classes.ClassInstantiationParentheses`            | No `(new Foo())->bar()`, and an argument list after `new (...)`         | Yes     |
+| `PERCS31.Classes.ConstantDeclaration`                      | One constant per statement, and one space after `const` and `case`      | Yes     |
+| `PERCS31.Classes.EnumMemberVisibility`                     | `private`, not `protected`, for a method or constant in an enum         | Yes     |
+| `PERCS31.Classes.PropertyDeclaration`                      | No leading `_`, no `var`, and a visibility on a property                | No      |
+| `PERCS31.Classes.PropertyHooks`                            | A hook list's layout, `get` first, and a promoted parameter's hooks     | Partly  |
+| `PERCS31.Classes.TraitUseBlock`                            | A trait's `as` clause spacing, and its conflict block's lines           | Yes     |
+| `PERCS31.ControlStructures.BodyOnNextLine`                 | A structure's body on the line after its `{`, allowing `{}`             | Yes     |
+| `PERCS31.ControlStructures.CatchVariableSpacing`           | One space between a `catch`'s type and its variable                     | Yes     |
+| `PERCS31.ControlStructures.ControlStructureEmptyStatement` | Braces on a structure with no body, `else` included                     | Yes     |
+| `PERCS31.ControlStructures.ControlStructureSpacing`        | The parentheses, with no split rule for `foreach` or `match`            | Yes     |
+| `PERCS31.ControlStructures.ForEachSpacing`                 | A space or line break each side of a `foreach`'s `as` and `=>`          | Yes     |
+| `PERCS31.ControlStructures.MatchArmPlacement`              | Each `match` arm, and each split condition, starts a line               | Yes     |
+| `PERCS31.ControlStructures.SwitchDeclaration`              | `switch` rules, with a `break` in the last case                         | Yes     |
+| `PERCS31.Files.DeclareStatement`                           | No spaces in `declare(...)`, with one directive or several              | Yes     |
+| `PERCS31.Files.Encoding`                                   | A file is encoded in UTF-8                                              | No      |
+| `PERCS31.Files.FileHeader`                                 | The file header, allowing `<?php declare(...) ?>` above markup          | Yes     |
+| `PERCS31.Files.LineEndings`                                | Every line ends in LF, in strings and markup too                        | Yes     |
+| `PERCS31.Formatting.AfterClosingBrace`                     | No statement after a `}`, or comment after a class's or function's      | Partly  |
+| `PERCS31.Formatting.DisallowMultipleStatements`            | One statement per line, allowing `{ get; set; }`                        | Yes     |
+| `PERCS31.Formatting.EmptyBody`                             | An empty class, function, closure or anonymous class body is `{}`       | Yes     |
+| `PERCS31.Formatting.MethodChaining`                        | A split chain's first method, its `->` and their indent                 | Yes     |
+| `PERCS31.Formatting.TrailingComma`                         | Trailing commas in `match`, compound namespace, `list()` and some calls | Yes     |
+| `PERCS31.Functions.ArrowFunctionSpacing`                   | An arrow function's `;`, the line after `fn`, and a wrapped `=>`        | Yes     |
+| `PERCS31.Functions.DisallowTrailingCommaInCall`            | No trailing comma in a call, unless the argument list is split          | Yes     |
+| `PERCS31.Functions.FunctionCallLayout`                     | A call's argument list, including `clone()`'s                           | Yes     |
+| `PERCS31.Functions.MultiLineFunctionDeclaration`           | Function, closure and `fn` declarations, allowing `{}` bodies           | Yes     |
+| `PERCS31.Functions.NullableTypeDeclaration`                | No space after the `?` of a nullable type, in any position              | Yes     |
+| `PERCS31.Functions.RequireTrailingCommaInCall`             | A trailing comma in a split call, but not after `foo(...)`'s `...`      | Yes     |
+| `PERCS31.Namespaces.CompoundNamespaceLayout`               | A compound namespace's layout: on one line, or one name per line        | Yes     |
+| `PERCS31.NamingConventions.AcronymCasing`                  | A warning for an acronym in capitals in a name                          | No      |
+| `PERCS31.NamingConventions.UpperCaseConstantName`          | Constants in UPPER_CASE, or PascalCase in an enum                       | No      |
+| `PERCS31.NamingConventions.ValidClassName`                 | Classes, interfaces, traits and enums in PascalCase                     | No      |
+| `PERCS31.NamingConventions.ValidConstantName`              | No leading underscore on a constant                                     | No      |
+| `PERCS31.NamingConventions.ValidEnumCaseName`              | Enum cases in PascalCase                                                | No      |
+| `PERCS31.Operators.OperatorPlacement`                      | A wrapped operator starts its line, and a split ternary takes three     | Yes     |
+| `PERCS31.Operators.OperatorSpacing`                        | At least one space around binary operators, including `\|>`             | Yes     |
+| `PERCS31.Operators.UnaryOperatorSpacing`                   | No whitespace after a reference `&`                                     | Yes     |
+| `PERCS31.PHP.LowerCaseKeyword`                             | Keywords in lower case, including a property hook's `get` or `set`      | Yes     |
+| `PERCS31.PHP.LowerCaseType`                                | Types in lower case, including a `set` hook's and an enum's type        | Yes     |
+| `PERCS31.PHP.RequireCloneParentheses`                      | A warning for `clone $a`, or `clone($a)->b`, not `clone($a)`            | Yes     |
+| `PERCS31.PHP.TypeCast`                                     | `(bool)`, `(int)`, `(float)` and `(string)` in a cast                   | Yes     |
+| `PERCS31.Strings.HeredocLayout`                            | Where a heredoc or nowdoc begins, and its indentation                   | Yes     |
+| `PERCS31.TypeHints.CompoundType`                           | A compound type's spacing and split lines, and `null` last              | Yes     |
+| `PERCS31.WhiteSpace.ArrowSpacing`                          | The space around `=>` in `match` arms and arrays                        | Yes     |
+| `PERCS31.WhiteSpace.ConsistentIndent`                      | No line indented further than its scope, after a statement              | Yes     |
+| `PERCS31.WhiteSpace.ObjectOperatorSpacing`                 | No white space around `->`, `?->` and `::`                              | Yes     |
+| `PERCS31.WhiteSpace.ScopeClosingBrace`                     | A closing brace on its own line, allowing `{}`                          | Yes     |
+| `PERCS31.WhiteSpace.ScopeIndent`                           | Indentation, including property hooks and anonymous classes             | Yes     |
 
 ## PERCS31.Arrays.ArrayBracketSpacing
 
@@ -1586,8 +1586,8 @@ $user = $repository->
 
 ## PERCS31.Formatting.TrailingComma
 
-Requires a trailing comma after the last arm of a multi-line `match`, the last name in a multi-line group `use`, the
-last item in a multi-line `list()`, or the last argument in multi-line arguments to an anonymous class, `clone()`,
+Requires a trailing comma after the last arm of a multi-line `match`, the last name in a multi-line compound namespace,
+the last item in a multi-line `list()`, or the last argument in multi-line arguments to an anonymous class, `clone()`,
 `exit()`, `die()` or a call through an expression, such as `$handlers[$name](`, and disallows one when the list is on a
 single line. A `match` arm's conditions are a list too: no comma before the `=>` when they're on one line, so
 `1, 2, => 'a'` is reported, and one when they're split over lines, as in `1,` then `2, => 'a'`. The list is split when
@@ -1595,7 +1595,7 @@ it doesn't start and end on the same line, which includes one with a condition t
 
 **Why:** [PER Coding Style 3.1, Section 2.6](https://www.php-fig.org/per/coding-style/#26-trailing-commas) says the last item of a list split across lines MUST have a trailing comma,
 and the last item of a list on one line MUST NOT. Slevomat's trailing comma sniffs cover calls, declarations and closure
-`use` lists, and Slevomat's array sniff covers arrays and short lists, but none covers `match`, group `use`,
+`use` lists, and Slevomat's array sniff covers arrays and short lists, but none covers `match`, compound namespace,
 `new class (`, `list()`, `clone()`, `exit()` or `die()`. Slevomat's call sniffs also skip a call unless a name, a
 variable or a `)` comes before its `(`, so they miss `$handlers[$name](`, `[$object, 'method'](`, `$object->{$method}(`
 and `'strlen'(`. `PhpCollective.PHP.DisallowTrailingCommaInSingleLine` reports a comma in a single-line `list()`,
@@ -1913,19 +1913,19 @@ $largest = max(
 
 ---
 
-## PERCS31.Namespaces.GroupUseLayout
+## PERCS31.Namespaces.CompoundNamespaceLayout
 
-Requires a group `use` split across lines to have one name per line, indented once past the `use` line, with the first
-on the line after the `{`, the `}` on a line of its own, and no blank line in it. In a group `use` on one line, it
-disallows a space after the `{` or before the `}`.
+Requires a compound namespace split across lines to have one name per line, indented once past the `use` line, with the
+first on the line after the `{`, the `}` on a line of its own, and no blank line in it. In a compound namespace on one
+line, it disallows a space after the `{` or before the `}`.
 
-**Why:** [PER Coding Style 3.1, Section 3](https://www.php-fig.org/per/coding-style/#3-declare-statements-namespace-and-import-statements) shows a group `use` on one line, and one split with a name on each line. Its
-text sets no layout, so the two examples are read as the two allowed forms, as for a single-line and a multi-line array.
-See [PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md#a-group-use-split-over-lines). No inherited sniff checks which line a name is on, its indent, or the space inside the
-braces.
+**Why:** [PER Coding Style 3.1, Section 3](https://www.php-fig.org/per/coding-style/#3-declare-statements-namespace-and-import-statements) shows a compound namespace on one line, and one split with a name on each line.
+Its text sets no layout, so the two examples are read as the two allowed forms, as for a single-line and a multi-line
+array. See [PER-CS 3.1 Judgement Calls](PER-CS_3.1_Judgement_Calls.md#a-compound-namespace-split-over-lines). No inherited sniff checks which line a name is on, its indent, or the space
+inside the braces.
 
-Section 3 also says a block of the file header MUST NOT contain a blank line, and a group `use` is part of the block of
-imports. So a blank line anywhere in one is reported, as `BlankLine`.
+Section 3 also says a block of the file header MUST NOT contain a blank line, and a compound namespace is part of the
+block of imports. So a blank line anywhere in one is reported, as `BlankLine`.
 
 Every single-line example, in section 3 and in the overview, is written `{ClassA as A, ClassB}`, with no space inside
 the braces. That's read as setting the spacing, as it's how the spec writes every list in brackets.

@@ -145,7 +145,7 @@
     <rule ref="Jumbo.TypeHints.DeclareStrictTypes"/>
 
     <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses"/>
-    <!-- Slevomat's namespace sniffs skip a group use, so it would hide unused and unsorted imports -->
+    <!-- Slevomat's namespace sniffs skip a compound namespace, so it would hide unused and unsorted imports -->
     <rule ref="SlevomatCodingStandard.Namespaces.DisallowGroupUse"/>
     <rule ref="SlevomatCodingStandard.Namespaces.MultipleUsesPerLine"/>
     <rule ref="SlevomatCodingStandard.Namespaces.NamespaceDeclaration"/>

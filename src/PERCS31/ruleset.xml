@@ -254,9 +254,9 @@
          (2.6) -->
     <rule ref="SlevomatCodingStandard.Arrays.TrailingArrayComma"/>
 
-    <!-- A trailing comma in a multi-line match, group use, list(), or the arguments of an anonymous class, clone(),
-         exit(), die() or a call through an expression, as in $handlers[$name](, and none on a single line. The same
-         for a match arm's conditions. Also no trailing comma hidden by a comment after it, on one line, in a
+    <!-- A trailing comma in a multi-line match, compound namespace, list(), or the arguments of an anonymous class,
+         clone(), exit(), die() or a call through an expression, as in $handlers[$name](, and none on a single line. The
+         same for a match arm's conditions. Also no trailing comma hidden by a comment after it, on one line, in a
          parameter list, a closure's use list or an array (2.6). -->
     <rule ref="PERCS31.Formatting.TrailingComma"/>
 
@@ -268,7 +268,7 @@
         <exclude name="Universal.Attributes.TrailingComma.RequiredMultiAttributeMultiLine"/>
     </rule>
 
-    <!-- A comma with no space before it and one after in any other list, such as an array, group use, match
+    <!-- A comma with no space before it and one after in any other list, such as an array, compound namespace, match
          conditions or clone(), as the examples show (3, 5.2, 11). The codes ending in InFunctionCall cover a comma
          inside a call's parentheses (4.7). Parameter, closure use and declare lists have their own codes, which other
          sniffs already cover. -->
@@ -288,10 +288,10 @@
     <!-- The file header (3), allowing a declare statement between PHP tags on the first line of a file with markup -->
     <rule ref="PERCS31.Files.FileHeader"/>
 
-    <!-- A group use split across lines: one name per line, indented once, the first on the line after the {, and the }
-         on a line of its own, as the examples in 3 show. No blank line in it, as a header block can't contain one
-         (3). -->
-    <rule ref="PERCS31.Namespaces.GroupUseLayout"/>
+    <!-- A compound namespace split across lines: one name per line, indented once, the first on the line after the {,
+         and the } on a line of its own, as the examples in 3 show. No blank line in it, as a header block can't contain
+         one (3). -->
+    <rule ref="PERCS31.Namespaces.CompoundNamespaceLayout"/>
 
     <!-- No spaces inside a declare statement's parentheses, including one with several directives (3) -->
     <rule ref="PERCS31.Files.DeclareStatement">

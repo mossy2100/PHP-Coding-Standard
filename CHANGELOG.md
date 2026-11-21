@@ -113,16 +113,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`PERCS31.Classes.TraitUseBlock` (breaking).** Requires a single space after a visibility or `final` in a trait's
   `as` clause. `sayBye as private  myBye;` passed, though PER Coding Style 3.1 sets the spacing there by its example.
   Auto-fixable, unless a comment is in the way.
-- **A blank line just inside a multi-line array, or anywhere in a group `use` (breaking).** A blank line after a
+- **A blank line just inside a multi-line array, or anywhere in a compound namespace (breaking).** A blank line after a
   multi-line array's `[` is now reported, by `PERCS31.Arrays.ArrayBracketSpacing`, as `BlankLineAfterOpener`. PER Coding
   Style 3.1 puts the first value on the next line, and only a blank line before the `]` was reported. A blank line
-  between values is still allowed. A blank line anywhere in a group `use` is reported too, by
-  `PERCS31.Namespaces.GroupUseLayout`, as `BlankLine`, as section 3 says a block of the file header MUST NOT contain
-  one. Both are auto-fixable.
-- **Spacing in an import (breaking).** A space just inside the braces of a group `use` on one line is now reported, by
-  `PERCS31.Namespaces.GroupUseLayout`, as `SpaceAfterOpenBrace` or `SpaceBeforeCloseBrace`, so `use Foo\{ A, B };` must
-  be `use Foo\{A, B};`. And `Universal.UseStatements.KeywordSpacing` now requires one space after `use`, `function` and
-  `const`, and each side of `as`, in any import. `use Foo\Bar  as  Baz;` passed. Both are auto-fixable.
+  between values is still allowed. A blank line anywhere in a compound namespace is reported too, by
+  `PERCS31.Namespaces.CompoundNamespaceLayout`, as `BlankLine`, as section 3 says a block of the file header MUST NOT
+  contain one. Both are auto-fixable.
+- **Spacing in an import (breaking).** A space just inside the braces of a compound namespace on one line is now
+  reported, by `PERCS31.Namespaces.CompoundNamespaceLayout`, as `SpaceAfterOpenBrace` or `SpaceBeforeCloseBrace`, so
+  `use Foo\{ A, B };` must be `use Foo\{A, B};`. And `Universal.UseStatements.KeywordSpacing` now requires one space
+  after `use`, `function` and `const`, and each side of `as`, in any import. `use Foo\Bar  as  Baz;` passed. Both are
+  auto-fixable.
 - **`PERCS31.Files.Encoding` (breaking).** A file that isn't valid UTF-8 is now reported, as `NotUtf8`, at its first
   invalid line. PSR-1 requires UTF-8, and only the byte-order mark was checked. Not auto-fixable.
 - **Strict UPPER_SNAKE_CASE for constants, in Jumbo (breaking).** `PERCS31.NamingConventions.UpperCaseConstantName` has
@@ -130,10 +131,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   digits, separated by single underscores, so `__HIDDEN`, `TWO__WORDS` and `TRAILING_` are reported, as
   `ConstantNotUpperSnakeCase`. It covers class constants, global constants from `const` or `define()`, and an enum
   constant that isn't in PascalCase. PERCS31 still allows them.
-- **`PERCS31.Namespaces.GroupUseLayout` (breaking).** A group `use` split across lines must have one name per line, with
-  the first on the line after the `{`, and the `}` on a line of its own, and each name indented once past the `use`
-  line, as `NameIndent`, as PER Coding Style 3.1's example shows. `use A\{B,` then `C,` then `};` passed. Auto-fixable,
-  unless a comment is in the way.
+- **`PERCS31.Namespaces.CompoundNamespaceLayout` (breaking).** A compound namespace split across lines must have one
+  name per line, with the first on the line after the `{`, and the `}` on a line of its own, and each name indented once
+  past the `use` line, as `NameIndent`, as PER Coding Style 3.1's example shows. `use A\{B,` then `C,` then `};` passed.
+  Auto-fixable, unless a comment is in the way.
 - **`PERCS31.Classes.ConstantDeclaration` (breaking).** Requires a single space after a class constant's `const`
   keyword, and between its type and its name. `public const  int  A = 1;` passed. PER Coding Style 3.1 sets this spacing
   for keywords and for a property's type, and it's read as covering a constant too. Auto-fixable.
@@ -262,8 +263,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **`PERCS31.ControlStructures.MatchArmPlacement` (breaking).** Each `match` arm must start on a new line, as PER Coding
   Style 3.1, section 5.2, shows. Auto-fixable.
 - **Comma spacing in every list (breaking).** As PER Coding Style 3.1's examples show, a comma has no space before it
-  and one after, in any list: an array, including one nested in a multi-line array, a short list, group `use`, `match`
-  conditions, `clone()` arguments, and others such as `echo 1, 2;`. Uses the general codes of
+  and one after, in any list: an array, including one nested in a multi-line array, a short list, a compound namespace,
+  `match` conditions, `clone()` arguments, and others such as `echo 1, 2;`. Uses the general codes of
   `Universal.WhiteSpace.CommaSpacing`. Auto-fixable.
 - **No space inside a single-line array's brackets (breaking).** In PERCS31, as in Jumbo, as section 11 shows. Uses
   `SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace`, now in PERCS31. A space or line break inside an empty
@@ -357,9 +358,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   or `?->` must start its line, indented once, and the first method must be on the next line, not the object's line.
   Adds `PEAR.WhiteSpace.ObjectOperatorIndent` and the new `PERCS31.Formatting.MethodChaining`. Auto-fixable.
 - **`PERCS31.Formatting.TrailingComma` (breaking).** As PER Coding Style 3.1 requires, the last arm of a multi-line
-  `match`, the last name in a multi-line group `use`, the last item in a multi-line `list()`, and the last argument in
-  multi-line arguments to an anonymous class, `clone()`, `exit()` or `die()` must have a trailing comma, and one on a
-  single line is an error, including in a `match` arm's conditions. Auto-fixable.
+  `match`, the last name in a multi-line compound namespace, the last item in a multi-line `list()`, and the last
+  argument in multi-line arguments to an anonymous class, `clone()`, `exit()` or `die()` must have a trailing comma, and
+  one on a single line is an error, including in a `match` arm's conditions. Auto-fixable.
 - **`Universal.Attributes.TrailingComma` (breaking).** A trailing comma in an attribute block is an error, including
   after one attribute whose arguments span lines, as in `#[Foo(` ... `),]`. PER Coding Style 3.1 never lets an attribute
   block be split, so its list never takes one. Auto-fixable.

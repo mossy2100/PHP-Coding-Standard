@@ -27,9 +27,9 @@ class TrailingCommaUnitTest extends AbstractSniffTestCase
         }
 
         return [
-            // A multi-line group use without a trailing comma.
+            // A multi-line compound namespace without a trailing comma.
             21 => 1,
-            // A single-line group use with one.
+            // A single-line compound namespace with one.
             23 => 1,
             // A multi-line match without a trailing comma.
             27 => 1,

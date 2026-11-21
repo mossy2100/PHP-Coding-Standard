@@ -501,7 +501,7 @@ PHP_CodeSniffer reads the same PSR-12 wording this way.
 
 **Decision:** Each is measured exactly, too little as well as too much:
 
-- A group `use`'s items: once past the `use` line, as section 3's example shows.
+- A compound namespace's items: once past the `use` line, as section 3's example shows.
 - A value wrapped after `=>`: once past its key's line.
 - Dead code after a `break`: level with the statement that ends the case.
 - A statement in a closure, anonymous class or `switch`: the usual indent for its body.
@@ -653,9 +653,9 @@ instead.
 The "etc." leaves open which other lists it covers.
 
 **Decision:** A multi-line list needs a trailing comma, and a single-line list mustn't have one, for arguments,
-parameters, closure `use` lists, arrays, `match` arms, a `match` arm's conditions, group `use`, `list()`, an anonymous
-class's arguments, `clone()`, `exit()`, `die()` and an attribute's arguments. `clone ($a)->c` is skipped, as its
-parentheses may only group the object.
+parameters, closure `use` lists, arrays, `match` arms, a `match` arm's conditions, compound namespaces, `list()`, an
+anonymous class's arguments, `clone()`, `exit()`, `die()` and an attribute's arguments. `clone ($a)->c` is skipped, as
+its parentheses may only group the object.
 
 A `match` has two lists: its arms, and the conditions at the start of each arm. See [`match` Conditions](#match-conditions).
 
@@ -848,14 +848,14 @@ statement may import several names.
 
 **Decision:** `use A, B;` is allowed.
 
-**Why:** PSR-2 required one `use` keyword per declaration. PSR-12 dropped that rule when it added group `use`, and PER
-doesn't have it either.
+**Why:** PSR-2 required one `use` keyword per declaration. PSR-12 dropped that rule when it added compound namespaces,
+and PER doesn't have it either.
 
 ---
 
-### A Group `use` Split Over Lines
+### A Compound Namespace Split Over Lines
 
-**Issue:** [Section 3](https://www.php-fig.org/per/coding-style/#3-declare-statements-namespace-and-import-statements) shows a group `use` on one line, and one split over lines:
+**Issue:** [Section 3](https://www.php-fig.org/per/coding-style/#3-declare-statements-namespace-and-import-statements) shows a compound namespace on one line, and one split over lines:
 
 ```php
 use Vendor\Package\{ClassA as A, ClassB, ClassC as C};
@@ -870,7 +870,7 @@ use Vendor\Package\SomeNamespace\{
 
 Its text doesn't say how a split one is laid out.
 
-**Decision:** A group `use` is written in one of those two ways. All on one line:
+**Decision:** A compound namespace is written in one of those two ways. All on one line:
 
 ```php
 use A\{B, C};
@@ -907,18 +907,19 @@ use A\{
     C};
 ```
 
-A blank line anywhere in a group `use`, after the `{`, between two names or before the `}`, is reported. A block of the
-file header "MUST NOT contain a blank line", and a group `use` is part of the block of imports.
+A blank line anywhere in a compound namespace, after the `{`, between two names or before the `}`, is reported. A block
+of the file header "MUST NOT contain a blank line", and a compound namespace is part of the block of imports.
 
 **Why:** The two examples are the only forms the spec shows, and they match its rules for a single-line and a multi-line
 array.
 
 ---
 
-### Spacing in a Group `use`
+### Spacing in a Compound Namespace
 
-**Issue:** No rule in section 3 sets the spacing in a group `use`. Its examples, and the overview's, which "encompasses
-some rules below", all write one the same way, as in `use Vendor\Package\{ClassA as A, ClassB, ClassC as C};`.
+**Issue:** No rule in section 3 sets the spacing in a compound namespace. Its examples, and the overview's, which
+"encompasses some rules below", all write one the same way, as in
+`use Vendor\Package\{ClassA as A, ClassB, ClassC as C};`.
 
 **Decision:** The examples' spacing is required.
 
@@ -2075,7 +2076,7 @@ Its text states none of that layout.
 
 **Decision:** At least one space each side of `=>`, one space after each comma, one arm per line, a trailing comma after
 each arm, and `}` on its own line. The comma spacing is also applied to lists with no example, such as `echo`, `global`
-and a group `use`.
+and a compound namespace.
 
 The arrows may be lined up, as an array's may. See [`=>` in a `match` Arm, an Array or `yield`](#-in-a-match-arm-an-array-or-yield).
 
